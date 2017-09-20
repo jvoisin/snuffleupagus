@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+
+DH_VERBOSE = 1
+
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/default.mk
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+
+%:
+	dh $@ 
+
+override_dh_auto_clean:
+	cd ./src; phpize --clean
+
+override_dh_auto_configure:
+	cd ./src; phpize
+	cd ./src; ./configure --enable-snuffleupagus
+
+override_dh_auto_build:
+	make -C src
+
+override_dh_auto_install:
+	make -C src install
+
+override_dh_auto_test:
+	TEST_PHP_ARGS="-q" REPORT_EXIST_STATUS=1 make -C src test

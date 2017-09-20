@@ -1,0 +1,14 @@
+Source: snuffleupagus
+Priority: optional
+Maintainer: NBS System <snuffleupagus@nbs-system.com>
+Build-Depends: debhelper (>= 9), php7.0-dev
+Standards-Version: 3.9.2
+Homepage: https://snuffleupagus.fr
+Section: php
+Vcs-Git: https://github.com/nbs-system/snuffleupagus
+
+Package: snuffleupagus
+Architecture: any
+Depends: ${misc:Depends}
+Description: Hardening for your php7 stack
+	Snuffleupagus is cool

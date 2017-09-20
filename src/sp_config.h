@@ -1,0 +1,206 @@
+#ifndef SP_CONFIG_H
+#define SP_CONFIG_H
+
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+
+typedef enum {
+  SP_TYPE_STR = 0,
+  SP_TYPE_REGEXP,
+  SP_TYPE_INT,
+  SP_TYPE_EMPTY
+} sp_type;
+
+typedef enum {
+  SP_PHP_TYPE_UNDEF = IS_UNDEF, 
+  SP_PHP_TYPE_NULL = IS_NULL, 
+  SP_PHP_TYPE_FALSE = IS_FALSE, 
+  SP_PHP_TYPE_TRUE = IS_TRUE, 
+  SP_PHP_TYPE_LONG = IS_LONG, 
+  SP_PHP_TYPE_DOUBLE = IS_DOUBLE, 
+  SP_PHP_TYPE_STRING = IS_STRING, 
+  SP_PHP_TYPE_ARRAY = IS_ARRAY, 
+  SP_PHP_TYPE_OBJECT = IS_OBJECT, 
+  SP_PHP_TYPE_RESOURCE = IS_RESOURCE, 
+  SP_PHP_TYPE_REFERENCE = IS_REFERENCE
+} sp_php_type;
+
+typedef struct {
+  int ip_version;
+  union {
+    struct in_addr ipv4;
+    struct in6_addr ipv6;
+  } ip;
+  uint8_t mask;
+} sp_cidr;
+
+typedef struct { char *encryption_key; } sp_config_encryption_key;
+
+typedef struct {
+	bool enable;
+	bool simulation;
+} sp_config_readonly_exec;
+
+typedef struct { bool enable; } sp_config_global_strict;
+
+typedef struct { bool enable; } sp_config_random;
+
+typedef struct { bool enable; } sp_config_auto_cookie_secure;
+
+typedef struct { bool enable; } sp_config_disable_xxe;
+
+typedef struct {
+  HashTable *names;
+  uint32_t mask_ipv4;
+  uint32_t mask_ipv6;
+} sp_config_cookie_encryption;
+
+typedef struct {
+  bool enable;
+  bool simulation;
+} sp_config_unserialize;
+
+typedef struct {
+  char *filename;
+  pcre *r_filename;
+
+  char *function;
+  pcre *r_function;
+
+  char *hash;
+  int simulation;
+  bool enable;
+
+  char *param;
+  pcre *r_param;
+  sp_php_type param_type;
+
+  char *ret;
+  pcre *r_ret;
+  sp_php_type ret_type;
+  
+  pcre *regexp;
+  char *value;
+
+  char *dump;
+  char *alias;
+  bool param_is_array;
+  bool var_is_array;
+  sp_node_t *param_array_keys;
+  sp_node_t *var_array_keys;
+
+  bool allow;
+  bool drop;
+
+  char *var;
+
+  sp_cidr *cidr;
+} sp_disabled_function;
+
+typedef struct {
+  sp_node_t *disabled_functions;  // list of sp_disabled_function
+} sp_config_disabled_functions;
+
+typedef struct {
+  sp_node_t *regexp_inclusion;  // list of regexp for inclusion
+} sp_config_regexp_inclusion;
+
+typedef struct {
+  char *script;
+  bool simulation;
+  bool enable;
+} sp_config_upload_validation;
+
+typedef struct {
+  sp_config_random *config_random;
+  sp_config_unserialize *config_unserialize;
+  sp_config_disabled_functions *config_disabled_functions;
+  sp_config_disabled_functions *config_disabled_functions_ret;
+  sp_config_readonly_exec *config_readonly_exec;
+  sp_config_upload_validation *config_upload_validation;
+  sp_config_cookie_encryption *config_cookie_encryption;
+  sp_config_encryption_key *config_snuffleupagus;
+  sp_config_auto_cookie_secure *config_auto_cookie_secure;
+  sp_config_global_strict *config_global_strict;
+  sp_config_disable_xxe *config_disable_xxe;
+  sp_config_regexp_inclusion *config_regexp_inclusion;
+} sp_config;
+
+typedef struct {
+  int (*func)(char *, char *, void *);
+  char *token;
+  void *retval;
+} sp_config_functions;
+
+typedef struct {
+  int (*func)(char *);
+  char *token;
+} sp_config_tokens;
+
+#define SP_TOKEN_BASE "sp"
+
+#define SP_TOKEN_AUTO_COOKIE_SECURE ".auto_cookie_secure"
+#define SP_TOKEN_COOKIE_ENCRYPTION ".cookie_encryption"
+#define SP_TOKEN_DISABLE_FUNC ".disable_functions"
+#define SP_TOKEN_GLOBAL ".global"
+#define SP_TOKEN_GLOBAL_STRICT ".global_strict"
+#define SP_TOKEN_HARDEN_RANDOM ".harden_random"
+#define SP_TOKEN_READONLY_EXEC ".readonly_exec"
+#define SP_TOKEN_UNSERIALIZE_HMAC ".unserialize_hmac"
+#define SP_TOKEN_UPLOAD_VALIDATION ".upload_validation"
+#define SP_TOKEN_DISABLE_XXE ".disable_xxe"
+
+// common tokens
+#define SP_TOKEN_ENABLE ".enable("
+#define SP_TOKEN_DISABLE ".disable("
+#define SP_TOKEN_SIMULATION ".simulation("
+#define SP_TOKEN_TRUE "1"
+#define SP_TOKEN_FALSE "0"
+#define SP_TOKEN_DUMP ".dump("
+#define SP_TOKEN_ALIAS ".alias("
+#define SP_TOKEN_ALLOW ".allow("
+#define SP_TOKEN_DROP ".drop("
+
+#define SP_TOKEN_END_PARAM ')'
+
+// disable_function
+#define SP_TOKEN_CIDR ".cidr("
+#define SP_TOKEN_FILENAME ".filename("
+#define SP_TOKEN_FILENAME_REGEXP ".filename_r("
+#define SP_TOKEN_FUNCTION ".function("
+#define SP_TOKEN_FUNCTION_REGEXP ".function_r("
+#define SP_TOKEN_HASH ".hash("
+#define SP_TOKEN_LOCAL_VAR ".var("
+#define SP_TOKEN_PARAM ".param("
+#define SP_TOKEN_PARAM_REGEXP ".param_r("
+#define SP_TOKEN_PARAM_TYPE ".param_type("
+#define SP_TOKEN_RET ".ret("
+#define SP_TOKEN_RET_REGEXP ".ret_r("
+#define SP_TOKEN_RET_TYPE ".ret_type("
+#define SP_TOKEN_VALUE ".value("
+#define SP_TOKEN_VALUE_REGEXP ".value_r("
+
+// cookies encryption
+#define SP_TOKEN_NAME ".cookie("
+#define SP_TOKEN_MASK_IPV4 ".mask_ipv4("
+#define SP_TOKEN_MASK_IPV6 ".mask_ipv6("
+
+// Global configuration options
+#define SP_TOKEN_ENCRYPTION_KEY ".secret_key("
+
+// upload_validator
+#define SP_TOKEN_UPLOAD_SCRIPT ".script("
+
+int sp_parse_config(const char *);
+int parse_array(sp_disabled_function *);
+
+int parse_str(char *restrict, char *restrict, void *);
+int parse_regexp(char *restrict, char *restrict, void *);
+int parse_empty(char *restrict, char *restrict, void *);
+int parse_int(char *restrict, char *restrict, void *);
+int parse_cidr(char *restrict, char *restrict, void *);
+int parse_php_type(char *restrict, char *restrict, void *);
+
+
+#endif /* SP_CONFIG_H */
