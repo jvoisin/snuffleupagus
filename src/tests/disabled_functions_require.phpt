@@ -13,10 +13,8 @@ require $dir . '/test.meh';
 require $dir . '/test.bla';
 echo "1337";
 ?>
---XFAIL--
-PHP doesn't replace the format string, so the test is failing.
 --EXPECTF--
-[snuffleupagus][0.0.0.0][include][drop] Inclusion of a forbidden file (%a/test.bla)
+[snuffleupagus][0.0.0.0][include][drop] Inclusion of a forbidden file (%a/test.bla).
 --CLEAN--
 <?php
 $dir = __DIR__;
