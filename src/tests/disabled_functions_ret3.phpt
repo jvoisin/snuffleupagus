@@ -4,6 +4,7 @@ Disable functions check on `ret`.
 <?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_functions_ret.ini
+memory_limit=-1
 --FILE--
 <?php 
 class Bob {

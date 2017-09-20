@@ -35,14 +35,14 @@
 #define HOOK_FUNCTION_BY_REGEXP(regexp, hook_table, new_function, execution) \
   hook_regexp(regexp, SNUFFLEUPAGUS_G(hook_table), new_function, execution)
 
-#define LOG_NOTICE "notice"
-#define LOG_DROP "drop"
-#define LOG_DEBUG "debug"
-#define LOG_ERROR "error"
+#define SP_LOG_NOTICE "notice"
+#define SP_LOG_DROP "drop"
+#define SP_LOG_DEBUG "debug"
+#define SP_LOG_ERROR "error"
 
-#define sp_log_err(feature, ...) sp_log_msg(feature, LOG_ERROR, __VA_ARGS__)
+#define sp_log_err(feature, ...) sp_log_msg(feature, SP_LOG_ERROR, __VA_ARGS__)
 #ifdef SP_DEBUG
-    #define sp_log_debug(...) sp_log_msg("DEBUG", LOG_DEBUG, __VA_ARGS__)
+    #define sp_log_debug(...) sp_log_msg("DEBUG", SP_LOG_DEBUG, __VA_ARGS__)
 #else
     #define sp_log_debug(...)
 #endif

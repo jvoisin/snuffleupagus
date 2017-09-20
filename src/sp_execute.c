@@ -13,10 +13,10 @@ static int (*orig_zend_stream_open)(const char *filename,
 ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   if (0 == access(filename, W_OK)) {
     if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->simulation) {
-      sp_log_msg("readonly_exec", LOG_NOTICE,
+      sp_log_msg("readonly_exec", SP_LOG_NOTICE,
         "Attempted execution of a writable file (%s).", filename);
     } else {
-      sp_log_msg("readonly_exec", LOG_DROP,
+      sp_log_msg("readonly_exec", SP_LOG_DROP,
         "Attempted execution of a writable file (%s).", filename);
       sp_terminate();
     }
@@ -37,7 +37,7 @@ static void check_inclusion_regexp(const char * const filename) {
     while (config) {
       pcre *config_node = (pcre*)(config->data);
       if (false == is_regexp_matching(config_node, filename)) {
-        sp_log_msg("include", LOG_DROP, "Inclusion of a forbidden file (%s).", filename);
+        sp_log_msg("include", SP_LOG_DROP, "Inclusion of a forbidden file (%s).", filename);
         sp_terminate();
       }
       config = config->next;

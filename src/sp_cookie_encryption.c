@@ -63,7 +63,7 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
 
   if (value_len <
       crypto_secretbox_NONCEBYTES + crypto_secretbox_ZEROBYTES) {
-    sp_log_msg("cookie_encryption", LOG_DROP,
+    sp_log_msg("cookie_encryption", SP_LOG_DROP,
         "Buffer underflow tentative detected in cookie encryption handling.");
     return ZEND_HASH_APPLY_REMOVE;
   }
@@ -77,7 +77,7 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
       (unsigned char *)ZSTR_VAL(debase64), key);
 
   if (ret == -1) {
-    sp_log_msg("cookie_encryption", LOG_DROP,
+    sp_log_msg("cookie_encryption", SP_LOG_DROP,
       "Something went wrong with the decryption of %s.",
                ZSTR_VAL(hash_key->key));
     return ZEND_HASH_APPLY_REMOVE;

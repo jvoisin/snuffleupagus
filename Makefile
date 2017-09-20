@@ -4,7 +4,7 @@ clean:
 
 debug:
 	cd src; phpize
-	export CFLAGS="-Wall -Wextra -g3 -ggdb -Wno-unused-function"; cd src; ./configure --enable-snuffleupagus --enable-debug
+	export CFLAGS="-Wall -Wextra -g3 -ggdb -O1 -g -Wno-unused-function"; cd src; ./configure --enable-snuffleupagus --enable-debug
 	make -C src
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test
 

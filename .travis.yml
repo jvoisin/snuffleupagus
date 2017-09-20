@@ -1,0 +1,23 @@
+language: php
+
+php:
+  - '7.0'
+  - '7.1'
+
+env:
+  - CC=gcc
+  - CC=clang
+
+addons:
+  apt:
+    packages:
+      - gdb
+      - gcc
+      - lcov
+      - valgrind
+      - libpcre3
+      - libpcre3-dev
+
+script:
+  - php-config --configure-options
+  - make debug

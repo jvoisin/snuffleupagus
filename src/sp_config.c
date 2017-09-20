@@ -145,7 +145,7 @@ int parse_regexp(char *restrict line, char *restrict keyword, void *retval) {
   if (value) {
     const char *pcre_error;
     int pcre_error_offset;
-    pcre *compiled_re = pcre_compile(value, PCRE_CASELESS, &pcre_error,
+    pcre *compiled_re = sp_pcre_compile(value, PCRE_CASELESS, &pcre_error,
                                      &pcre_error_offset, NULL);
     if (NULL == compiled_re) {
       sp_log_err("config", "Failed to compile '%s': %s.", value, pcre_error);

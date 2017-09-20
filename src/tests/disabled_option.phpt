@@ -7,10 +7,16 @@ sp.configuration_file={PWD}/config/config_rand_harden_disabled.ini
 --FILE--
 <?php 
 srand(0);
-echo rand(0,100)."\n";
+$a =  rand(0,100)."\n";
 srand(0);
-echo rand(0,100)."\n";
+$b = rand(0,100)."\n";
+srand(0);
+$c = rand(0,100)."\n";
+if ($a == $b && $a == $c) {
+    echo "win";
+} else {
+    echo "lose";
+}
 ?>
 --EXPECT--
-84
-84
+win

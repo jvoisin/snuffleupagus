@@ -271,7 +271,7 @@ static bool should_drop_on_ret(zval* return_value,
       }
     }
 
-    ret_value_str = sp_convert_to_string(return_value);  // FIXME memleak
+    ret_value_str = sp_convert_to_string(return_value);
 
     bool match_type = (config_node->ret_type) &&
                       (config_node->ret_type == Z_TYPE_P(return_value));
@@ -282,15 +282,18 @@ static bool should_drop_on_ret(zval* return_value,
     if (true == match_type || match_value) {
       if (true == config_node->allow) {
         efree(complete_path_function);
+        efree(ret_value_str);
         return false;
       }
       sp_log_disable_ret(complete_path_function, ret_value_str, config_node);
       if (false == config_node->simulation) {
         efree(complete_path_function);
+        efree(ret_value_str);
         return true;
       }
     }
   next:
+    efree(ret_value_str);
     config = config->next;
   }
   efree(complete_path_function);

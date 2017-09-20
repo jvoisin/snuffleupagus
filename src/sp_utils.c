@@ -201,7 +201,7 @@ bool sp_match_value(const char* value, const char* to_match, const pcre* rx) {
     }
   } else if (rx) {
     int substrvec[30];
-    int ret = pcre_exec(rx, NULL, value, strlen(value), 0, 0, substrvec, 30);
+    int ret = sp_pcre_exec(rx, NULL, value, strlen(value), 0, 0, substrvec, 30);
 
     if (ret < 0) {
       if (ret != PCRE_ERROR_NOMATCH) {
@@ -223,14 +223,14 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
   const int sim = config_node->simulation;
   if (arg_name) {
     if (alias) {
-      sp_log_msg("disabled_function", sim?LOG_NOTICE:LOG_DROP,
+      sp_log_msg("disabled_function", sim?SP_LOG_NOTICE:SP_LOG_DROP,
           "The call to the function '%s' in %s:%d has been disabled, "
           "because its argument '%s' content (%s) matched the rule '%s'.",
           path, zend_get_executed_filename(TSRMLS_C),
           zend_get_executed_lineno(TSRMLS_C), arg_name, arg_value?arg_value:"?",
            alias);
     } else {
-      sp_log_msg("disabled_function", sim?LOG_NOTICE:LOG_DROP,
+      sp_log_msg("disabled_function", sim?SP_LOG_NOTICE:SP_LOG_DROP,
           "The call to the function '%s' in %s:%d has been disabled, "
           "because its argument '%s' content (%s) matched a rule.",
           path, zend_get_executed_filename(TSRMLS_C),
@@ -239,13 +239,13 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
     }
   } else {
     if (alias) {
-      sp_log_msg("disabled_function", sim?LOG_NOTICE:LOG_DROP,
+      sp_log_msg("disabled_function", sim?SP_LOG_NOTICE:SP_LOG_DROP,
           "The call to the function '%s' in %s:%d has been disabled, "
           "because of the the rule '%s'.",path,
           zend_get_executed_filename(TSRMLS_C),
           zend_get_executed_lineno(TSRMLS_C), alias);
     } else {
-      sp_log_msg("disabled_function", sim?LOG_NOTICE:LOG_DROP,
+      sp_log_msg("disabled_function", sim?SP_LOG_NOTICE:SP_LOG_DROP,
                  "The call to the function '%s' in %s:%d has been disabled.",
 				 path, zend_get_executed_filename(TSRMLS_C),
                  zend_get_executed_lineno(TSRMLS_C));
@@ -263,13 +263,13 @@ void sp_log_disable_ret(const char* restrict path,
   const char* alias = config_node->alias;
   const int sim = config_node->simulation;
   if (alias) {
-    sp_log_msg("disabled_function", sim?LOG_NOTICE:LOG_DROP,
+    sp_log_msg("disabled_function", sim?SP_LOG_NOTICE:SP_LOG_DROP,
         "The execution has been aborted in %s:%d, "
         "because the function '%s' returned '%s', which matched the rule '%s'.",
         zend_get_executed_filename(TSRMLS_C),
         zend_get_executed_lineno(TSRMLS_C), path, ret_value?ret_value:"?", alias);
   } else {
-    sp_log_msg("disabled_function", sim?LOG_NOTICE:LOG_DROP,
+    sp_log_msg("disabled_function", sim?SP_LOG_NOTICE:SP_LOG_DROP,
         "The execution has been aborted in %s:%d, "
         "because the return value (%s) of the function '%s' matched a rule.",
         zend_get_executed_filename(TSRMLS_C),
@@ -349,7 +349,7 @@ zend_always_inline char* sp_getenv(char* var) {
 
 zend_always_inline int is_regexp_matching(const pcre* regexp, const char* str) {
   int vec[30];
-  int ret = pcre_exec(regexp, NULL, str, strlen(str), 0, 0, vec, sizeof(vec));
+  int ret = sp_pcre_exec(regexp, NULL, str, strlen(str), 0, 0, vec, sizeof(vec));
   if (ret < 0) {
     if (ret != PCRE_ERROR_NOMATCH) {
       sp_log_err("regexp", "Something went wrong with a regexp.");
@@ -367,6 +367,29 @@ int hook_function(const char* original_name, HashTable* hook_table,
 
   /* The `mb` module likes to hook functions, like strlen->mb_strlen,
    * so we have to hook both of them. */
+
+  if ((func = zend_hash_str_find_ptr(ht,
+                                     VAR_AND_LEN(original_name)))) {
+    if (func->handler == new_function) {
+      return SUCCESS;
+    }
+  }
+ 
+  if ((func = zend_hash_str_find_ptr(CG(function_table),
+                                     VAR_AND_LEN(original_name)))) {
+    if (func->handler == new_function) {
+      /* Success !*/
+    } else if (zend_hash_str_add_new_ptr((hook_table),
+                                         VAR_AND_LEN(original_name),
+                                         func->handler) == NULL) {
+      sp_log_err("function_pointer_saving",
+			  "Could not save function pointer for %s", original_name);
+      return FAILURE;
+    } else {
+      func->handler = new_function;
+    }
+  }
+ 
   if (0 == strncmp(original_name, "mb_", 3)) {
     CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
     if (zend_hash_str_find(ht,
@@ -383,20 +406,6 @@ int hook_function(const char* original_name, HashTable* hook_table,
     }
   }
 
-  if ((func = zend_hash_str_find_ptr(CG(function_table),
-                                     VAR_AND_LEN(original_name)))) {
-    if (func->handler == new_function) {
-      /* Success !*/
-    } else if (zend_hash_str_add_new_ptr((hook_table),
-                                         VAR_AND_LEN(original_name),
-                                         func->handler) == NULL) {
-      sp_log_err("function_pointer_saving",
-			  "Could not save function pointer for %s", original_name);
-      return FAILURE;
-    } else {
-      func->handler = new_function;
-    }
-  }
   return SUCCESS;
 }
 
@@ -409,7 +418,7 @@ int hook_regexp(const pcre* regexp, HashTable* hook_table,
   ZEND_HASH_FOREACH_STR_KEY(ht, key) {
     if (key) {
       int vec[30];
-      int ret = pcre_exec(regexp, NULL, key->val, key->len, 0, 0, vec, 30);
+      int ret = sp_pcre_exec(regexp, NULL, key->val, key->len, 0, 0, vec, 30);
       if (ret < 0) { /* Error or no match*/
         if (PCRE_ERROR_NOMATCH != ret) {
           sp_log_err("pcre", "Runtime error with pcre, error code: %d", ret);

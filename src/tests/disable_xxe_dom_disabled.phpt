@@ -6,7 +6,6 @@ Disable XXE
  if (!extension_loaded("dom")) die "skip";
  ?>
 --INI--
-extension=`php-config --extension-dir`/dom.so 
 sp.configuration_file={PWD}/config/disable_xxe_disable.ini
 --FILE--
 <?php 

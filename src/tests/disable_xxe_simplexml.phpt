@@ -6,7 +6,6 @@ Disable XXE
  if (!extension_loaded("simplexml")) die "skip";
  ?>
 --INI--
-extension=`php-config --extension-dir`/simplexml.so 
 sp.configuration_file={PWD}/config/disable_xxe.ini
 --FILE--
 <?php 

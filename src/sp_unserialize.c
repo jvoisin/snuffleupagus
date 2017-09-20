@@ -57,7 +57,7 @@ PHP_FUNCTION(sp_unserialize) {
 
   /* 64 is the length of HMAC-256 */
   if (buf_len < 64) {
-    sp_log_msg("unserialize", LOG_DROP, "The serialized object is too small.");
+    sp_log_msg("unserialize", SP_LOG_DROP, "The serialized object is too small.");
     RETURN_FALSE;
   }
 
@@ -88,13 +88,13 @@ PHP_FUNCTION(sp_unserialize) {
     }
   } else {
     if ( true == SNUFFLEUPAGUS_G(config).config_unserialize->simulation) {
-      sp_log_msg("unserialize", LOG_NOTICE, "Invalid HMAC for %s", serialized_str);
+      sp_log_msg("unserialize", SP_LOG_NOTICE, "Invalid HMAC for %s", serialized_str);
       if ((orig_handler = zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
                                                "unserialize", 11))) {
         orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
       }
     } else {
-      sp_log_msg("unserialize", LOG_DROP, "Invalid HMAC for %s", serialized_str);
+      sp_log_msg("unserialize", SP_LOG_DROP, "Invalid HMAC for %s", serialized_str);
     }
   }
   efree(serialized_str);

@@ -20,9 +20,13 @@ CFLAGS="$CFLAGS -lpcre"
 CFLAGS="$CFLAGS -D_DEFAULT_SOURCE=1 -std=c99"
 CFLAGS="$CFLAGS -Wall -Wextra -Wno-unused-parameter"
 
+LFLAGS="$LFLAGS -lpcre"
+
 if test "$PHP_DEBUG" = "yes"; then
 	AC_DEFINE(SP_DEBUG, 1, [Wether you want to enable debug messages])
 fi
+
+AC_CHECK_LIB(pcre, pcre_compile, AC_DEFINE(HAVE_PCRE, 1, [have pcre]))
 
 if test "$PHP_SNUFFLEUPAGUS" != "no"; then
    if test "$PHP_COVERAGE" != "no"; then
