@@ -1,8 +1,4 @@
-[![build
-status](https://gitlab.nbs-system.com/secu/snuffleupagus/badges/master/build.svg)](https://gitlab.nbs-system.com/secu/snuffleupagus/commits/master)
-[![coverage
-report](https://gitlab.nbs-system.com/secu/snuffleupagus/badges/master/coverage.svg)](https://gitlab.nbs-system.com/secu/snuffleupagus/commits/master)
-[Documentation]( https://secu.gitlab-pages.nbs-system.com/snuffleupagus/ )
+# ALPHA SOFTWARE : DO NOT USE IN PRODUCTION #
 
 # Code style
 We're using [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to
