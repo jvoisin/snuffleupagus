@@ -39,7 +39,7 @@ int compute_hash(const char* const filename, char* file_hash) {
       php_stream_open_wrapper(filename, "rb", REPORT_ERRORS, NULL);
   if (!stream) {
     sp_log_err("hash_computation", "Can not open the file %s to compute its hash.\n", filename);
-    return -1;
+    return FAILURE;
   }
 
   PHP_SHA256Init(&context);
@@ -49,7 +49,7 @@ int compute_hash(const char* const filename, char* file_hash) {
   PHP_SHA256Final(digest, &context);
   php_stream_close(stream);
   make_digest_ex(file_hash, digest, SHA256_SIZE);
-  return 0;
+  return SUCCESS;
 }
 
 static void construct_filename(char* filename, const char* folder) {
@@ -123,7 +123,7 @@ int sp_log_request(const char* folder) {
 
     // Allocate and copy the data
     // FIXME Why are we even allocating?
-    param = pecalloc(params_len, 1, 0);
+    param = ecalloc(params_len, 1);
     NCAT_AND_DEC(param, zones[i].str, params_len);
     NCAT_AND_DEC(param, ":", params_len);
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, variable_key, variable_value) {
@@ -138,6 +138,7 @@ int sp_log_request(const char* folder) {
 
     fputs(param, file);
     fputs("\n", file);
+    efree(param);
   }
   fclose(file);
 

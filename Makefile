@@ -10,13 +10,12 @@ debug:
 
 coverage:
 	cd src; phpize
-	export CFLAGS="--coverage -fprofile-arcs -ftest-coverage -O0"; export LDFLAGS="--coverage"; cd src; ./configure --enable-snuffleupagus --enable-coverage
+	export CFLAGS="--coverage"; cd src; ./configure --enable-snuffleupagus --enable-coverage
 	make -C src
-	lcov --base-directory src --directory ./src --zerocounters -q   --rc lcov_branch_coverage=1
 	rm -Rf src/COV.html
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test
-	lcov --base-directory ./src --directory src -c -o ./src/COV.info --rc lcov_branch_coverage=1 2>/dev/null 1>/dev/null
-	lcov --remove src/COV.info '/usr/*' --remove src/COV.info '*tweetnacl.c' -o src/COV.info --rc lcov_branch_coverage=1 2>/dev/null 1>/dev/null
+	lcov --base-directory ./src --directory ./src -c -o ./src/COV.info --rc lcov_branch_coverage=1 
+	lcov --remove src/COV.info '/usr/*' --remove src/COV.info '*tweetnacl.c' -o src/COV.info --rc lcov_branch_coverage=1
 	genhtml -o src/COV.html ./src/COV.info  --branch-coverage
 
 tests: joomla

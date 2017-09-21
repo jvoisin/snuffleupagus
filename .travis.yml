@@ -3,21 +3,25 @@ language: php
 php:
   - '7.0'
   - '7.1'
-
-env:
-  - CC=gcc
-  - CC=clang
+  - '7.2'
+  - nightly
 
 addons:
   apt:
     packages:
-      - gdb
       - gcc
       - lcov
-      - valgrind
-      - libpcre3
-      - libpcre3-dev
 
 script:
-  - php-config --configure-options
-  - make debug
+  - cd src
+  - phpize
+  - ./configure --enable-snuffleupagus --enable-coverage
+  - make
+  - make test
+
+after_success:
+  - git clone https://github.com/linux-test-project/lcov.git --depth 1
+  - ./lcov/bin/lcov -c -o ./COV.info --rc lcov_branch_coverage=1 --base-directory . --directory .
+  - ./lcov/bin/lcov --remove ./COV.info '/usr/*' --remove ./COV.info '*tweetnacl.c' -o ./COV.info --rc lcov_branch_coverage=1
+  - ./lcov/bin/genhtml -o ./COV.html ./COV.info  --branch-coverage
+  - bash <(curl -s https://codecov.io/bash)
