@@ -50,7 +50,7 @@ Warning: DOMDocument::loadXML(): Failure to process entity foo in Entity, line: 
 
 Warning: DOMDocument::loadXML(): Entity 'foo' not defined in Entity, line: %d in %a/disable_xxe_dom.php on line %d
 
-Notice: Trying to get property of non-object in %a/disable_xxe_dom.php on line %d
+Notice: Trying to get property %a in %a/disable_xxe_dom.php on line %d
 libxml_disable_entity to true: 
 
 Warning: DOMDocument::loadXML(): I/O warning : failed to load external entity "file://%a/content.txt" in %a/disable_xxe_dom.php on line %d
@@ -59,7 +59,7 @@ Warning: DOMDocument::loadXML(): Failure to process entity foo in Entity, line: 
 
 Warning: DOMDocument::loadXML(): Entity 'foo' not defined in Entity, line: %d in %a/disable_xxe_dom.php on line %d
 
-Notice: Trying to get property of non-object in %a/disable_xxe_dom.php on line %d
+Notice: Trying to get property %a in %a/disable_xxe_dom.php on line %d
 libxml_disable_entity to false: 
 without xxe: foo
 --CLEAN--
