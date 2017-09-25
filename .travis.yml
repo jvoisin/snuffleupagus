@@ -1,17 +1,44 @@
 language: php
 
-php:
-  - '7.0'
-  - '7.1'
-  - '7.2'
-  - nightly
-
 before_install:
   - pip install --user cpp-coveralls
+  - if test ${TARGET} = "coverity"; then echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-; fi
+
 
 env:
-  - CC=clang
-  - CC=gcc
+  - secure: "fjx/arfcdoqWUIzlQXzQdW9gqXRG7Vpo8dTwJip0uJH8oFeTfYhw1V9EMS4JtKVGwQo3vaagehMflVr7swaoe9Nf4YoCjaEq8x6ZMJH3bLHNgtigfS03Uqop9FI/a/Jau/BL7ibIEkZRNfEIx8z+NyfY4bAeK35W/Ru5k2BHyp1GLKwBpizHdJsshG/ukM+4W8PY9BAeXVavqxQRywseQEsqmGruGLcYFuuh04D7cnNqyuYgbdaq7YMKZfVGxM7N5eeL5xSlw0Sl9yOutRzkxUmL1WSmYMFrkRLcc37hRTu67tCmP60tiGLGY2Ll8nUh6rkc3RwBgc1wOC7jRMrtoGvlgsLxz7kLOtpQ31PdJKefe99rQMkcYKLwCxXf7WQdOHY4YsTmjqlPyzfTKT3mNtGhUwp1rEvlcygZZK8osHtc46BUD6BKNRCvTyLNyLTx2IoA4WfrzWOaQ+A1gNRD5L9Jbqi0kY6teENCzzlHUe80mH7wBarCTRoDAD73w/EPgSn3+CeLALXXEu+r9Sm/e5YpaFfLdeKDC6fr1KwU69ddHUKWZqjFM8vEHjrIbmAdNwVsuCo8LeWdCCXdQlWrISQ4OUDBBEmnwlKoojSjIYP5SKoH1txZemGok1/TN/tvjlyrx2RYYxy7AdUulENKXXeqlwWsiwVZCZLR4tt+wEQ="
+
+matrix:
+  include:
+  - env: TARGET="coverity"
+    php: nightly
+    script: echo "Coverity, nothing to do."
+    after_success: cat /home/travis/build/nbs-system/snuffleupagus/cov-int/scm_log.txt
+    addons:
+      coverity_scan:
+        project:
+          name: "nbs-system/snuffleupagus"
+          description: "Build submitted via Travis CI"
+        notification_email: devnull@nbs-system.com
+        build_command_prepend: "cd src; phpize; ./configure --enable-snuffleupagus; cd -"
+        build_command: "make debug -j2"
+        branch_pattern: master
+  - env: TARGET="gcc php7.0" CC="gcc"
+    php: '7.0'
+  - env: TARGET="gcc php7.1" CC="gcc"
+    php: '7.1'
+  - env: TARGET="gcc php7.2" CC="gcc"
+    php: '7.2'
+  - env: TARGET="gcc php nightly" CC="gcc"
+    php: nightly
+  - env: TARGET="clang php7.0" CC="clang"
+    php: '7.0'
+  - env: TARGET="clang php7.1" CC="clang"
+    php: '7.1'
+  - env: TARGET="clang php7.2" CC="clang"
+    php: '7.2'
+  - env: TARGET="clang php nightly" CC="clang"
+    php: nightly
 
 script:
   - cd src
