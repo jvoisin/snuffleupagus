@@ -6,6 +6,8 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
+size_t sp_line_no;
+
 sp_config_tokens const sp_func[] = {
     {.func = parse_unserialize, .token = SP_TOKEN_UNSERIALIZE_HMAC},
     {.func = parse_random, .token = SP_TOKEN_HARDEN_RANDOM},
@@ -33,7 +35,7 @@ static int parse_line(char *line) {
   }
 
   if (strncmp(ptr, SP_TOKEN_BASE, strlen(SP_TOKEN_BASE))) {
-    sp_log_err("config", "Invalid configuration prefix for '%s'.", line);
+    sp_log_err("config", "Invalid configuration prefix for '%s' on line %zu.", line, sp_line_no);
     return -1;
   }
   ptr += strlen(SP_TOKEN_BASE);
@@ -43,7 +45,7 @@ static int parse_line(char *line) {
       return sp_func[i].func(ptr + strlen(sp_func[i].token));
     }
   }
-  sp_log_err("config", "Invalid configuration section '%s'.", line);
+  sp_log_err("config", "Invalid configuration section '%s' on line %zu.", line, sp_line_no);
   return -1;
 }
 
@@ -61,7 +63,7 @@ int parse_int(char *restrict line, char *restrict keyword, void *retval) {
     pefree(value, 1);
     return consumed;
   } else {
-    sp_log_err("error", "%s) is expecting a valid integer.", keyword);
+    sp_log_err("error", "%s) is expecting a valid integer on line %zu.", keyword, sp_line_no);
     return -1;
   }
 }
@@ -96,7 +98,7 @@ int parse_php_type(char *restrict line, char *restrict keyword, void *retval) {
       pefree(value, 1);
       sp_log_err("error", "%s) is expecting a valid php type ('false', 'true',"
         " 'array'. 'object', 'long', 'double', 'null', 'resource', 'reference',"
-        " 'undef').", keyword);
+        " 'undef') on line %zu.", keyword, sp_line_no);
       return -1;
     }
     pefree(value, 1);
@@ -130,7 +132,7 @@ int parse_cidr(char *restrict line, char *restrict keyword, void *retval) {
     *(sp_cidr **)retval = cidr;
     return consumed;
   } else {
-    sp_log_err("config", "%s doesn't contain a valid cidr.", line);
+    sp_log_err("config", "%s doesn't contain a valid cidr on line %zu.", line, sp_line_no);
     return -1;
   }
 }
@@ -148,7 +150,7 @@ int parse_regexp(char *restrict line, char *restrict keyword, void *retval) {
     pcre *compiled_re = sp_pcre_compile(value, PCRE_CASELESS, &pcre_error,
                                      &pcre_error_offset, NULL);
     if (NULL == compiled_re) {
-      sp_log_err("config", "Failed to compile '%s': %s.", value, pcre_error);
+      sp_log_err("config", "Failed to compile '%s': %s on line %zu.", value, pcre_error, sp_line_no);
     } else {
       *(pcre **)retval = compiled_re;
       return consumed;
@@ -158,8 +160,8 @@ int parse_regexp(char *restrict line, char *restrict keyword, void *retval) {
   if (NULL != closing_paren) {
     closing_paren[0] = '\0';
   }
-  sp_log_err("config", "'%s)' is expecting a valid regexp, and not '%s'.",
-             keyword, line);
+  sp_log_err("config", "'%s)' is expecting a valid regexp, and not '%s' on line %zu.",
+             keyword, line, sp_line_no);
   return -1;
 }
 
@@ -167,6 +169,7 @@ int sp_parse_config(const char *conf_file) {
   FILE *fd = fopen(conf_file, "r");
   char *lineptr = NULL;
   size_t n = 0;
+  sp_line_no = 1;
 
   if (fd == NULL) {
     sp_log_err("config", "Could not open configuration file %s : %s", conf_file,
@@ -187,6 +190,7 @@ int sp_parse_config(const char *conf_file) {
     free(lineptr);
     lineptr = NULL;
     n = 0;
+    sp_line_no++;
   }
   fclose(fd);
   return SUCCESS;

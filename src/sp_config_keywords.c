@@ -17,7 +17,7 @@ static int parse_enable(char *line, bool * restrict retval, bool * restrict simu
   }
 
   if (!(enable ^ disable)) {
-    sp_log_err("config", "A rule can't be enabled and disabled.");
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu.", sp_line_no);
     return -1;
   } 
 
@@ -135,50 +135,50 @@ int parse_disabled_functions(char *line) {
   if (df->value && df->regexp) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               "'.value' and '.regexp' are mutually exclusives.",
-               line);
+               "'.value' and '.regexp' are mutually exclusives on line %zu.",
+               line, sp_line_no);
     return -1;
   } else if (df->r_function && df->function) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s': "
-               "'.r_function' and '.function' are mutually exclusive.",
-               line);
+               "'.r_function' and '.function' are mutually exclusive on line %zu.",
+               line, sp_line_no);
     return -1;
   } else if (df->r_filename && df->filename) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               "'.r_filename' and '.filename' are mutually exclusive.",
-               line);
+               "'.r_filename' and '.filename' are mutually exclusive on line %zu.",
+               line, sp_line_no);
     return -1;
   } else if (df->r_param && df->param) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               "'.r_param' and '.param' are mutually exclusive.",
-               line);
+               "'.r_param' and '.param' are mutually exclusive on line %zu.",
+               line, sp_line_no);
     return -1;
   } else if (df->r_ret && df->ret) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               "'.r_ret' and '.ret' are mutually exclusive.",
-               line);
+               "'.r_ret' and '.ret' are mutually exclusive on line %zu.",
+               line, sp_line_no);
     return -1;
   } else if ((df->r_ret || df->ret) && (df->r_param || df->param)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               "`ret` and `param` are mutually exclusives.",
-               line);
+               "`ret` and `param` are mutually exclusive on line %zu.",
+               line, sp_line_no);
     return -1;
   } else if (!(df->r_function || df->function)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               " must take a function name.",
-               line);
+               " must take a function name on line %zu.",
+               line, sp_line_no);
     return -1;
   } else if (!(df->allow ^ df->drop)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s': The "
-               "rule must either be a `drop` or and `allow` one.",
-               line);
+               "rule must either be a `drop` or and `allow` one on line %zu.",
+               line, sp_line_no);
     return -1;
   }
 
@@ -245,7 +245,7 @@ int parse_upload_validation(char *line) {
   }
 
   if (!(enable ^ disable)) {
-    sp_log_err("config", "A rule can't be enabled and disabled.");
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu.", sp_line_no);
     return -1;
   } 
   SNUFFLEUPAGUS_G(config).config_upload_validation->enable = enable;
@@ -253,14 +253,14 @@ int parse_upload_validation(char *line) {
   char const *script = SNUFFLEUPAGUS_G(config).config_upload_validation->script;
 
   if (!script) {
-    sp_log_err("config", "The `script` directive is mandatory in %s",
-      line);
+    sp_log_err("config", "The `script` directive is mandatory in '%s' on line %zu.",
+      line, sp_line_no);
     return -1;
   } else if (-1 == access(script, F_OK)) {
-    sp_log_err("config", "The `script` (%s) doesn't exist.", script);
+    sp_log_err("config", "The `script` (%s) doesn't exist on line %zu.", script, sp_line_no);
     return -1;
   } else if (-1 == access(script, X_OK)) {
-    sp_log_err("config", "The `script` (%s) isn't executable.", script);
+    sp_log_err("config", "The `script` (%s) isn't executable on line %zu.", script, sp_line_no);
     return -1;
   }
   

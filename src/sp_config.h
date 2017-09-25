@@ -5,6 +5,8 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+extern size_t sp_line_no;
+
 typedef enum {
   SP_TYPE_STR = 0,
   SP_TYPE_REGEXP,
