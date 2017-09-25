@@ -14,9 +14,3 @@ administrator to fix specific vulnerabilities and audit suspicious behaviours
 without having to touch the PHP code.
 
 You can read its documentation [here](https://snuffleupagus.readthedocs.io/).
-
-# Code style
-
-We're using [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to
-ensure a consistent code-style. Please run it with `clang-format -style=google`
-before committing, or even better, use a [pre-commit hook](https://github.com/andrewseidl/githook-clang-format)
