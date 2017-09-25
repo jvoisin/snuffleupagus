@@ -1,5 +1,7 @@
 #include "php_snuffleupagus.h"
 
+size_t sp_line_no;
+
 static int validate_int(const char *value);
 static int validate_str(const char *value);
 
@@ -55,8 +57,8 @@ int parse_keywords(sp_config_functions *funcs, char *line) {
   }
 
   if (*line) {
-    sp_log_err("config", "Trailing chars '%s' at the end of '%s'.", line,
-               original_line);
+    sp_log_err("config", "Trailing chars '%s' at the end of '%s' on line %zu.",
+     line, original_line, sp_line_no);
     return -1;
   }
   return 0;
@@ -116,8 +118,8 @@ static char *get_string(size_t *consumed, char *restrict line,
   }
 err:
   sp_log_err("error",
-             "There is an issue with the parsing of '%s': it doesn't look like a valid string.",
-             original_line ? original_line : "NULL");
+             "There is an issue with the parsing of '%s': it doesn't look like a valid string on line %zu.",
+             original_line ? original_line : "NULL", sp_line_no);
   line = NULL;
   return NULL;
 }
@@ -133,15 +135,15 @@ static char *get_misc(char *restrict line, const char *restrict keyword) {
 
   if (line[i] != SP_TOKEN_END_PARAM) {
     if (i >= 1024 - 1) {
-      sp_log_err("config", "The following line is too long: %s.", line);
+      sp_log_err("config", "The following line is too long: %s on line %zu.", line, sp_line_no);
 		} else {
-      sp_log_err("config", "Missing closing %c in line %s.", SP_TOKEN_END_PARAM,
-                 line);
+      sp_log_err("config", "Missing closing %c in line %s on line %zu.", SP_TOKEN_END_PARAM,
+                 line, sp_line_no);
 		}
     return NULL;
   } else if (i == 0) {
-    sp_log_err("config", "The keyword %s%c is expecting a parameter.",
-     keyword, SP_TOKEN_END_PARAM);
+    sp_log_err("config", "The keyword %s%c is expecting a parameter on line %zu.",
+     keyword, SP_TOKEN_END_PARAM, sp_line_no);
     return NULL;
   }
   return ret;

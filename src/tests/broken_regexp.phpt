@@ -6,4 +6,4 @@ Broken regexp
 sp.configuration_file={PWD}/config/broken_regexp.ini
 --FILE--
 --EXPECTF--
-[snuffleupagus][0.0.0.0][config][error] '.value_r()' is expecting a valid regexp, and not '"^$["'.
+[snuffleupagus][0.0.0.0][config][error] '.value_r()' is expecting a valid regexp, and not '"^$["' on line 1.

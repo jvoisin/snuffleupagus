@@ -6,4 +6,4 @@ Configuration line without closing parenthese
 sp.configuration_file={PWD}/config/broken_conf_line_no_closing.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][error][error] There is an issue with the parsing of '"123"': it doesn't look like a valid string.
+[snuffleupagus][0.0.0.0][error][error] There is an issue with the parsing of '"123"': it doesn't look like a valid string on line 1.
