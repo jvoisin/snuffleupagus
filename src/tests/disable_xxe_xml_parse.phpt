@@ -1,9 +1,12 @@
 --TEST--
-Disable XXE
+Disable XXE in xml_parse
 --SKIPIF--
 <?php
- if (!extension_loaded("snuffleupagus")) die "skip";
- if (!extension_loaded("xml")) die "skip";
+ if (!extension_loaded("snuffleupagus")) {
+  echo "skip because snuffleupagus isn't loaded";
+} elseif (!extension_loaded("xml")) {
+  echo "skip because the `xml` extension isn't loaded";
+}
  ?>
 --INI--
 sp.configuration_file={PWD}/config/disable_xxe.ini
