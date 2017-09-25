@@ -13,4 +13,5 @@ Source code
 -----------
 
 ::
-  git clone https://github.com/nbs-system.com/snuffleupagus
+
+  git clone https://github.com/nbs-system/snuffleupagus
