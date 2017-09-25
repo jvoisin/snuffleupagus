@@ -21,9 +21,14 @@ coverage:
 tests: joomla
 
 joomla:
-	if [ -nd "joomla-cms" ]; then git clone --depth 1 git@github.com:joomla/joomla-cms.git; fi
-	cd joomla-cms; composer install
-	cd joomla-cms; libraries/vendor/phpunit/phpunit/phpunit -d extension=./src/modules/snuffleupagus.so
+	if [ ! -d "joomla-cms" ]; then \
+		git clone --depth 1 https://github.com/joomla/joomla-cms.git >/dev/null; \
+	fi
+	cd joomla-cms; composer install >/dev/null 2>/dev/null
+	echo "\nWith snuffleupagus:"
+	cd joomla-cms; time libraries/vendor/phpunit/phpunit/phpunit -d "extension=./src/modules/snuffleupagus.so" -d "sp.configuration_file=config/default.ini" --no-coverage >/dev/null
+	echo "\nWithout snuffleupagus:"
+	cd joomla-cms; time libraries/vendor/phpunit/phpunit/phpunit --no-coverage >/dev/null
 
 packages: debian
 

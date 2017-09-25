@@ -16,7 +16,6 @@ script:
   - make -j 2
   - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make test
 
-
 after_success:
   - git clone https://github.com/linux-test-project/lcov.git --depth 1
   - rm -rf ./lcov/examples/ ./lcov/test/
@@ -24,6 +23,8 @@ after_success:
   - ./lcov/bin/lcov --remove ./COV.info '/usr/*' --remove ./COV.info '*tweetnacl.c' -o ./COV.info --rc lcov_branch_coverage=1
   - ./lcov/bin/genhtml -o ./COV.html ./COV.info  --branch-coverage
   - coveralls --exclude 'tweetnacl.c'
+  - cd ..
+  - make joomla
 
 after_failure:
   - grep -r . ./tests/*.out
