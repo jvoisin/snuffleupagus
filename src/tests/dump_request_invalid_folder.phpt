@@ -21,5 +21,6 @@ echo "2\n";
 --EXPECTF--
 1
 [snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'system' in %atests/dump_request_invalid_folder.php:3 has been disabled.
+[snuffleupagus][0.0.0.0][request_logging][error] Unable to create the folder '/root/NON_EXISTENT/FOLDER/PLEASE/'.
 [snuffleupagus][0.0.0.0][request_logging][error] Unable to open /root/NON_EXISTENT/FOLDER/PLEASE/sp_dump_%a_0.0.0.0.dump
 2

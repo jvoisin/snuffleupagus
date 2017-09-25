@@ -52,14 +52,17 @@ int compute_hash(const char* const filename, char* file_hash) {
   return SUCCESS;
 }
 
-static void construct_filename(char* filename, const char* folder) {
+static int construct_filename(char* filename, const char* folder) {
   time_t t = time(NULL);
   struct tm* tm = localtime(&t);  // FIXME use `localtime_r` instead
   struct timeval tval;
   struct stat st = {0};
 
   if (-1 == stat(folder, &st)) {
-    mkdir(folder, 0700);
+    if (0 != mkdir(folder, 0700)) {
+      sp_log_err("request_logging", "Unable to create the folder '%s'.",
+        folder);
+    }
   }
 
   memcpy(filename, folder, strlen(folder));
@@ -70,12 +73,14 @@ static void construct_filename(char* filename, const char* folder) {
   strcat(filename, "_");
 
   char* remote_addr = getenv("REMOTE_ADDR");
-  if (remote_addr) {
-    strcat(filename, remote_addr);
+  if (remote_addr) { // ipv6: 8*4 bytes + 7 colons = 39 chars max
+    strncat(filename, remote_addr, 40);
   } else {
     strcat(filename, "0.0.0.0");
   }
   strcat(filename, ".dump");
+
+  return 0;
 }
 
 int sp_log_request(const char* folder) {
@@ -90,7 +95,9 @@ int sp_log_request(const char* folder) {
                {"COOKIE", TRACK_VARS_COOKIE}, {"SERVER", TRACK_VARS_SERVER},
                {"ENV", TRACK_VARS_ENV},       {NULL, 0}};
 
-  construct_filename(filename, folder);
+  if (0 != construct_filename(filename, folder)) {
+    return -1;
+  }
   if (NULL == (file = fopen(filename, "a"))) {
     sp_log_err("request_logging", "Unable to open %s", filename);
     return -1;
