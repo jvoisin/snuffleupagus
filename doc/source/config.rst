@@ -234,6 +234,7 @@ Details
 The ``function`` filter is able to do various dereferencing:
 
 - ``function("AwesomeClass::my_method")`` will match in the method ``my_method`` in the class ``AwesomeClass``
+- ``function("AwesomeNamespace\\my_function")`` will match in the function ``my_function`` in the namespace ``AwesomeNamespace``
 
 The ``param`` filter is also able to do some dereferencing:
 

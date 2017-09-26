@@ -1,5 +1,5 @@
 --TEST--
-Disable functions: namespaces support isn't implemented now
+Disable functions in namespaces
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
 --INI--
@@ -8,17 +8,17 @@ sp.configuration_file={PWD}/config/config_disabled_functions_namespace.ini
 <?php 
 namespace my_super_namespace {
 	function my_function() {
-		echo "1\n";
+		echo "Should not be printed\n";
 	}
 }
 namespace my_second_namespace {
 	function my_function() {
-		echo "2\n";
+		echo "Second namespace\n";
 	}
 }
 namespace {
 	function my_function() {
-		echo "3\n";
+		echo "Anonymous namespace\n";
 	}
 \strcmp("1", "2");
 \my_super_namespace\my_function();
@@ -26,6 +26,8 @@ namespace {
 my_function();
 }
 ?>
---XFAIL--
 --EXPECTF--
-[snuffleupagus] The call to the function 'strcmp' in %a/tests/disabled_functions_namespace.php:%d has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'strcmp' in %a/disabled_functions_namespace.php:%d has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'my_super_namespace\my_function' in %a/disabled_functions_namespace.php:%d has been disabled.
+Second namespace
+Anonymous namespace

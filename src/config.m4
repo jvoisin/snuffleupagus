@@ -26,13 +26,14 @@ LDFLAGS="$LDFLAGS -lpcre"
 
 if test "$PHP_DEBUG" = "yes"; then
 	AC_DEFINE(SP_DEBUG, 1, [Wether you want to enable debug messages])
+      CFLAGS="$CFLAGS -g -ggdb -O0"
 fi
 
 AC_CHECK_LIB(pcre, pcre_compile, AC_DEFINE(HAVE_PCRE, 1, [have pcre]))
 
 if test "$PHP_SNUFFLEUPAGUS" = "yes"; then
    if test "$PHP_COVERAGE" = "yes"; then
-      CFLAGS="$CFLAGS -g --coverage -lgcov -O1 -g"
+      CFLAGS="$CFLAGS --coverage -lgcov -O1 -g"
    fi
    PHP_NEW_EXTENSION(snuffleupagus, $sources, $ext_shared,-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi
