@@ -74,7 +74,7 @@ but an invalid decryption will leave a trace in the logs.
 Finally, having a secret server-side key will prevent anyone (even the user himself)
 from reading the content of the cookie, reducing the impact of an application storing sensitive data client-side.
 
-The encryption is done via the [tweetnacl library](https://tweetnacl.cr.yp.to/),
+The encryption is done via the `tweetnacl library <https://tweetnacl.cr.yp.to/>`_,
 thus using curve25519, xsalsa20 and poly1305 for the encryption. We chose this
 library because of its portability, simplicity and reduced size (a single `.h` and
 `.c` file.).
