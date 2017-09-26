@@ -2,8 +2,8 @@
 Disable XXE
 --SKIPIF--
 <?php
- if (!extension_loaded("snuffleupagus")) die "skip";
- if (!extension_loaded("dom")) die "skip";
+ if (!extension_loaded("snuffleupagus")) echo "skip";
+ if (!extension_loaded("dom")) echo "skip";
  ?>
 --INI--
 sp.configuration_file={PWD}/config/disable_xxe_disable.ini
