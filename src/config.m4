@@ -16,12 +16,13 @@ PHP_ARG_ENABLE(coverage, whether to enable coverage support,
 PHP_ARG_ENABLE(debug, whether to enable debug messages,
 [  --enable-debug           Enable debug messages])
 
-CFLAGS="$CFLAGS -lpcre"
+CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -D_DEFAULT_SOURCE=1 -std=c99"
 CFLAGS="$CFLAGS -Wall -Wextra -Wno-unused-parameter"
-CFLAGS="$CFLAGS --coverage"
+CFLAGS="$CFLAGS -Wformat=2 -Wformat-security -D_FORTIFY_SOURCE=2"
+CFLAGS="$CFLAGS -fstack-protector"
 
-LDFLAGS="$LDFLAGS -lpcre --coverage"
+LDFLAGS="$LDFLAGS -lpcre"
 
 if test "$PHP_DEBUG" = "yes"; then
 	AC_DEFINE(SP_DEBUG, 1, [Wether you want to enable debug messages])
@@ -31,12 +32,7 @@ AC_CHECK_LIB(pcre, pcre_compile, AC_DEFINE(HAVE_PCRE, 1, [have pcre]))
 
 if test "$PHP_SNUFFLEUPAGUS" = "yes"; then
    if test "$PHP_COVERAGE" = "yes"; then
-      CFLAGS="$CFLAGS --coverage"
-      LDFLAGS="$LDFLAGS --coverage"
-      PHP_NEW_EXTENSION(snuffleupagus, $sources, $ext_shared,-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -g --coverage -lgcov)
-   else
-      CFLAGS="$CFLAGS --coverage"
-      LDFLAGS="$LDFLAGS --coverage"
-      PHP_NEW_EXTENSION(snuffleupagus, $sources, $ext_shared,-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
+      CFLAGS="$CFLAGS -g --coverage -lgcov -O1 -g"
    fi
+   PHP_NEW_EXTENSION(snuffleupagus, $sources, $ext_shared,-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi
