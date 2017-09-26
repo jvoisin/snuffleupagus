@@ -36,13 +36,14 @@ Like PHP's `ElePHPant <https://secure.php.net/elephpant.php>`_,
 we thought that using an elephant as a mascot would be a great idea.
 
 
-Why did you write Snuffleupagus?
-""""""""""""""""""""""""""""""""
+Who are you and why did you write Snuffleupagus?
+""""""""""""""""""""""""""""""""""""""""""""""""
 
 We're working for `NBS System <https://nbs-system.com/en/>`__,
 a web hosting company (meaning that we're dealing with PHP code all day long),
 with a strong focus on security. We do have hardening
-(kernel, `WAF <https://naxsi.org>`_, `IDS <https://en.wikipedia.org/wiki/Intrusion_detection_system>`_, …)
+(`kernel <https://grsecurity.net/>`_, `WAF <https://naxsi.org>`_,
+`IDS <https://en.wikipedia.org/wiki/Intrusion_detection_system>`_, …)
 below the web stack, but most of the time, when a website is compromised,
 it's either to send ads, spam, deface it, steal data, …
 This is why we need to harden the website itself too, but we can't touch its
@@ -60,7 +61,8 @@ We're huge fans of `Suhosin <https://suhosin.org>`_, unfortunately:
 
 We're using the `disable_function <https://secure.php.net/manual/en/ini.core.php#ini.disable-functions>`_
 directive, but unfortunately, it doesn't provide enough usable granularity (guess how many CMS are using
-``system`` to do various mandatory maintenance tasks…).
+the `system <https://secure.php.net/manual/en/function.system.php#refsect1-function.system-notes>`_
+function to perform various mandatory maintenance tasks…).
 
 This is why we decided to write our own hardening module, in the spirit of Suhosin,
 via virtual-patching support, and other cool new features.
@@ -91,8 +93,8 @@ How mature is this project?
 """""""""""""""""""""""""""
 
 This project was floating around since early 2016, and we did the first commit
-the 28ᵗʰ of December of the same year. We're currently in a private alpha phase,
-finding and fixing as much bugs as possible with the help of friends.
+the 28ᵗʰ of December of the same year. We're currently in an alpha phase,
+finding and fixing as much bugs as possible before the beta.
 
 Are you saying that PHP isn't secure?
 """""""""""""""""""""""""""""""""""""
@@ -108,6 +110,9 @@ issues, as stated in their `documentation <https://wiki.php.net/security#not_a_s
 We do think that an security issue that "requires the use of code or settings known to be insecure"
 is still a security issue, and should be treated as such.
 
+We don't have the pretention to state that Snuffleupagus will magically solve
+all your security issues, but we believe that it might definitely help.
+
 Installation and configuration
 ------------------------------
 
@@ -115,8 +120,10 @@ Can snuffleupagus break my application?
 """""""""""""""""""""""""""""""""""""""
 Yes.
 
-Some options won't break anything, like ``harden_rand``, but some like ``global_strict``
-or overly-restrictives virtual-patching rules might pretty well break your website.
+Some options won't break anything, like :ref:`harden-rand <harden-rand-feature>`,
+but some like :ref:`global_strict <global-strict-feature>`
+or overly-restrictives :ref:`virtual-patching<virtual-patching-feature>`
+rules might pretty well break your website.
 It's up to you to configure Snuffleupaggus accordingly to your needs.
 
 You can also enable the ``simulation`` mode on features that you're not sure about,
@@ -130,7 +137,7 @@ By checking the logs; Snuffleupagus systematically prefix them with ``[snuffleup
 
 Does Snuffleupagus run on Windows?
 """"""""""""""""""""""""""""""""""
-No idea.
+No idea, feel free to `try <https://github.com/nbs-system/snuffleupagus/issues/2>`_.
 
 
 Will Snuffleupagus run on my old PHP 5?
@@ -206,7 +213,7 @@ Where can I find even more help?
 """"""""""""""""""""""""""""""""
 The :doc:`configuration page <config>` might be what you're looking for.
 If you're adventurous, you can also check the `issue tracker <https://github.com/nbs-system/snuffleupagus/issues/?q=is%3Aissue>`_
-(make sure to check the closed issues too).
+(make sure to check the `closed issues <https://github.com/nbs-system/snuffleupagus/issues?q=is%3Aissue+is%3Aclosed>`_ too).
 
 I need professional support for my company.
 """""""""""""""""""""""""""""""""""""""""""

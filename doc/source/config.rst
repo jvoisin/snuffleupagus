@@ -13,12 +13,18 @@ Some rules applies in a specific ``function`` (context), on a specific ``variabl
 (data), like ``disable_functions``, others can only be enabled/disabled, like
 ``harden_random``.
 
+
 .. warning::
 
   Careful, a wrongly configured Snuffleupagus might break your website.
   It's up to you to understand its :doc:`features <features>`,
   read the present documentation about how to configure them,
   evaluate your threat model, and write your configuration file accordingly.
+
+Most of the features can be used in ``simulation`` mode by appending the
+``.simulation()`` option to them (eg. ``sp.readonly_exec.simulation()enable();``) to see
+if they might break your website. The simulation mode won't block the request,
+but will write a warning in the log.
 
 The rules are evaluated in the order that they are written, and the **first** one
 to match will terminate the evaluation (except for rules in simulation mode).
@@ -34,7 +40,7 @@ global_strict
 forcing PHP to throw a `TypeError <https://secure.php.net/manual/en/class.typeerror.php>`_
 exception if an argument type being passed to a function does not match its corresponding declared parameter type.
 
-It can either be ``enabled`` or ``disabled``
+It can either be ``enabled`` or ``disabled``.
 
 ::
 
@@ -81,6 +87,8 @@ unserialize_hmac
 ``unserialize_hmac`` will add integrity check to ``unserialize`` calls, preventing
 abritrary code execution in their context.
 
+It can either be ``enabled`` or ``disabled``, and used in ``simulation`` mode.
+
 ::
 
   sp.unserialize_hmac.enable();
@@ -116,7 +124,7 @@ cookie_encryption
 
 ``cookie_secure`` will activate transparent encryption of specific cookies.
 
-It can either be ``enabled`` or ``disabled``.
+It can either be ``enabled`` or ``disabled``, and used in ``simulation`` mode.
 
 ::
 
@@ -130,7 +138,7 @@ readonly_exec
 
 ``readonly_exec`` will prevent the execution of writable PHP files.
 
-It can either be ``enabled`` or ``disabled``.
+It can either be ``enabled`` or ``disabled``, and used in ``simulation`` mode.
 
 ::
 
@@ -155,6 +163,8 @@ code, with something like `vld <https://derickrethans.nl/projects.html#vld>`_
 
 The upload will be **allowed** if the script return the value ``0``. Every other
 value will prevent the file from being uploaded.
+
+It can either be ``enabled`` or ``disabled``, and used in ``simulation`` mode.
 
 ::
 
@@ -191,22 +201,22 @@ Of course, this is a trivial example, and a lot can be achieved with this featur
 Filters
 ^^^^^^^
 
-- ``alias(:str)``: human-readable description of the rule
-- ``cidr(ip/mask:str)``: match on the client's `cidr <https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing>`_
-- ``filename(name:str)``: match in the file ``name``
-- ``filename_r(regexp:str)``: the file name matching the ``regexp``
-- ``function(name:str)``: match on function ``name``
-- ``function_r(regexp:str)``: the function matching the ``regexp``
-- ``hash(:str)``: match on the file's `sha256 <https://en.wikipedia.org/wiki/SHA-2>`_ sum
-- ``param(name:str)``: match on the function's parameter ``name``
-- ``param_r(regexp:str)``: match on the function's parameter ``regexp``
-- ``param_type(type:str)``: match on the function's parameter ``type``
-- ``ret(value:str)``: match on the function's return ``value``
-- ``ret_r(regexp:str)``: match with a ``regexp`` on the function's return
-- ``ret_type(type_name:str)``: match on the ``type_name`` of the function's return value
-- ``value(:str)``: match on a litteral value
-- ``value_r(:regexp)``: match on a value matching the ``regexp``
-- ``var(name:str)``: match on a **local variable** ``name``
+- ``alias(description)``: human-readable ``description`` of the rule
+- ``cidr(ip/mask)``: match on the client's `cidr <https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing>`_
+- ``filename(name)``: match in the file ``name``
+- ``filename_r(regexp)``: the file name matching the ``regexp``
+- ``function(name)``: match on function ``name``
+- ``function_r(regexp)``: the function matching the ``regexp``
+- ``hash(sha256)``: match on the file's `sha256 <https://en.wikipedia.org/wiki/SHA-2>`_ sum
+- ``param(name)``: match on the function's parameter ``name``
+- ``param_r(regexp)``: match on the function's parameter ``regexp``
+- ``param_type(type)``: match on the function's parameter ``type``
+- ``ret(value)``: match on the function's return ``value``
+- ``ret_r(regexp)``: match with a ``regexp`` on the function's return
+- ``ret_type(type_name)``: match on the ``type_name`` of the function's return value
+- ``value(value)``: match on a litteral ``value``
+- ``value_r(regexp)``: match on a value matching the ``regexp``
+- ``var(name)``: match on a **local variable** ``name``
 
 The ``type`` must be one of the following values:
 
@@ -225,7 +235,7 @@ Actions
 
 - ``allow()``: **allow** the request if the rule matches
 - ``drop()``: **drop** the request if the rule matches
-- ``dump(directory:str)``: dump the request in the ``directory`` if it matches the rule
+- ``dump(directory)``: dump the request in the ``directory`` if it matches the rule
 - ``simulation()``: enabled the simulation mode
 
 Details

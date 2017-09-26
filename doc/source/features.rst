@@ -150,6 +150,7 @@ This family of vulnerabilities lead to various CVE, like:
 - `CVE-2012-5692 <https://www.rapid7.com/db/modules/exploit/unix/webapp/invision_pboard_unserialize_exec>`_: Unauthenticated remote code execution in IP.Board
 
 
+.. _harden-rand-feature:
 
 Weak-PRNG via rand/mt_rand
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -238,6 +239,9 @@ This behaviour is suggested in the documentation:
 Exploitation, post-exploitation and general hardening
 -----------------------------------------------------
 
+
+.. _virtual-patching-feature:
+
 Virtual-patching
 ^^^^^^^^^^^^^^^^
 
@@ -261,6 +265,8 @@ of dangerous functions, droping them everywhere else:
 
 The intent is to make post-exploitation process (such as backdooring of legitimate code, or RAT usage) a lot harder for the attacker.
 
+
+.. _global-strict-feature:
 
 Global strict mode
 ^^^^^^^^^^^^^^^^^^
@@ -300,7 +306,7 @@ and using this feature to lock this up.
 
 Dumping capabilities
 ^^^^^^^^^^^^^^^^^^^^
-It's possible to apply the ``dump(:str)`` filter to any virtual-patching rule,
+It's possible to apply the ``dump()`` filter to any virtual-patching rule,
 to dump the complete web request, along with the filename and the corresponding 
 line number. By using the *right* set of restrictive rules (or by using the
 *overly* restrictives ones in ``simulation`` mode), you might be able
@@ -335,8 +341,8 @@ Arbitrary file inclusion hardening
 """"""""""""""""""""""""""""""""""
 
 Arbitrary file inclusion is a common vulnerability, that might be detected
-by preventing the use of anything else than a whitelist of extensions in calls
-to ``include`` or ``require``.
+by preventing the inclusion of anything that doens't match a strict set
+of file extensions in calls to ``include`` or ``require``.
 
 *Cheap* SQL injections detection
 """"""""""""""""""""""""""""""""
