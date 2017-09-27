@@ -279,7 +279,7 @@ PHP7 introduced a **strict mode**, in which variables won't be coerced anymore,
 and a `TypeError <https://php.net/manual/en/class.typeerror.php>`_ exception will
 be raised if the types aren't matching.
 `Scalar type declarations <https://secure.php.net/manual/en/migration70.new-features.php#migration70.new-features.scalar-type-declarations>`_
-are optional, but you don't have to used them in your code to benefit from them,
+are optional, but you don't have to use them in your code to benefit from them,
 since every internal function from php has them.
 
 This option provide a switch to globally activate this strict mode,
