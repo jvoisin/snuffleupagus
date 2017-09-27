@@ -185,6 +185,10 @@ int parse_disabled_functions(char *line) {
     return -1;
   }
 
+  if (df->function) {
+    df->functions_list = parse_functions_list(df->function);
+  }
+
   if (df->param && strchr(df->param, '[')) {  // assume that this is an array
     df->param_array_keys = sp_new_list();
     if (0 != array_to_list(&df->param, &df->param_array_keys)) {
