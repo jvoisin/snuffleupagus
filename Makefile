@@ -1,22 +1,25 @@
-clean:
+.DEFAULT_GOAL=help
+.PHONY=help
+
+clean:  ## clean everything
 	make -C src clean
 	cd src; phpize --clean
 
-release:
+release:  ## compile with releases flags
 	cd src; phpize
 	cd src; ./configure --enable-snuffleupagus
 	make -C src
 
-install: release
+install: release  ## compile and install snuffleupagus
 	make -C install
 
-debug:
+debug: ## compile a debug build
 	cd src; phpize
 	export CFLAGS="-g3 -ggdb -O1 -g"; cd src; ./configure --enable-snuffleupagus --enable-debug
 	make -C src
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test
 
-coverage:
+coverage:  ## compile snuffleugpaus, and run the testsuite with coverage
 	cd src; phpize
 	cd src; ./configure --enable-snuffleupagus --enable-coverage
 	make -C src
@@ -26,7 +29,7 @@ coverage:
 	lcov --remove src/COV.info '/usr/*' --remove src/COV.info '*tweetnacl.c' -o src/COV.info --rc lcov_branch_coverage=1
 	genhtml -o src/COV.html ./src/COV.info  --branch-coverage
 
-tests: joomla
+bench: joomla  ## run the benchmark
 
 joomla:
 	if [ ! -d "joomla-cms" ]; then \
@@ -38,7 +41,10 @@ joomla:
 	echo "\nWithout snuffleupagus:"
 	cd joomla-cms; time libraries/vendor/phpunit/phpunit/phpunit --no-coverage >/dev/null
 
-packages: debian
+packages: debian  ## produce packages
 
 debian:
 	dpkg-buildpackage -i -us -uc -tc -I -rfakeroot
+
+help:
+	@awk -F ':|##' '/^[^\t].+?:.*?##/ { printf "\033[36m%-30s\033[0m %s\n", $$1, $$NF }' $(MAKEFILE_LIST)
