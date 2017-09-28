@@ -17,15 +17,20 @@ Quickstart
 ::
 
     git clone https://github.com/nbs-system/snuffleupagus
-    cd snuffleupagus
+    cd snuffleupagus/src
     phpize
-    ./configure
+    ./configure --with-snuffleupagus
     make
     make install
 
-This should install ``snuffleupagus.so`` file in your extension directory. The final step is adding a load directive to ``php.ini``::
+This should install ``snuffleupagus.so`` file in your extension directory.
+The final step is adding a load directive to ``php.ini``,
+and to specify the location of its :doc:`configuration file <config>`:
+
+::
 
     extension=snuffleupagus.so
+    sp.configuration_file=/etc/php/conf.d/snuffleupagus.ini
 
 Upgrading
 ---------

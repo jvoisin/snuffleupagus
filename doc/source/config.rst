@@ -2,7 +2,9 @@ Configuration
 =============
 
 Since PHP *ini-like* configuration model isn't flexible enough,
-Snuffleupagus is using its own format.
+Snuffleupagus is using its own format, in the file specified by
+the directive ``sp.configuration_file`` (in your ``php.ini`` file),
+like ``sp.configuration_file=/etc/php/conf.d/snuffleupagus.ini``.
 
 Options are chainable by using dots (``.``), and string parameters
 **must** be quoted, while booleans and integers aren't.
