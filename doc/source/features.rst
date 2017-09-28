@@ -6,8 +6,8 @@ killers and virtual-patching. The first category provides primitives to kill var
 bug families (like arbitrary code execution via ``unserialize`` for example) or rise the 
 cost of exploitation, the second one is a highly configurable system to patch functions in php itself.
 
-Bug classes killed
-------------------
+Bug classes killed or mitigated
+-------------------------------
 
 ``system`` injections
 ^^^^^^^^^^^^^^^^^^^^^
@@ -22,7 +22,7 @@ Unfortunately, passing user-controlled parameters to it often leads to an arbitr
 
   --- `The PHP documentation about system <https://secure.php.net/manual/en/function.system.php>`_
 
-We're kind of killing it by filtering the ``$``, ``|``, ``;``, ````` and ``&`` chars in our 
+We're mitigating it by filtering the ``$``, ``|``, ``;``, `````, ``\n`` and ``&`` chars in our
 default configuration, making it a lot harder for an attacker to inject arbitrary commands.
 
 This family of vulnerabilities lead to various CVE, like:

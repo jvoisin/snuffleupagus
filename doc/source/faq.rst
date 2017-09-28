@@ -222,8 +222,8 @@ Contact `NBS System <https://nbs-system.com>`_.
 Unimplemented mitigations and abandoned ideas
 ---------------------------------------------
 
-Contant time comparisons
-""""""""""""""""""""""""
+Constant time comparisons
+"""""""""""""""""""""""""
 We didn't manage to perform time-based side-channel attacks on strings 
 against real world PHP application, and the results that we gathered on
 tailored test cases weren't concluding: for simplicity's sake, we chose
