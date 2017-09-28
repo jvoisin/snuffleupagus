@@ -59,7 +59,7 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
     return ZEND_HASH_APPLY_KEEP;
   }
 
-  debase64 = php_base64_decode_ex((unsigned char *)(Z_STRVAL_P(pDest)), value_len, 1);
+  debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)), value_len);
 
   if (NULL == debase64) {
     goto fail;
