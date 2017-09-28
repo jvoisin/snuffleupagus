@@ -113,6 +113,17 @@ is still a security issue, and should be treated as such.
 We don't have the pretention to state that Snuffleupagus will magically solve
 all your security issues, but we believe that it might definitely help.
 
+Why should you send us bugs, security issues and patches?
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Snuffleupagus is an open-source security software, by reporting (or fixing)
+bugs, or implementing new features, you are helping others to protect themselves.
+
+We're also firm believer in the *Beerbounty* system:
+we are happy to offer you beers when/if we ever met if you helped the project in
+any way. If you don't like beer, we're sure that we'll find something else,
+don't worry.
+
+
 Installation and configuration
 ------------------------------
 
