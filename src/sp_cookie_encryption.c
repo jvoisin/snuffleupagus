@@ -59,16 +59,20 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
     return ZEND_HASH_APPLY_KEEP;
   }
 
-  debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)), value_len);
+  debase64 = php_base64_decode_ex((unsigned char *)(Z_STRVAL_P(pDest)), value_len, 1);
 
-  if (value_len <
+  if (NULL == debase64) {
+    goto fail;
+  }
+
+  if (ZSTR_LEN(debase64) <
       crypto_secretbox_NONCEBYTES + crypto_secretbox_ZEROBYTES) {
     sp_log_msg("cookie_encryption", SP_LOG_DROP,
         "Buffer underflow tentative detected in cookie encryption handling.");
     return ZEND_HASH_APPLY_REMOVE;
   }
 
-  decrypted = pecalloc(value_len, 1, 0);
+  decrypted = pecalloc(ZSTR_LEN(debase64), 1, 0);
 
   ret = crypto_secretbox_open(
       decrypted,
@@ -77,6 +81,7 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
       (unsigned char *)ZSTR_VAL(debase64), key);
 
   if (ret == -1) {
+fail:
     sp_log_msg("cookie_encryption", SP_LOG_DROP,
       "Something went wrong with the decryption of %s.",
                ZSTR_VAL(hash_key->key));
