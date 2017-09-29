@@ -61,10 +61,6 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
 
   debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)), value_len);
 
-  if (NULL == debase64) {
-    goto fail;
-  }
-
   if (ZSTR_LEN(debase64) <
       crypto_secretbox_NONCEBYTES + crypto_secretbox_ZEROBYTES) {
     sp_log_msg("cookie_encryption", SP_LOG_DROP,
@@ -81,7 +77,6 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
       (unsigned char *)ZSTR_VAL(debase64), key);
 
   if (ret == -1) {
-fail:
     sp_log_msg("cookie_encryption", SP_LOG_DROP,
       "Something went wrong with the decryption of %s.",
                ZSTR_VAL(hash_key->key));
