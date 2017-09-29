@@ -61,14 +61,14 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
 
   debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)), value_len);
 
-  if (value_len <
+  if (ZSTR_LEN(debase64) <
       crypto_secretbox_NONCEBYTES + crypto_secretbox_ZEROBYTES) {
     sp_log_msg("cookie_encryption", SP_LOG_DROP,
         "Buffer underflow tentative detected in cookie encryption handling.");
     return ZEND_HASH_APPLY_REMOVE;
   }
 
-  decrypted = pecalloc(value_len, 1, 0);
+  decrypted = pecalloc(ZSTR_LEN(debase64), 1, 0);
 
   ret = crypto_secretbox_open(
       decrypted,
