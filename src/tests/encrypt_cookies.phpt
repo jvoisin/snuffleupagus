@@ -5,7 +5,7 @@ Cookie decryption in ipv4
 --INI--
 sp.configuration_file={PWD}/config/config_encrypted_cookies.ini
 --COOKIE--
-super_cookie=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEmXkk3H0xheoOMxoWPEDw1Zd8NAmD9KbB2DSjQ=%3d;awful_cookie=awful_cookie_value;
+super_cookie=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP3gV9YJZL/pUeNAjCKFW0U2ywmf1CwHzwd2pWM=;awful_cookie=awful_cookie_value;
 --ENV--
 return <<<EOF
 REMOTE_ADDR=127.0.0.1

@@ -19,10 +19,10 @@ static int parse_enable(char *line, bool * restrict retval, bool * restrict simu
   if (!(enable ^ disable)) {
     sp_log_err("config", "A rule can't be enabled and disabled on line %zu.", sp_line_no);
     return -1;
-  } 
+  }
 
   *retval = enable;
-  
+
   return ret;
 }
 
@@ -51,11 +51,13 @@ int parse_readonly_exec(char *line) {
 }
 
 int parse_global(char *line) {
-  sp_config_functions sp_config_funcs_encryption_key[] = {
+  sp_config_functions sp_config_global[] = {
       {parse_str, SP_TOKEN_ENCRYPTION_KEY,
        &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)},
+      {parse_str, SP_TOKEN_ENV_VAR,
+       &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)},
       {0}};
-  return parse_keywords(sp_config_funcs_encryption_key, line);
+  return parse_keywords(sp_config_global, line);
 }
 
 int parse_cookie_encryption(char *line) {
@@ -64,10 +66,6 @@ int parse_cookie_encryption(char *line) {
 
   sp_config_functions sp_config_funcs_cookie_encryption[] = {
       {parse_str, SP_TOKEN_NAME, &name},
-      {parse_int, SP_TOKEN_MASK_IPV4,
-       &(SNUFFLEUPAGUS_G(config).config_cookie_encryption->mask_ipv4)},
-      {parse_int, SP_TOKEN_MASK_IPV6,
-       &(SNUFFLEUPAGUS_G(config).config_cookie_encryption->mask_ipv6)},
       {0}};
 
   ret = parse_keywords(sp_config_funcs_cookie_encryption, line);
@@ -75,11 +73,16 @@ int parse_cookie_encryption(char *line) {
     return ret;
   }
 
-  if (32 < SNUFFLEUPAGUS_G(config).config_cookie_encryption->mask_ipv4) {
-    SNUFFLEUPAGUS_G(config).config_cookie_encryption->mask_ipv4 = 32;
-  }
-  if (128 < SNUFFLEUPAGUS_G(config).config_cookie_encryption->mask_ipv6) {
-    SNUFFLEUPAGUS_G(config).config_cookie_encryption->mask_ipv6 = 128;
+  if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)) {
+    sp_log_err("config", "You're trying to use the cookie encryption feature"
+      "on line %zu without having set the `.cookie_env_var` option in"
+      "`sp.global`: please set it first.", sp_line_no);
+    return -1;
+  } else if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
+    sp_log_err("config", "You're trying to use the cookie encryption feature"
+      "on line %zu without having set the `.encryption_key` option in"
+      "`sp.global`: please set it first.", sp_line_no);
+    return -1;
   }
 
   if (name) {
@@ -190,7 +193,7 @@ int parse_disabled_functions(char *line) {
     }
     df->param_is_array = 1;
   }
-  
+
   if (df->var && strchr(df->var, '[')) {  // assume that this is an array
     df->var_array_keys = sp_new_list();
     if (0 != array_to_list(&df->var, &df->var_array_keys)) {
@@ -247,7 +250,7 @@ int parse_upload_validation(char *line) {
   if (!(enable ^ disable)) {
     sp_log_err("config", "A rule can't be enabled and disabled on line %zu.", sp_line_no);
     return -1;
-  } 
+  }
   SNUFFLEUPAGUS_G(config).config_upload_validation->enable = enable;
 
   char const *script = SNUFFLEUPAGUS_G(config).config_upload_validation->script;
@@ -263,6 +266,6 @@ int parse_upload_validation(char *line) {
     sp_log_err("config", "The `script` (%s) isn't executable on line %zu.", script, sp_line_no);
     return -1;
   }
-  
+
   return ret;
 }

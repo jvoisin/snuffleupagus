@@ -2,17 +2,7 @@
 
 size_t sp_line_no;
 
-static int validate_int(const char *value);
 static int validate_str(const char *value);
-
-static sp_pure int validate_int(const char *value) {
-  for (size_t i = 0; i < strlen(value); i++) {
-    if (!isdigit(value[i])) {
-      return -1;
-    }
-  }
-  return 0;
-}
 
 static sp_pure int validate_str(const char *value) {
   int balance = 0;  // ghetto [] validation
@@ -124,48 +114,14 @@ err:
   return NULL;
 }
 
-static char *get_misc(char *restrict line, const char *restrict keyword) {
-  size_t i = 0;
-  char *ret = pecalloc(sizeof(char), 1024, 1);
-
-  while (i < 1024 - 1 && line[i] && line[i] != SP_TOKEN_END_PARAM) {
-    ret[i] = line[i];
-    i++;
-  }
-
-  if (line[i] != SP_TOKEN_END_PARAM) {
-    if (i >= 1024 - 1) {
-      sp_log_err("config", "The following line is too long: %s on line %zu.", line, sp_line_no);
-		} else {
-      sp_log_err("config", "Missing closing %c in line %s on line %zu.", SP_TOKEN_END_PARAM,
-                 line, sp_line_no);
-		}
-    return NULL;
-  } else if (i == 0) {
-    sp_log_err("config", "The keyword %s%c is expecting a parameter on line %zu.",
-     keyword, SP_TOKEN_END_PARAM, sp_line_no);
-    return NULL;
-  }
-  return ret;
-}
-
 char *get_param(size_t *consumed, char *restrict line, sp_type type,
                 const char *restrict keyword) {
-  char *retval = NULL;
-  if (type == SP_TYPE_STR) {
-    retval = get_string(consumed, line, keyword);
-  } else {
-    retval = get_misc(line, keyword);
-    *consumed = retval ? strlen(retval) : 0;
+  char *retval = get_string(consumed, line, keyword);
+
+  if (retval && 0 == validate_str(retval)) {
+      return retval;
   }
 
-  if (retval) {
-    if (type == SP_TYPE_STR && 0 == validate_str(retval)) {
-      return retval;
-    } else if (type == SP_TYPE_INT && 0 == validate_int(retval)) {
-      return retval;
-    }
-  }
   return NULL;
 }
 

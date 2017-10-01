@@ -55,19 +55,6 @@ int parse_empty(char *restrict line, char *restrict keyword, void *retval) {
   return 0;
 }
 
-int parse_int(char *restrict line, char *restrict keyword, void *retval) {
-  size_t consumed = 0;
-  char *value = get_param(&consumed, line, SP_TYPE_INT, keyword);
-  if (value) {
-    sscanf(value, "%ud", (uint32_t *)retval);
-    pefree(value, 1);
-    return consumed;
-  } else {
-    sp_log_err("error", "%s) is expecting a valid integer on line %zu.", keyword, sp_line_no);
-    return -1;
-  }
-}
-
 int parse_php_type(char *restrict line, char *restrict keyword, void *retval) {
   size_t consumed = 0;
   char *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
