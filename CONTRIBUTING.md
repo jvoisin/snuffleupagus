@@ -6,7 +6,7 @@ First off, thank you for considering contributing to snuffleupagus.
 
 If you've noticed a bug or have a question,
 look at the [faq](https://snuffleupagus.readthedocs.io/faq.html) and
-[search the issue tracker](https://github.com/nbs-system/snuffleupagus/issues) 
+[search the issue tracker](https://github.com/nbs-system/snuffleupagus/issues)
 to see if someone else has already created a ticket. If not, go ahead and
 [make one](https://github.com/nbs-system/snuffleupagus/issues/new)!
 
@@ -25,7 +25,7 @@ git checkout -b 325-kill-sql-injections
 ### 3. Get the test suite running
 
 Just type `make coverage` or `make debug`, the testsuite should be run
-automatically.
+automatically. Please do add tests if you're fixing a bug or adding a new feature.
 
 ### 4. Did you find a bug?
 
@@ -70,7 +70,7 @@ Finally, go to GitHub and [make a Pull Request](https://help.github.com/articles
 Travis CI will run our test suite against all supported PHP versions. We care
 about quality, so your PR won't be merged until all tests pass. It's unlikely,
 but it's possible that your changes pass tests in one PHP version but fail in
-another. In that case, you'll have to setup your development environment 
+another. In that case, you'll have to setup your development environment
 to use the problematic PHP version, and investigate
 what's going on!
 

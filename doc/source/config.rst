@@ -38,7 +38,7 @@ global_strict
 ^^^^^^^^^^^^^
 `default: disabled`
 
-``global_strict`` will enable the `strict <https://secure.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.strict>`_ mode globally, 
+``global_strict`` will enable the `strict <https://secure.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.strict>`_ mode globally,
 forcing PHP to throw a `TypeError <https://secure.php.net/manual/en/class.typeerror.php>`_
 exception if an argument type being passed to a function does not match its corresponding declared parameter type.
 
@@ -53,7 +53,7 @@ harden_random
 ^^^^^^^^^^^^^
  * `default: enabled`
  * `more <features.html#weak-prng-via-rand-mt-rand>`__
- 
+
 ``harden_random`` will silently replace the insecure `rand <https://secure.php.net/manual/en/function.rand.php>`_
 and `mt_rand <https://secure.php.net/manual/en/function.mt-rand.php>`_ functions with
 the secure PRNG `random_int <https://secure.php.net/manual/en/function.random-int.php>`_.
@@ -85,7 +85,7 @@ unserialize_hmac
 ^^^^^^^^^^^^^^^^
  * `default: disabled`
  * `more <features.html#unserialize-related-magic>`__
- 
+
 ``unserialize_hmac`` will add integrity check to ``unserialize`` calls, preventing
 abritrary code execution in their context.
 
@@ -101,7 +101,7 @@ auto_cookie_secure
 ^^^^^^^^^^^^^^^^^^
  * `default: disabled`
  * `more <features.html#session-cookie-stealing-via-xss>`__
- 
+
 ``auto_cookie_secure`` will automatically mark cookies as `secure <https://en.wikipedia.org/wiki/HTTP_cookie#Secure_cookie>`_
 when the web page is requested over HTTPS.
 
@@ -116,7 +116,7 @@ cookie_encryption
 ^^^^^^^^^^^^^^^^^
  * `default: disabled`
  * `more <features.html#session-cookie-stealing-via-xss>`__
-   
+
 .. warning::
 
   To use this feature, you **must** set the :ref:`global.secret_key <config_global>` variable.
@@ -151,7 +151,7 @@ upload_validation
  * `default: disabled`
  * `more <features.html#remote-code-execution-via-file-upload>`__
 
-``upload_validation`` will call a given script upon a file upload, with the path 
+``upload_validation`` will call a given script upon a file upload, with the path
 to the file being uploaded as argument, and various information about it in the environment:
 
 * ``SP_FILENAME``: the name of the uploaded file
@@ -192,8 +192,8 @@ Snuffleupagus provides virtual-patching, via the ``disable_functions`` directive
 Admitting you have a call to ``system()`` that lacks proper user-input validation, thus leading to an **RCE**, this might be the right tool.
 
 ::
-   
-  # Allow `id.php` to restrict system() calls to `id`
+
+  # Restrict calls to `system` to `id` in the `id.php` file
   sp.disable_functions.function("system").filename("id.php").param("cmd").value("id").allow();
   sp.disable_functions.function("system").filename("id.php").drop()
 

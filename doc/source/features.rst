@@ -3,7 +3,7 @@ Features
 
 Snuffleupagus has a lot of features that can be divided in two main categories: bug-classes
 killers and virtual-patching. The first category provides primitives to kill various
-bug families (like arbitrary code execution via ``unserialize`` for example) or rise the 
+bug families (like arbitrary code execution via ``unserialize`` for example) or rise the
 cost of exploitation, the second one is a highly configurable system to patch functions in php itself.
 
 Bug classes killed or mitigated
@@ -171,7 +171,7 @@ It's worth noting that the PHP documentation contains the following warning:
 
   ``min`` ``max`` range must be within the range ``getrandmax()``. i.e. ``(max - min) <= getrandmax()``.
   Otherwise, ``rand()`` may return poor-quality random numbers.
-  
+
   --- `The PHP documentation about rand <https://secure.php.net/manual/en/function.rand.php>`_
 
 This is of course addressed as well by the ``harden_rand`` feature.
@@ -279,7 +279,7 @@ PHP7 introduced a **strict mode**, in which variables won't be coerced anymore,
 and a `TypeError <https://php.net/manual/en/class.typeerror.php>`_ exception will
 be raised if the types aren't matching.
 `Scalar type declarations <https://secure.php.net/manual/en/migration70.new-features.php#migration70.new-features.scalar-type-declarations>`_
-are optional, but you don't have to used them in your code to benefit from them,
+are optional, but you don't have to use them in your code to benefit from them,
 since every internal function from php has them.
 
 This option provide a switch to globally activate this strict mode,
@@ -307,7 +307,7 @@ and using this feature to lock this up.
 Dumping capabilities
 ^^^^^^^^^^^^^^^^^^^^
 It's possible to apply the ``dump()`` filter to any virtual-patching rule,
-to dump the complete web request, along with the filename and the corresponding 
+to dump the complete web request, along with the filename and the corresponding
 line number. By using the *right* set of restrictive rules (or by using the
 *overly* restrictives ones in ``simulation`` mode), you might be able
 to gather interesting vulnerabilities used against your website.
@@ -332,7 +332,7 @@ or ``is_callable`` with *suspicious* parameters.
 ``chmod`` hardening
 """""""""""""""""""
 
-Some PHP applications are using broad rights when using the ``chmod`` function, 
+Some PHP applications are using broad rights when using the ``chmod`` function,
 like the infamous ``chmod(777)`` command, effectively making the file writable by everyone.
 Snuffleupagus is preventing this kind of behaviour by restricting the parameters
 than can be passer to ``chmod``.
