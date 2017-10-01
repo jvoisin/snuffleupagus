@@ -38,7 +38,7 @@ global_strict
 ^^^^^^^^^^^^^
 `default: disabled`
 
-``global_strict`` will enable the `strict <https://secure.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.strict>`_ mode globally,
+``global_strict`` will enable the `strict <https://secure.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.strict>`_ mode globally, 
 forcing PHP to throw a `TypeError <https://secure.php.net/manual/en/class.typeerror.php>`_
 exception if an argument type being passed to a function does not match its corresponding declared parameter type.
 
@@ -53,7 +53,7 @@ harden_random
 ^^^^^^^^^^^^^
  * `default: enabled`
  * `more <features.html#weak-prng-via-rand-mt-rand>`__
-
+ 
 ``harden_random`` will silently replace the insecure `rand <https://secure.php.net/manual/en/function.rand.php>`_
 and `mt_rand <https://secure.php.net/manual/en/function.mt-rand.php>`_ functions with
 the secure PRNG `random_int <https://secure.php.net/manual/en/function.random-int.php>`_.
@@ -85,7 +85,7 @@ unserialize_hmac
 ^^^^^^^^^^^^^^^^
  * `default: disabled`
  * `more <features.html#unserialize-related-magic>`__
-
+ 
 ``unserialize_hmac`` will add integrity check to ``unserialize`` calls, preventing
 abritrary code execution in their context.
 
@@ -101,7 +101,7 @@ auto_cookie_secure
 ^^^^^^^^^^^^^^^^^^
  * `default: disabled`
  * `more <features.html#session-cookie-stealing-via-xss>`__
-
+ 
 ``auto_cookie_secure`` will automatically mark cookies as `secure <https://en.wikipedia.org/wiki/HTTP_cookie#Secure_cookie>`_
 when the web page is requested over HTTPS.
 
@@ -112,17 +112,19 @@ It can either be ``enabled`` or ``disabled``.
   sp.auto_cookie_secure.enable();
   sp.auto_cookie_secure.disable();
 
+.. _cookie-encryption_config:
 cookie_encryption
 ^^^^^^^^^^^^^^^^^
  * `default: disabled`
  * `more <features.html#session-cookie-stealing-via-xss>`__
-
+   
 .. warning::
 
-  To use this feature, you **must** set the :ref:`global.secret_key <config_global>` variable.
+  To use this feature, you **must** set the :ref:`global.secret_key <config_global>` and
+  and the :ref:`global.cookie_env_var <config_global>` variables.
   This design decision prevents attacker from
   `trivially bruteforcing <https://www.idontplaydarts.com/2011/11/decrypting-suhosin-sessions-and-cookies/>`_
-  session cookies.
+  or re-using session cookies.
 
 ``cookie_secure`` will activate transparent encryption of specific cookies.
 
@@ -133,6 +135,26 @@ It can either be ``enabled`` or ``disabled``, and used in ``simulation`` mode.
   sp.cookie_encryption.cookie("my_cookie_name");
   sp.cookie_encryption.cookie("another_cookie_name");
 
+Choosing the proper environment variable
+""""""""""""""""""""""""""""""""""""""""
+
+It's up to you to chose a meaningul environment variable to derive the key from.
+Suhosin `is using <https://www.suhosin.org/stories/configuration.html#suhosin-session-cryptraddr>`_
+the ``REMOTE_ADDR`` one, tying the validity of the cookie to the IP address of the user;
+unfortunately, nowadays, people are `roaming <https://en.wikipedia.org/wiki/Roaming>`_ a lot on their smartphone,
+hopping from WiFi to 4G, …
+
+This is why we recommend, if possible, to use the *extended master secret*
+from TLS connections (`RFC7627 <https://tools.ietf.org/html/rfc7627>`_)
+instead, to make the valitity of the cookie TLS-dependent, by using the ``SSL_SESSION_ID`` variable.
+
+- In `Apache <https://httpd.apache.org/docs/current/mod/mod_ssl.html>`_,
+  it possible to enable by adding ``SSLOptions StdEnvVars`` in your Apache2 configuration.
+- In `nginx <https://nginx.org/en/docs/http/ngx_http_ssl_module.html#variables>`_,
+  you have to use ``fastcgi_param SSL_SESSION_ID $ssl_session_id if_not_empty;``.
+
+If you're not using TLS (you should.), you can always use the ``REMOTE_ADDR`` one,
+or ``X-Real-IP`` if you're behind a reverse proxy.
 
 readonly_exec
 ^^^^^^^^^^^^^
@@ -151,7 +173,7 @@ upload_validation
  * `default: disabled`
  * `more <features.html#remote-code-execution-via-file-upload>`__
 
-``upload_validation`` will call a given script upon a file upload, with the path
+``upload_validation`` will call a given script upon a file upload, with the path 
 to the file being uploaded as argument, and various information about it in the environment:
 
 * ``SP_FILENAME``: the name of the uploaded file
@@ -192,8 +214,8 @@ Snuffleupagus provides virtual-patching, via the ``disable_functions`` directive
 Admitting you have a call to ``system()`` that lacks proper user-input validation, thus leading to an **RCE**, this might be the right tool.
 
 ::
-
-  # Restrict calls to `system` to `id` in the `id.php` file
+   
+  # Allow `id.php` to restrict system() calls to `id`
   sp.disable_functions.function("system").filename("id.php").param("cmd").value("id").allow();
   sp.disable_functions.function("system").filename("id.php").drop()
 
