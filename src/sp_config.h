@@ -15,16 +15,16 @@ typedef enum {
 } sp_type;
 
 typedef enum {
-  SP_PHP_TYPE_UNDEF = IS_UNDEF, 
-  SP_PHP_TYPE_NULL = IS_NULL, 
-  SP_PHP_TYPE_FALSE = IS_FALSE, 
-  SP_PHP_TYPE_TRUE = IS_TRUE, 
-  SP_PHP_TYPE_LONG = IS_LONG, 
-  SP_PHP_TYPE_DOUBLE = IS_DOUBLE, 
-  SP_PHP_TYPE_STRING = IS_STRING, 
-  SP_PHP_TYPE_ARRAY = IS_ARRAY, 
-  SP_PHP_TYPE_OBJECT = IS_OBJECT, 
-  SP_PHP_TYPE_RESOURCE = IS_RESOURCE, 
+  SP_PHP_TYPE_UNDEF = IS_UNDEF,
+  SP_PHP_TYPE_NULL = IS_NULL,
+  SP_PHP_TYPE_FALSE = IS_FALSE,
+  SP_PHP_TYPE_TRUE = IS_TRUE,
+  SP_PHP_TYPE_LONG = IS_LONG,
+  SP_PHP_TYPE_DOUBLE = IS_DOUBLE,
+  SP_PHP_TYPE_STRING = IS_STRING,
+  SP_PHP_TYPE_ARRAY = IS_ARRAY,
+  SP_PHP_TYPE_OBJECT = IS_OBJECT,
+  SP_PHP_TYPE_RESOURCE = IS_RESOURCE,
   SP_PHP_TYPE_REFERENCE = IS_REFERENCE
 } sp_php_type;
 
@@ -37,7 +37,10 @@ typedef struct {
   uint8_t mask;
 } sp_cidr;
 
-typedef struct { char *encryption_key; } sp_config_encryption_key;
+typedef struct {
+  char *encryption_key;
+  char *cookies_env_var;
+} sp_config_global;
 
 typedef struct {
 	bool enable;
@@ -52,11 +55,7 @@ typedef struct { bool enable; } sp_config_auto_cookie_secure;
 
 typedef struct { bool enable; } sp_config_disable_xxe;
 
-typedef struct {
-  HashTable *names;
-  uint32_t mask_ipv4;
-  uint32_t mask_ipv6;
-} sp_config_cookie_encryption;
+typedef struct { HashTable *names; } sp_config_cookie_encryption;
 
 typedef struct {
   bool enable;
@@ -81,7 +80,7 @@ typedef struct {
   char *ret;
   pcre *r_ret;
   sp_php_type ret_type;
-  
+
   pcre *regexp;
   char *value;
 
@@ -122,7 +121,7 @@ typedef struct {
   sp_config_readonly_exec *config_readonly_exec;
   sp_config_upload_validation *config_upload_validation;
   sp_config_cookie_encryption *config_cookie_encryption;
-  sp_config_encryption_key *config_snuffleupagus;
+  sp_config_global *config_snuffleupagus;
   sp_config_auto_cookie_secure *config_auto_cookie_secure;
   sp_config_global_strict *config_global_strict;
   sp_config_disable_xxe *config_disable_xxe;
@@ -185,11 +184,10 @@ typedef struct {
 
 // cookies encryption
 #define SP_TOKEN_NAME ".cookie("
-#define SP_TOKEN_MASK_IPV4 ".mask_ipv4("
-#define SP_TOKEN_MASK_IPV6 ".mask_ipv6("
 
 // Global configuration options
 #define SP_TOKEN_ENCRYPTION_KEY ".secret_key("
+#define SP_TOKEN_ENV_VAR ".cookie_env_var("
 
 // upload_validator
 #define SP_TOKEN_UPLOAD_SCRIPT ".script("
@@ -200,7 +198,6 @@ int parse_array(sp_disabled_function *);
 int parse_str(char *restrict, char *restrict, void *);
 int parse_regexp(char *restrict, char *restrict, void *);
 int parse_empty(char *restrict, char *restrict, void *);
-int parse_int(char *restrict, char *restrict, void *);
 int parse_cidr(char *restrict, char *restrict, void *);
 int parse_php_type(char *restrict, char *restrict, void *);
 

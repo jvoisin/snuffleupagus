@@ -12,37 +12,6 @@ static inline bool cidr6_match(const struct in6_addr address,
                                const struct in6_addr network, uint8_t bits);
 static inline int get_ip_version(const char *ip);
 
-void apply_mask_on_ip(char *out, const char *const remote_addr) {
-  uint8_t mask4 = SNUFFLEUPAGUS_G(config).config_cookie_encryption->mask_ipv4;
-  uint8_t mask6 = SNUFFLEUPAGUS_G(config).config_cookie_encryption->mask_ipv6;
-  const int ip_version = get_ip_version(remote_addr);
-
-  memset(out, 0, 128);
-
-  if (ip_version == AF_INET) {
-    struct in_addr out4;
-    inet_pton(AF_INET, remote_addr, &out4);
-    const long n = out4.s_addr & htonl(0xFFFFFFFFu << (32 - mask4));
-    out[0] = (n >> 24) & 0xFF;
-    out[1] = (n >> 16) & 0xFF;
-    out[2] = (n >> 8) & 0xFF;
-    out[3] = (n >> 0) & 0xFF;
-  } else if (ip_version == AF_INET6) {
-    inet_pton(AF_INET6, remote_addr, out);
-    uint32_t *p_ip = (uint32_t *)out;
-    while (32 < mask6) {
-      *p_ip = 0xFFFFFFFFu;
-      p_ip++;
-      mask6 -= 32;
-    }
-    if (0 != mask6) {
-      *p_ip = htonl(0xFFFFFFFFu << (32 - mask6));
-    }
-  } else {
-    sp_log_err("ip_mask", "It seems that %s isn't a valid ip.", remote_addr);
-  }
-}
-
 /* http://fxr.watson.org/fxr/source/include/net/xfrm.h?v=linux-2.6#L840 */
 static inline bool cidr4_match(const struct in_addr addr,
                                const struct in_addr net, uint8_t bits) {

@@ -5,7 +5,7 @@ Cookie decryption with ipv6
 --INI--
 sp.configuration_file={PWD}/config/config_encrypted_cookies.ini
 --COOKIE--
-super_cookie=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJNTUge7MpiVNi4q3DqstbcumllXBir0CbIQiDI%3D;awful_cookie=awful_cookie_value;
+super_cookie=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABM84SCotZTpP6b27Lr5lavORPMvqaKpcUahvxw=;awful_cookie=awful_cookie_value;
 --ENV--
 return <<<EOF
 REMOTE_ADDR=2001:0db8:0000:0000:0000:fe00:0042:8329

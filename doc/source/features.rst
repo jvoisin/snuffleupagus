@@ -61,17 +61,16 @@ Session-cookie stealing via XSS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The goto payload for XSS is often to steal cookies.
-Like *Suhosin*, we are encrypting the cookies with a secret key, the IP of the user
+Like *Suhosin*, we are encrypting the cookies with a secret key,
+an environment variable (usually the IP of the user)
 and its user-agent. This means that an attacker with an XSS won't be able to use
-the stolen cookie, since he (often) can't spoof the IP address of the user.
+the stolen cookie, since he can't spoof the content of the value of the environment
+variable for the user. Please do read the :ref:`documentation about this feature <cookie-encryption_config>`
+if you're planning to use it.
 
 This feature is roughly the same than the `Suhosin one <https://suhosin.org/stories/configuration.html#transparent-encryption-options>`_.
 
-Users behind the same IP address but with different browsers won't be able to use each other stolen cookies,
-except if they can manage to guess the user agent. This isn't especially difficult,
-but an invalid decryption will leave a trace in the logs.
-
-Finally, having a secret server-side key will prevent anyone (even the user himself)
+Having a secret server-side key will prevent anyone (even the user himself)
 from reading the content of the cookie, reducing the impact of an application storing sensitive data client-side.
 
 The encryption is done via the `tweetnacl library <https://tweetnacl.cr.yp.to/>`_,

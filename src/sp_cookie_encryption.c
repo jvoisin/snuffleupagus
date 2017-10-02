@@ -9,7 +9,8 @@ static unsigned int nonce_d = 0;
 static inline void generate_key(unsigned char *key) {
   PHP_SHA256_CTX ctx;
   const char *user_agent = sp_getenv("HTTP_USER_AGENT");
-  const char *remote_addr = sp_getenv("REMOTE_ADDR");
+  const char *env_var =
+    sp_getenv(SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var);
   const char *encryption_key =
       SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key;
 
@@ -22,10 +23,12 @@ static inline void generate_key(unsigned char *key) {
     PHP_SHA256Update(&ctx, (unsigned char *)user_agent, strlen(user_agent));
   }
 
-  if (remote_addr) {
-    char out[128];
-	  apply_mask_on_ip(out, remote_addr);
-    PHP_SHA256Update(&ctx, (unsigned char*)out, sizeof(out));
+  if (env_var) {
+    PHP_SHA256Update(&ctx, (unsigned char*)env_var, strlen(env_var));
+  } else {
+    sp_log_err("cookie_encryption", "The environment variable '%s'"
+      "is empty, cookies are weakly encrypted.",
+      SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var);
   }
 
   if (encryption_key) {
@@ -115,8 +118,11 @@ static zend_string *encrypt_data(char *data, unsigned long long data_len) {
 
   assert(sizeof(size_t) <= crypto_secretbox_NONCEBYTES);
 
+  if (0 == nonce_d) {
+    nonce_d = getpid();
+  }
   nonce_d++;
-  sscanf((char*)nonce, "%ud", &nonce_d); 
+  sscanf((char*)nonce, "%ud", &nonce_d);
 
   memcpy(encrypted_data, nonce, crypto_secretbox_NONCEBYTES);
   crypto_secretbox(encrypted_data + crypto_secretbox_NONCEBYTES,
