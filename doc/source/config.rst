@@ -215,7 +215,7 @@ Admitting you have a call to ``system()`` that lacks proper user-input validatio
 
 ::
    
-  # Allow `id.php` to restrict system() calls to `id`
+  # Let `id.php` to restrict system() calls to `id`
   sp.disable_functions.function("system").filename("id.php").param("cmd").value("id").allow();
   sp.disable_functions.function("system").filename("id.php").drop()
 
