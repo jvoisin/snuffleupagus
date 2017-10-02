@@ -90,6 +90,8 @@ html_theme = 'alabaster'
 # documentation.
 #
 
+html_favicon = './_static/sp.ico'
+
 html_sidebars = {
     '**': [
         'about.html',
@@ -100,7 +102,7 @@ html_sidebars = {
     ]
 }
 html_theme_options = {
-        'logo': './sp.jpg',
+        'logo': './sp.png',
         #'description': '<br>Killing bug-classes in PHP 7, virtual-patching the rest.',
         #'fixed_sidebar': True,
         'page_width': '60%',
