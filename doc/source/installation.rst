@@ -10,6 +10,11 @@ Depending on the system, we might already offer binary packages.
 You can check our :doc:`download`. In that case you only need to activate
 the extension inside your ``php.ini`` and to configure it.
 
+Requirements
+^^^^^^^^^^^^
+
+The only dependency (at least on Debian) to compile Snuffleupagus is
+`php7.0-dev <https://packages.debian.org/search?keywords=php7.0-dev>`_ or onwards.
 
 Quickstart
 ^^^^^^^^^^
