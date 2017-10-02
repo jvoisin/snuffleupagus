@@ -9,6 +9,10 @@ php:
 before_install:
   - pip install --user cpp-coveralls
 
+env:
+  - CC=clang
+  - CC=gcc
+
 script:
   - cd src
   - phpize
@@ -17,12 +21,14 @@ script:
   - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make test
 
 after_success:
-  - git clone https://github.com/linux-test-project/lcov.git --depth 1
-  - rm -rf ./lcov/examples/ ./lcov/test/
-  - ./lcov/bin/lcov -c -o ./COV.info --rc lcov_branch_coverage=1 --base-directory . --directory .
-  - ./lcov/bin/lcov --remove ./COV.info '/usr/*' --remove ./COV.info '*tweetnacl.c' -o ./COV.info --rc lcov_branch_coverage=1
-  - ./lcov/bin/genhtml -o ./COV.html ./COV.info  --branch-coverage
-  - coveralls --exclude 'tweetnacl.c'
+  - 'if [ ${CC} = "gcc" ]; then
+      git clone https://github.com/linux-test-project/lcov.git --depth 1 ;
+      rm -rf ./lcov/examples/ ./lcov/test/ ;
+      ./lcov/bin/lcov -c -o ./COV.info --rc lcov_branch_coverage=1 --base-directory . --directory . ;
+      ./lcov/bin/lcov --remove ./COV.info "/usr/*" --remove ./COV.info "*tweetnacl.c" -o ./COV.info --rc lcov_branch_coverage=1 ;
+      ./lcov/bin/genhtml -o ./COV.html ./COV.info  --branch-coverage ;
+      coveralls --exclude "tweetnacl.c" ;
+    fi'
   - cd ..
   - make joomla
 

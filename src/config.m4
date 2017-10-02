@@ -11,10 +11,10 @@ PHP_ARG_ENABLE(snuffleupagus, whether to enable snuffleupagus support,
 [  --enable-snuffleupagus           Enable snuffleupagus support])
 
 PHP_ARG_ENABLE(coverage, whether to enable coverage support,
-[  --enable-coverage           Enable coverage support])
+[  --enable-coverage           Enable coverage support], no, no)
 
 PHP_ARG_ENABLE(debug, whether to enable debug messages,
-[  --enable-debug           Enable debug messages])
+[  --enable-debug           Enable debug messages], no, no)
 
 CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -D_DEFAULT_SOURCE=1 -std=c99"
@@ -33,7 +33,7 @@ AC_CHECK_LIB(pcre, pcre_compile, AC_DEFINE(HAVE_PCRE, 1, [have pcre]))
 
 if test "$PHP_SNUFFLEUPAGUS" = "yes"; then
    if test "$PHP_COVERAGE" = "yes"; then
-      CFLAGS="$CFLAGS --coverage -lgcov -O1 -g"
+      CFLAGS="$CFLAGS --coverage -O0 -g"
    fi
    PHP_NEW_EXTENSION(snuffleupagus, $sources, $ext_shared,-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi
