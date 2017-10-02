@@ -151,6 +151,12 @@ Does Snuffleupagus run on Windows?
 No idea, feel free to `try <https://github.com/nbs-system/snuffleupagus/issues/2>`_.
 
 
+Does Snuggleupagus run on `HHVM <http://hhvm.com/>`_?
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
+No it doesn't, since `HHVM's API <https://github.com/facebook/hhvm/wiki/Extension-API>`_
+is really different from PHP7's one. We're not currently planning to rewrite
+Snuffleupagus to support it.
+
 Will Snuffleupagus run on my old PHP 5?
 """""""""""""""""""""""""""""""""""""""
 No.
