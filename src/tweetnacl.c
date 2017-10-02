@@ -1,3 +1,16 @@
+/* Since TweetNacl doesn't come with a `randombytes` implementation,
+we're using the one from PHP.*/
+#include "php_snuffleupagus.h"
+#include "ext/standard/php_random.h"
+
+ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
+
+void randombytes(unsigned char *x, unsigned long long xlen) {
+  php_random_bytes(x, xlen, 1);
+}
+
+// And now, the original code of tweetnacl - https://tweetnacl.cr.yp.to/ 
+
 #include "tweetnacl.h"
 #define FOR(i,n) for (i = 0;i < n;++i)
 #define sv static void
@@ -7,38 +20,6 @@ typedef unsigned long u32;
 typedef unsigned long long u64;
 typedef long long i64;
 typedef i64 gf[16];
-
-
-/* it's really stupid that there isn't a syscall for this */
-
-static int fd = -1;
-
-void randombytes(unsigned char *x,unsigned long long xlen)
-{
-  int i;
-
-  if (fd == -1) {
-    for (;;) {
-      fd = open("/dev/urandom",O_RDONLY);
-      if (fd != -1) break;
-      sleep(1);
-    }
-  }
-
-  while (xlen > 0) {
-    if (xlen < 1048576) i = xlen; else i = 1048576;
-
-    i = read(fd,x,i);
-    if (i < 1) {
-      sleep(1);
-      continue;
-    }
-
-    x += i;
-    xlen -= i;
-  }
-}
-
 
 static const u8
   _0[16],
