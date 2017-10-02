@@ -25,6 +25,10 @@ static inline void generate_key(unsigned char *key) {
 
   if (env_var) {
     PHP_SHA256Update(&ctx, (unsigned char*)env_var, strlen(env_var));
+  } else {
+    sp_log_err("cookie_encryption", "The environment variable '%s'"
+      "is empty, cookies are weakly encrypted.",
+      SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var);
   }
 
   if (encryption_key) {
