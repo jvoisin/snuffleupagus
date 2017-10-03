@@ -14,7 +14,7 @@ require $dir . '/test.meh';
 echo "1337";
 ?>
 --EXPECTF--
-BLA[snuffleupagus][0.0.0.0][disabled_functions][drop] The call to the function 'include' has been disabled because the file %a/test.meh matched a rule.
+BLA[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'include' in %a/disabled_functions_require.php:%d has been disabled, because its argument 'inclusion path' content (%a/test.meh) matched a rule.
 --CLEAN--
 <?php
 $dir = __DIR__;

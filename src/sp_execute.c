@@ -28,7 +28,7 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   }
 }
 
-static void construct_regexp_handler(const char * const filename) {
+static void construct_include_handler(const char * const filename) {
   if (SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include) {
     const sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
     if (!config || !config->data) {
@@ -38,12 +38,8 @@ static void construct_regexp_handler(const char * const filename) {
     while (config) {
       sp_disabled_function *config_node = (sp_disabled_function*)(config->data);
       if (true == is_regexp_matching(config_node->regexp, filename)) {
-        if (true == config_node->simulation) {
-          sp_log_msg("disabled_functions", SP_LOG_NOTICE,
-           "The call to the function 'include' has been disabled because the file %s matched a rule.", filename);
-        } else {
-          sp_log_msg("disabled_functions", SP_LOG_DROP,
-           "The call to the function 'include' has been disabled because the file %s matched a rule.", filename);
+        sp_log_disable("include", "inclusion path", filename, config_node);
+        if (false == config_node->simulation) {
           sp_terminate();
         }
       }
@@ -87,7 +83,7 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
       if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
         terminate_if_writable(filename);
       }
-      construct_regexp_handler(filename);
+      construct_include_handler(filename);
   }
 
 end:
