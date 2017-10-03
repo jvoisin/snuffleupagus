@@ -28,17 +28,24 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   }
 }
 
-static void check_inclusion_regexp(const char * const filename) {
-  if (SNUFFLEUPAGUS_G(config).config_regexp_inclusion->regexp_inclusion) {
-    const sp_node_t* config = SNUFFLEUPAGUS_G(config).config_regexp_inclusion->regexp_inclusion;
+static void construct_regexp_handler(const char * const filename) {
+  if (SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include) {
+    const sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
     if (!config || !config->data) {
       return;
     }
+
     while (config) {
-      pcre *config_node = (pcre*)(config->data);
-      if (false == is_regexp_matching(config_node, filename)) {
-        sp_log_msg("include", SP_LOG_DROP, "Inclusion of a forbidden file (%s).", filename);
-        sp_terminate();
+      sp_disabled_function *config_node = (sp_disabled_function*)(config->data);
+      if (true == is_regexp_matching(config_node->regexp, filename)) {
+        if (true == config_node->simulation) {
+          sp_log_msg("disabled_functions", SP_LOG_NOTICE,
+           "The call to the function 'include' has been disabled because the file %s matched a rule.", filename);
+        } else {
+          sp_log_msg("disabled_functions", SP_LOG_DROP,
+           "The call to the function 'include' has been disabled because the file %s matched a rule.", filename);
+          sp_terminate();
+        }
       }
       config = config->next;
     }
@@ -68,17 +75,22 @@ execute:
   orig_execute_ex(execute_data);
 }
 
-static int sp_stream_open(const char *filename,
-                                   zend_file_handle *handle) {
-  const zend_execute_data *data = EG(current_execute_data);
+static int sp_stream_open(const char *filename, zend_file_handle *handle) {
+  zend_execute_data const * const data = EG(current_execute_data);
 
-  if ((NULL != data) && (NULL != data->opline) && 
-      (ZEND_INCLUDE_OR_EVAL == data->opline->opcode)) {
-    if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
-      terminate_if_writable(filename);
-    }
-    check_inclusion_regexp(filename);
+  if ((NULL == data) || (NULL == data->opline)) {
+    goto end;
   }
+
+  switch(data->opline->opcode) {
+    case ZEND_INCLUDE_OR_EVAL:
+      if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
+        terminate_if_writable(filename);
+      }
+      construct_regexp_handler(filename);
+  }
+
+end:
   return orig_zend_stream_open(filename, handle);
 }
 
