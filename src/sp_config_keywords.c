@@ -15,6 +15,15 @@ static int get_construct_type(sp_disabled_function const *const df) {
       .type = ZEND_ECHO,
       .keys = {"echo", NULL}
     },{
+      .type = ZEND_NEW,
+      .keys = {"new", NULL}
+    },{
+      .type = ZEND_EXIT,
+      .keys = {"exit", NULL}
+    },{
+      .type = ZEND_STRLEN,
+      .keys = {"strlen", NULL}
+    },{
       .type = 0,
       .keys = {NULL}
    }
