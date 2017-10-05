@@ -6,6 +6,7 @@ we're using the one from PHP.*/
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 void randombytes(unsigned char *x, unsigned long long xlen) {
+  assert(SIZE_MAX >= ULLONG_MAX);  // max(size_t) > max(ull) ?
   php_random_bytes(x, xlen, 1);
 }
 
