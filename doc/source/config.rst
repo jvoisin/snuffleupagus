@@ -2,33 +2,33 @@ Configuration
 =============
 
 Since PHP *ini-like* configuration model isn't flexible enough,
-Snuffleupagus is using its own format, in the file specified by
+Snuffleupagus is using its own format in the file specified by
 the directive ``sp.configuration_file`` (in your ``php.ini`` file),
 like ``sp.configuration_file=/etc/php/conf.d/snuffleupagus.ini``.
 
-Options are chainable by using dots (``.``), and string parameters
+Options are chainable by using dots (``.``) and string parameters
 **must** be quoted, while booleans and integers aren't.
 
 Comments are prefixed either with ``#``, or ``;``.
 
-Some rules applies in a specific ``function`` (context), on a specific ``variable``
-(data), like ``disable_functions``, others can only be enabled/disabled, like
+Some rules apply in a specific ``function`` (context) on a specific ``variable``
+(data), like ``disable_functions``. Others can only be enabled/disabled, like
 ``harden_random``.
 
 
 .. warning::
 
-  Careful, a wrongly configured Snuffleupagus might break your website.
-  It's up to you to understand its :doc:`features <features>`,
+  If you configure Snuffleupagus incorrectly, you could break your website.
+  It's up to you to understand the :doc:`features <features>`,
   read the present documentation about how to configure them,
-  evaluate your threat model, and write your configuration file accordingly.
+  evaluate your threat model and write your configuration file accordingly.
 
 Most of the features can be used in ``simulation`` mode by appending the
 ``.simulation()`` option to them (eg. ``sp.readonly_exec.simulation()enable();``) to see
-if they might break your website. The simulation mode won't block the request,
+whether or not they could break your website. The simulation mode won't block the request,
 but will write a warning in the log.
 
-The rules are evaluated in the order that they are written, and the **first** one
+The rules are evaluated in the order that they are written, the **first** one
 to match will terminate the evaluation (except for rules in simulation mode).
 
 Bugclass-killer features
@@ -70,12 +70,12 @@ It can either be ``enabled`` or ``disabled``.
 global
 ^^^^^^
 
-This configuration variable contain parameters that are used by other ones:
+This configuration variable contains parameters that are used by multiple functions:
 
 - ``secret_key``: A secret key used by various cryptographic features,
   like `cookies protection <features.html#session-cookie-stealing-via-xss>`__ or `unserialize protection <features.html#unserialize-related-magic>`__,
-  so do make sure that it's random and long enough.
-  You can generate it with something like this: ``head -c 256 /dev/urandom | tr -dc 'a-zA-Z0-9'``.
+  please ensure the length and complexity is sufficient.
+  You can generate it with functions such as: ``head -c 256 /dev/urandom | tr -dc 'a-zA-Z0-9'``.
 
 ::
 
@@ -86,10 +86,10 @@ unserialize_hmac
  * `default: disabled`
  * `more <features.html#unserialize-related-magic>`__
  
-``unserialize_hmac`` will add integrity check to ``unserialize`` calls, preventing
+``unserialize_hmac`` will add an integrity check to ``unserialize`` calls, preventing
 abritrary code execution in their context.
 
-It can either be ``enabled`` or ``disabled``, and used in ``simulation`` mode.
+It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` mode.
 
 ::
 
@@ -120,15 +120,15 @@ cookie_encryption
    
 .. warning::
 
-  To use this feature, you **must** set the :ref:`global.secret_key <config_global>` and
+  To use this feature, you **must** set the :ref:`global.secret_key <config_global>`
   and the :ref:`global.cookie_env_var <config_global>` variables.
-  This design decision prevents attacker from
+  This design decision prevents an attacker from
   `trivially bruteforcing <https://www.idontplaydarts.com/2011/11/decrypting-suhosin-sessions-and-cookies/>`_
   or re-using session cookies.
 
 ``cookie_secure`` will activate transparent encryption of specific cookies.
 
-It can either be ``enabled`` or ``disabled``, and used in ``simulation`` mode.
+It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` mode.
 
 ::
 
@@ -138,22 +138,22 @@ It can either be ``enabled`` or ``disabled``, and used in ``simulation`` mode.
 Choosing the proper environment variable
 """"""""""""""""""""""""""""""""""""""""
 
-It's up to you to chose a meaningul environment variable to derive the key from.
+It's up to you to choose a meaningful environment variable to derive the key from.
 Suhosin `is using <https://www.suhosin.org/stories/configuration.html#suhosin-session-cryptraddr>`_
 the ``REMOTE_ADDR`` one, tying the validity of the cookie to the IP address of the user;
 unfortunately, nowadays, people are `roaming <https://en.wikipedia.org/wiki/Roaming>`_ a lot on their smartphone,
-hopping from WiFi to 4G, …
+hopping from WiFi to 4G.
 
 This is why we recommend, if possible, to use the *extended master secret*
 from TLS connections (`RFC7627 <https://tools.ietf.org/html/rfc7627>`_)
-instead, to make the valitity of the cookie TLS-dependent, by using the ``SSL_SESSION_ID`` variable.
+instead. The will make the validity of the cookie TLS-dependent, by using the ``SSL_SESSION_ID`` variable.
 
 - In `Apache <https://httpd.apache.org/docs/current/mod/mod_ssl.html>`_,
-  it possible to enable by adding ``SSLOptions StdEnvVars`` in your Apache2 configuration.
+  it is possible to enable by adding ``SSLOptions StdEnvVars`` in your Apache2 configuration.
 - In `nginx <https://nginx.org/en/docs/http/ngx_http_ssl_module.html#variables>`_,
   you have to use ``fastcgi_param SSL_SESSION_ID $ssl_session_id if_not_empty;``.
 
-If you're not using TLS (you should.), you can always use the ``REMOTE_ADDR`` one,
+If you aren't using TLS (you should be), you can always use the ``REMOTE_ADDR`` one,
 or ``X-Real-IP`` if you're behind a reverse proxy.
 
 readonly_exec
@@ -162,7 +162,7 @@ readonly_exec
 
 ``readonly_exec`` will prevent the execution of writable PHP files.
 
-It can either be ``enabled`` or ``disabled``, and used in ``simulation`` mode.
+It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` mode.
 
 ::
 
@@ -174,7 +174,7 @@ upload_validation
  * `more <features.html#remote-code-execution-via-file-upload>`__
 
 ``upload_validation`` will call a given script upon a file upload, with the path 
-to the file being uploaded as argument, and various information about it in the environment:
+to the file being uploaded as argument and various information about it in the environment:
 
 * ``SP_FILENAME``: the name of the uploaded file
 * ``SP_FILESIZE``: the size of the file being uploaded
@@ -185,10 +185,10 @@ This feature can be used, for example, to check if an uploaded file contains php
 code, with something like `vld <https://derickrethans.nl/projects.html#vld>`_
 (``php -d vld.execute=0 -d vld.active=1 -d extension=vld.so yourfile.php``).
 
-The upload will be **allowed** if the script return the value ``0``. Every other
+The upload will be **allowed** if the script returns the value ``0``. Every other
 value will prevent the file from being uploaded.
 
-It can either be ``enabled`` or ``disabled``, and used in ``simulation`` mode.
+It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` mode.
 
 ::
 
@@ -210,8 +210,8 @@ disable_xxe
 Virtual-patching
 ----------------
 
-Snuffleupagus provides virtual-patching, via the ``disable_functions`` directive, allowing you to stop or control dangerous behaviours.
-Admitting you have a call to ``system()`` that lacks proper user-input validation, thus leading to an **RCE**, this might be the right tool.
+Snuffleupagus provides virtual-patching via the ``disable_functions`` directive, allowing you to stop or control dangerous behaviours.
+In the situation where you have a call to ``system()`` that lacks proper user-input validation, this could cause issues as it would lead to an **RCE**. The virtual-patching would allow this to be prevented.
 
 ::
    
@@ -219,7 +219,7 @@ Admitting you have a call to ``system()`` that lacks proper user-input validatio
   sp.disable_functions.function("system").filename("id.php").param("cmd").value("id").allow();
   sp.disable_functions.function("system").filename("id.php").drop()
 
-Of course, this is a trivial example, and a lot can be achieved with this feature, as you will see below.
+Of course, this is a trivial example,  a lot can be achieved with this feature, as you will see below.
 
 
 Filters
@@ -238,7 +238,7 @@ Filters
 - ``ret(value)``: match on the function's return ``value``
 - ``ret_r(regexp)``: match with a ``regexp`` on the function's return
 - ``ret_type(type_name)``: match on the ``type_name`` of the function's return value
-- ``value(value)``: match on a litteral ``value``
+- ``value(value)``: match on a literal ``value``
 - ``value_r(regexp)``: match on a value matching the ``regexp``
 - ``var(name)``: match on a **local variable** ``name``
 
@@ -267,22 +267,22 @@ Details
 
 The ``function`` filter is able to do various dereferencing:
 
-- ``function("AwesomeClass::my_method")`` will match in the method ``my_method`` in the class ``AwesomeClass``
-- ``function("AwesomeNamespace\\my_function")`` will match in the function ``my_function`` in the namespace ``AwesomeNamespace``
+- ``function("AwesomeClass::my_method")`` will match the method ``my_method`` in the class ``AwesomeClass``
+- ``function("AwesomeNamespace\\my_function")`` will match the function ``my_function`` in the namespace ``AwesomeNamespace``
 
 The ``param`` filter is also able to do some dereferencing:
 
-- ``param(foo[bar])`` will get match on the value corresponding to the ``bar`` key in the hashtable ``foo``.
+- ``param(foo[bar])`` will get a match on the value corresponding to the ``bar`` key in the hashtable ``foo``.
   Remember that in PHP, almost every data structure is a hashtable. You can of course nest this like
   ``param(foo[bar][baz][batman])``.
-- The ``var`` filter will walk the calltrace until it finds the variable's name, or the end of it,
-  allowing to match on global variables: ``.var("_GET[param]")`` will match on the GET parameter ``param``.
+- The ``var`` filter will walk the calltrace until it finds the variable name, or the end of the calltrace,
+  allowing the filter to match global variables: ``.var("_GET[param]")`` will match on the GET parameter ``param``.
 
-For clarity's sake, the presence of the ``allow`` or ``drop`` action is **mandatory**.
+For clarity, the presence of the ``allow`` or ``drop`` action is **mandatory**.
 
 .. warning::
 
-  When you're writing rules, please do keep in mind that the **order matters**.
+  When you're writing rules, please do keep in mind that **the order matters**.
   For example, if you're denying a call to ``system()`` and then allowing it in a
   more narrowed way later, the call will be denied,
   because it'll match the deny first.
