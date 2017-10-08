@@ -28,9 +28,9 @@ Quickstart
     make
     make install
 
-This should install ``snuffleupagus.so`` file in your extension directory.
-The final step is adding a load directive to ``php.ini``,
-and to specify the location of its :doc:`configuration file <config>`:
+This should install the ``snuffleupagus.so`` file in your extension directory.
+The final step is adding a load directive to ``php.ini``
+and to specify the location of the :doc:`configuration file <config>`:
 
 ::
 

@@ -8,19 +8,19 @@ What is Snuffleupagus?
 """"""""""""""""""""""
 
 Snuffleupagus is a `PHP7+ <http://php.net/manual/en/migration70.php>`_
-module designed to drastically raising the cost of attacks against website,
-by killing entire bug classes, and also providing a powerful virtual-patching system,
-allowing administrator to fix specific vulnerabilities without having to touch the PHP code.
+module designed to drastically raise the cost of attacks against websites. This is achieved
+by killing entire bug classes and providing a powerful virtual-patching system,
+allowing the administrator to fix specific vulnerabilities without having to touch the PHP code.
 
 
-Where does the name *Snuffeupagus* comes from?
+Where does the name *Snuffeupagus* come from?
 """"""""""""""""""""""""""""""""""""""""""""""
 
-  Aloysius Snuffleupagus, more commonly known as Mr. Snuffleupagus, Snuffleupagus
+  Aloysius Snuffleupagus, more commonly known as Mr. Snuffleupagus,
   or Snuffy for short, is one of the characters on Sesame Street,
   the educational television program for young children.
 
-  He was created as a woolly mammoth, without tusks or (visible) ears,
+  He was created as a woolly mammoth without tusks or (visible) ears,
   and has a long thick pointed tail, similar in shape to that of a dinosaur
   or other reptile. He has long thick brown hair and a trunk, or "snuffle",
   that drags along the ground. He is Big Bird's best friend and
@@ -43,9 +43,9 @@ We're working for `NBS System <https://nbs-system.com/en/>`__,
 a web hosting company (meaning that we're dealing with PHP code all day long),
 with a strong focus on security. We do have hardening
 (`kernel <https://grsecurity.net/>`_, `WAF <https://naxsi.org>`_,
-`IDS <https://en.wikipedia.org/wiki/Intrusion_detection_system>`_, …)
+`IDS <https://en.wikipedia.org/wiki/Intrusion_detection_system>`_, etc)
 below the web stack, but most of the time, when a website is compromised,
-it's either to send ads, spam, deface it, steal data, …
+it's can be to send ads, spam, deface it, steal data etc.
 This is why we need to harden the website itself too, but we can't touch its
 source code.
 
@@ -62,7 +62,7 @@ We're huge fans of `Suhosin <https://suhosin.org>`_, unfortunately:
 We're using the `disable_function <https://secure.php.net/manual/en/ini.core.php#ini.disable-functions>`_
 directive, but unfortunately, it doesn't provide enough usable granularity (guess how many CMS are using
 the `system <https://secure.php.net/manual/en/function.system.php#refsect1-function.system-notes>`_
-function to perform various mandatory maintenance tasks…).
+function to perform various mandatory maintenance tasks).
 
 This is why we decided to write our own hardening module, in the spirit of Suhosin,
 via virtual-patching support, and other cool new features.
@@ -70,7 +70,7 @@ via virtual-patching support, and other cool new features.
 What license is Snuffleupagus under and why?
 """"""""""""""""""""""""""""""""""""""""""""
 
-Snuffleupagus is licensed under the `LGPL <https://www.gnu.org/copyleft/lesser.html>`_,
+Snuffleupagus is licensed under the `LGPL <https://www.gnu.org/copyleft/lesser.html>`_
 and is developed by the fine people from `NBS System <https://nbs-system.com/>`__.
 
 We chose the LGPL because we don't care that much how you're using Snuffleupagus,
@@ -92,22 +92,22 @@ it becomes compromised.
 How mature is this project?
 """""""""""""""""""""""""""
 
-This project was floating around since early 2016, and we did the first commit
+This project was floating around since early 2016 and we did the first commit
 the 28ᵗʰ of December of the same year. We're currently in an alpha phase,
-finding and fixing as much bugs as possible before the beta.
+finding and fixing as many bugs as possible before the beta.
 
 Are you saying that PHP isn't secure?
 """""""""""""""""""""""""""""""""""""
 
 We don't like PHP's approach of security; namely (sometimes) adding warnings
 in the documentation and trusting the developer to not do any mistake,
-instead of focusing on the root cause, and killing the
-bug class one for all.
+instead of focusing on the root cause and killing the
+bug class once and for all.
 
 Moreover, it seems that the current attitude toward security in the PHP world
 is to `blame the user <https://externals.io/message/100147>`_ instead of acknowledging
 issues, as stated in their `documentation <https://wiki.php.net/security#not_a_security_issue>`_.
-We do think that an security issue that "requires the use of code or settings known to be insecure"
+We do think that a security issue that "requires the use of code or settings known to be insecure"
 is still a security issue, and should be treated as such.
 
 We don't have the pretention to state that Snuffleupagus will magically solve
@@ -133,12 +133,12 @@ Yes.
 
 Some options won't break anything, like :ref:`harden-rand <harden-rand-feature>`,
 but some like :ref:`global_strict <global-strict-feature>`
-or overly-restrictives :ref:`virtual-patching<virtual-patching-feature>`
+or overly-restrictive :ref:`virtual-patching<virtual-patching-feature>`
 rules might pretty well break your website.
 It's up to you to configure Snuffleupaggus accordingly to your needs.
 
 You can also enable the ``simulation`` mode on features that you're not sure about,
-to see what would snuffleupagus do to your application, before activating them for good.
+to see what snuffleupagus would do to your application, before activating them for good.
 
 How can I find out the problem when my application breaks?
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""
