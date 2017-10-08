@@ -11,9 +11,11 @@ $functions_blacklist = ['shell_exec', 'exec', 'passthru', 'php_uname', 'popen',
 	'proc_terminate', 'proc_open', 'proc_get_status', 'dl', 'pnctl_exec',
     'pnctl_fork', 'assert', 'system'];
 
-$extensions = ['php', 'php7', 'php5'];
+$extensions = ['php', 'php7', 'php5', 'inc'];
 
 $path = realpath($argv[1]);
+
+$output = Array();
 
 $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path));
 foreach($objects as $name => $object){
@@ -33,11 +35,14 @@ foreach($objects as $name => $object){
 			if ('' === $hash) {
 				$hash = hash('sha256', $file_content);
 			}
-			echo 'sp.disable_function.function("' . $token[1] . '").filename("' . $name . '").hash("' . $hash . '").allow();' . "\n";
+			$output[] = 'sp.disable_function.function("' . $token[1] . '").filename("' . $name . '").hash("' . $hash . '").allow();' . "\n";
 		}
 	}
 }
 foreach($functions_blacklist as $fun) {
-	echo 'sp.disable_function.function("' . $fun . '").drop();' . "\n";
-
+	$output[] = 'sp.disable_function.function("' . $fun . '").drop();' . "\n";
 }
+
+foreach (array_unique($output) as $line) {
+ 	echo $line;
+ }
