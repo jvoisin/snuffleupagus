@@ -105,8 +105,9 @@ typedef struct {
 } sp_config_disabled_functions;
 
 typedef struct {
-  sp_node_t *regexp_inclusion;  // list of regexp for inclusion
-} sp_config_regexp_inclusion;
+  sp_node_t *construct_include; // list of rules for `(include|require)_(once)?`
+  sp_node_t *construct_echo;
+} sp_config_disabled_constructs;
 
 typedef struct {
   char *script;
@@ -126,7 +127,7 @@ typedef struct {
   sp_config_auto_cookie_secure *config_auto_cookie_secure;
   sp_config_global_strict *config_global_strict;
   sp_config_disable_xxe *config_disable_xxe;
-  sp_config_regexp_inclusion *config_regexp_inclusion;
+  sp_config_disabled_constructs *config_disabled_constructs;
 } sp_config;
 
 typedef struct {

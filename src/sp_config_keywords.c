@@ -2,6 +2,51 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
+
+static int get_construct_type(sp_disabled_function const *const df) {
+  const struct {
+    unsigned int type;
+    char *keys[5];
+  } mapping[] = {
+    {
+      .type = ZEND_INCLUDE_OR_EVAL,
+      .keys = {"include", "include_once", "require", "require_once", NULL}
+    },{
+      .type = ZEND_ECHO,
+      .keys = {"echo", NULL}
+    },{
+      .type = ZEND_NEW,
+      .keys = {"new", NULL}
+    },{
+      .type = ZEND_EXIT,
+      .keys = {"exit", NULL}
+    },{
+      .type = ZEND_STRLEN,
+      .keys = {"strlen", NULL}
+    },{
+      .type = 0,
+      .keys = {NULL}
+   }
+  };
+
+  // FIXME: This can be optimized
+  // FIXME the ->function and r_fonction tests are _wrong_
+  for (size_t i=0; 0 != mapping[i].type; i++) {
+    for (size_t j=0; NULL != mapping[i].keys[j]; j++) {
+      if (df->function) {
+        if (0 == strcmp(df->function, mapping[i].keys[j])) {
+          return mapping[i].type;
+        }
+      } else if (df->r_function) {
+        if (true == is_regexp_matching(df->r_function, mapping[i].keys[j])) {
+          return mapping[i].type;
+        } 
+      }
+    }
+  }
+  return -1;
+}
+
 static int parse_enable(char *line, bool * restrict retval, bool * restrict simulation) {
   bool enable = false, disable = false;
   sp_config_functions sp_config_funcs[] = {
@@ -207,22 +252,16 @@ int parse_disabled_functions(char *line) {
     df->var_is_array = 1;
   }
 
-  bool match = false;
-  const char *key[4] = {"include", "include_once", "require", "require_once"};
-  for (size_t i = 0; i < 4; i++) {
-    if (df->r_function && true == is_regexp_matching(df->r_function, key[i])) {
-      match = true;
+  switch (get_construct_type(df)) {
+    case ZEND_INCLUDE_OR_EVAL:
+      sp_list_insert(SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include, df);
+      return ret;
+    case ZEND_ECHO:
+    default:
       break;
-    } else if (df->function && 0 == strcmp(df->function, key[i])) {
-      match = true;
-      break;
-    }
   }
-  if (true == match && df->regexp) {
-    sp_list_insert(
-        SNUFFLEUPAGUS_G(config).config_regexp_inclusion->regexp_inclusion,
-        df->regexp);
-  } else if (df->ret || df->r_ret || df->ret_type) {
+
+  if (df->ret || df->r_ret || df->ret_type) {
     sp_list_insert(
         SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions,
         df);
