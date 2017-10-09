@@ -37,3 +37,4 @@ src/Makefile.objects
 src/missing
 src/mkinstalldirs
 src/run-tests.php
+doc/build/

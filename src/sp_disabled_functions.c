@@ -31,6 +31,35 @@ static zend_always_inline char* get_complete_function_path(
   return complete_path_function;
 }
 
+static bool is_functions_list_matching(zend_execute_data *execute_data, sp_node_t *functions_list) {
+  zend_execute_data *orig_execute_data, *current;
+  orig_execute_data = current = execute_data;
+  sp_node_t *it = functions_list;
+  
+  while (current) {
+    if (it == NULL) { // every function in the list matched, we've got a match!
+      return true;
+    }
+
+    EG(current_execute_data) = current;
+
+    char *complete_path_function = get_complete_function_path(current);
+    int match = strcmp(((char*)it->data), complete_path_function);
+    efree(complete_path_function);
+
+    if (0 == match) {
+      it = it->next;
+      current = current->prev_execute_data;
+    } else {
+      EG(current_execute_data) = orig_execute_data;
+      return false;
+    }
+  }
+
+  EG(current_execute_data) = orig_execute_data;
+  return false;
+}
+
 static bool is_local_var_matching(zend_execute_data *execute_data, const sp_disabled_function *const config_node) {
   zend_execute_data *orig_execute_data = execute_data;
   
@@ -100,7 +129,14 @@ bool should_disable(zend_execute_data* execute_data) {
       goto next;
     }
 
-    if (config_node->function) { /* Litteral match against the function name. */
+    /* The order matters, since when we have `config_node->functions_list`,
+    we also do have `config_node->function` */
+    if (config_node->functions_list) {
+      if (false ==
+          is_functions_list_matching(execute_data, config_node->functions_list)) {
+        goto next;
+      }
+    } else if (config_node->function) { /* Litteral match against the function name. */
       if (0 != strcmp(config_node->function, complete_path_function)) {
         goto next;
       }
@@ -110,6 +146,7 @@ bool should_disable(zend_execute_data* execute_data) {
         goto next;
       }
     }
+
     if (config_node->var) {
       if (false == is_local_var_matching(execute_data, config_node)) {
         goto next;
@@ -207,8 +244,13 @@ bool should_disable(zend_execute_data* execute_data) {
       goto allow;
     }
 
-    sp_log_disable(complete_path_function, arg_name, arg_value_str,
-                   config_node);
+    if (config_node->functions_list) {
+      sp_log_disable(config_node->function, arg_name, arg_value_str,
+        config_node);
+    } else {
+      sp_log_disable(complete_path_function, arg_name, arg_value_str,
+        config_node);
+    }
     if (true == config_node->simulation) {
       goto next;
     } else {  // We've got a match, the function won't be executed

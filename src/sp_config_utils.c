@@ -167,3 +167,23 @@ int array_to_list(char **name_ptr, sp_node_t **keys) {
   *name_ptr = pestrdup(tmp, 1);
   return in_key;
 }
+
+
+zend_always_inline sp_node_t *parse_functions_list(char *value) {
+  const char *sep = ">";
+
+  if (NULL == strchr(value, sep[0])) {
+    return NULL;
+  }
+
+  sp_node_t *list = sp_new_list();
+  char* tmp = strdup(value);
+  char* function_name;
+  char *next_token = tmp;
+  while ((function_name = strtok_r(NULL, sep, &next_token))) {
+    sp_list_prepend(list, strdup(function_name));
+  }
+  free(tmp);
+
+  return list;
+}

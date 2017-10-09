@@ -35,3 +35,21 @@ void sp_list_insert(sp_node_t *list, void *data) {
     list->next = new;
   }
 }
+
+void sp_list_prepend(sp_node_t *list, void *data) {
+  if (list->head == NULL) {
+    list->data = data;
+    list->next = NULL;
+    list->head = list;
+  } else {
+    sp_node_t *new = pecalloc(sizeof(*new), 1, 1);
+
+    new->next = list->next;
+    list->next = new;
+
+    new->head = list;
+
+    new->data = list->data;
+    list->data = data;
+  }
+}
