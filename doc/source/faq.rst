@@ -45,7 +45,7 @@ with a strong focus on security. We do have hardening
 (`kernel <https://grsecurity.net/>`_, `WAF <https://naxsi.org>`_,
 `IDS <https://en.wikipedia.org/wiki/Intrusion_detection_system>`_, etc)
 below the web stack, but most of the time, when a website is compromised,
-it's can be to send ads, spam, deface it, steal data etc.
+it can be to send ads, spam, deface it, steal data etc.
 This is why we need to harden the website itself too, but we can't touch its
 source code.
 
@@ -60,7 +60,7 @@ We're huge fans of `Suhosin <https://suhosin.org>`_, unfortunately:
 - it has some shortcomings by design
 
 We're using the `disable_function <https://secure.php.net/manual/en/ini.core.php#ini.disable-functions>`_
-directive, but unfortunately, it doesn't provide enough usable granularity (guess how many CMS are using
+directive, but unfortunately, it doesn't provide enough usable granularity (guess how many CMSs are using
 the `system <https://secure.php.net/manual/en/function.system.php#refsect1-function.system-notes>`_
 function to perform various mandatory maintenance tasks).
 
@@ -92,7 +92,7 @@ it becomes compromised.
 How mature is this project?
 """""""""""""""""""""""""""
 
-This project was floating around since early 2016 and we did the first commit
+This project has been floating around since early 2016 and we did the first commit
 the 28ᵗʰ of December of the same year. We're currently in an alpha phase,
 finding and fixing as many bugs as possible before the beta.
 
@@ -113,13 +113,13 @@ is still a security issue, and should be treated as such.
 We don't have the pretention to state that Snuffleupagus will magically solve
 all your security issues, but we believe that it might definitely help.
 
-Why should you send us bugs, security issues and patches?
+Why should I send you bugs, security issues and patches?
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Snuffleupagus is an open-source security software, by reporting (or fixing)
 bugs, or implementing new features, you are helping others to protect themselves.
 
-We're also firm believer in the *Beerbounty* system:
-we are happy to offer you beers when/if we ever met if you helped the project in
+We're also firm believers in the *Beerbounty* system:
+we are happy to offer you beers when/if we ever meet if you helped the project in
 any way. If you don't like beer, we're sure that we'll find something else,
 don't worry.
 
@@ -135,7 +135,7 @@ Some options won't break anything, like :ref:`harden-rand <harden-rand-feature>`
 but some like :ref:`global_strict <global-strict-feature>`
 or overly-restrictive :ref:`virtual-patching<virtual-patching-feature>`
 rules might pretty well break your website.
-It's up to you to configure Snuffleupaggus accordingly to your needs.
+It's up to you to configure Snuffleupagus accordingly to your needs.
 
 You can also enable the ``simulation`` mode on features that you're not sure about,
 to see what snuffleupagus would do to your application, before activating them for good.
@@ -222,7 +222,7 @@ I found a bug. How can I report it?
 """""""""""""""""""""""""""""""""""
 We do have an issue tracker on `Github <https://github.com/nbs-system/snuffleupagus/issues>`_.
 Please make sure to include as much information as possible when reporting your issue,
-such as your operating system, your version of PHP 7, your version of snuffleupagus,
+such as your operating system, your version of PHP 7, your version of Snuffleupagus,
 your logs, the problematic php code, the request, a brief description, … long story short,
 give us everything that you can.
 
