@@ -9,7 +9,6 @@
 #endif
 
 static PHP_INI_MH(OnUpdateConfiguration);
-static inline int zend_auto_start(zend_extension *extension);
 static inline void sp_op_array_handler(zend_op_array *op);
 
 ZEND_EXTENSION();
