@@ -13,7 +13,7 @@ static int (*orig_zend_stream_open)(const char *filename,
 ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   if (0 == access(filename, W_OK)) {
     if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->simulation) {
-      sp_log_msg("readonly_exec", SP_LOG_NOTICE,
+      sp_log_msg("readonly_exec", SP_LOG_SIMULATION,
         "Attempted execution of a writable file (%s).", filename);
     } else {
       sp_log_msg("readonly_exec", SP_LOG_DROP,

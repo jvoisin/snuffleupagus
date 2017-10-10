@@ -32,7 +32,7 @@ include "$dir/writable_file.txt";
 include "$dir/non_writable_file.txt";
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][readonly_exec][notice] Attempted execution of a writable file (%a/writable_file.txt).
+[snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/writable_file.txt).
 Code execution within a writable file.
 Code execution within a non-writable file.
 --CLEAN--

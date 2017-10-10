@@ -13,5 +13,5 @@ var_dump(unserialize('s:1:"a";alyualskdufyhalkdjsfhalkjdhflaksjdfhlkasdhflkahdaw
 ?>
 --EXPECT--
 s:1:"a";650609b417904d0d9bbf1fc44a975d13ecdf6b02b715c1a06271fb3b673f25b1string(1) "a"
-[snuffleupagus][0.0.0.0][unserialize][notice] Invalid HMAC for s:1:"a";alyualskdufyhalkdjsfh
+[snuffleupagus][0.0.0.0][unserialize][simulation] Invalid HMAC for s:1:"a";alyualskdufyhalkdjsfh
 string(1) "a"

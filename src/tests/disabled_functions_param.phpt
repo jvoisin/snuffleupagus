@@ -20,5 +20,5 @@ win
 int(15)
 [snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'shell_exec' in %a/disabled_functions_param.php:5 has been disabled, because its argument 'cmd' content (id) matched the rule '3'.
 42
-[snuffleupagus][0.0.0.0][disabled_function][notice] The call to the function 'strcmp' in %a/tests/disabled_functions_param.php:7 has been disabled, because its argument 'str1' content (bla) matched the rule '5'.
-[snuffleupagus][0.0.0.0][disabled_function][notice] The call to the function 'strncmp' in %a/tests/disabled_functions_param.php:8 has been disabled, because its argument 'str1' content (bla) matched a rule.
+[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'strcmp' in %a/tests/disabled_functions_param.php:7 has been disabled, because its argument 'str1' content (bla) matched the rule '5'.
+[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'strncmp' in %a/tests/disabled_functions_param.php:8 has been disabled, because its argument 'str1' content (bla) matched a rule.

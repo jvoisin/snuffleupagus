@@ -14,7 +14,7 @@ echo sTRPOs("pouet", "o");
 ?>
 --EXPECTF--
 [snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'system' in %a/tests/disabled_functions_upper.php:%d has been disabled.
-[snuffleupagus][0.0.0.0][disabled_function][notice] The call to the function 'printf' in %a/tests/disabled_functions_upper.php:%d has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'printf' in %a/tests/disabled_functions_upper.php:%d has been disabled.
 printf in simulation mode
 print in disabled mode
 [snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'var_dump' in %a/tests/disabled_functions_upper.php:%d has been disabled.

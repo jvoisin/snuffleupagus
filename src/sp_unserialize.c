@@ -88,7 +88,7 @@ PHP_FUNCTION(sp_unserialize) {
     }
   } else {
     if ( true == SNUFFLEUPAGUS_G(config).config_unserialize->simulation) {
-      sp_log_msg("unserialize", SP_LOG_NOTICE, "Invalid HMAC for %s", serialized_str);
+      sp_log_msg("unserialize", SP_LOG_SIMULATION, "Invalid HMAC for %s", serialized_str);
       if ((orig_handler = zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
                                                "unserialize", 11))) {
         orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);

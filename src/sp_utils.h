@@ -35,7 +35,7 @@
 #define HOOK_FUNCTION_BY_REGEXP(regexp, hook_table, new_function, execution) \
   hook_regexp(regexp, SNUFFLEUPAGUS_G(hook_table), new_function, execution)
 
-#define SP_LOG_NOTICE "notice"
+#define SP_LOG_SIMULATION "simulation"
 #define SP_LOG_DROP "drop"
 #define SP_LOG_DEBUG "debug"
 #define SP_LOG_ERROR "error"
