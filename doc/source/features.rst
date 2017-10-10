@@ -25,7 +25,9 @@ Unfortunately, passing user-controlled parameters to it often leads to arbitrary
 We're mitigating it by filtering the ``$``, ``|``, ``;``, `````, ``\n`` and ``&`` chars in our
 default configuration, making it a lot harder for an attacker to inject arbitrary commands.
 
-This family of vulnerabilities lead to various CVE entries, like:
+
+Examples of related vulnerabilities
+"""""""""""""""""""""""""""""""""""
 
 - `CVE-2017-7981 <https://tuleap.net/plugins/tracker/?aid=10159>`_: Authenticated remote code execution on Tuleap
 - `CVE-2014-4688 <https://www.pfsense.org/security/advisories/pfSense-SA-14_10.webgui.asc>`_: Authenticated remote code execution on pfSense
@@ -50,7 +52,9 @@ often meaning an arbitrary code execution.
 
 We're killing it by preventing any extra options in additional_parameters.
 
-This family of vulnerabilities lead to various CVE, like:
+
+Examples of related vulnerabilities
+"""""""""""""""""""""""""""""""""""
 
 - `CVE-2017-7692 <https://legalhackers.com/advisories/SquirrelMail-Exploit-Remote-Code-Exec-CVE-2017-7692-Vuln.html>`_: Authenticated remote code execution in SquirrelMail
 - `CVE-2016-10074 <https://legalhackers.com/advisories/SwiftMailer-Exploit-Remote-Code-Exec-CVE-2016-10074-Vuln.html>`_: remote code execution in SwiftMailer
@@ -100,6 +104,16 @@ inside the script to ensure the file doesn't contain any valid PHP code, with so
 
   $ php -d vld.execute=0 -d vld.active=1 -d extension=vld.so $file
 
+
+Examples of related vulnerabilities
+"""""""""""""""""""""""""""""""""""
+
+- `CVE-2017-6090 <https://sysdream.com/news/lab/2017-09-29-cve-2017-6090-phpcollab-2-5-1-arbitrary-file-upload-unauthenticated/>`_: Unauthenticated remote code execution in PhpCollab
+- `EDB-38407 <https://www.exploit-db.com/exploits/38407/>`_: Authenticated remote code execution in GLPI
+- `CVE-2013-5576 <https://developer.joomla.org/security/news/563-20130801-core-unauthorised-uploads>`_: Authenticated remote code execution in Joomla
+- `EDB-19154 <https://www.rapid7.com/db/modules/exploit/multi/http/qdpm_upload_exec>`_: Authenticated remote code execution in qdPM
+
+
 Unserialize-related magic
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -136,7 +150,9 @@ issues related to the complexity of ``unserialize``'s implementation,
 and the amount of control if provides to an attacker, like `CVE-2016-9137, CVE-2016-9138 <https://bugs.php.net/bug.php?id=73147>`_,
 `2016-7124 <https://bugs.php.net/bug.php?id=72663>`_, `CVE-2016-5771 and CVE-2016-5773 <https://www.evonide.com/how-we-broke-php-hacked-pornhub-and-earned-20000-dollar/>`_.
 
-This family of vulnerabilities lead to various CVE, like:
+
+Examples of related vulnerabilities
+"""""""""""""""""""""""""""""""""""
 
 - `CVE-2016-???? <https://www.computest.nl/advisories/CT-2016-1110_Observium.txt>`_: Unauthenticated remote code execution in Observium (leading to remote root)
 - `CVE-2016-5726 <http://seclists.org/oss-sec/2016/q2/521>`_: Unauthenticated remote code execution in Simple Machines Forums
@@ -179,7 +195,9 @@ This is of course addressed as well by the ``harden_rand`` feature.
   Activating this feature will raise an `Error <https://secure.php.net/manual/en/class.error.php>`_
   exception if ``min`` is superior to ``max``, while the default dehaviour is simply to swap them.
 
-This family of vulnerabilities lead to various CVE, like:
+
+Examples of related vulnerabilities
+"""""""""""""""""""""""""""""""""""
 
 - `CVE-2015-5267 <https://moodle.org/mod/forum/discuss.php?d=320291>`_: Unauthenticated accounts takeover in in Moodle
 - `CVE-2014-9624 <https://www.mantisbt.org/bugs/view.php?id=17984>`_: Captcha bypass in MantisBT
@@ -211,7 +229,9 @@ the `libxml_disable_entity_loader <https://secure.php.net/manual/en/function.lib
 function with its parameter set to ``true`` at startup,
 and then *nop'ing* it, so it won't do anything if ever called again.
 
-This family of vulnerabilities lead to various CVE vulnerabilities, like:
+
+Examples of related vulnerabilities
+"""""""""""""""""""""""""""""""""""
 
 - `CVE-2015-5161 <https://legalhackers.com/advisories/eBay-Magento-XXE-Injection-Vulnerability.html>`_: Unauthenticated arbitrary file disclosure on Magento
 - `CVE-2014-8790 <https://github.com/GetSimpleCMS/GetSimpleCMS/issues/944>`_: Unauthenticated remote code execution in GetSimple CMS
