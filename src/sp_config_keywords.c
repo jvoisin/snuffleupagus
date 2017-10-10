@@ -128,13 +128,16 @@ int parse_cookie_encryption(char *line) {
       "on line %zu without having set the `.encryption_key` option in"
       "`sp.global`: please set it first.", sp_line_no);
     return -1;
+  } else if (0 == strlen(name)) {
+    sp_log_err("config", "You must specify a cookie name to encrypt on line "
+      "%zu.", sp_line_no);
+    return -1;
   }
 
-  if (name) {
-    zend_hash_str_add_empty_element(
-        SNUFFLEUPAGUS_G(config).config_cookie_encryption->names, name,
-        strlen(name));
-  }
+  zend_hash_str_add_empty_element(
+      SNUFFLEUPAGUS_G(config).config_cookie_encryption->names, name,
+      strlen(name));
+
   return SUCCESS;
 }
 

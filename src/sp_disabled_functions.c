@@ -15,6 +15,11 @@ ZEND_COLD static zend_always_inline bool is_hash_matching(
 
 static zend_always_inline char* get_complete_function_path(
     zend_execute_data const* const execute_data) {
+  
+  if (!(execute_data->func->common.function_name)) {
+    return NULL;
+  }
+
   char const* class_name;
   char const* const function_name =
       ZSTR_VAL(execute_data->func->common.function_name);
@@ -38,12 +43,16 @@ static bool is_functions_list_matching(zend_execute_data *execute_data, sp_node_
   
   while (current) {
     if (it == NULL) { // every function in the list matched, we've got a match!
+      EG(current_execute_data) = orig_execute_data;
       return true;
     }
 
     EG(current_execute_data) = current;
 
     char *complete_path_function = get_complete_function_path(current);
+    if (!complete_path_function) {
+      goto end;
+    }
     int match = strcmp(((char*)it->data), complete_path_function);
     efree(complete_path_function);
 
@@ -51,11 +60,11 @@ static bool is_functions_list_matching(zend_execute_data *execute_data, sp_node_
       it = it->next;
       current = current->prev_execute_data;
     } else {
-      EG(current_execute_data) = orig_execute_data;
-      return false;
+      goto end;
     }
   }
 
+end:
   EG(current_execute_data) = orig_execute_data;
   return false;
 }
