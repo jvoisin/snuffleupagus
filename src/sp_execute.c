@@ -38,6 +38,9 @@ static void construct_include_handler(const char * const filename) {
     while (config) {
       sp_disabled_function *config_node = (sp_disabled_function*)(config->data);
       if (true == is_regexp_matching(config_node->regexp, filename)) {
+        if (true == config_node->allow) {
+          return;
+        }
         sp_log_disable("include", "inclusion path", filename, config_node);
         if (false == config_node->simulation) {
           sp_terminate();
