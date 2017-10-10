@@ -113,8 +113,10 @@ It can either be ``enabled`` or ``disabled``.
   sp.auto_cookie_secure.disable();
 
 .. _cookie-encryption_config:
+
 cookie_encryption
 ^^^^^^^^^^^^^^^^^
+
  * `default: disabled`
  * `more <features.html#session-cookie-stealing-via-xss>`__
    
