@@ -144,7 +144,9 @@ int parse_cookie_encryption(char *line) {
 int parse_disabled_functions(char *line) {
   int ret = 0;
   bool enable = true, disable = false;
+  char *pos = NULL;
   sp_disabled_function *df = pecalloc(sizeof(*df), 1, 1);
+  df->pos = -1;
 
   sp_config_functions sp_config_funcs_disabled_functions[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
@@ -169,6 +171,7 @@ int parse_disabled_functions(char *line) {
       {parse_regexp, SP_TOKEN_RET_REGEXP, &(df->r_ret)},
       {parse_php_type, SP_TOKEN_RET_TYPE, &(df->ret_type)},
       {parse_str, SP_TOKEN_LOCAL_VAR, &(df->var)},
+      {parse_str, SP_TOKEN_VALUE_ARG_POS, &(pos)},
       {0}};
 
   ret = parse_keywords(sp_config_funcs_disabled_functions, line);
@@ -231,6 +234,10 @@ int parse_disabled_functions(char *line) {
                "rule must either be a `drop` or and `allow` one on line %zu.",
                line, sp_line_no);
     return -1;
+  }
+
+  if (pos) {
+    df->pos = atoi(pos) > 128 ? 128: atoi(pos); // FIXME do the strtol dance
   }
 
   if (df->function) {

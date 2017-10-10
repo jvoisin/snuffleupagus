@@ -77,6 +77,7 @@ typedef struct {
   char *param;
   pcre *r_param;
   sp_php_type param_type;
+  int pos;
 
   char *ret;
   pcre *r_ret;
@@ -183,6 +184,7 @@ typedef struct {
 #define SP_TOKEN_RET_TYPE ".ret_type("
 #define SP_TOKEN_VALUE ".value("
 #define SP_TOKEN_VALUE_REGEXP ".value_r("
+#define SP_TOKEN_VALUE_ARG_POS ".pos("
 
 // cookies encryption
 #define SP_TOKEN_NAME ".cookie("
