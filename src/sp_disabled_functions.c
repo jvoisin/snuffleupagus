@@ -178,11 +178,17 @@ bool should_disable(zend_execute_data* execute_data) {
     }
 
     /* Check if we filter on parameter value*/
-    if (config_node->param || config_node->r_param) {
-      const unsigned int nb_param = execute_data->func->common.num_args;
+    if (config_node->param || config_node->r_param || (config_node->pos != -1)) {
+      unsigned int nb_param = execute_data->func->common.num_args;
       bool arg_matched = false;
+      int i = 0;
 
-      for (unsigned int i = 0; i < nb_param; i++) {
+      if (config_node->pos != -1) {//&& nb_param <= config_node->pos) {
+        i = config_node->pos;
+        nb_param = (config_node->pos) + 1;
+      }
+
+      for (; i < nb_param; i++) {
         arg_matched = false;
         if (ZEND_USER_CODE(execute_data->func->type)) {  // yay consistency
           arg_name = ZSTR_VAL(execute_data->func->common.arg_info[i].name);
@@ -197,7 +203,7 @@ bool should_disable(zend_execute_data* execute_data) {
             (true == is_regexp_matching(config_node->r_param, arg_name));
 
         /* This is the parameter name we're looking for. */
-        if (true == arg_matching || true == pcre_matching) {
+        if (true == arg_matching || true == pcre_matching || (config_node->pos != -1)) {
           zval* arg_value = ZEND_CALL_VAR_NUM(execute_data, i);
 
           if (config_node->param_type) {  // Are we matching on the `type`?
