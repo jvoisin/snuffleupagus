@@ -9,7 +9,7 @@ $functions_blacklist = ['shell_exec', 'exec', 'passthru', 'php_uname', 'popen',
 	'posix_kill', 'posix_mkfifo', 'posix_setpgid', 'posix_setsid', 'posix_setuid',
 	'posix_setgid', 'posix_uname', 'proc_close', 'proc_nice', 'proc_open',
 	'proc_terminate', 'proc_open', 'proc_get_status', 'dl', 'pnctl_exec',
-    'pnctl_fork', 'assert', 'system'];
+	'pnctl_fork', 'assert', 'system', 'curl_exec'];
 
 $extensions = ['php', 'php7', 'php5', 'inc'];
 
