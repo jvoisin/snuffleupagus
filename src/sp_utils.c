@@ -213,7 +213,7 @@ bool sp_match_value(const char* value, const char* to_match, const pcre* rx) {
 
     if (ret < 0) {
       if (ret != PCRE_ERROR_NOMATCH) {
-        sp_log_err("regexp", "Something went wrong with a regexp.");
+        sp_log_err("regexp", "Something went wrong with a regexp (%d).", ret);
         return false;
       }
       return false;
