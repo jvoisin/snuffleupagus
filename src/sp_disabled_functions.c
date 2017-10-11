@@ -106,12 +106,10 @@ bool should_disable(zend_execute_data* execute_data) {
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const sp_node_t* config =
       SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions;
-  const char* function_name =
-      ZSTR_VAL(execute_data->func->common.function_name);
-  char* complete_path_function;
+  char* complete_path_function = get_complete_function_path(execute_data);;
   char const* client_ip = sp_getenv("REMOTE_ADDR");
 
-  if (!function_name) {
+  if (!complete_path_function) {
     return false;
   }
 
@@ -119,7 +117,6 @@ bool should_disable(zend_execute_data* execute_data) {
     return false;
   }
 
-  complete_path_function = get_complete_function_path(execute_data);
 
   while (config) {
     sp_disabled_function const* const config_node =
@@ -277,6 +274,10 @@ static bool should_drop_on_ret(zval* return_value,
   char* complete_path_function = get_complete_function_path(execute_data);
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   char current_file_hash[SHA256_SIZE * 2] = {0};
+
+  if (!complete_path_function) {
+    return false;
+  }
 
   if (!config || !config->data) {
     return false;
