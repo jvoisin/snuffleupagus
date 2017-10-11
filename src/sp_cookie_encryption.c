@@ -141,6 +141,8 @@ PHP_FUNCTION(sp_setcookie) {
   zval ret_val;
   zval func_name;
 
+
+  // LCOV_EXCL_BR_START
   ZEND_PARSE_PARAMETERS_START(1, 7)
   Z_PARAM_STR(name)
   Z_PARAM_OPTIONAL
@@ -151,6 +153,7 @@ PHP_FUNCTION(sp_setcookie) {
   Z_PARAM_BOOL(secure)
   Z_PARAM_BOOL(httponly)
   ZEND_PARSE_PARAMETERS_END();
+  // LCOV_EXCL_BR_END
 
   /* If the request was issued over HTTPS, the cookie should be "secure" */
   if (SNUFFLEUPAGUS_G(config).config_auto_cookie_secure) {

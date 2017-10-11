@@ -15,9 +15,11 @@ static void random_int_wrapper(INTERNAL_FUNCTION_PARAMETERS) {
     max = PHP_MT_RAND_MAX;
     break;
   case 1:
+    // LCOV_EXCL_BR_START
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_QUIET, 1, 1);
     Z_PARAM_LONG(min);
     ZEND_PARSE_PARAMETERS_END();
+    // LCOV_EXCL_BR_END
     max = PHP_MT_RAND_MAX;
     break;
   case 2:
