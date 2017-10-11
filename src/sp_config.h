@@ -145,7 +145,7 @@ typedef struct {
 
 #define SP_TOKEN_AUTO_COOKIE_SECURE ".auto_cookie_secure"
 #define SP_TOKEN_COOKIE_ENCRYPTION ".cookie_encryption"
-#define SP_TOKEN_DISABLE_FUNC ".disable_functions"
+#define SP_TOKEN_DISABLE_FUNC ".disable_function"
 #define SP_TOKEN_GLOBAL ".global"
 #define SP_TOKEN_GLOBAL_STRICT ".global_strict"
 #define SP_TOKEN_HARDEN_RANDOM ".harden_random"

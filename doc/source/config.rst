@@ -12,7 +12,7 @@ Options are chainable by using dots (``.``) and string parameters
 Comments are prefixed either with ``#``, or ``;``.
 
 Some rules apply in a specific ``function`` (context) on a specific ``variable``
-(data), like ``disable_functions``. Others can only be enabled/disabled, like
+(data), like ``disable_function``. Others can only be enabled/disabled, like
 ``harden_random``.
 
 
@@ -212,14 +212,14 @@ disable_xxe
 Virtual-patching
 ----------------
 
-Snuffleupagus provides virtual-patching via the ``disable_functions`` directive, allowing you to stop or control dangerous behaviours.
+Snuffleupagus provides virtual-patching via the ``disable_function`` directive, allowing you to stop or control dangerous behaviours.
 In the situation where you have a call to ``system()`` that lacks proper user-input validation, this could cause issues as it would lead to an **RCE**. The virtual-patching would allow this to be prevented.
 
 ::
    
   # Allow `id.php` to restrict system() calls to `id`
-  sp.disable_functions.function("system").filename("id.php").param("cmd").value("id").allow();
-  sp.disable_functions.function("system").filename("id.php").drop()
+  sp.disable_function.function("system").filename("id.php").param("cmd").value("id").allow();
+  sp.disable_function.function("system").filename("id.php").drop()
 
 Of course, this is a trivial example,  a lot can be achieved with this feature, as you will see below.
 
@@ -309,9 +309,9 @@ The following rules will:
 
 ::
 
-  sp.disable_functions.function("system").param("cmd").value("id").allow();
-  sp.disable_functions.function("system").param("cmd").value_r("^ping").drop().simulation();
-  sp.disable_functions.function("system").param("cmd").drop();
+  sp.disable_function.function("system").param("cmd").value("id").allow();
+  sp.disable_function.function("system").param("cmd").value_r("^ping").drop().simulation();
+  sp.disable_function.function("system").param("cmd").drop();
 
 Miscellaneous examples
 """"""""""""""""""""""
