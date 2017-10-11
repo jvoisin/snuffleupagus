@@ -40,7 +40,7 @@ static int get_construct_type(sp_disabled_function const *const df) {
       } else if (df->r_function) {
         if (true == is_regexp_matching(df->r_function, mapping[i].keys[j])) {
           return mapping[i].type;
-        } 
+        }
       }
     }
   }
@@ -96,13 +96,13 @@ int parse_readonly_exec(char *line) {
 }
 
 int parse_global(char *line) {
-  sp_config_functions sp_config_global[] = {
+  sp_config_functions sp_config_funcs_global[] = {
       {parse_str, SP_TOKEN_ENCRYPTION_KEY,
        &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)},
       {parse_str, SP_TOKEN_ENV_VAR,
        &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)},
       {0}};
-  return parse_keywords(sp_config_global, line);
+  return parse_keywords(sp_config_funcs_global, line);
 }
 
 int parse_cookie_encryption(char *line) {

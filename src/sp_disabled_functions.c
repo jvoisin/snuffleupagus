@@ -274,6 +274,7 @@ static bool should_drop_on_ret(zval* return_value,
   char* complete_path_function = get_complete_function_path(execute_data);
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   char current_file_hash[SHA256_SIZE * 2] = {0};
+  bool match_type = false, match_value = false;
 
   if (!complete_path_function) {
     return false;
@@ -325,13 +326,13 @@ static bool should_drop_on_ret(zval* return_value,
 
     ret_value_str = sp_convert_to_string(return_value);
 
-    bool match_type = (config_node->ret_type) &&
+    match_type = (config_node->ret_type) &&
                       (config_node->ret_type == Z_TYPE_P(return_value));
-    bool match_value = (config_node->ret || config_node->r_ret) &&
+    match_value = (config_node->ret || config_node->r_ret) &&
                        (true == sp_match_value(ret_value_str, config_node->ret,
                                                config_node->r_ret));
 
-    if (true == match_type || match_value) {
+    if (true == match_type || true == match_value) {
       if (true == config_node->allow) {
         efree(complete_path_function);
         efree(ret_value_str);
