@@ -167,7 +167,7 @@ static char *zv_str_to_char(zval *zv) {
   }
   ret = estrdup(Z_STRVAL(copy));
   //  zend_string_release(str);
-  return ret;  
+  return ret;
 }
 
 
@@ -360,7 +360,7 @@ zend_always_inline int is_regexp_matching(const pcre* regexp, const char* str) {
   int ret = sp_pcre_exec(regexp, NULL, str, strlen(str), 0, 0, vec, sizeof(vec));
   if (ret < 0) {
     if (ret != PCRE_ERROR_NOMATCH) {
-      sp_log_err("regexp", "Something went wrong with a regexp.");
+      sp_log_err("regexp", "Something went wrong with a regexp (%d).", ret);
     }
     return false;
   }
@@ -382,7 +382,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
       return SUCCESS;
     }
   }
- 
+
   if ((func = zend_hash_str_find_ptr(CG(function_table),
                                      VAR_AND_LEN(original_name)))) {
     if (func->handler == new_function) {
@@ -397,7 +397,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
       func->handler = new_function;
     }
   }
- 
+
   if (0 == strncmp(original_name, "mb_", 3)) {
     CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
     if (zend_hash_str_find(ht,
