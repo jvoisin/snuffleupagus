@@ -5,17 +5,9 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus);
 
-ZEND_COLD static zend_always_inline bool is_hash_matching(
-    const char* current_filename,
-    sp_disabled_function const* const config_node) {
-  char current_file_hash[SHA256_SIZE * 2];
-  compute_hash(current_filename, current_file_hash);
-  return (0 == strncmp(current_file_hash, config_node->hash, SHA256_SIZE));
-}
-
 static zend_always_inline char* get_complete_function_path(
     zend_execute_data const* const execute_data) {
-  
+
   if (!(execute_data->func->common.function_name)) {
     return NULL;
   }
@@ -40,7 +32,7 @@ static bool is_functions_list_matching(zend_execute_data *execute_data, sp_node_
   zend_execute_data *orig_execute_data, *current;
   orig_execute_data = current = execute_data;
   sp_node_t *it = functions_list;
-  
+
   while (current) {
     if (it == NULL) { // every function in the list matched, we've got a match!
       EG(current_execute_data) = orig_execute_data;
@@ -71,12 +63,12 @@ end:
 
 static bool is_local_var_matching(zend_execute_data *execute_data, const sp_disabled_function *const config_node) {
   zend_execute_data *orig_execute_data = execute_data;
-  
+
   /*because execute_data points to hooked function data,
    which we dont care about */
   zend_execute_data *current = execute_data->prev_execute_data;
   zval *value = NULL;
-  
+
   while (current) {
     zend_string *key = NULL;
     EG(current_execute_data) = current;
@@ -110,6 +102,7 @@ static bool is_local_var_matching(zend_execute_data *execute_data, const sp_disa
 }
 
 bool should_disable(zend_execute_data* execute_data) {
+  char current_file_hash[SHA256_SIZE * 2] = {0};
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const sp_node_t* config =
       SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions;
@@ -174,7 +167,10 @@ bool should_disable(zend_execute_data* execute_data) {
     }
 
     if (config_node->hash) {
-      if (false == is_hash_matching(current_filename, config_node)) {
+      if ('\0' == current_file_hash[0]) {
+        compute_hash(current_filename, current_file_hash);
+      }
+      if (0 != strncmp(current_file_hash, config_node->hash, SHA256_SIZE)) {
         goto next;
       }
     }
@@ -280,6 +276,7 @@ static bool should_drop_on_ret(zval* return_value,
       SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions;
   char* complete_path_function = get_complete_function_path(execute_data);
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
+  char current_file_hash[SHA256_SIZE * 2] = {0};
 
   if (!config || !config->data) {
     return false;
@@ -317,7 +314,10 @@ static bool should_drop_on_ret(zval* return_value,
     }
 
     if (config_node->hash) {
-      if (false == is_hash_matching(current_filename, config_node)) {
+      if ('\0' == current_file_hash[0]) {
+        compute_hash(current_filename, current_file_hash);
+      }
+      if (0 != strncmp(current_file_hash, config_node->hash, SHA256_SIZE)) {
         goto next;
       }
     }
