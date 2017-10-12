@@ -29,6 +29,36 @@ void sp_log_msg(char const *feature, char const *level, const char* fmt, ...) {
     feature, level, msg);
 }
 
+
+zend_always_inline char* sp_getenv(char* var) {
+  if (sapi_module.getenv) {
+    return sapi_module.getenv(ZEND_STRL(var));
+  } else {
+    return getenv(var);
+  }
+}
+
+zend_always_inline int is_regexp_matching(const pcre* regexp, const char* str) {
+  int vec[30];
+  int ret = 0;
+
+  if (!regexp || !str) {
+    sp_log_err("regexp", "Something went wrong with a regexp (%d:%d).",
+     !regexp?0:1, !str?0:1);
+    return false;
+  }
+
+  ret = sp_pcre_exec(regexp, NULL, str, strlen(str), 0, 0, vec, sizeof(vec));
+
+  if (ret < 0) {
+    if (ret != PCRE_ERROR_NOMATCH) {
+      sp_log_err("regexp", "Something went wrong with a regexp (%d).", ret);
+    }
+    return false;
+  }
+  return true;
+}
+
 int compute_hash(const char* const filename, char* file_hash) {
   unsigned char buf[1024];
   unsigned char digest[SHA256_SIZE];
@@ -208,17 +238,7 @@ bool sp_match_value(const char* value, const char* to_match, const pcre* rx) {
       return true;
     }
   } else if (rx) {
-    int substrvec[30];
-    int ret = sp_pcre_exec(rx, NULL, value, strlen(value), 0, 0, substrvec, 30);
-
-    if (ret < 0) {
-      if (ret != PCRE_ERROR_NOMATCH) {
-        sp_log_err("regexp", "Something went wrong with a regexp (%d).", ret);
-        return false;
-      }
-      return false;
-    }
-    return true;
+    return is_regexp_matching(rx, value);
   }
   return false;
 }
@@ -347,25 +367,6 @@ int sp_match_array_key_recurse(const zval* arr, sp_node_t* keys,
   return 0;
 }
 
-zend_always_inline char* sp_getenv(char* var) {
-  if (sapi_module.getenv) {
-    return sapi_module.getenv(ZEND_STRL(var));
-  } else {
-    return getenv(var);
-  }
-}
-
-zend_always_inline int is_regexp_matching(const pcre* regexp, const char* str) {
-  int vec[30];
-  int ret = sp_pcre_exec(regexp, NULL, str, strlen(str), 0, 0, vec, sizeof(vec));
-  if (ret < 0) {
-    if (ret != PCRE_ERROR_NOMATCH) {
-      sp_log_err("regexp", "Something went wrong with a regexp (%d).", ret);
-    }
-    return false;
-  }
-  return true;
-}
 
 int hook_function(const char* original_name, HashTable* hook_table,
                   void (*new_function)(INTERNAL_FUNCTION_PARAMETERS),
