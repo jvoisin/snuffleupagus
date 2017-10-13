@@ -1,7 +1,7 @@
 Installation
 ============
 
-Snuffleupagus is tested against various PHP 7+ versions: XXX
+Snuffleupagus is tested against `various PHP 7+ versions <https://travis-ci.org/nbs-system/snuffleupagus/>`_.
 
 Manual installation
 -------------------

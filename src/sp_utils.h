@@ -1,6 +1,10 @@
 #ifndef SP_UTILS_H
 #define SP_UTILS_H
 
+#include "ext/hash/php_hash.h"
+#include "ext/hash/php_hash_sha.h"
+#include "ext/standard/md5.h"
+
 #include "sp_config.h"
 #include "sp_list.h"
 
