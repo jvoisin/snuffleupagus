@@ -145,9 +145,9 @@ PHP_RSHUTDOWN_FUNCTION(snuffleupagus) { return SUCCESS; }
 
 PHP_MINFO_FUNCTION(snuffleupagus) {
   php_info_print_table_start();
-  php_info_print_table_header(2, "snuffleupagus support", "enabled");
+  php_info_print_table_row(2, "snuffleupagus support", "enabled");
+  php_info_print_table_row(2, "Version", PHP_SNUFFLEUPAGUS_VERSION);
   php_info_print_table_end();
-
   DISPLAY_INI_ENTRIES();
 }
 
