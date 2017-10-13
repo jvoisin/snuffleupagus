@@ -24,7 +24,7 @@ Quickstart
     git clone https://github.com/nbs-system/snuffleupagus
     cd snuffleupagus/src
     phpize
-    ./configure --with-snuffleupagus
+    ./configure --enable-snuffleupagus
     make
     make install
 
