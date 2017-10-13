@@ -235,7 +235,7 @@ char* sp_convert_to_string(zval* zv) {
 
 bool sp_match_value(const char* value, const char* to_match, const pcre* rx) {
   if (to_match) {
-    if (0 == strcmp(value, to_match)) {
+    if (0 == strcmp(to_match, value)) {
       return true;
     }
   } else if (rx) {
