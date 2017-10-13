@@ -48,7 +48,8 @@ zend_always_inline int is_regexp_matching(const pcre* regexp, const char* str) {
     return false;
   }
 
-  ret = sp_pcre_exec(regexp, NULL, str, strlen(str), 0, 0, vec, sizeof(vec));
+  ret = sp_pcre_exec(regexp, NULL, str, strlen(str), 0, 0, vec,
+   sizeof(vec)/sizeof(int));
 
   if (ret < 0) {
     if (ret != PCRE_ERROR_NOMATCH) {
@@ -427,7 +428,8 @@ int hook_regexp(const pcre* regexp, HashTable* hook_table,
   ZEND_HASH_FOREACH_STR_KEY(ht, key) {
     if (key) {
       int vec[30];
-      int ret = sp_pcre_exec(regexp, NULL, key->val, key->len, 0, 0, vec, 30);
+      int ret = sp_pcre_exec(regexp, NULL, key->val, key->len, 0, 0, vec,
+       sizeof(vec)/sizeof(int));
       if (ret < 0) { /* Error or no match*/
         if (PCRE_ERROR_NOMATCH != ret) {
           sp_log_err("pcre", "Runtime error with pcre, error code: %d", ret);
