@@ -148,9 +148,7 @@ PHP_MINFO_FUNCTION(snuffleupagus) {
   php_info_print_table_header(2, "snuffleupagus support", "enabled");
   php_info_print_table_end();
 
-  /* Remove comments if you have entries in php.ini
   DISPLAY_INI_ENTRIES();
-  */
 }
 
 static PHP_INI_MH(OnUpdateConfiguration) {
