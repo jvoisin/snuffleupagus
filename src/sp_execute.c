@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <string.h>
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus);
+ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 static void (*orig_execute_ex)(zend_execute_data *execute_data);
 static int (*orig_zend_stream_open)(const char *filename,

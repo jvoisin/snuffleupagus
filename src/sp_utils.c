@@ -30,7 +30,7 @@ void sp_log_msg(char const *feature, char const *level, const char* fmt, ...) {
 }
 
 
-zend_always_inline char* sp_getenv(char* var) {
+zend_always_inline char* sp_getenv(const char* var) {
   if (sapi_module.getenv) {
     return sapi_module.getenv(ZEND_STRL(var));
   } else {

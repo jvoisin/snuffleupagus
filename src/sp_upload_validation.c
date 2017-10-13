@@ -1,7 +1,7 @@
 #include "php_snuffleupagus.h"
 #include "rfc1867.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus);
+ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 #define EFREE_3(env)               \
   for (size_t i = 0; i < 4; i++) { \

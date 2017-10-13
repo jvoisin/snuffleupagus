@@ -3,7 +3,7 @@
 #include "zend_execute.h"
 #include "zend_hash.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus);
+ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 static zend_always_inline char* get_complete_function_path(
     zend_execute_data const* const execute_data) {
