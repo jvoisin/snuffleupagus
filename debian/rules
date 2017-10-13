@@ -21,7 +21,11 @@ override_dh_auto_build:
 	make -C src
 
 override_dh_auto_install:
-	make -C src install
+	dh_testdir
+	dh_testroot
+	dh_installdirs
+	mkdir -p debian/snuffleupagus/$$(/usr/bin/php-config --extension-dir)/
+	install -m 644 -o root -g root src/modules/snuffleupagus.so debian/snuffleupagus/$$(/usr/bin/php-config --extension-dir)/snuffleupagus.so
 
 override_dh_auto_test:
 	TEST_PHP_ARGS="-q" REPORT_EXIST_STATUS=1 make -C src test
