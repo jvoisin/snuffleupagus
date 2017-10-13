@@ -37,7 +37,7 @@ static void construct_include_handler(const char * const filename) {
 
     while (config) {
       sp_disabled_function *config_node = (sp_disabled_function*)(config->data);
-      if (true == sp_match_value(filename, config_node->value, config_node->regexp)) {
+      if (true == sp_match_value(filename, config_node->value, config_node->value_r)) {
         if (true == config_node->allow) {
           return;
         }

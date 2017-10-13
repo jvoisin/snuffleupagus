@@ -82,7 +82,7 @@ typedef struct {
   pcre *r_ret;
   sp_php_type ret_type;
 
-  pcre *regexp;
+  pcre *value_r;
   char *value;
 
   char *dump;

@@ -80,7 +80,7 @@ static bool is_local_var_matching(zend_execute_data *execute_data, const sp_disa
         }
 	if (Z_TYPE_P(value) != IS_ARRAY) {
 	  char *var_value_str = sp_convert_to_string(value);
-	  if (true == sp_match_value(var_value_str, config_node->value, config_node->regexp)) {
+	  if (true == sp_match_value(var_value_str, config_node->value, config_node->value_r)) {
 	    efree(var_value_str);
 	    EG(current_execute_data) = orig_execute_data;
 	    return true;
@@ -214,13 +214,13 @@ bool should_disable(zend_execute_data* execute_data) {
             if (config_node->param_is_array == true) {
               if (true == sp_match_array_key_recurse(
                               arg_value, config_node->param_array_keys,
-                              config_node->value, config_node->regexp)) {
+                              config_node->value, config_node->value_r)) {
                 arg_matched = true;
                 break;
               }
             } else {  // match on all keys, but don't go into subarray
               if (true == sp_match_array_key(arg_value, config_node->value,
-                                             config_node->regexp)) {
+                                             config_node->value_r)) {
                 arg_matched = true;
                 break;
               }
@@ -228,7 +228,7 @@ bool should_disable(zend_execute_data* execute_data) {
           } else {
             arg_value_str = sp_convert_to_string(arg_value);
             if (true == sp_match_value(arg_value_str, config_node->value,
-                                       config_node->regexp)) {
+                                       config_node->value_r)) {
               arg_matched = true;
               break;
             }

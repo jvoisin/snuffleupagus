@@ -160,7 +160,7 @@ int parse_disabled_functions(char *line) {
       {parse_empty, SP_TOKEN_DROP, &(df->drop)},
       {parse_str, SP_TOKEN_HASH, &(df->hash)},
       {parse_str, SP_TOKEN_PARAM, &(df->param)},
-      {parse_regexp, SP_TOKEN_VALUE_REGEXP, &(df->regexp)},
+      {parse_regexp, SP_TOKEN_VALUE_REGEXP, &(df->value_r)},
       {parse_str, SP_TOKEN_VALUE, &(df->value)},
       {parse_regexp, SP_TOKEN_PARAM_REGEXP, &(df->r_param)},
       {parse_php_type, SP_TOKEN_PARAM_TYPE, &(df->param_type)},
@@ -183,7 +183,7 @@ int parse_disabled_functions(char *line) {
     df->enable = true;
   }
 
-  if (df->value && df->regexp) {
+  if (df->value && df->value_r) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                "'.value' and '.regexp' are mutually exclusives on line %zu.",
