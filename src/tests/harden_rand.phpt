@@ -16,7 +16,7 @@ $d = rand(0,100)."\n";
 rand(100,0)."\n";
 
 if ($a == $c && $b == $d)
-	echo 'fail';
+    echo "a:$a, b:$b, c:$c, d:$d\n";
 else
 	echo 'win';
 ?>

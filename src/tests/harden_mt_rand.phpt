@@ -14,7 +14,7 @@ $c = mt_rand(0,100)."\n";
 $d = mt_rand(0,100)."\n";
 
 if ($a == $c && $b == $d)
-	echo 'lose';
+    echo "a:$a, b:$b, c:$c, d:$d\n";
 else
 	echo 'win';
 ?>
