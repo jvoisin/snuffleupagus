@@ -237,7 +237,14 @@ int parse_disabled_functions(char *line) {
   }
 
   if (pos) {
-    df->pos = atoi(pos) > 128 ? 128: atoi(pos); // FIXME do the strtol dance
+    errno = 0;
+    df->pos = strtol(pos, NULL, 10) > 128 ? 128 : strtol(pos, NULL, 10);
+    if (errno != 0) {
+      sp_log_err("config",
+		 "Failed to parse arg '%s' of `pos` on line %zu.",
+		 pos, sp_line_no);
+      return -1;
+    }
   }
 
   if (df->function) {
