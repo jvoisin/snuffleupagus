@@ -28,6 +28,3 @@ my_function();
 ?>
 --EXPECTF--
 [snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'strcmp' in %a/disabled_functions_namespace.php:%d has been disabled.
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'my_super_namespace\my_function' in %a/disabled_functions_namespace.php:%d has been disabled.
-Second namespace
-Anonymous namespace

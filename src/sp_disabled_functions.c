@@ -358,7 +358,7 @@ ZEND_FUNCTION(check_disabled_function) {
   const char* current_function_name = get_active_function_name(TSRMLS_C);
 
   if (true == should_disable(execute_data)) {
-    return;
+    zend_bailout();
   }
 
   if ((orig_handler = zend_hash_str_find_ptr(
