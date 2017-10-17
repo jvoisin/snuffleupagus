@@ -51,8 +51,8 @@ PHP_FUNCTION(sp_rand) {
     /* call the original `rand` function,
      * since we might no be the only ones to hook it*/
     orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-  }
-
+  } else
+    sp_log_err("harden_rand", "Unable to find the pointer to the original function 'rand' in the hashtable.\n");
   random_int_wrapper(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
@@ -64,7 +64,8 @@ PHP_FUNCTION(sp_mt_rand) {
     /* call the original `mt_rand` function,
      * since we might no be the only ones to hook it*/
     orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-  }
+  } else
+    sp_log_err("harden_rand", "Unable to find the pointer to the original function 'mt_rand' in the hashtable.\n");
 
   random_int_wrapper(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
