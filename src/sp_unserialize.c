@@ -28,7 +28,7 @@ PHP_FUNCTION(sp_serialize) {
               SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key);
   call_user_function(CG(function_table), NULL, &func_name, &hmac, 3, params);
 
-  size_t len = Z_STRLEN_P(return_value) + Z_STRLEN(hmac) + 1;
+  size_t len = Z_STRLEN_P(return_value) + Z_STRLEN(hmac);
   zend_string *res = zend_string_alloc(len, 0);
 
   memcpy(ZSTR_VAL(res), Z_STRVAL_P(return_value), Z_STRLEN_P(return_value));
