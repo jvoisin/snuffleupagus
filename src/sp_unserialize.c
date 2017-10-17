@@ -13,6 +13,7 @@ PHP_FUNCTION(sp_serialize) {
     sp_log_err("disabled_functions",
         "Unable to find the pointer to the original function 'serialize' in "
         "the hashtable.\n");
+    return;
   }
 
   /* Compute the HMAC of the textual representation of the serialized data*/
@@ -27,7 +28,7 @@ PHP_FUNCTION(sp_serialize) {
               SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key);
   call_user_function(CG(function_table), NULL, &func_name, &hmac, 3, params);
 
-  size_t len = Z_STRLEN_P(return_value) + Z_STRLEN(hmac);
+  size_t len = Z_STRLEN_P(return_value) + Z_STRLEN(hmac) + 1;
   zend_string *res = zend_string_alloc(len, 0);
 
   memcpy(ZSTR_VAL(res), Z_STRVAL_P(return_value), Z_STRLEN_P(return_value));
