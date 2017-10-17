@@ -238,8 +238,9 @@ int parse_disabled_functions(char *line) {
 
   if (pos) {
     errno = 0;
-    df->pos = strtol(pos, NULL, 10) > 128 ? 128 : strtol(pos, NULL, 10);
-    if (errno != 0) {
+    char *endptr;
+    df->pos = strtol(pos, &endptr, 10) > 128 ? 128 : strtol(pos, NULL, 10);
+    if (errno != 0 || endptr == pos) {
       sp_log_err("config",
 		 "Failed to parse arg '%s' of `pos` on line %zu.",
 		 pos, sp_line_no);
