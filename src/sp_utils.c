@@ -42,11 +42,8 @@ zend_always_inline int is_regexp_matching(const pcre* regexp, const char* str) {
   int vec[30];
   int ret = 0;
 
-  if (!regexp || !str) {
-    sp_log_err("regexp", "Something went wrong with a regexp (%d:%d).",
-     !regexp?0:1, !str?0:1);
-    return false;
-  }
+  assert(NULL != regexp);
+  assert(NULL != str);
 
   ret = sp_pcre_exec(regexp, NULL, str, strlen(str), 0, 0, vec,
    sizeof(vec)/sizeof(int));
