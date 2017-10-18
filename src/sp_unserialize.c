@@ -13,6 +13,7 @@ PHP_FUNCTION(sp_serialize) {
     sp_log_err("disabled_functions",
         "Unable to find the pointer to the original function 'serialize' in "
         "the hashtable.\n");
+    return;
   }
 
   /* Compute the HMAC of the textual representation of the serialized data*/

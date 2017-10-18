@@ -358,7 +358,7 @@ ZEND_FUNCTION(check_disabled_function) {
   const char* current_function_name = get_active_function_name(TSRMLS_C);
 
   if (true == should_disable(execute_data)) {
-    return;
+    sp_terminate();
   }
 
   if ((orig_handler = zend_hash_str_find_ptr(
@@ -366,7 +366,7 @@ ZEND_FUNCTION(check_disabled_function) {
            strlen(current_function_name)))) {
     orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     if (true == should_drop_on_ret(return_value, execute_data)) {
-      zend_bailout();
+      sp_terminate();
     }
   } else {
     sp_log_err(
