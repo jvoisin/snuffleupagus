@@ -183,7 +183,7 @@ bool should_disable(zend_execute_data* execute_data) {
       bool arg_matched = false;
       int i = 0;
 
-      if (config_node->pos != -1) {//&& nb_param <= config_node->pos) {
+      if ((config_node->pos != -1) && (config_node->pos <= nb_param)) {
         i = config_node->pos;
         nb_param = (config_node->pos) + 1;
       }
