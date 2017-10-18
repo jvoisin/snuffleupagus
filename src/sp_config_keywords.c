@@ -204,10 +204,10 @@ int parse_disabled_functions(char *line) {
                "'.r_filename' and '.filename' are mutually exclusive on line %zu.",
                line, sp_line_no);
     return -1;
-  } else if (df->r_param && df->param) {
+  } else if (1 < ((df->r_param?1:0) + (df->param?1:0) + ((-1 != df->pos)?1:0))) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               "'.r_param' and '.param' are mutually exclusive on line %zu.",
+               "'.r_param', '.param' and '.pos' are mutually exclusive on line %zu.",
                line, sp_line_no);
     return -1;
   } else if (df->r_ret && df->ret) {
