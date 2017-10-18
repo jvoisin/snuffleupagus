@@ -179,7 +179,7 @@ bool should_disable(zend_execute_data* execute_data) {
 
     /* Check if we filter on parameter value*/
     if (config_node->param || config_node->r_param || (config_node->pos != -1)) {
-      unsigned int nb_param = execute_data->func->common.num_args;
+      int nb_param = execute_data->func->common.num_args;
       bool arg_matched = false;
       int i = 0;
 
