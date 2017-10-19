@@ -144,7 +144,9 @@ int parse_cookie_encryption(char *line) {
 int parse_disabled_functions(char *line) {
   int ret = 0;
   bool enable = true, disable = false;
+  char *pos = NULL;
   sp_disabled_function *df = pecalloc(sizeof(*df), 1, 1);
+  df->pos = -1;
 
   sp_config_functions sp_config_funcs_disabled_functions[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
@@ -169,6 +171,7 @@ int parse_disabled_functions(char *line) {
       {parse_regexp, SP_TOKEN_RET_REGEXP, &(df->r_ret)},
       {parse_php_type, SP_TOKEN_RET_TYPE, &(df->ret_type)},
       {parse_str, SP_TOKEN_LOCAL_VAR, &(df->var)},
+      {parse_str, SP_TOKEN_VALUE_ARG_POS, &(pos)},
       {0}};
 
   ret = parse_keywords(sp_config_funcs_disabled_functions, line);
@@ -201,10 +204,10 @@ int parse_disabled_functions(char *line) {
                "'.r_filename' and '.filename' are mutually exclusive on line %zu.",
                line, sp_line_no);
     return -1;
-  } else if (df->r_param && df->param) {
+  } else if (1 < ((df->r_param?1:0) + (df->param?1:0) + ((-1 != df->pos)?1:0))) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               "'.r_param' and '.param' are mutually exclusive on line %zu.",
+               "'.r_param', '.param' and '.pos' are mutually exclusive on line %zu.",
                line, sp_line_no);
     return -1;
   } else if (df->r_ret && df->ret) {
@@ -231,6 +234,22 @@ int parse_disabled_functions(char *line) {
                "rule must either be a `drop` or and `allow` one on line %zu.",
                line, sp_line_no);
     return -1;
+  }
+
+  if (pos) {
+    errno = 0;
+    char *endptr;
+    df->pos = strtol(pos, &endptr, 10);
+    if (errno != 0 || endptr == pos) {
+      sp_log_err("config", "Failed to parse arg '%s' of `pos` on line %zu.",
+		    pos, sp_line_no);
+      return -1;
+    }
+
+    // We'll never have a function with more than 128 params
+    if (df->pos > 128) {
+      df->pos = 128;
+    }
   }
 
   if (df->function) {
