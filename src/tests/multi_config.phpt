@@ -16,8 +16,8 @@ foo();
 bla();
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'foo' in /home/seb/git/snuffleupagus/src/tests/multi_config.php:%d has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'foo' in %s/src/tests/multi_config.php:%d has been disabled.
 1
-[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'bla' in /home/seb/git/snuffleupagus/src/tests/multi_config.php:%d has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'bla' in %s/src/tests/multi_config.php:%d has been disabled.
 2
 
