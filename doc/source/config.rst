@@ -6,6 +6,9 @@ Snuffleupagus is using its own format in the file specified by
 the directive ``sp.configuration_file`` (in your ``php.ini`` file),
 like ``sp.configuration_file=/etc/php/conf.d/snuffleupagus.ini``.
 
+You can use the ``,`` separator to include multiple configuration files :
+``sp.configuration_file=/etc/php/conf.d/snuffleupagus.ini,/etc/php/conf.d/sp_wordpress.ini``
+
 Options are chainable by using dots (``.``) and string parameters
 **must** be quoted, while booleans and integers aren't.
 
