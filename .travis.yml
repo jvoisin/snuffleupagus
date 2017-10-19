@@ -29,8 +29,6 @@ after_success:
       ./lcov/bin/genhtml -o ./COV.html ./COV.info  --branch-coverage ;
       coveralls --exclude "tweetnacl.c" ;
     fi'
-  - cd ..
-  - make joomla
 
 after_failure:
   - grep -r . ./tests/*.out
