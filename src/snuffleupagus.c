@@ -154,12 +154,20 @@ PHP_MINFO_FUNCTION(snuffleupagus) {
 static PHP_INI_MH(OnUpdateConfiguration) {
   TSRMLS_FETCH();
 
+  char *config_file = NULL;
+
   if (!new_value || !new_value->len) {
     return FAILURE;
   }
 
-  if (sp_parse_config(new_value->val) != SUCCESS) {
+  config_file = strtok(new_value->val, ",");
+  if (sp_parse_config(config_file) != SUCCESS) {
     return FAILURE;
+  }
+  while ((config_file = strtok(NULL, ","))) {
+    if (sp_parse_config(config_file) != SUCCESS) {
+      return FAILURE;
+    }
   }
 
   if (SNUFFLEUPAGUS_G(config).config_random->enable) {
