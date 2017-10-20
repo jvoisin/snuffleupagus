@@ -172,6 +172,12 @@ bool should_disable(zend_execute_data* execute_data) {
       }
     }
 
+    if (config_node->line) {
+      if (config_node->line != zend_get_executed_lineno()) {
+	goto next;
+      }
+    }
+
     if (client_ip && config_node->cidr &&
         (false == cidr_match(client_ip, config_node->cidr))) {
       goto next;

@@ -145,6 +145,7 @@ int parse_disabled_functions(char *line) {
   int ret = 0;
   bool enable = true, disable = false;
   char *pos = NULL;
+  char *line_number = NULL;
   sp_disabled_function *df = pecalloc(sizeof(*df), 1, 1);
   df->pos = -1;
 
@@ -172,6 +173,7 @@ int parse_disabled_functions(char *line) {
       {parse_php_type, SP_TOKEN_RET_TYPE, &(df->ret_type)},
       {parse_str, SP_TOKEN_LOCAL_VAR, &(df->var)},
       {parse_str, SP_TOKEN_VALUE_ARG_POS, &(pos)},
+      {parse_str, SP_TOKEN_LINE_NUMBER, &(line_number)},
       {0}};
 
   ret = parse_keywords(sp_config_funcs_disabled_functions, line);
@@ -249,6 +251,17 @@ int parse_disabled_functions(char *line) {
     // We'll never have a function with more than 128 params
     if (df->pos > 128) {
       df->pos = 128;
+    }
+  }
+
+  if (line_number) {
+    errno = 0;
+    char *endptr;
+    df->line = strtoul(line_number, &endptr, 10);
+    if (errno != 0 || endptr == pos) {
+      sp_log_err("config", "Failed to parse arg '%s' of `line` on line %zu.",
+		 pos, sp_line_no);
+      return -1;
     }
   }
 
