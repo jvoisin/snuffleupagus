@@ -7,5 +7,5 @@ Broken configuration, invalid cidr value
 sp.configuration_file={PWD}/config/broken_conf_invalid_cidr_value.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][error][error] There is an issue with the parsing of '"': it doesn't look like a valid string on line 1.
+[snuffleupagus][0.0.0.0][error][error] A valid string as parameter is expected on line 1.
 [snuffleupagus][0.0.0.0][config][error] " doesn't contain a valid cidr on line 1.
