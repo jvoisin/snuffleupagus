@@ -107,9 +107,13 @@ static char *get_string(size_t *consumed, char *restrict line,
     ret[j++] = line[i];
   }
 err:
-  sp_log_err("error",
-             "There is an issue with the parsing of '%s': it doesn't look like a valid string on line %zu.",
-             original_line ? original_line : "NULL", sp_line_no);
+  if (0 == j) {
+    sp_log_err("error", "A valid string as parameter is expected on line %zu.", sp_line_no);
+  } else {
+    sp_log_err("error",
+               "There is an issue with the parsing of '%s': it doesn't look like a valid string on line %zu.",
+               original_line ? original_line : "NULL", sp_line_no);
+}
   line = NULL;
   return NULL;
 }
