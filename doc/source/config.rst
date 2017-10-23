@@ -237,6 +237,7 @@ Filters
 - ``function(name)``: match on function ``name``
 - ``function_r(regexp)``: the function matching the ``regexp``
 - ``hash(sha256)``: match on the file's `sha256 <https://en.wikipedia.org/wiki/SHA-2>`_ sum
+- ``line(line_number)``: match on the file's line.
 - ``param(name)``: match on the function's parameter ``name``
 - ``param_r(regexp)``: match on the function's parameter ``regexp``
 - ``param_type(type)``: match on the function's parameter ``type``
