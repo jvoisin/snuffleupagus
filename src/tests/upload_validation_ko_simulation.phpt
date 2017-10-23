@@ -1,8 +1,8 @@
 --TEST--
-Upload a file, validation ko, no simulation
+Upload a file, validation ko, simulation
 --INI--
 file_uploads=1
-sp.configuration_file={PWD}/config/upload_validation_ko.ini
+sp.configuration_file={PWD}/config/upload_validation_ko_simulation.ini
 output_buffering=off
 --POST_RAW--
 Content-Type: multipart/form-data; boundary=blabla
@@ -10,5 +10,6 @@ Content-Type: multipart/form-data; boundary=blabla
 Content-Disposition: form-data; name="test"; filename="test.php"
 --blabla--
 --FILE--
+<?php echo 1337; ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][upload_validation][drop] The upload of test.php on ? was rejected.
+1337
