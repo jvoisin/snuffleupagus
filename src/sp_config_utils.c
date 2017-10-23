@@ -2,9 +2,7 @@
 
 size_t sp_line_no;
 
-static int validate_str(const char *value);
-
-static sp_pure int validate_str(const char *value) {
+static int validate_str(const char *value) {
   int balance = 0;  // ghetto [] validation
 
   if (!strchr(value, '[')) {
@@ -18,6 +16,7 @@ static sp_pure int validate_str(const char *value) {
       balance--;
     }
     if (balance < 0) {
+      sp_log_err("config", "The string '%s' contains unbalanced brackets.", value);
       return -1;
     }
   }
