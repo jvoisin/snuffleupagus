@@ -79,7 +79,7 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
       if (WEXITSTATUS(waitstatus) != 0) {  // Nope
         char *uri = sp_getenv("REQUEST_URI");
         int sim = SNUFFLEUPAGUS_G(config).config_upload_validation->simulation;
-        sp_log_msg("upload_valiation", sim?SP_LOG_SIMULATION:SP_LOG_DROP,
+        sp_log_msg("upload_validation", sim?SP_LOG_SIMULATION:SP_LOG_DROP,
           "The upload of %s on %s was rejected.", filename, uri?uri:"?");
         if (!SNUFFLEUPAGUS_G(config).config_upload_validation->simulation) {
           zend_bailout();
