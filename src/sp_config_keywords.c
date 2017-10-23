@@ -182,12 +182,6 @@ int parse_disabled_functions(char *line) {
     return ret;
   }
 
-  if (true == disable){
-    df->enable = false;
-  } else {
-    df->enable = true;
-  }
-
   if (df->value && df->value_r) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
@@ -294,6 +288,10 @@ int parse_disabled_functions(char *line) {
     case ZEND_ECHO:
     default:
       break;
+  }
+
+  if (true == disable) {
+    return ret;
   }
 
   if (df->ret || df->r_ret || df->ret_type) {

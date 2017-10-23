@@ -72,7 +72,6 @@ typedef struct {
 
   char *hash;
   int simulation;
-  bool enable;
 
   char *param;
   pcre *r_param;

@@ -124,10 +124,6 @@ bool should_disable(zend_execute_data* execute_data) {
     const char* arg_name = NULL;
     const char* arg_value_str = NULL;
 
-    if (false == config_node->enable) {
-      goto next;
-    }
-
     /* The order matters, since when we have `config_node->functions_list`,
     we also do have `config_node->function` */
     if (config_node->functions_list) {
@@ -189,9 +185,18 @@ bool should_disable(zend_execute_data* execute_data) {
       bool arg_matched = false;
       int i = 0;
 
-      if ((config_node->pos != -1) && (config_node->pos <= nb_param)) {
-        i = config_node->pos;
-        nb_param = (config_node->pos) + 1;
+      if (config_node->pos != -1) {
+        if (config_node->pos <= nb_param) {
+          sp_log_err("config", "It seems that you wrote a rule filtering on the "
+            "%d%s argument of the function '%s', but it takes only %d arguments. "
+            "Matching on _all_ arguments instead.",
+            config_node->pos,
+            (config_node->pos == 1)?"st":(config_node->pos)?"nd":"th",
+            complete_path_function, nb_param);
+        } else {
+          i = config_node->pos;
+          nb_param = (config_node->pos) + 1;
+        }
       }
 
       for (; i < nb_param; i++) {
@@ -300,10 +305,6 @@ static bool should_drop_on_ret(zval* return_value,
     char* ret_value_str = NULL;
     sp_disabled_function const* const config_node =
         (sp_disabled_function*)(config->data);
-
-    if (false == config_node->enable) {
-      goto next;
-    }
 
     if (config_node->function) {
       if (0 != strcmp(config_node->function, complete_path_function)) {
