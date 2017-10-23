@@ -258,9 +258,9 @@ int parse_disabled_functions(char *line) {
     errno = 0;
     char *endptr;
     df->line = strtoul(line_number, &endptr, 10);
-    if (errno != 0 || endptr == pos) {
+    if (errno != 0 || endptr == line_number) {
       sp_log_err("config", "Failed to parse arg '%s' of `line` on line %zu.",
-		 pos, sp_line_no);
+		 line_number, sp_line_no);
       return -1;
     }
   }
