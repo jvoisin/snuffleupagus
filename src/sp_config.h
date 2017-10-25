@@ -206,5 +206,7 @@ int parse_empty(char *restrict, char *restrict, void *);
 int parse_cidr(char *restrict, char *restrict, void *);
 int parse_php_type(char *restrict, char *restrict, void *);
 
+// cleanup
+void sp_disabled_function_list_free(sp_node_t*);
 
 #endif /* SP_CONFIG_H */

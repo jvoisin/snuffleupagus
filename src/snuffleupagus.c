@@ -3,6 +3,7 @@
 #endif
 
 #include "php_snuffleupagus.h"
+#include "sp_config.h"
 
 #ifndef ZEND_EXT_API
 #define ZEND_EXT_API ZEND_DLEXPORT
@@ -118,11 +119,20 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   pefree(SNUFFLEUPAGUS_G(config.config_upload_validation), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_cookie_encryption), 1);
 
-  sp_list_free(SNUFFLEUPAGUS_G(config.config_disabled_functions->disabled_functions));
+  sp_node_t* disabled_functions = SNUFFLEUPAGUS_G(config.config_disabled_functions->disabled_functions);
+  sp_node_t* disabled_functions_ret = SNUFFLEUPAGUS_G(config.config_disabled_functions_ret->disabled_functions);
+  sp_node_t* disabled_constructs = SNUFFLEUPAGUS_G(config.config_disabled_constructs->construct_include);
+
+  // Free the list of disabled functions for each `sp_disabled_function` instance
+  sp_disabled_function_list_free(disabled_functions);
+  sp_disabled_function_list_free(disabled_functions_ret);
+  sp_disabled_function_list_free(disabled_constructs);
+
+  sp_list_free(disabled_functions);
   pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions), 1);
-  sp_list_free(SNUFFLEUPAGUS_G(config.config_disabled_functions_ret->disabled_functions));
+  sp_list_free(disabled_functions_ret);
   pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions_ret), 1);
-  sp_list_free(SNUFFLEUPAGUS_G(config.config_disabled_constructs->construct_include));
+  sp_list_free(disabled_constructs);
   pefree(SNUFFLEUPAGUS_G(config.config_disabled_constructs), 1);
 
   UNREGISTER_INI_ENTRIES();
