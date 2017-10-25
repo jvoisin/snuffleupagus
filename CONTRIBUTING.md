@@ -27,6 +27,23 @@ git checkout -b 325-kill-sql-injections
 Just type `make coverage` or `make debug`, the testsuite should be run
 automatically. Please do add tests if you're fixing a bug or adding a new feature.
 
+#### Debugging failures in the test suite
+
+If your changes have introduced run-time failures in the test-suite, you can
+easily attach your debugger to analyse that particular test case by doing the
+following:
+```
+make debug
+cd src/
+make test TESTS="-v --show-diff"
+```
+Adding the `-v` flag will provide more information (e.g. the full command used
+to run that particular test case), and `--show-diff` will (if the test case
+failed) show the difference between what was returned, and what was expected.
+
+If you'd like to see what other options are available for debugging test cases,
+you can add `-h` to the `TESTS` variable.
+
 ### 4. Did you find a bug?
 
 * **Ensure the bug was not already reported** by
