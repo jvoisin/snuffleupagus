@@ -82,9 +82,9 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT(snuffleupagus_globals->config.config_cookie_encryption);
   SP_INIT(snuffleupagus_globals->config.config_disabled_constructs);
 
-  snuffleupagus_globals->config.config_disabled_constructs->construct_include = sp_new_list();
-  snuffleupagus_globals->config.config_disabled_functions->disabled_functions = sp_new_list();
-  snuffleupagus_globals->config.config_disabled_functions_ret->disabled_functions = sp_new_list();
+  snuffleupagus_globals->config.config_disabled_constructs->construct_include = sp_list_new();
+  snuffleupagus_globals->config.config_disabled_functions->disabled_functions = sp_list_new();
+  snuffleupagus_globals->config.config_disabled_functions_ret->disabled_functions = sp_list_new();
 
   SP_INIT_HT(snuffleupagus_globals->config.config_cookie_encryption->names);
 
