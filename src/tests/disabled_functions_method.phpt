@@ -25,5 +25,3 @@ $c->method3("pouet");
 ?>
 --EXPECTF--
 [snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'AwesomeClass::method1' in %a/tests/disabled_functions_method.php:4 has been disabled.
-method2:paf
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'AwesomeClass::method3' in %a/tests/disabled_functions_method.php:10 has been disabled, because its argument 'a' content (pouet) matched a rule.

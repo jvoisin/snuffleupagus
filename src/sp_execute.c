@@ -57,7 +57,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   }
 
   if (true == should_disable(execute_data)) {
-    return;
+    sp_terminate();
   }
 
   if (execute_data->func->op_array.type == ZEND_EVAL_CODE) {
