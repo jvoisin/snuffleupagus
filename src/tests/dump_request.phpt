@@ -21,7 +21,7 @@ cookie_a=data_cookie_a&cookie_b=data_cookie_b
 sp.configuration_file={PWD}/config/dump_request.ini
 --FILE--
 <?php
-mkdir("/tmp/dump_results/");
+@mkdir("/tmp/dump_results/");
 echo "1\n";
 echo system("echo 1337;");
 $filename = glob('/tmp/dump_results/*.dump')[0];
