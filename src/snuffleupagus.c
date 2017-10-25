@@ -122,6 +122,8 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions), 1);
   sp_list_free(SNUFFLEUPAGUS_G(config.config_disabled_functions_ret->disabled_functions));
   pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions_ret), 1);
+  sp_list_free(SNUFFLEUPAGUS_G(config.config_disabled_constructs->construct_include));
+  pefree(SNUFFLEUPAGUS_G(config.config_disabled_constructs), 1);
 
   UNREGISTER_INI_ENTRIES();
 
