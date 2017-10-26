@@ -25,24 +25,22 @@ git checkout -b 325-kill-sql-injections
 ### 3. Get the test suite running
 
 Just type `make coverage` or `make debug`, the testsuite should be run
-automatically. Please do add tests if you're fixing a bug or adding a new feature.
+automatically.
 
-#### Debugging failures in the test suite
+Please add tests if you're fixing a bug or adding a new feature: we do have a
+[high coverage](https://coveralls.io/github/nbs-system/snuffleupagus?branch=master)
+(functions, lines and branches), and intend to keep it that way.
+
+#### 3.3 Debugging failures in the test suite
 
 If your changes have introduced run-time failures in the test-suite, you can
-easily attach your debugger to analyse that particular test case by doing the
-following:
-```
-make debug
-cd src/
-make test TESTS="-v --show-diff"
-```
-Adding the `-v` flag will provide more information (e.g. the full command used
-to run that particular test case), and `--show-diff` will (if the test case
-failed) show the difference between what was returned, and what was expected.
+easily troubleshoot them by inspecting the files that
+[php has generated](https://qa.php.net/write-test.php#analyzing-failing-tests)
+for this purpose.
 
-If you'd like to see what other options are available for debugging test cases,
-you can add `-h` to the `TESTS` variable.
+A nice trick is to edit the `.sh` file to prepend `gdb --args` to it before
+launching it, in order to run the failing test inside GDB.
+
 
 ### 4. Did you find a bug?
 
@@ -66,7 +64,7 @@ before committing, or even better, use a [pre-commit hook](https://github.com/an
 ### 6. Make a Pull Request
 
 At this point, you should switch back to your master branch and make sure it's
-up to date with Active Admin's master branch:
+up to date with our upstream master branch:
 
 ```sh
 git remote add upstream git@github.com:nbs-system/snuffleupagus.git
@@ -84,12 +82,12 @@ git push --set-upstream origin 325-kill-sql-injections
 
 Finally, go to GitHub and [make a Pull Request](https://help.github.com/articles/creating-a-pull-request) :D
 
-Travis CI will run our test suite against all supported PHP versions. We care
-about quality, so your PR won't be merged until all tests pass. It's unlikely,
-but it's possible that your changes pass tests in one PHP version but fail in
-another. In that case, you'll have to setup your development environment
-to use the problematic PHP version, and investigate
-what's going on!
+Travis CI will [run our test suite](https://travis-ci.org/nbs-system/snuffleupagus)
+against all supported PHP versions. We care about quality, so your PR won't be
+merged until all tests pass. It's unlikely, but it's possible that your changes
+pass tests in one PHP version but fail in another. In that case, you'll have to
+setup your development environment to use the problematic PHP version, and
+investigate what's going on!
 
 ### 7. Keeping your Pull Request updated
 
@@ -109,27 +107,28 @@ git push --force-with-lease 325-kill-sql-injections
 
 A PR can only be merged into master by a maintainer if:
 
-* It is passing CI.
-* It has been approved by at least two maintainers. If it was a maintainer who
-  opened the PR, only one extra approval is needed.
-* It has no requested changes.
-* It is up to date with current master.
+1. It is passing CI.
+2. It has been approved by at least one maintainer. If it was a maintainer who
+   opened the PR, only one extra approval is needed.
+3. It has no requested changes.
+4. It is up to date with current master.
 
-Any maintainer is allowed to merge a PR if all of these conditions are
-met.
+Any maintainer is allowed to merge a PR if all of these conditions are met.
 
 ### 9. Shipping a release (maintainers only)
 
 Maintainers need to do the following to push out a release:
 
-* Make sure all pull requests are in and that changelog is current
-* Update `snuggleupagus.h` file and changelog with new version number
-* Create a stable branch for that release:
+1. Make sure all pull requests are in and that changelog is current
+2. Update `snuffleupagus.h` file and changelog with new version number
+3. Create a tag for that release:
 
   ```sh
-  git pull master
+  git checkout master
+  git pull origin master
   make coverage
   git tag -s $MAJOR.$MINOR.$PATCH
   git push --tags
   ```
-* Do the *secret release dance*
+
+4. Do the *secret release dance*
