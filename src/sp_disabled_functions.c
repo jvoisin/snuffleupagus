@@ -191,7 +191,7 @@ bool should_disable(zend_execute_data* execute_data) {
             "%d%s argument of the function '%s', but it takes only %d arguments. "
             "Matching on _all_ arguments instead.",
             config_node->pos,
-            (config_node->pos == 1)?"st":(config_node->pos)?"nd":"th",
+            GET_SUFFIX(config_node->pos),
             complete_path_function, nb_param);
         } else {
           i = config_node->pos;

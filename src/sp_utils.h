@@ -51,6 +51,8 @@
     #define sp_log_debug(...)
 #endif
 
+#define GET_SUFFIX(x) (x==1)?"st":((x==2)?"nd":"th")
+
 void sp_log_msg(char const *feature, char const *level, const char* fmt, ...);
 int compute_hash(const char *const filename, char *file_hash);
 char *sp_convert_to_string(zval *);

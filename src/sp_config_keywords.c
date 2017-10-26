@@ -235,23 +235,18 @@ int parse_disabled_functions(char *line) {
   if (pos) {
     errno = 0;
     char *endptr;
-    df->pos = strtol(pos, &endptr, 10);
+    df->pos = (int)strtol(pos, &endptr, 10);
     if (errno != 0 || endptr == pos) {
       sp_log_err("config", "Failed to parse arg '%s' of `pos` on line %zu.",
 		    pos, sp_line_no);
       return -1;
-    }
-
-    // We'll never have a function with more than 128 params
-    if (df->pos > 128) {
-      df->pos = 128;
     }
   }
 
   if (line_number) {
     errno = 0;
     char *endptr;
-    df->line = strtoul(line_number, &endptr, 10);
+    df->line = (unsigned int)strtoul(line_number, &endptr, 10);
     if (errno != 0 || endptr == line_number) {
       sp_log_err("config", "Failed to parse arg '%s' of `line` on line %zu.",
 		 line_number, sp_line_no);
