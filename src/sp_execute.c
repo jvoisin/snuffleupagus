@@ -77,7 +77,7 @@ execute:
 static int sp_stream_open(const char *filename, zend_file_handle *handle) {
   zend_execute_data const * const data = EG(current_execute_data);
 
-  if ((NULL == data) || (NULL == data->opline)) {
+  if ((NULL == data) || (NULL == data->opline) || (data->func->type != ZEND_USER_FUNCTION)) {
     goto end;
   }
 
