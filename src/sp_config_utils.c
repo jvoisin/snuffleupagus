@@ -60,7 +60,7 @@ static char *get_string(size_t *consumed, char *restrict line,
   size_t j = 0;
 
   char *ret = NULL;
-  if (NULL == line) {
+  if (NULL == line || '\0' == *line) {
     goto err;
   }
 
