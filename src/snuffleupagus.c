@@ -52,6 +52,7 @@ ZEND_DLEXPORT zend_extension zend_extension_entry = {
     NULL,               /* op_array_dtor_func_t */
     STANDARD_ZEND_EXTENSION_PROPERTIES};
 
+
 PHP_GINIT_FUNCTION(snuffleupagus) {
 #define SP_INIT(F) F = pecalloc(sizeof(*F), 1, 1);
 #define SP_INIT_HT(F) \
@@ -75,6 +76,7 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT(snuffleupagus_globals->config.config_disabled_constructs);
 
   snuffleupagus_globals->config.config_disabled_constructs->construct_include = sp_list_new();
+  snuffleupagus_globals->config.config_disabled_constructs->construct_eval = sp_list_new();
   snuffleupagus_globals->config.config_disabled_functions->disabled_functions = sp_list_new();
   snuffleupagus_globals->config.config_disabled_functions_ret->disabled_functions = sp_list_new();
 
@@ -110,6 +112,7 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   pefree(SNUFFLEUPAGUS_G(config.config_upload_validation), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_cookie_encryption), 1);
 
+
 #define FREE_LST(L) \
   do { \
     sp_node_t* _n = SNUFFLEUPAGUS_G(L); \
@@ -120,8 +123,7 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_LST(config.config_disabled_functions->disabled_functions);
   FREE_LST(config.config_disabled_functions_ret->disabled_functions);
   FREE_LST(config.config_disabled_constructs->construct_include);
-
-#undef FREE_LST
+  FREE_LST(config.config_disabled_constructs->construct_eval);
 
   pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions_ret), 1);

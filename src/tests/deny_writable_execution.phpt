@@ -32,8 +32,7 @@ include "$dir/non_writable_file.txt";
 include "$dir/writable_file.txt";
 ?>
 --EXPECTF--
-Code execution within a non-writable file.
-[snuffleupagus][0.0.0.0][readonly_exec][drop] Attempted execution of a writable file (%a/writable_file.txt).
+[snuffleupagus][0.0.0.0][readonly_exec][drop] Attempted execution of a writable file (%a/tests/deny_writable_execution.php).
 --CLEAN--
 <?php
 $dir = __DIR__;
