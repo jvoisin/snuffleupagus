@@ -259,7 +259,7 @@ int parse_disabled_functions(char *line) {
   }
 
   if (df->param && strchr(df->param, '[')) {  // assume that this is an array
-    df->param_array_keys = sp_new_list();
+    df->param_array_keys = sp_list_new();
     if (0 != array_to_list(&df->param, &df->param_array_keys)) {
       pefree(df->param_array_keys, 1);
       return -1;
@@ -268,7 +268,7 @@ int parse_disabled_functions(char *line) {
   }
 
   if (df->var && strchr(df->var, '[')) {  // assume that this is an array
-    df->var_array_keys = sp_new_list();
+    df->var_array_keys = sp_list_new();
     if (0 != array_to_list(&df->var, &df->var_array_keys)) {
       pefree(df->var_array_keys, 1);
       return -1;

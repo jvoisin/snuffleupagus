@@ -179,7 +179,7 @@ zend_always_inline sp_node_t *parse_functions_list(char *value) {
     return NULL;
   }
 
-  sp_node_t *list = sp_new_list();
+  sp_node_t *list = sp_list_new();
   char* tmp = strdup(value);
   char* function_name;
   char *next_token = tmp;

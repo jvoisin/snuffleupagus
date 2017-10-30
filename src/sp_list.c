@@ -11,7 +11,7 @@ void sp_list_free(sp_node_t *node) {
   }
 }
 
-sp_node_t *sp_new_list() {
+sp_node_t *sp_list_new() {
   sp_node_t *new = pecalloc(sizeof(*new), 1, 1);
   new->next = new->data = new->head = NULL;
   return new;
