@@ -32,9 +32,8 @@ static inline bool cidr6_match(const struct in6_addr address,
   const uint32_t *n = network.__u6_addr.__u6_addr32;
 #endif
 */
-  int bits_whole, bits_incomplete;
-  bits_whole = bits >> 5;         // number of whole u32
-  bits_incomplete = bits & 0x1F;  // number of bits in incomplete u32
+  int bits_whole = bits >> 5;         // number of whole u32
+  int bits_incomplete = bits & 0x1F;  // number of bits in incomplete u32
   if (bits_whole) {
     if (memcmp(a, n, bits_whole << 2)) {
       return false;
@@ -53,12 +52,8 @@ static inline int get_ip_version(const char *ip) {
   struct in_addr out4;
   struct in6_addr out6;
   int res = inet_pton(AF_INET, ip, &out4);
-  if (0 == res) {
-    if (1 == inet_pton(AF_INET6, ip, &out6)) {
-      return AF_INET6;
-    } else {
-      return -1;
-    }
+  if ((0 == res) && (1 == inet_pton(AF_INET6, ip, &out6))) {
+    return AF_INET6;
   } else if (1 == res) {
     return AF_INET;
   } else {
@@ -66,7 +61,6 @@ static inline int get_ip_version(const char *ip) {
   }
 }
 
-// TODO factorise a bit this function
 bool cidr_match(const char *ip, const sp_cidr *cidr) {
   struct in_addr out4;
   struct in6_addr out6;
@@ -86,7 +80,6 @@ bool cidr_match(const char *ip, const sp_cidr *cidr) {
       return cidr6_match(out6, cidr->ip.ipv6, cidr->mask);
     default:
       sp_log_err("cidr_match", "Weird ip (%s) family", ip);
-      break;
   }
   return false;
 }
@@ -111,6 +104,8 @@ int get_ip_and_cidr(char *ip, sp_cidr *cidr) {
 
   cidr->ip_version = get_ip_version(ip);
 
+  assert(cidr->ip_version == AF_INET6 || cidr->ip_version == AF_INET);
+
   if (AF_INET == cidr->ip_version) {
     if (cidr->mask > 32) {
       sp_log_err("config", "'%d' isn't a valid ipv4 mask.", cidr->mask);
@@ -119,8 +114,6 @@ int get_ip_and_cidr(char *ip, sp_cidr *cidr) {
     inet_pton(AF_INET, ip, &(cidr->ip.ipv4));
   } else if (AF_INET6 == cidr->ip_version) {
     inet_pton(AF_INET6, ip, &(cidr->ip.ipv6));
-  } else {
-    return -1;
   }
 
   ip[mask - ip] = '/';
