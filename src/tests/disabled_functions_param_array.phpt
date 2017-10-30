@@ -17,23 +17,6 @@ foo($a);
 
 $a=Array("a"=>"abcd");
 foo($a);
-/*
-
-$a=Array("bla"=>"abcdef");
-foo($a);
-
-$a=Array("bla"=>"aaa", "a"=>"eee" );
-foo($a);
-
-$a=Array("test"=>"aaa", "a"=>"fff" );
-foo($a);
-
-$a=Array("test2"=>Array("foo"=>Array("lol"=>"bbb")), "a"=>"cccc");
-foo($a);
-
-$a=Array("test2"=>Array("foo"=>Array("lol"=>"aaa")), "a"=>"dddd");
-foo($a);
- */
 ?>
 --EXPECTF--
 test1

@@ -183,19 +183,14 @@ int sp_log_request(const char* folder) {
 
 static char *zv_str_to_char(zval *zv) {
   zval copy;
-  char *ret;
-
 
   ZVAL_ZVAL(&copy, zv, 1, 0);
-  //  str = zend_string_dup(Z_STR_P(zv), 0);
   for (size_t i = 0; i < Z_STRLEN(copy); i++) {
     if (Z_STRVAL(copy)[i] == '\0') {
       Z_STRVAL(copy)[i] = '0';
     }
   }
-  ret = estrdup(Z_STRVAL(copy));
-  //  zend_string_release(str);
-  return ret;
+  return estrdup(Z_STRVAL(copy));
 }
 
 
