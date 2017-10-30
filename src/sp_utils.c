@@ -86,11 +86,9 @@ static int construct_filename(char* filename, const char* folder) {
   struct timeval tval;
   struct stat st = {0};
 
-  if (-1 == stat(folder, &st)) {
-    if (0 != mkdir(folder, 0700)) {
-      sp_log_err("request_logging", "Unable to create the folder '%s'.",
-        folder);
-    }
+  if (0 > mkdir(folder, 0700) && errno != EEXIST) {
+    sp_log_err("request_logging", "Unable to create the folder '%s'.",
+      folder);
   }
 
   memcpy(filename, folder, strlen(folder));
