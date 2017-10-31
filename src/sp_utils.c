@@ -84,7 +84,6 @@ static int construct_filename(char* filename, const char* folder) {
   time_t t = time(NULL);
   struct tm* tm = localtime(&t);  // FIXME use `localtime_r` instead
   struct timeval tval;
-  struct stat st = {0};
 
   if (0 > mkdir(folder, 0700) && errno != EEXIST) {
     sp_log_err("request_logging", "Unable to create the folder '%s'.",
