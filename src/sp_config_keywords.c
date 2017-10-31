@@ -182,34 +182,25 @@ int parse_disabled_functions(char *line) {
     return ret;
   }
 
-  if (df->value && df->value_r) {
-    sp_log_err("config",
-               "Invalid configuration line: 'sp.disabled_functions%s':"
-               "'.value' and '.regexp' are mutually exclusives on line %zu.",
-               line, sp_line_no);
-    return -1;
-  } else if (df->r_function && df->function) {
-    sp_log_err("config",
-               "Invalid configuration line: 'sp.disabled_functions%s': "
-               "'.r_function' and '.function' are mutually exclusive on line %zu.",
-               line, sp_line_no);
-    return -1;
-  } else if (df->r_filename && df->filename) {
-    sp_log_err("config",
-               "Invalid configuration line: 'sp.disabled_functions%s':"
-               "'.r_filename' and '.filename' are mutually exclusive on line %zu.",
-               line, sp_line_no);
-    return -1;
-  } else if (1 < ((df->r_param?1:0) + (df->param?1:0) + ((-1 != df->pos)?1:0))) {
+#define MUTUALLY_EXCLUSIVE(X, Y, STR1, STR2) \
+  if (X && Y) { \
+    sp_log_err("config", \
+               "Invalid configuration line: 'sp.disabled_functions%s': " \
+               "'.%s' and '.%s' are mutually exclusive on line %zu.", \
+               line, STR1, STR2, sp_line_no); \
+    return 1;\
+  }
+
+  MUTUALLY_EXCLUSIVE(df->value, df->value_r, "value", "regexp");
+  MUTUALLY_EXCLUSIVE(df->r_function, df->function, "r_function", "function");
+  MUTUALLY_EXCLUSIVE(df->filename, df->r_filename, "r_filename", "filename");
+  MUTUALLY_EXCLUSIVE(df->ret, df->r_ret, "r_ret", "ret");
+#undef MUTUALLY_EXCLUSIVE
+
+  if (1 < ((df->r_param?1:0) + (df->param?1:0) + ((-1 != df->pos)?1:0))) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                "'.r_param', '.param' and '.pos' are mutually exclusive on line %zu.",
-               line, sp_line_no);
-    return -1;
-  } else if (df->r_ret && df->ret) {
-    sp_log_err("config",
-               "Invalid configuration line: 'sp.disabled_functions%s':"
-               "'.r_ret' and '.ret' are mutually exclusive on line %zu.",
                line, sp_line_no);
     return -1;
   } else if ((df->r_ret || df->ret) && (df->r_param || df->param)) {
