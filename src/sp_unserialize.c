@@ -34,7 +34,6 @@ PHP_FUNCTION(sp_serialize) {
   memcpy(ZSTR_VAL(res), Z_STRVAL_P(return_value), Z_STRLEN_P(return_value));
   memcpy(ZSTR_VAL(res) + Z_STRLEN_P(return_value), Z_STRVAL(hmac),
          Z_STRLEN(hmac));
-  ZSTR_VAL(res)[len] = '\0';
 
   /* Append the computed HMAC to the serialized data. */
   return_value->value.str = res;
