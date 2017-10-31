@@ -94,7 +94,6 @@ typedef struct {
   sp_node_t *var_array_keys;
 
   bool allow;
-  bool drop;
 
   char *var;
 
