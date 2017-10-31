@@ -143,7 +143,7 @@ int parse_cookie_encryption(char *line) {
 
 int parse_disabled_functions(char *line) {
   int ret = 0;
-  bool enable = true, disable = false;
+  bool enable = true, disable = false, allow = false, drop = false;
   char *pos = NULL;
   char *line_number = NULL;
   sp_disabled_function *df = pecalloc(sizeof(*df), 1, 1);
@@ -159,8 +159,8 @@ int parse_disabled_functions(char *line) {
       {parse_str, SP_TOKEN_FUNCTION, &(df->function)},
       {parse_regexp, SP_TOKEN_FUNCTION_REGEXP, &(df->r_function)},
       {parse_str, SP_TOKEN_DUMP, &(df->dump)},
-      {parse_empty, SP_TOKEN_ALLOW, &(df->allow)},
-      {parse_empty, SP_TOKEN_DROP, &(df->drop)},
+      {parse_empty, SP_TOKEN_ALLOW, &(allow)},
+      {parse_empty, SP_TOKEN_DROP, &(drop)},
       {parse_str, SP_TOKEN_HASH, &(df->hash)},
       {parse_str, SP_TOKEN_PARAM, &(df->param)},
       {parse_regexp, SP_TOKEN_VALUE_REGEXP, &(df->value_r)},
@@ -224,10 +224,10 @@ int parse_disabled_functions(char *line) {
                " must take a function name on line %zu.",
                line, sp_line_no);
     return -1;
-  } else if (!(df->allow ^ df->drop)) {
+  } else if (!(allow ^ drop)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s': The "
-               "rule must either be a `drop` or and `allow` one on line %zu.",
+               "rule must either be a `drop` or `allow` one on line %zu.",
                line, sp_line_no);
     return -1;
   }
@@ -253,6 +253,8 @@ int parse_disabled_functions(char *line) {
       return -1;
     }
   }
+
+  df->allow = allow;
 
   if (df->function) {
     df->functions_list = parse_functions_list(df->function);
