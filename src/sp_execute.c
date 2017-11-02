@@ -53,9 +53,9 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   if (true == should_disable(execute_data)) {
     sp_terminate();
   }
-
+  
   if (execute_data->func->op_array.type == ZEND_EVAL_CODE) {
-    const sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
+    sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
     is_builtin_matching(zend_get_executed_filename(), "eval", NULL, config);
   }
 
@@ -63,9 +63,8 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
     if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
       terminate_if_writable(ZSTR_VAL(execute_data->func->op_array.filename));
     }
-}
+  }
 
-execute:
   orig_execute_ex(execute_data);
 }
 
@@ -81,7 +80,7 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
       if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
         terminate_if_writable(filename);
       }
-      const sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
+      sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
       is_builtin_matching(filename, "include", "inclusion path", config);
   }
 
