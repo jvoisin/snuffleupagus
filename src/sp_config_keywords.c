@@ -182,6 +182,7 @@ int parse_disabled_functions(char *line) {
     return ret;
   }
 
+#define MUTUALLY_EXCLUSIVE(X, Y, STR1, STR2) \
   if (X && Y) { \
     sp_log_err("config", \
                "Invalid configuration line: 'sp.disabled_functions%s': " \
@@ -214,6 +215,12 @@ int parse_disabled_functions(char *line) {
                " must take a function name on line %zu.",
                line, sp_line_no);
     return -1;
+  } else if (df->filename && *df->filename != '/') {
+     sp_log_err("config",
+                "Invalid configuration line: 'sp.disabled_functions%s':"
+                "'.filename' must be an absolute path on line %zu.",
+                line, sp_line_no);
+     return -1;
   } else if (!(allow ^ drop)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s': The "
