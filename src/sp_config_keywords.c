@@ -197,7 +197,7 @@ int parse_disabled_functions(char *line) {
   MUTUALLY_EXCLUSIVE(df->ret, df->r_ret, "r_ret", "ret");
 #undef MUTUALLY_EXCLUSIVE
 
-  if (1 < ((df->r_param?1:0) + (df->param?1:0) + ((-1 != df->pos)?1:0))) {
+ if (1 < ((df->r_param?1:0) + (df->param?1:0) + ((-1 != df->pos)?1:0))) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                "'.r_param', '.param' and '.pos' are mutually exclusive on line %zu.",
@@ -215,6 +215,12 @@ int parse_disabled_functions(char *line) {
                " must take a function name on line %zu.",
                line, sp_line_no);
     return -1;
+  } else if (df->filename && *df->filename != '/') {
+     sp_log_err("config",
+                "Invalid configuration line: 'sp.disabled_functions%s':"
+                "'.filename' must be an absolute path on line %zu.",
+                line, sp_line_no);
+     return -1;
   } else if (!(allow ^ drop)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s': The "
@@ -244,7 +250,6 @@ int parse_disabled_functions(char *line) {
       return -1;
     }
   }
-
   df->allow = allow;
 
   if (df->function) {
