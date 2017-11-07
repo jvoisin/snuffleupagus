@@ -8,6 +8,7 @@ ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 static void (*orig_execute_ex)(zend_execute_data *execute_data);
 static int (*orig_zend_stream_open)(const char *filename,
                                              zend_file_handle *handle);
+static int (*orig_zend_write)(const char *str, size_t len);
 
 // FIXME handle symlink
 ZEND_COLD static inline void terminate_if_writable(const char *filename) {
@@ -68,10 +69,40 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
     if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
       terminate_if_writable(ZSTR_VAL(execute_data->func->op_array.filename));
     }
-}
+  }
 
 execute:
   orig_execute_ex(execute_data);
+}
+
+static int hook_zend_write(const char *str, size_t len) {
+  const sp_node_t* config =
+    SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions;
+
+  if (!str) {
+    goto end;
+  }
+
+  while (config) {
+    sp_disabled_function *config_node = (sp_disabled_function*)(config->data);
+    if (config_node && config_node->function) {
+      if (0 == strcmp("echo", config_node->function)) {
+        if (config_node->allow) {
+          break;
+        } else if ((!config_node->value && !config_node->value_r) ||
+                   (true == sp_match_value(str, config_node->value, config_node->value_r))) {
+          sp_log_disable("echo", NULL, str, config_node);
+          if (false == config_node->simulation) {
+            sp_terminate();
+          }
+        }
+      }
+    }
+    config = config->next;
+  }
+
+end:
+  return orig_zend_write(str, len);
 }
 
 static int sp_stream_open(const char *filename, zend_file_handle *handle) {
@@ -103,6 +134,11 @@ int hook_execute(void) {
   /* zend_stream_open_function is used FIXME */
   orig_zend_stream_open = zend_stream_open_function;
   zend_stream_open_function = sp_stream_open;
+
+  /* zend_write is used for "echo" and "print",
+   * so it is used every time php output something (almost). */
+  orig_zend_write = zend_write;
+  zend_write = hook_zend_write;
 
   /* zend_execute_internal is used for "indirect" functions call,
    * like array_map or call_user_func. */
