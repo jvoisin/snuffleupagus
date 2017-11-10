@@ -36,7 +36,7 @@ static void is_builtin_matching(const char * const filename, char* function_name
 
   while (config) {
     sp_disabled_function *config_node = (sp_disabled_function*)(config->data);
-    if (true == sp_match_value(filename, config_node->value, config_node->value_r)) {
+    if (true == sp_match_value(filename, config_node->filename, config_node->r_filename)) {
       if (true == config_node->allow) {
         return;
       }
