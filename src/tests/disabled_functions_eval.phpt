@@ -11,4 +11,4 @@ eval('$var = 1337 + 1337;');
 print("Variable: $var\n");
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'eval' in %a/tests/disabled_functions_eval.php(3) : eval()'d code:1 has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'eval' in %a/tests/disabled_functions_eval.php:1 has been disabled.

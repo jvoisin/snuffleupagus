@@ -56,7 +56,21 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   
   if (execute_data->func->op_array.type == ZEND_EVAL_CODE) {
     sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
-    is_builtin_matching(zend_get_executed_filename(), "eval", NULL, config);
+    char *filename = (char *)zend_get_executed_filename();
+    size_t i = strlen(filename) - 1;
+    int count = 0;
+    //ghetto as fuck
+    while (i) {
+      if (filename[i] == '(') {
+	if (count == 1) {
+	  filename[i] = 0;
+	  break;
+	}
+	count++;
+      }
+      i--;
+    }
+    is_builtin_matching(filename, "eval", NULL, config);
   }
 
   if (NULL != execute_data->func->op_array.filename) {
