@@ -284,6 +284,10 @@ The ``param`` filter is also able to do some dereferencing:
 - The ``var`` filter will walk the calltrace until it finds the variable name, or the end of the calltrace,
   allowing the filter to match global variables: ``.var("_GET[param]")`` will match on the GET parameter ``param``.
 
+The ``filename`` filter requires a leading ``/``, since paths are absolutes (like ``/var/www/mywebsite/lib/parse.php``).
+If you would like to have only one configuration file for several vhost in different folders,
+you can use the the ``filename_r`` directive to match on the filename (like ``/lib/parse\.php``).
+
 For clarity, the presence of the ``allow`` or ``drop`` action is **mandatory**.
 
 .. warning::
