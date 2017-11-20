@@ -41,6 +41,8 @@ static inline void generate_key(unsigned char *key) {
 
 int decrypt_cookie(zval *pDest, int num_args, va_list args,
                    zend_hash_key *hash_key) {
+  const sp_node_t* config =
+      SNUFFLEUPAGUS_G(config).config_cookie->cookies;
   unsigned char key[crypto_secretbox_KEYBYTES] = {0};
   size_t value_len;
   zend_string *debase64;
@@ -48,12 +50,19 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
   int ret = 0;
 
   /* If the cookie isn't in the conf, it shouldn't be encrypted. */
-  if (0 ==
-      zend_hash_exists(SNUFFLEUPAGUS_G(config).config_cookie_encryption->names,
-                       hash_key->key)) {
-    return ZEND_HASH_APPLY_KEEP;
+  while (config) {
+    sp_cookie const* const config_node =
+      (sp_cookie*)(config->data);
+    if (config_node->encrypt) {
+      if (0 == strcmp(ZSTR_VAL(hash_key->key), config_node->name)) {
+	goto decrypt;
+      }
+    }
+    config = config->next;
   }
+  return ZEND_HASH_APPLY_KEEP;
 
+decrypt:
   generate_key(key);
 
   value_len = php_url_decode(Z_STRVAL_P(pDest), Z_STRLEN_P(pDest));
@@ -135,10 +144,13 @@ static zend_string *encrypt_data(char *data, unsigned long long data_len) {
 
 PHP_FUNCTION(sp_setcookie) {
   zval params[7] = { 0 };
-  zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL;
+  zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL, *samesite = NULL;
   zend_long expires = 0;
   zend_bool secure = 0, httponly = 0;
   zval ret_val;
+  const sp_node_t *config =
+      SNUFFLEUPAGUS_G(config).config_cookie->cookies;
+  const sp_cookie *cookie_node = NULL;
   zval func_name;
 
 
@@ -170,14 +182,20 @@ PHP_FUNCTION(sp_setcookie) {
   /* If the cookie's value is encrypted, it won't be usable by
    * javascript anyway.
    */
-  if (zend_hash_exists(SNUFFLEUPAGUS_G(config).config_cookie_encryption->names,
-                       name) > 0) {
-    httponly = 1;
+  while (config) {
+    cookie_node = (sp_cookie*)(config->data);
+    if (0 == strcmp(ZSTR_VAL(name), cookie_node->name)) {
+      if (cookie_node->encrypt) {
+	httponly = 1;
+      }
+      break;
+    }
+    cookie_node = NULL;
+    config = config->next;
   }
 
   /* Shall we encrypt the cookie's value? */
-  if (zend_hash_exists(SNUFFLEUPAGUS_G(config).config_cookie_encryption->names,
-                       name) > 0 && value) {
+  if (httponly && value) {
     zend_string *encrypted_data = encrypt_data(value->val, value->len);
     ZVAL_STR_COPY(&params[1], encrypted_data);
     zend_string_release(encrypted_data);
@@ -188,8 +206,19 @@ PHP_FUNCTION(sp_setcookie) {
   ZVAL_STRING(&func_name, "setcookie");
   ZVAL_STR_COPY(&params[0], name);
   ZVAL_LONG(&params[2], expires);
-  if (path) {
+  if (path && (!cookie_node || !cookie_node->samesite)) {
     ZVAL_STR_COPY(&params[3], path);
+  }
+  else if (cookie_node && cookie_node->samesite) {
+    if (!path) {
+      path = zend_string_init("", 0, 0);
+    }
+    samesite = zend_string_extend(path, ZSTR_LEN(path) + strlen(SAMESITE_COOKIE_FORMAT) + strlen(cookie_node->samesite) + 1, 0);
+    memcpy(ZSTR_VAL(samesite) + ZSTR_LEN(path), SAMESITE_COOKIE_FORMAT, strlen(SAMESITE_COOKIE_FORMAT));
+    memcpy(ZSTR_VAL(samesite) + ZSTR_LEN(path) + strlen(SAMESITE_COOKIE_FORMAT), cookie_node->samesite, strlen(cookie_node->samesite));
+    memcpy(ZSTR_VAL(samesite) + ZSTR_LEN(path) + strlen(SAMESITE_COOKIE_FORMAT) + strlen(cookie_node->samesite), "\0", 1);
+    ZVAL_STR_COPY(&params[3], samesite);
+    zend_string_release(path);
   }
   if (domain) {
     ZVAL_STR_COPY(&params[4], domain);

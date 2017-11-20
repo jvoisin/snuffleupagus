@@ -107,10 +107,12 @@ int parse_global(char *line) {
 
 int parse_cookie_encryption(char *line) {
   int ret = 0;
-  char *name = NULL;
+  sp_cookie *cookie = pecalloc(sizeof(*cookie), 1, 1);
 
   sp_config_functions sp_config_funcs_cookie_encryption[] = {
-      {parse_str, SP_TOKEN_NAME, &name},
+      {parse_str, SP_TOKEN_NAME, &cookie->name},
+      {parse_str, SP_TOKEN_SAMESITE, &cookie->samesite},
+      {parse_empty, SP_TOKEN_ENCRYPT, &cookie->encrypt},
       {0}};
 
   ret = parse_keywords(sp_config_funcs_cookie_encryption, line);
@@ -118,25 +120,32 @@ int parse_cookie_encryption(char *line) {
     return ret;
   }
 
-  if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)) {
-    sp_log_err("config", "You're trying to use the cookie encryption feature"
-      "on line %zu without having set the `.cookie_env_var` option in"
-      "`sp.global`: please set it first.", sp_line_no);
-    return -1;
-  } else if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
-    sp_log_err("config", "You're trying to use the cookie encryption feature"
-      "on line %zu without having set the `.encryption_key` option in"
-      "`sp.global`: please set it first.", sp_line_no);
-    return -1;
-  } else if (0 == strlen(name)) {
+  if (cookie->encrypt) {
+    if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)) {
+      sp_log_err("config", "You're trying to use the cookie encryption feature"
+	"on line %zu without having set the `.cookie_env_var` option in"
+	"`sp.global`: please set it first.", sp_line_no);
+      return -1;
+    } else if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
+      sp_log_err("config", "You're trying to use the cookie encryption feature"
+	"on line %zu without having set the `.encryption_key` option in"
+	"`sp.global`: please set it first.", sp_line_no);
+      return -1;
+    }
+  } else if (0 == strlen(cookie->name)) {
     sp_log_err("config", "You must specify a cookie name to encrypt on line "
+      "%zu.", sp_line_no);
+    return -1;
+  } else if (cookie->samesite && 0 != strcmp(cookie->samesite, SP_TOKEN_SAMESITE_LAX) &&
+	     0 != strcmp(cookie->samesite, SP_TOKEN_SAMESITE_STRICT)) {
+    sp_log_err("config", "You must specify a valid value to samesite on line "
       "%zu.", sp_line_no);
     return -1;
   }
 
-  zend_hash_str_add_empty_element(
-      SNUFFLEUPAGUS_G(config).config_cookie_encryption->names, name,
-      strlen(name));
+  sp_list_insert(
+      SNUFFLEUPAGUS_G(config).config_cookie->cookies,
+      cookie);
 
   return SUCCESS;
 }

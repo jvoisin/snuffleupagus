@@ -55,7 +55,12 @@ typedef struct { bool enable; } sp_config_auto_cookie_secure;
 
 typedef struct { bool enable; } sp_config_disable_xxe;
 
-typedef struct { HashTable *names; } sp_config_cookie_encryption;
+typedef struct {
+  char *name;
+  char *samesite;
+
+  bool encrypt;
+} sp_cookie;
 
 typedef struct {
   bool enable;
@@ -105,6 +110,10 @@ typedef struct {
 } sp_config_disabled_functions;
 
 typedef struct {
+  sp_node_t *cookies;  // list of sp_cookie
+} sp_config_cookie;
+
+typedef struct {
   sp_node_t *construct_include; // list of rules for `(include|require)_(once)?`
   sp_node_t *construct_echo;
 } sp_config_disabled_constructs;
@@ -122,7 +131,7 @@ typedef struct {
   sp_config_disabled_functions *config_disabled_functions_ret;
   sp_config_readonly_exec *config_readonly_exec;
   sp_config_upload_validation *config_upload_validation;
-  sp_config_cookie_encryption *config_cookie_encryption;
+  sp_config_cookie *config_cookie;
   sp_config_global *config_snuffleupagus;
   sp_config_auto_cookie_secure *config_auto_cookie_secure;
   sp_config_global_strict *config_global_strict;
@@ -144,7 +153,7 @@ typedef struct {
 #define SP_TOKEN_BASE "sp"
 
 #define SP_TOKEN_AUTO_COOKIE_SECURE ".auto_cookie_secure"
-#define SP_TOKEN_COOKIE_ENCRYPTION ".cookie_encryption"
+#define SP_TOKEN_COOKIE_ENCRYPTION ".cookie"
 #define SP_TOKEN_DISABLE_FUNC ".disable_function"
 #define SP_TOKEN_GLOBAL ".global"
 #define SP_TOKEN_GLOBAL_STRICT ".global_strict"
@@ -187,7 +196,13 @@ typedef struct {
 #define SP_TOKEN_LINE_NUMBER ".line("
 
 // cookies encryption
-#define SP_TOKEN_NAME ".cookie("
+#define SP_TOKEN_NAME ".name("
+
+// cookies samesite
+#define SP_TOKEN_SAMESITE ".samesite("
+#define SP_TOKEN_ENCRYPT ".encrypt("
+#define SP_TOKEN_SAMESITE_LAX "lax"
+#define SP_TOKEN_SAMESITE_STRICT "strict"
 
 // Global configuration options
 #define SP_TOKEN_ENCRYPTION_KEY ".secret_key("
