@@ -135,20 +135,9 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
 #if defined(COMPILE_DL_SNUFFLEUPAGUS) && defined(ZTS)
   ZEND_TSRMLS_CACHE_UPDATE();
 #endif
-  const sp_node_t* config =
-      SNUFFLEUPAGUS_G(config).config_cookie->cookies;
-
   if (NULL != SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
-    while (config) {
-      sp_cookie const* const config_node =
-	(sp_cookie*)(config->data);
-      if (config_node && config_node->encrypt) {
-	zend_hash_apply_with_arguments(
-	    Z_ARRVAL(PG(http_globals)[TRACK_VARS_COOKIE]), decrypt_cookie, 0);
-	break;
-      }
-      config = config->next;
-    }
+    zend_hash_apply_with_arguments(
+	Z_ARRVAL(PG(http_globals)[TRACK_VARS_COOKIE]), decrypt_cookie, 0);
   }
   return SUCCESS;
 }
@@ -194,8 +183,10 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   hook_disabled_functions();
   hook_execute();
 
-  if (SNUFFLEUPAGUS_G(config).config_unserialize->enable) {
-    hook_serialize();
+  if (NULL != SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
+    if (SNUFFLEUPAGUS_G(config).config_unserialize->enable) {
+      hook_serialize();
+    }
   }
   hook_cookies();
 
