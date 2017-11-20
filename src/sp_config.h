@@ -110,6 +110,7 @@ typedef struct {
 } sp_config_disabled_functions;
 
 typedef struct {
+  // not using an HashTable, as i don't know how to use it.
   sp_node_t *cookies;  // list of sp_cookie
 } sp_config_cookie;
 

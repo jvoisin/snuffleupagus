@@ -194,12 +194,10 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   hook_disabled_functions();
   hook_execute();
 
-  if (NULL != SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
-    if (SNUFFLEUPAGUS_G(config).config_unserialize->enable) {
-      hook_serialize();
-    }
-    hook_cookies();
+  if (SNUFFLEUPAGUS_G(config).config_unserialize->enable) {
+    hook_serialize();
   }
+  hook_cookies();
 
   if (true == SNUFFLEUPAGUS_G(config).config_global_strict->enable) {
     if (!zend_get_extension(PHP_SNUFFLEUPAGUS_EXTNAME)) {

@@ -206,20 +206,6 @@ PHP_FUNCTION(sp_setcookie) {
   ZVAL_STRING(&func_name, "setcookie");
   ZVAL_STR_COPY(&params[0], name);
   ZVAL_LONG(&params[2], expires);
-  if (path && (!cookie_node || !cookie_node->samesite)) {
-    ZVAL_STR_COPY(&params[3], path);
-  }
-  else if (cookie_node && cookie_node->samesite) {
-    if (!path) {
-      path = zend_string_init("", 0, 0);
-    }
-    samesite = zend_string_extend(path, ZSTR_LEN(path) + strlen(SAMESITE_COOKIE_FORMAT) + strlen(cookie_node->samesite) + 1, 0);
-    memcpy(ZSTR_VAL(samesite) + ZSTR_LEN(path), SAMESITE_COOKIE_FORMAT, strlen(SAMESITE_COOKIE_FORMAT));
-    memcpy(ZSTR_VAL(samesite) + ZSTR_LEN(path) + strlen(SAMESITE_COOKIE_FORMAT), cookie_node->samesite, strlen(cookie_node->samesite));
-    memcpy(ZSTR_VAL(samesite) + ZSTR_LEN(path) + strlen(SAMESITE_COOKIE_FORMAT) + strlen(cookie_node->samesite), "\0", 1);
-    ZVAL_STR_COPY(&params[3], samesite);
-    zend_string_release(path);
-  }
   if (domain) {
     ZVAL_STR_COPY(&params[4], domain);
   }
@@ -228,6 +214,24 @@ PHP_FUNCTION(sp_setcookie) {
   }
   if (httponly) {
     ZVAL_LONG(&params[6], httponly);
+  }
+
+  /* param[3](path) is concatenated to path= and is not filtered, we can inject
+  the samesite parameter here */
+  if (path && (!cookie_node || !cookie_node->samesite)) {
+    ZVAL_STR_COPY(&params[3], path);
+  }
+  else if (cookie_node && cookie_node->samesite) {
+    if (!path) {
+      path = zend_string_init("", 0, 0);
+    }
+    /* Concatenating everything, as is in PHP internals */
+    samesite = zend_string_extend(path, ZSTR_LEN(path) + strlen(SAMESITE_COOKIE_FORMAT) + strlen(cookie_node->samesite) + 1, 0);
+    memcpy(ZSTR_VAL(samesite) + ZSTR_LEN(path), SAMESITE_COOKIE_FORMAT, strlen(SAMESITE_COOKIE_FORMAT));
+    memcpy(ZSTR_VAL(samesite) + ZSTR_LEN(path) + strlen(SAMESITE_COOKIE_FORMAT), cookie_node->samesite, strlen(cookie_node->samesite));
+    memcpy(ZSTR_VAL(samesite) + ZSTR_LEN(path) + strlen(SAMESITE_COOKIE_FORMAT) + strlen(cookie_node->samesite), "\0", 1);
+    ZVAL_STR_COPY(&params[3], samesite);
+    zend_string_release(path);
   }
 
   /* This is the _fun_ part: because PHP is utterly idiotic and nonsensical,
