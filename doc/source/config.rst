@@ -115,6 +115,19 @@ It can either be ``enabled`` or ``disabled``.
   sp.auto_cookie_secure.enable();
   sp.auto_cookie_secure.disable();
 
+cookie_samesite
+^^^^^^^^^^^^^^^^
+ * `default: disabled`
+ 
+``samesite`` will add the ``samesite`` attribute to a cookies.
+
+It can either be ``enabled`` or ``disabled``.
+
+::
+
+  sp.cookie.name("cookie1").samesite("lax");
+  sp.cookie.name("cookie2").samesite("strict");;
+
 .. _cookie-encryption_config:
 
 cookie_encryption
@@ -137,8 +150,8 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 
 ::
 
-  sp.cookie_encryption.cookie("my_cookie_name");
-  sp.cookie_encryption.cookie("another_cookie_name");
+  sp.cookie.name("my_cookie_name").encrypt();
+  sp.cookie.name("another_cookie_name").encrypt();
 
 Choosing the proper environment variable
 """"""""""""""""""""""""""""""""""""""""
