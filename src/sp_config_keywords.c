@@ -132,8 +132,13 @@ int parse_cookie_encryption(char *line) {
 	"`sp.global`: please set it first.", sp_line_no);
       return -1;
     }
-  } else if (0 == strlen(cookie->name)) {
-    sp_log_err("config", "You must specify a cookie name to encrypt on line "
+  } else if (!cookie->samesite) {
+    sp_log_err("config", "You must specify a at least one action to a cookie on line "
+      "%zu.", sp_line_no);
+    return -1;
+  }
+  if (0 == strlen(cookie->name)) {
+    sp_log_err("config", "You must specify a cookie name on line "
       "%zu.", sp_line_no);
     return -1;
   } else if (cookie->samesite && 0 != strcmp(cookie->samesite, SP_TOKEN_SAMESITE_LAX) &&
