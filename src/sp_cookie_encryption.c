@@ -53,7 +53,7 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
   while (config) {
     sp_cookie const* const config_node =
       (sp_cookie*)(config->data);
-    if (config_node->encrypt) {
+    if (config_node && config_node->encrypt) {
       if (0 == strcmp(ZSTR_VAL(hash_key->key), config_node->name)) {
 	goto decrypt;
       }
