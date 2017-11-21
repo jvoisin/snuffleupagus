@@ -201,8 +201,8 @@ typedef struct {
 // cookies samesite
 #define SP_TOKEN_SAMESITE ".samesite("
 #define SP_TOKEN_ENCRYPT ".encrypt("
-#define SP_TOKEN_SAMESITE_LAX "lax"
-#define SP_TOKEN_SAMESITE_STRICT "strict"
+#define SP_TOKEN_SAMESITE_LAX "Lax"
+#define SP_TOKEN_SAMESITE_STRICT "Strict"
 
 // Global configuration options
 #define SP_TOKEN_ENCRYPTION_KEY ".secret_key("
