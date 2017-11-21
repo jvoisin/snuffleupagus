@@ -55,10 +55,10 @@ typedef struct { bool enable; } sp_config_auto_cookie_secure;
 
 typedef struct { bool enable; } sp_config_disable_xxe;
 
-typedef struct {
-  char *name;
-  char *samesite;
+enum samesite_type {strict=1, lax=2};
 
+typedef struct {
+  enum samesite_type samesite;
   bool encrypt;
 } sp_cookie;
 
@@ -110,8 +110,7 @@ typedef struct {
 } sp_config_disabled_functions;
 
 typedef struct {
-  // not using an HashTable, as i don't know how to use it.
-  sp_node_t *cookies;  // list of sp_cookie
+  HashTable *cookies;  // HashTable of sp_cookie
 } sp_config_cookie;
 
 typedef struct {

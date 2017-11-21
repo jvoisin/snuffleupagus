@@ -119,9 +119,13 @@ cookie_samesite
 ^^^^^^^^^^^^^^^^
  * `default: disabled`
  
-``samesite`` will add the `samesite <https://tools.ietf.org/html/draft-west-first-party-cookies-07>`_ attribute to a cookies. It `prevents CSRF <https://chloe.re/2016/04/13/goodbye-csrf-samesite-to-the-rescue/>`_ but is not compatible with `all web browsers <https://caniuse.com/#search=samesite>`_
+``samesite`` will add the `samesite <https://tools.ietf.org/html/draft-west-first-party-cookies-07>`_ attribute to a cookies. It `prevents CSRF <https://chloe.re/2016/04/13/goodbye-csrf-samesite-to-the-rescue/>`_ but is not compatible with `all web browsers <https://caniuse.com/#search=samesite>`_ yet.
 
-It can either be ``enabled`` or ``disabled``.
+It can either be ``strict``, ``lax`` or ``disabled``.
+
+The ``Lax`` (relax?) attribute solves the above issue by only stopping cookies to be sent cross-domain if it uses "dangerous" HTTP-methods, in this case POST.
+
+``Strict`` is the most robust protection and will probably protect against all CSRF-attacks. However it's far from user friendly because it [tries] to protect against CSRF that is in GET.
 
 ::
 
