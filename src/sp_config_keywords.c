@@ -145,13 +145,13 @@ int parse_cookie(char *line) {
     return -1;
   }
   if (samesite) {
-    if (0 == strcmp(samesite, SP_TOKEN_SAMESITE_LAX)) {
+    if (0 == strcasecmp(samesite, SP_TOKEN_SAMESITE_LAX)) {
       cookie->samesite = lax;
-    } else if (0 == strcmp(samesite, SP_TOKEN_SAMESITE_STRICT)) {
+    } else if (0 == strcasecmp(samesite, SP_TOKEN_SAMESITE_STRICT)) {
       cookie->samesite = strict;
     } else {
-      sp_log_err("config", "You must specify a valid value to samesite on line "
-	"%zu.", sp_line_no);
+      sp_log_err("config", "%s is an invalid value to samesite (expected %s or %s) on line "
+	"%zu.", samesite, SP_TOKEN_SAMESITE_LAX, SP_TOKEN_SAMESITE_STRICT, sp_line_no);
       return -1;
     }
   }
