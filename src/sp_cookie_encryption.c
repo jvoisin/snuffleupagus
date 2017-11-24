@@ -45,12 +45,12 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
   size_t value_len;
   zend_string *debase64;
   unsigned char *decrypted;
+  sp_cookie *cookie = zend_hash_find_ptr(SNUFFLEUPAGUS_G(config).config_cookie->cookies,
+					 hash_key->key);
   int ret = 0;
 
   /* If the cookie isn't in the conf, it shouldn't be encrypted. */
-  if (0 ==
-      zend_hash_exists(SNUFFLEUPAGUS_G(config).config_cookie_encryption->names,
-                       hash_key->key)) {
+  if (!cookie || !cookie->encrypt) {
     return ZEND_HASH_APPLY_KEEP;
   }
 
@@ -135,11 +135,13 @@ static zend_string *encrypt_data(char *data, unsigned long long data_len) {
 
 PHP_FUNCTION(sp_setcookie) {
   zval params[7] = { 0 };
-  zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL;
+  zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL, *samesite = NULL;
   zend_long expires = 0;
   zend_bool secure = 0, httponly = 0;
   zval ret_val;
+  const sp_cookie *cookie_node = NULL;
   zval func_name;
+  char *cookie_samesite;
 
 
   // LCOV_EXCL_BR_START
@@ -167,17 +169,18 @@ PHP_FUNCTION(sp_setcookie) {
     }
   }
 
+  cookie_node =
+    zend_hash_find_ptr(SNUFFLEUPAGUS_G(config).config_cookie->cookies, name);
+
   /* If the cookie's value is encrypted, it won't be usable by
    * javascript anyway.
    */
-  if (zend_hash_exists(SNUFFLEUPAGUS_G(config).config_cookie_encryption->names,
-                       name) > 0) {
+  if (cookie_node && cookie_node->encrypt) {
     httponly = 1;
   }
 
   /* Shall we encrypt the cookie's value? */
-  if (zend_hash_exists(SNUFFLEUPAGUS_G(config).config_cookie_encryption->names,
-                       name) > 0 && value) {
+  if (httponly && value) {
     zend_string *encrypted_data = encrypt_data(value->val, value->len);
     ZVAL_STR_COPY(&params[1], encrypted_data);
     zend_string_release(encrypted_data);
@@ -188,9 +191,6 @@ PHP_FUNCTION(sp_setcookie) {
   ZVAL_STRING(&func_name, "setcookie");
   ZVAL_STR_COPY(&params[0], name);
   ZVAL_LONG(&params[2], expires);
-  if (path) {
-    ZVAL_STR_COPY(&params[3], path);
-  }
   if (domain) {
     ZVAL_STR_COPY(&params[4], domain);
   }
@@ -199,6 +199,23 @@ PHP_FUNCTION(sp_setcookie) {
   }
   if (httponly) {
     ZVAL_LONG(&params[6], httponly);
+  }
+
+  /* param[3](path) is concatenated to path= and is not filtered, we can inject
+  the samesite parameter here */
+  if (cookie_node && cookie_node->samesite) {
+    if (!path) {
+      path = zend_string_init("", 0, 0);
+    }
+    cookie_samesite = (cookie_node->samesite == lax) ? SAMESITE_COOKIE_FORMAT SP_TOKEN_SAMESITE_LAX
+      : SAMESITE_COOKIE_FORMAT SP_TOKEN_SAMESITE_STRICT;
+    /* Concatenating everything, as is in PHP internals */
+    samesite = zend_string_extend(path, ZSTR_LEN(path) + strlen(cookie_samesite) + 1, 0);
+    memcpy(ZSTR_VAL(samesite) + ZSTR_LEN(path), cookie_samesite, strlen(cookie_samesite) + 1);
+    ZVAL_STR_COPY(&params[3], samesite);
+    zend_string_release(path);
+  } else if (path) {
+    ZVAL_STR_COPY(&params[3], path);
   }
 
   /* This is the _fun_ part: because PHP is utterly idiotic and nonsensical,

@@ -115,6 +115,26 @@ It can either be ``enabled`` or ``disabled``.
   sp.auto_cookie_secure.enable();
   sp.auto_cookie_secure.disable();
 
+cookie_samesite
+^^^^^^^^^^^^^^^^
+ * `default: disabled`
+ 
+``samesite`` will add the `samesite <https://tools.ietf.org/html/draft-west-first-party-cookies-07>`_
+attribute to cookies. It `prevents CSRF <https://www.owasp.org/index.php/SameSite>`_
+but is not implemented by `all web browsers <https://caniuse.com/#search=samesite>`_ yet.
+
+It can either be set to ``strict`` or ``lax``:
+
+- The ``lax`` attribute prevents cookies from being sent cross-domain for
+  "dangerous" methods, like ``POST``, ``PUT`` or ``DELETE``.
+
+- The ``strict`` one prevents any cookies from beind sent cross-domain.
+
+::
+
+  sp.cookie.name("cookie1").samesite("lax");
+  sp.cookie.name("cookie2").samesite("strict");;
+
 .. _cookie-encryption_config:
 
 cookie_encryption
@@ -137,8 +157,8 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 
 ::
 
-  sp.cookie_encryption.cookie("my_cookie_name");
-  sp.cookie_encryption.cookie("another_cookie_name");
+  sp.cookie.name("my_cookie_name").encrypt();
+  sp.cookie.name("another_cookie_name").encrypt();
 
 Choosing the proper environment variable
 """"""""""""""""""""""""""""""""""""""""
