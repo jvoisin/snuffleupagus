@@ -160,6 +160,20 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
   sp.cookie.name("my_cookie_name").encrypt();
   sp.cookie.name("another_cookie_name").encrypt();
 
+
+Removing the user-agent part
+""""""""""""""""""""""""""""
+
+Some web browser extensions, such as [uMatrix](https://github.com/gorhill/uMatrix/wiki)
+might be configured to change the user-agent on a regular basis. If you think that
+some of your users might be using configurations like this, you might want to disable
+the mixing of the user-agent in the cookie's encryption key. The simplest way to do
+so is to set the environment variable ``HTTP_USER_AGENT`` to a fixed value before passing
+it to your php process.
+
+We think that this use case is too exotic to be worth implementing as a
+proper configuration directive.
+
 Choosing the proper environment variable
 """"""""""""""""""""""""""""""""""""""""
 
