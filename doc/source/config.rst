@@ -120,7 +120,7 @@ cookie_samesite
  * `default: disabled`
  
 ``samesite`` will add the `samesite <https://tools.ietf.org/html/draft-west-first-party-cookies-07>`_
-attribute to cookies. It `prevents CSRF <https://chloe.re/2016/04/13/goodbye-csrf-samesite-to-the-rescue/>`_
+attribute to cookies. It `prevents CSRF <https://www.owasp.org/index.php/SameSite>`_
 but is not implemented by `all web browsers <https://caniuse.com/#search=samesite>`_ yet.
 
 It can either be set to ``strict`` or ``lax``:
