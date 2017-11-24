@@ -321,6 +321,20 @@ would be to use a different user to run PHP than for administrating the website,
 and using this feature to lock this up.
 
 
+Protection against cross site request forgery
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cross-site request forgery, sometimes abbreviated as *CSRF*,
+is when unauthorised commands are issued from a user that the application trusts.
+For example, if a user is authenticated on a banking website,
+an other site might present something like 
+``<img src="http://mybank.com/transfer?from=user&to=attack&amount=1337EUR">``,
+effectivement transfering money from the user's account to the attacker one.
+
+Snuffleupagus can prevent this (in `supported browsers <https://caniuse.com/#search=samesite>`__)
+by setting the `samesite <https://tools.ietf.org/html/draft-west-first-party-cookies-07>`__
+attribute on cookies.
+
 
 Dumping capabilities
 ^^^^^^^^^^^^^^^^^^^^
