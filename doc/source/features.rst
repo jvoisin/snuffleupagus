@@ -332,7 +332,7 @@ an other site might present something like
 effectivement transfering money from the user's account to the attacker one.
 
 Snuffleupagus can prevent this (in `supported browsers <https://caniuse.com/#search=samesite>`__)
-by setting the `samesite <https://tools.ietf.org/html/draft-west-first-party-cookies-07>`__
+by setting the `samesite <https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02#section-5.3.7>`__
 attribute on cookies.
 
 
