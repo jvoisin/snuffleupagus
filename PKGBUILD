@@ -7,32 +7,27 @@ arch=('i686' 'x86_64')
 license=('LGPL3')
 depends=('php' 'php-fpm')
 checkdepends=()
-source=("$pkgname"::"git+https://github.com/nbs-system/$pkgname.git")
+source=("${pkgname}"::"git+https://github.com/nbs-system/${pkgname}.git")
 md5sums=('SKIP')
 
 pkgver() {
-  cd "$pkgname"
+  cd "${srcdir}/${pkgname}"
   printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
 }
 
 build() {
-  cd "$pkgname/src"
+  cd "${srcdir}/${pkgname}/src"
   phpize
-  ./configure --prefix=/usr --enable-"$pkgname"
+  ./configure --prefix=/usr --enable-"${pkgname}"
   make
 }
 
 check() {
-  cd "$pkgname/src"
-  NO_INTERACTION=1 REPORT_EXIT_STATUS=1 make test
+  NO_INTERACTION=1 REPORT_EXIT_STATUS=1 make -C "${srcdir}/${pkgname}/src" test
 }
 
 package() {
-  cd "$pkgname/src"
-  make INSTALL_ROOT="$pkgdir" install
-  cd ..
-  # remove checkout before merging :D
-  git checkout archlinux_pkg
-  install -D -m644 "config/default.ini" "$pkgdir/etc/php/conf.d/$pkgname.rules"
-  install -D -m644 "config/$pkgname.ini" "$pkgdir/etc/php/conf.d/$pkgname.ini"
+  make -C "${srcdir}/${pkgname}/src" INSTALL_ROOT="${pkgdir}" install
+  install -D -m644 "${srcdir}/${pkgname}/config/default.ini" "${pkgdir}/etc/php/conf.d/${pkgname}.rules"
+  install -D -m644 "${srcdir}/${pkgname}/config/${pkgname}.ini" "${pkgdir}/etc/php/conf.d/${pkgname}.ini"
 }
