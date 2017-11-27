@@ -4,7 +4,7 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-static unsigned int nonce_d = 0;
+static zend_long nonce_d = 0;
 
 static inline void generate_key(unsigned char *key) {
   PHP_SHA256_CTX ctx;
@@ -14,8 +14,8 @@ static inline void generate_key(unsigned char *key) {
   const char *encryption_key =
       SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key;
 
-  /* 32 is the size of a SHA256. */
-  assert(32 == crypto_secretbox_KEYBYTES);
+  assert(32 == crypto_secretbox_KEYBYTES); // 32 is the size of a SHA256.
+  assert(encryption_key); // Encryption key can't be NULL
 
   PHP_SHA256Init(&ctx);
 
@@ -95,11 +95,8 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
 
 /**
   This function will return the `data` of length `data_len` encrypted in the
-  form
-  base64(nonce | encrypted_data) (with `|` being the concatenation
+  form `base64(nonce | encrypted_data)` (with `|` being the concatenation
   operation).
-
-  The `nonce` is time-based.
 */
 static zend_string *encrypt_data(char *data, unsigned long long data_len) {
   const size_t encrypted_msg_len = crypto_secretbox_ZEROBYTES + data_len + 1;
@@ -116,13 +113,16 @@ static zend_string *encrypt_data(char *data, unsigned long long data_len) {
   crypto_secretbox_ZEROBYTES zeroes. */
   memcpy(data_to_encrypt + crypto_secretbox_ZEROBYTES, data, data_len);
 
-  assert(sizeof(size_t) <= crypto_secretbox_NONCEBYTES);
+  assert(sizeof(zend_long) <= crypto_secretbox_NONCEBYTES);
 
   if (0 == nonce_d) {
-    nonce_d = getpid();
+    /* A zend_long should be enough to avoid collisions */
+    if (php_random_int_throw(0, ZEND_LONG_MAX, &nonce_d) == FAILURE) {
+      return NULL;
+    }
   }
   nonce_d++;
-  sscanf((char*)nonce, "%ud", &nonce_d);
+  sscanf((char*)nonce, "%ld", &nonce_d);
 
   memcpy(encrypted_data, nonce, crypto_secretbox_NONCEBYTES);
   crypto_secretbox(encrypted_data + crypto_secretbox_NONCEBYTES,
