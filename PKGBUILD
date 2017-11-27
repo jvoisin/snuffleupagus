@@ -11,7 +11,7 @@ source=("${pkgname}"::"git+https://github.com/nbs-system/${pkgname}.git")
 md5sums=('SKIP')
 
 pkgver() {
-  cat "${srcdir}/${pkgname}/src/php_${pkgname}.h" | sed -n 's/.*PHP_SNUFFLEUPAGUS_VERSION "\(.*\)".*/\1/p' | tr -d ' '
+  sed -n 's/.*PHP_SNUFFLEUPAGUS_VERSION "\(.*\) ".*/\1/p' "${srcdir}/${pkgname}/src/php_${pkgname}.h"
 }
 
 build() {
