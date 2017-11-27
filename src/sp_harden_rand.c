@@ -7,7 +7,9 @@ ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 /* This function is needed because `rand` and `mt_rand` parameters
  * are optional, while the ones from `random_int` aren't. */
 static void random_int_wrapper(INTERNAL_FUNCTION_PARAMETERS) {
-  zend_long min, max, result;
+  zend_long min = 0;
+  zend_long max = PHP_MT_RAND_MAX;
+  zend_long result;
 
   switch (EX_NUM_ARGS()) {
   case 0:
