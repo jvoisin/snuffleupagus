@@ -1,5 +1,5 @@
 pkgname="snuffleupagus"
-pkgver=r142.73c30e3
+pkgver=0.1
 pkgrel=1
 pkgdesc="Snuffleupagus module for PHP7."
 url="https://snuffleupagus.readthedocs.io"
@@ -11,8 +11,7 @@ source=("${pkgname}"::"git+https://github.com/nbs-system/${pkgname}.git")
 md5sums=('SKIP')
 
 pkgver() {
-  cd "${srcdir}/${pkgname}"
-  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+  cat "${srcdir}/${pkgname}/src/php_${pkgname}.h" | sed -n 's/.*PHP_SNUFFLEUPAGUS_VERSION "\(.*\)".*/\1/p' | tr -d ' '
 }
 
 build() {
