@@ -118,7 +118,8 @@ Unserialize-related magic
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 PHP is able to *serialize* arbitrary objects, to easily store them.
-Unfortunately, it is often possible to gain arbitrary code execution upon deserialization
+Unfortunately, as demonstrated by `Stefan Esser <https://twitter.com/i0n1c>`__ in his `Shocking News in PHP Exploitation <https://www.owasp.org/images/f/f6/POC2009-ShockingNewsInPHPExploitation.pdf>`__ and `Utilizing Code Reuse/ROP in PHP
+Application Exploits <https://www.owasp.org/images/9/9e/Utilizing-Code-Reuse-Or-Return-Oriented-Programming-In-PHP-Application-Exploits.pdf>`__ slides, it is often possible to gain arbitrary code execution upon deserialization
 of user-supplied serialized objects.
 
   Do not pass untrusted user input to ``unserialize()`` regardless of the options value of allowed_classes.
@@ -306,7 +307,7 @@ helping to uncover vulnerabilities like the classical
 and various other types mismatch.
 
 This feature is largely inspired from the
-`autostrict <https://github.com/krakjoe/autostrict>`_ module from `krakjoe <krakjoe.ninja>`_.
+`autostrict <https://github.com/krakjoe/autostrict>`_ module from `krakjoe <http://krakjoe.ninja>`__.
 
 
 Preventing execution of writable PHP files
