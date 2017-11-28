@@ -39,6 +39,26 @@ static void is_builtin_matching(const char * const filename, char* function_name
   }
 }
 
+char *get_eval_filename(const char *filename) {
+  size_t i = strlen(filename) - 1;
+  int count = 0;
+  char *clean_filename = estrdup(filename);
+
+  //ghetto as fuck
+  //get the filename in which eval() is called from "foo.php(1) : eval()'d code"
+  while (i) {
+    if (clean_filename[i] == '(') {
+      if (count == 1) {
+	clean_filename[i] = 0;
+	break;
+      }
+      count++;
+    }
+    i--;
+  }
+  return clean_filename;
+}
+
 static void sp_execute_ex(zend_execute_data *execute_data) {
   if (true == should_disable(execute_data, NULL, NULL, NULL)) {
     sp_terminate();
@@ -46,22 +66,9 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   
   if (execute_data->func->op_array.type == ZEND_EVAL_CODE) {
     sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
-    char *filename = (char *)zend_get_executed_filename();
-    size_t i = strlen(filename) - 1;
-    int count = 0;
-    //ghetto as fuck
-    // get the filename in which eval() is called : foo.php(1) : eval()'d code
-    while (i) {
-      if (filename[i] == '(') {
-	if (count == 1) {
-	  filename[i] = 0;
-	  break;
-	}
-	count++;
-      }
-      i--;
-    }
+    char *filename = get_eval_filename((char *)zend_get_executed_filename());
     is_builtin_matching(filename, "eval", NULL, config);
+    efree(filename);
   }
 
   if (NULL != execute_data->func->op_array.filename) {

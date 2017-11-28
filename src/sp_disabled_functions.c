@@ -120,11 +120,18 @@ static sp_node_t *get_config(const char *builtin_name) {
 bool should_disable(zend_execute_data* execute_data, const char *builtin_name, const char *builtin_param,
 		    const char *builtin_param_name) {
   char current_file_hash[SHA256_SIZE * 2] = {0};
-  const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const sp_node_t* config = get_config(builtin_name);      
   char* complete_path_function = get_complete_function_path(execute_data);
   char const* client_ip = sp_getenv("REMOTE_ADDR");
+  const char* current_filename;
 
+  if (builtin_name && !strcmp(builtin_name, "eval")) {
+    current_filename = get_eval_filename(zend_get_executed_filename());
+  }
+  else {
+    current_filename = zend_get_executed_filename();
+  }
+  
   if (!complete_path_function) {
     if (builtin_name) {
       complete_path_function = (char *)builtin_name;
@@ -170,6 +177,7 @@ bool should_disable(zend_execute_data* execute_data, const char *builtin_name, c
     }
 
     if (config_node->filename) { /* Check the current file name. */
+
       if (0 != strcmp(current_filename, config_node->filename)) {
         goto next;
       }
