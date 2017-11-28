@@ -34,23 +34,13 @@ static void is_builtin_matching(const char * const filename, char* function_name
     return;
   }
 
-  while (config) {
-    sp_disabled_function *config_node = (sp_disabled_function*)(config->data);
-    if (true == sp_match_value(filename, config_node->filename, config_node->r_filename)) {
-      if (true == config_node->allow) {
-        return;
-      }
-      sp_log_disable(function_name, param_name, filename, config_node);
-      if (false == config_node->simulation) {
-        sp_terminate();
-      }
-    }
-    config = config->next;
+  if (true == should_disable(EG(current_execute_data), function_name, filename, param_name)) {
+    sp_terminate();
   }
 }
 
 static void sp_execute_ex(zend_execute_data *execute_data) {
-  if (true == should_disable(execute_data)) {
+  if (true == should_disable(execute_data, NULL, NULL, NULL)) {
     sp_terminate();
   }
   
@@ -95,7 +85,25 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
         terminate_if_writable(filename);
       }
       sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
-      is_builtin_matching(filename, "include", "inclusion path", config);
+      switch (data->opline->extended_value) {
+      case ZEND_INCLUDE:
+	is_builtin_matching(filename, "include", "inclusion path", config);
+	break;
+      case ZEND_REQUIRE:
+	is_builtin_matching(filename, "require", "inclusion path", config);
+	break;
+      case ZEND_REQUIRE_ONCE:
+	is_builtin_matching(filename, "require_once", "inclusion path", config);
+	break;
+      case ZEND_INCLUDE_ONCE:
+	is_builtin_matching(filename, "include_once", "inclusion path", config);
+	break;
+      case ZEND_EVAL:
+	is_builtin_matching(filename, "eval", NULL, config);
+	break;
+      default:
+	break;
+      }
   }
 
 end:
