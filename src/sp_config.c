@@ -15,7 +15,7 @@ sp_config_tokens const sp_func[] = {
     {.func = parse_readonly_exec, .token = SP_TOKEN_READONLY_EXEC},
     {.func = parse_global_strict, .token = SP_TOKEN_GLOBAL_STRICT},
     {.func = parse_upload_validation, .token = SP_TOKEN_UPLOAD_VALIDATION},
-    {.func = parse_cookie_encryption, .token = SP_TOKEN_COOKIE_ENCRYPTION},
+    {.func = parse_cookie, .token = SP_TOKEN_COOKIE_ENCRYPTION},
     {.func = parse_global, .token = SP_TOKEN_GLOBAL},
     {.func = parse_auto_cookie_secure, .token = SP_TOKEN_AUTO_COOKIE_SECURE},
     {.func = parse_disable_xxe, .token = SP_TOKEN_DISABLE_XXE},

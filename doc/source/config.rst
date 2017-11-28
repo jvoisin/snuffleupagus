@@ -115,6 +115,26 @@ It can either be ``enabled`` or ``disabled``.
   sp.auto_cookie_secure.enable();
   sp.auto_cookie_secure.disable();
 
+cookie_samesite
+^^^^^^^^^^^^^^^^
+ * `default: disabled`
+ 
+``samesite`` will add the `samesite <https://tools.ietf.org/html/draft-west-first-party-cookies-07>`_
+attribute to cookies. It `prevents CSRF <https://www.owasp.org/index.php/SameSite>`_
+but is not implemented by `all web browsers <https://caniuse.com/#search=samesite>`_ yet.
+
+It can either be set to ``strict`` or ``lax``:
+
+- The ``lax`` attribute prevents cookies from being sent cross-domain for
+  "dangerous" methods, like ``POST``, ``PUT`` or ``DELETE``.
+
+- The ``strict`` one prevents any cookies from beind sent cross-domain.
+
+::
+
+  sp.cookie.name("cookie1").samesite("lax");
+  sp.cookie.name("cookie2").samesite("strict");;
+
 .. _cookie-encryption_config:
 
 cookie_encryption
@@ -137,8 +157,22 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 
 ::
 
-  sp.cookie_encryption.cookie("my_cookie_name");
-  sp.cookie_encryption.cookie("another_cookie_name");
+  sp.cookie.name("my_cookie_name").encrypt();
+  sp.cookie.name("another_cookie_name").encrypt();
+
+
+Removing the user-agent part
+""""""""""""""""""""""""""""
+
+Some web browser extensions, such as `uMatrix <https://github.com/gorhill/uMatrix/wiki>`__
+might be configured to change the user-agent on a regular basis. If you think that
+some of your users might be using configurations like this, you might want to disable
+the mixing of the user-agent in the cookie's encryption key. The simplest way to do
+so is to set the environment variable ``HTTP_USER_AGENT`` to a fixed value before passing
+it to your php process.
+
+We think that this use case is too exotic to be worth implementing as a
+proper configuration directive.
 
 Choosing the proper environment variable
 """"""""""""""""""""""""""""""""""""""""
@@ -283,6 +317,10 @@ The ``param`` filter is also able to do some dereferencing:
   ``param(foo[bar][baz][batman])``.
 - The ``var`` filter will walk the calltrace until it finds the variable name, or the end of the calltrace,
   allowing the filter to match global variables: ``.var("_GET[param]")`` will match on the GET parameter ``param``.
+
+The ``filename`` filter requires a leading ``/``, since paths are absolutes (like ``/var/www/mywebsite/lib/parse.php``).
+If you would like to have only one configuration file for several vhost in different folders,
+you can use the the ``filename_r`` directive to match on the filename (like ``/lib/parse\.php``).
 
 For clarity, the presence of the ``allow`` or ``drop`` action is **mandatory**.
 

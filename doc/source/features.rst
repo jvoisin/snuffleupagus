@@ -118,7 +118,8 @@ Unserialize-related magic
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 PHP is able to *serialize* arbitrary objects, to easily store them.
-Unfortunately, it is often possible to gain arbitrary code execution upon deserialization
+Unfortunately, as demonstrated by `Stefan Esser <https://twitter.com/i0n1c>`__ in his `Shocking News in PHP Exploitation <https://www.owasp.org/images/f/f6/POC2009-ShockingNewsInPHPExploitation.pdf>`__ and `Utilizing Code Reuse/ROP in PHP
+Application Exploits <https://www.owasp.org/images/9/9e/Utilizing-Code-Reuse-Or-Return-Oriented-Programming-In-PHP-Application-Exploits.pdf>`__ slides, it is often possible to gain arbitrary code execution upon deserialization
 of user-supplied serialized objects.
 
   Do not pass untrusted user input to ``unserialize()`` regardless of the options value of allowed_classes.
@@ -306,7 +307,7 @@ helping to uncover vulnerabilities like the classical
 and various other types mismatch.
 
 This feature is largely inspired from the
-`autostrict <https://github.com/krakjoe/autostrict>`_ module from `krakjoe <krakjoe.ninja>`_.
+`autostrict <https://github.com/krakjoe/autostrict>`_ module from `krakjoe <http://krakjoe.ninja>`__.
 
 
 Preventing execution of writable PHP files
@@ -320,6 +321,20 @@ Snuffleupagus can prevent the execution of this kind of file. A good practice
 would be to use a different user to run PHP than for administrating the website,
 and using this feature to lock this up.
 
+
+Protection against cross site request forgery
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cross-site request forgery, sometimes abbreviated as *CSRF*,
+is when unauthorised commands are issued from a user that the application trusts.
+For example, if a user is authenticated on a banking website,
+an other site might present something like 
+``<img src="http://mybank.com/transfer?from=user&to=attack&amount=1337EUR">``,
+effectivement transfering money from the user's account to the attacker one.
+
+Snuffleupagus can prevent this (in `supported browsers <https://caniuse.com/#search=samesite>`__)
+by setting the `samesite <https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02#section-5.3.7>`__
+attribute on cookies.
 
 
 Dumping capabilities

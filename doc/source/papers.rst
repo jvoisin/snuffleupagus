@@ -6,9 +6,9 @@ This pages lists various mentions, articles, usages and presentations about Snuf
 Talks
 -----
 
-- `BerlinSide0x08 <https://berlinsides.org/?page_id=2168>`_ - `slides <https://dustri.org/b/killing-php-bug-classes-at-berlinsides.html>`__ - 2017-05-28
+- `BerlinSide0x08 <https://berlinsides.org/?page_id=2168>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/berlinsides_2017.pdf>`__ - 2017-05-28
 - `Hack.lu 2017 <https://2017.hack.lu/talks/>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/hacklu_2017.pdf>`__ - `video <https://www.youtube.com/watch?v=RzaRiuJ6MkI>`__ - 2017-10-18
-- `BlackAlps <https://blackalps.ch/2017program.php>`_ - soon™ - 2017-11-16
+- `BlackAlps <https://blackalps.ch/2017program.php>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/blackalps_2017.pdf>`__ - 2017-11-16
 
 Articles
 --------

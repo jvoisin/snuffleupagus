@@ -108,12 +108,16 @@ int parse_global(char *line) {
   return parse_keywords(sp_config_funcs_global, line);
 }
 
-int parse_cookie_encryption(char *line) {
+int parse_cookie(char *line) {
   int ret = 0;
-  char *name = NULL;
+  char *samesite = NULL, *name = NULL;
+  sp_cookie *cookie = pecalloc(sizeof(sp_cookie), 1, 1);
+  zend_string *zend_name;
 
   sp_config_functions sp_config_funcs_cookie_encryption[] = {
       {parse_str, SP_TOKEN_NAME, &name},
+      {parse_str, SP_TOKEN_SAMESITE, &samesite},
+      {parse_empty, SP_TOKEN_ENCRYPT, &cookie->encrypt},
       {0}};
 
   ret = parse_keywords(sp_config_funcs_cookie_encryption, line);
@@ -121,25 +125,42 @@ int parse_cookie_encryption(char *line) {
     return ret;
   }
 
-  if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)) {
-    sp_log_err("config", "You're trying to use the cookie encryption feature"
-      "on line %zu without having set the `.cookie_env_var` option in"
-      "`sp.global`: please set it first.", sp_line_no);
-    return -1;
-  } else if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
-    sp_log_err("config", "You're trying to use the cookie encryption feature"
-      "on line %zu without having set the `.encryption_key` option in"
-      "`sp.global`: please set it first.", sp_line_no);
-    return -1;
-  } else if (0 == strlen(name)) {
-    sp_log_err("config", "You must specify a cookie name to encrypt on line "
+  if (cookie->encrypt) {
+    if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)) {
+      sp_log_err("config", "You're trying to use the cookie encryption feature"
+	"on line %zu without having set the `.cookie_env_var` option in"
+	"`sp.global`: please set it first.", sp_line_no);
+      return -1;
+    } else if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
+      sp_log_err("config", "You're trying to use the cookie encryption feature"
+	"on line %zu without having set the `.encryption_key` option in"
+	"`sp.global`: please set it first.", sp_line_no);
+      return -1;
+    }
+  } else if (!samesite) {
+    sp_log_err("config", "You must specify a at least one action to a cookie on line "
       "%zu.", sp_line_no);
     return -1;
   }
+  if (0 == strlen(name)) {
+    sp_log_err("config", "You must specify a cookie name on line "
+      "%zu.", sp_line_no);
+    return -1;
+  }
+  if (samesite) {
+    if (0 == strcasecmp(samesite, SP_TOKEN_SAMESITE_LAX)) {
+      cookie->samesite = lax;
+    } else if (0 == strcasecmp(samesite, SP_TOKEN_SAMESITE_STRICT)) {
+      cookie->samesite = strict;
+    } else {
+      sp_log_err("config", "%s is an invalid value to samesite (expected %s or %s) on line "
+	"%zu.", samesite, SP_TOKEN_SAMESITE_LAX, SP_TOKEN_SAMESITE_STRICT, sp_line_no);
+      return -1;
+    }
+  }
 
-  zend_hash_str_add_empty_element(
-      SNUFFLEUPAGUS_G(config).config_cookie_encryption->names, name,
-      strlen(name));
+  zend_name = zend_string_init(name, strlen(name), 1);
+  zend_hash_add_ptr(SNUFFLEUPAGUS_G(config).config_cookie->cookies, zend_name, cookie);
 
   return SUCCESS;
 }
@@ -200,7 +221,7 @@ int parse_disabled_functions(char *line) {
   MUTUALLY_EXCLUSIVE(df->ret, df->r_ret, "r_ret", "ret");
 #undef MUTUALLY_EXCLUSIVE
 
-  if (1 < ((df->r_param?1:0) + (df->param?1:0) + ((-1 != df->pos)?1:0))) {
+ if (1 < ((df->r_param?1:0) + (df->param?1:0) + ((-1 != df->pos)?1:0))) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                "'.r_param', '.param' and '.pos' are mutually exclusive on line %zu.",
@@ -218,6 +239,12 @@ int parse_disabled_functions(char *line) {
                " must take a function name on line %zu.",
                line, sp_line_no);
     return -1;
+  } else if (df->filename && *df->filename != '/') {
+     sp_log_err("config",
+                "Invalid configuration line: 'sp.disabled_functions%s':"
+                "'.filename' must be an absolute path on line %zu.",
+                line, sp_line_no);
+     return -1;
   } else if (!(allow ^ drop)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s': The "
@@ -247,7 +274,6 @@ int parse_disabled_functions(char *line) {
       return -1;
     }
   }
-
   df->allow = allow;
 
   if (df->function) {

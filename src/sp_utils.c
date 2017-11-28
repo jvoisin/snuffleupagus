@@ -140,7 +140,7 @@ int sp_log_request(const char* folder) {
       continue;
     }
 
-    const HashTable* ht = Z_ARRVAL(PG(http_globals)[zones[i].key]);
+    HashTable* ht = Z_ARRVAL(PG(http_globals)[zones[i].key]);
 
     // Compute the size of the allocation
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, variable_key, variable_value) {
