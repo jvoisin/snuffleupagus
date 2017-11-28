@@ -164,7 +164,7 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 Removing the user-agent part
 """"""""""""""""""""""""""""
 
-Some web browser extensions, such as [uMatrix](https://github.com/gorhill/uMatrix/wiki)
+Some web browser extensions, such as `uMatrix <https://github.com/gorhill/uMatrix/wiki>`__
 might be configured to change the user-agent on a regular basis. If you think that
 some of your users might be using configurations like this, you might want to disable
 the mixing of the user-agent in the cookie's encryption key. The simplest way to do
