@@ -50,6 +50,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
     size_t i = strlen(filename) - 1;
     int count = 0;
     //ghetto as fuck
+    // get the filename in which eval() is called : foo.php(1) : eval()'d code
     while (i) {
       if (filename[i] == '(') {
 	if (count == 1) {
