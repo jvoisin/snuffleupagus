@@ -127,7 +127,7 @@ bool should_disable(zend_execute_data* execute_data, const char *builtin_name, c
 
   if (!complete_path_function) {
     if (builtin_name) {
-      complete_path_function = builtin_name;
+      complete_path_function = (char *)builtin_name;
     }
     else {
       return false;
