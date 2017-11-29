@@ -147,13 +147,15 @@ static bool is_param_matching(zend_execute_data* execute_data,
   }
 
   if (builtin_name) {
-    // we are matching on a builtin param, but for PHP, it's not the same a
-    // function param
+    /* We're matching on a language construct (here named "builtin"),
+     * and they can only take a single argument, but PHP considers them
+     * differently than functions arguments. */
     *arg_name = builtin_param_name;
     *arg_value_str = builtin_param;
     return sp_match_value(builtin_param, config_node->value,
                           config_node->value_r);
   } else {
+    // We're matching on a function (and not a language construct)
     for (; i < nb_param; i++) {
       if (ZEND_USER_CODE(execute_data->func->type)) {  // yay consistency
         *arg_name = ZSTR_VAL(execute_data->func->common.arg_info[i].name);
@@ -246,8 +248,7 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
                                               config_node->functions_list)) {
         goto next;
       }
-    } else if (config_node
-                   ->function) { /* Litteral match against the function name. */
+    } else if (config_node->function) {
       if (0 != strcmp(config_node->function, complete_path_function)) {
         goto next;
       }
@@ -258,8 +259,8 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
       }
     }
 
-    if (config_node->var) {
-      if (false == is_local_var_matching(execute_data, config_node)) {
+    if (config_node->line) {
+      if (config_node->line != zend_get_executed_lineno()) {
         goto next;
       }
     }
@@ -275,6 +276,17 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
       }
     }
 
+    if (client_ip && config_node->cidr &&
+        (false == cidr_match(client_ip, config_node->cidr))) {
+      goto next;
+    }
+
+    if (config_node->var) {
+      if (false == is_local_var_matching(execute_data, config_node)) {
+        goto next;
+      }
+    }
+
     if (config_node->hash) {
       if ('\0' == current_file_hash[0]) {
         compute_hash(current_filename, current_file_hash);
@@ -282,17 +294,6 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
       if (0 != strncmp(current_file_hash, config_node->hash, SHA256_SIZE)) {
         goto next;
       }
-    }
-
-    if (config_node->line) {
-      if (config_node->line != zend_get_executed_lineno()) {
-        goto next;
-      }
-    }
-
-    if (client_ip && config_node->cidr &&
-        (false == cidr_match(client_ip, config_node->cidr))) {
-      goto next;
     }
 
     /* Check if we filter on parameter value*/
