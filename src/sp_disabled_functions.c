@@ -119,7 +119,7 @@ static sp_node_t *get_config(const char *builtin_name) {
 
 bool should_disable(zend_execute_data* execute_data, const char *builtin_name, const char *builtin_param,
 		    const char *builtin_param_name) {
-  char current_file_hash[SHA256_SIZE * 2] = {0};
+  char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
   const sp_node_t* config = get_config(builtin_name);      
   char* complete_path_function = get_complete_function_path(execute_data);
   char const* client_ip = sp_getenv("REMOTE_ADDR");
