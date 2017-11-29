@@ -2,47 +2,31 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
+static const struct {
+  unsigned int type;
+  char *keys[5];  // Update this value if necessary
+} CONSTRUCTS_TYPES[] = {
+    {.type = ZEND_INCLUDE_OR_EVAL,
+     .keys = {"include", "include_once", "require", "require_once", NULL}},
+    {.type = ZEND_ECHO, .keys = {"echo", NULL}},
+    {.type = ZEND_NEW, .keys = {"new", NULL}},
+    {.type = ZEND_EXIT, .keys = {"exit", NULL}},
+    {.type = ZEND_STRLEN, .keys = {"strlen", NULL}},
+    {.type = ZEND_EVAL_CODE, .keys = {"eval", NULL}},
+    {.type = 0, .keys = {NULL}}};
 
 static int get_construct_type(sp_disabled_function const *const df) {
-  const struct {
-    unsigned int type;
-    char *keys[5];
-  } mapping[] = {
-    {
-      .type = ZEND_INCLUDE_OR_EVAL,
-      .keys = {"include", "include_once", "require", "require_once", NULL}
-    },{
-      .type = ZEND_ECHO,
-      .keys = {"echo", NULL}
-    },{
-      .type = ZEND_NEW,
-      .keys = {"new", NULL}
-    },{
-      .type = ZEND_EXIT,
-      .keys = {"exit", NULL}
-    },{
-      .type = ZEND_STRLEN,
-      .keys = {"strlen", NULL}
-    },{
-      .type = ZEND_EVAL_CODE,
-      .keys = {"eval", NULL}
-    },{
-      .type = 0,
-      .keys = {NULL}
-   }
-  };
-
-  // FIXME: This can be optimized
-  // FIXME the ->function and r_fonction tests are _wrong_
-  for (size_t i=0; 0 != mapping[i].type; i++) {
-    for (size_t j=0; NULL != mapping[i].keys[j]; j++) {
+  for (size_t i = 0; 0 != CONSTRUCTS_TYPES[i].type; i++) {
+    for (size_t j = 0; NULL != CONSTRUCTS_TYPES[i].keys[j]; j++) {
+      assert(df->function || df->r_function);
       if (df->function) {
-        if (0 == strcmp(df->function, mapping[i].keys[j])) {
-          return mapping[i].type;
+        if (0 == strcmp(df->function, CONSTRUCTS_TYPES[i].keys[j])) {
+          return CONSTRUCTS_TYPES[i].type;
         }
-      } else if (df->r_function) {
-        if (true == is_regexp_matching(df->r_function, mapping[i].keys[j])) {
-          return mapping[i].type;
+      } else {
+        if (true ==
+            is_regexp_matching(df->r_function, CONSTRUCTS_TYPES[i].keys[j])) {
+          return CONSTRUCTS_TYPES[i].type;
         }
       }
     }
@@ -50,13 +34,14 @@ static int get_construct_type(sp_disabled_function const *const df) {
   return -1;
 }
 
-static int parse_enable(char *line, bool * restrict retval, bool * restrict simulation) {
+static int parse_enable(char *line, bool *restrict retval,
+                        bool *restrict simulation) {
   bool enable = false, disable = false;
   sp_config_functions sp_config_funcs[] = {
-    {parse_empty, SP_TOKEN_ENABLE, &(enable)},
-    {parse_empty, SP_TOKEN_DISABLE, &(disable)},
-    {parse_empty, SP_TOKEN_SIMULATION, simulation},
-    {0}};
+      {parse_empty, SP_TOKEN_ENABLE, &(enable)},
+      {parse_empty, SP_TOKEN_DISABLE, &(disable)},
+      {parse_empty, SP_TOKEN_SIMULATION, simulation},
+      {0}};
 
   int ret = parse_keywords(sp_config_funcs, line);
 
@@ -65,7 +50,8 @@ static int parse_enable(char *line, bool * restrict retval, bool * restrict simu
   }
 
   if (!(enable ^ disable)) {
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu.", sp_line_no);
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu.",
+               sp_line_no);
     return -1;
   }
 
@@ -75,27 +61,35 @@ static int parse_enable(char *line, bool * restrict retval, bool * restrict simu
 }
 
 int parse_random(char *line) {
-  return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_random->enable), NULL);
+  return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_random->enable),
+                      NULL);
 }
 
 int parse_disable_xxe(char *line) {
-  return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_disable_xxe->enable), NULL);
+  return parse_enable(
+      line, &(SNUFFLEUPAGUS_G(config).config_disable_xxe->enable), NULL);
 }
 
 int parse_auto_cookie_secure(char *line) {
-  return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_auto_cookie_secure->enable), NULL);
+  return parse_enable(
+      line, &(SNUFFLEUPAGUS_G(config).config_auto_cookie_secure->enable), NULL);
 }
 
 int parse_global_strict(char *line) {
-  return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_global_strict->enable), NULL);
+  return parse_enable(
+      line, &(SNUFFLEUPAGUS_G(config).config_global_strict->enable), NULL);
 }
 
 int parse_unserialize(char *line) {
-  return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_unserialize->enable), &(SNUFFLEUPAGUS_G(config).config_unserialize->simulation));
+  return parse_enable(
+      line, &(SNUFFLEUPAGUS_G(config).config_unserialize->enable),
+      &(SNUFFLEUPAGUS_G(config).config_unserialize->simulation));
 }
 
 int parse_readonly_exec(char *line) {
-  return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_readonly_exec->enable), &(SNUFFLEUPAGUS_G(config).config_readonly_exec->simulation));
+  return parse_enable(
+      line, &(SNUFFLEUPAGUS_G(config).config_readonly_exec->enable),
+      &(SNUFFLEUPAGUS_G(config).config_readonly_exec->simulation));
 }
 
 int parse_global(char *line) {
@@ -127,24 +121,35 @@ int parse_cookie(char *line) {
 
   if (cookie->encrypt) {
     if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)) {
-      sp_log_err("config", "You're trying to use the cookie encryption feature"
-	"on line %zu without having set the `.cookie_env_var` option in"
-	"`sp.global`: please set it first.", sp_line_no);
+      sp_log_err(
+          "config",
+          "You're trying to use the cookie encryption feature"
+          "on line %zu without having set the `.cookie_env_var` option in"
+          "`sp.global`: please set it first.",
+          sp_line_no);
       return -1;
-    } else if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
-      sp_log_err("config", "You're trying to use the cookie encryption feature"
-	"on line %zu without having set the `.encryption_key` option in"
-	"`sp.global`: please set it first.", sp_line_no);
+    } else if (0 ==
+               (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
+      sp_log_err(
+          "config",
+          "You're trying to use the cookie encryption feature"
+          "on line %zu without having set the `.encryption_key` option in"
+          "`sp.global`: please set it first.",
+          sp_line_no);
       return -1;
     }
   } else if (!samesite) {
-    sp_log_err("config", "You must specify a at least one action to a cookie on line "
-      "%zu.", sp_line_no);
+    sp_log_err("config",
+               "You must specify a at least one action to a cookie on line "
+               "%zu.",
+               sp_line_no);
     return -1;
   }
   if (0 == strlen(name)) {
-    sp_log_err("config", "You must specify a cookie name on line "
-      "%zu.", sp_line_no);
+    sp_log_err("config",
+               "You must specify a cookie name on line "
+               "%zu.",
+               sp_line_no);
     return -1;
   }
   if (samesite) {
@@ -153,14 +158,19 @@ int parse_cookie(char *line) {
     } else if (0 == strcasecmp(samesite, SP_TOKEN_SAMESITE_STRICT)) {
       cookie->samesite = strict;
     } else {
-      sp_log_err("config", "%s is an invalid value to samesite (expected %s or %s) on line "
-	"%zu.", samesite, SP_TOKEN_SAMESITE_LAX, SP_TOKEN_SAMESITE_STRICT, sp_line_no);
+      sp_log_err(
+          "config",
+          "%s is an invalid value to samesite (expected %s or %s) on line "
+          "%zu.",
+          samesite, SP_TOKEN_SAMESITE_LAX, SP_TOKEN_SAMESITE_STRICT,
+          sp_line_no);
       return -1;
     }
   }
 
   zend_name = zend_string_init(name, strlen(name), 1);
-  zend_hash_add_ptr(SNUFFLEUPAGUS_G(config).config_cookie->cookies, zend_name, cookie);
+  zend_hash_add_ptr(SNUFFLEUPAGUS_G(config).config_cookie->cookies, zend_name,
+                    cookie);
 
   return SUCCESS;
 }
@@ -206,13 +216,13 @@ int parse_disabled_functions(char *line) {
     return ret;
   }
 
-#define MUTUALLY_EXCLUSIVE(X, Y, STR1, STR2) \
-  if (X && Y) { \
-    sp_log_err("config", \
+#define MUTUALLY_EXCLUSIVE(X, Y, STR1, STR2)                             \
+  if (X && Y) {                                                          \
+    sp_log_err("config",                                                 \
                "Invalid configuration line: 'sp.disabled_functions%s': " \
-               "'.%s' and '.%s' are mutually exclusive on line %zu.", \
-               line, STR1, STR2, sp_line_no); \
-    return 1;\
+               "'.%s' and '.%s' are mutually exclusive on line %zu.",    \
+               line, STR1, STR2, sp_line_no);                            \
+    return 1;                                                            \
   }
 
   MUTUALLY_EXCLUSIVE(df->value, df->value_r, "value", "regexp");
@@ -221,11 +231,13 @@ int parse_disabled_functions(char *line) {
   MUTUALLY_EXCLUSIVE(df->ret, df->r_ret, "r_ret", "ret");
 #undef MUTUALLY_EXCLUSIVE
 
- if (1 < ((df->r_param?1:0) + (df->param?1:0) + ((-1 != df->pos)?1:0))) {
-    sp_log_err("config",
-               "Invalid configuration line: 'sp.disabled_functions%s':"
-               "'.r_param', '.param' and '.pos' are mutually exclusive on line %zu.",
-               line, sp_line_no);
+  if (1 < ((df->r_param ? 1 : 0) + (df->param ? 1 : 0) +
+           ((-1 != df->pos) ? 1 : 0))) {
+    sp_log_err(
+        "config",
+        "Invalid configuration line: 'sp.disabled_functions%s':"
+        "'.r_param', '.param' and '.pos' are mutually exclusive on line %zu.",
+        line, sp_line_no);
     return -1;
   } else if ((df->r_ret || df->ret) && (df->r_param || df->param)) {
     sp_log_err("config",
@@ -240,11 +252,11 @@ int parse_disabled_functions(char *line) {
                line, sp_line_no);
     return -1;
   } else if (df->filename && *df->filename != '/') {
-     sp_log_err("config",
-                "Invalid configuration line: 'sp.disabled_functions%s':"
-                "'.filename' must be an absolute path on line %zu.",
-                line, sp_line_no);
-     return -1;
+    sp_log_err("config",
+               "Invalid configuration line: 'sp.disabled_functions%s':"
+               "'.filename' must be an absolute path on line %zu.",
+               line, sp_line_no);
+    return -1;
   } else if (!(allow ^ drop)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s': The "
@@ -259,7 +271,7 @@ int parse_disabled_functions(char *line) {
     df->pos = (int)strtol(pos, &endptr, 10);
     if (errno != 0 || endptr == pos) {
       sp_log_err("config", "Failed to parse arg '%s' of `pos` on line %zu.",
-		    pos, sp_line_no);
+                 pos, sp_line_no);
       return -1;
     }
   }
@@ -270,7 +282,7 @@ int parse_disabled_functions(char *line) {
     df->line = (unsigned int)strtoul(line_number, &endptr, 10);
     if (errno != 0 || endptr == line_number) {
       sp_log_err("config", "Failed to parse arg '%s' of `line` on line %zu.",
-		 line_number, sp_line_no);
+                 line_number, sp_line_no);
       return -1;
     }
   }
@@ -300,10 +312,14 @@ int parse_disabled_functions(char *line) {
 
   switch (get_construct_type(df)) {
     case ZEND_INCLUDE_OR_EVAL:
-      sp_list_insert(SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include, df);
+      sp_list_insert(
+          SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include,
+          df);
       return ret;
     case ZEND_EVAL_CODE:
-      sp_list_insert(SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval, df);
+      sp_list_insert(
+          SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval,
+          df);
       return ret;
     case ZEND_ECHO:
     default:
@@ -315,9 +331,9 @@ int parse_disabled_functions(char *line) {
   }
 
   if (df->ret || df->r_ret || df->ret_type) {
-    sp_list_insert(
-        SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions,
-        df);
+    sp_list_insert(SNUFFLEUPAGUS_G(config)
+                       .config_disabled_functions_ret->disabled_functions,
+                   df);
   } else {
     sp_list_insert(
         SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions,
@@ -344,7 +360,8 @@ int parse_upload_validation(char *line) {
   }
 
   if (!(enable ^ disable)) {
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu.", sp_line_no);
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu.",
+               sp_line_no);
     return -1;
   }
   SNUFFLEUPAGUS_G(config).config_upload_validation->enable = enable;
@@ -352,14 +369,17 @@ int parse_upload_validation(char *line) {
   char const *script = SNUFFLEUPAGUS_G(config).config_upload_validation->script;
 
   if (!script) {
-    sp_log_err("config", "The `script` directive is mandatory in '%s' on line %zu.",
-      line, sp_line_no);
+    sp_log_err("config",
+               "The `script` directive is mandatory in '%s' on line %zu.", line,
+               sp_line_no);
     return -1;
   } else if (-1 == access(script, F_OK)) {
-    sp_log_err("config", "The `script` (%s) doesn't exist on line %zu.", script, sp_line_no);
+    sp_log_err("config", "The `script` (%s) doesn't exist on line %zu.", script,
+               sp_line_no);
     return -1;
   } else if (-1 == access(script, X_OK)) {
-    sp_log_err("config", "The `script` (%s) isn't executable on line %zu.", script, sp_line_no);
+    sp_log_err("config", "The `script` (%s) isn't executable on line %zu.",
+               script, sp_line_no);
     return -1;
   }
 
