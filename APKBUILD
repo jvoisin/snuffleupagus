@@ -1,5 +1,4 @@
-# Contributor:
-# Maintainer:
+# Maintainer: <secu@nbs-system.com>
 pkgname="php7-snuffleupagus"
 _pkgname="snuffleupagus"
 pkgver=0.1
@@ -8,17 +7,15 @@ pkgdesc="Snuffleupagus module for PHP7."
 url="https://snuffleupagus.readthedocs.io"
 arch="all"
 license="LGPL3"
-depends=
-pecldepends="php7-dev php7-fpm autoconf"
-makedepends="$pecldepends re2c"
-install=""
-subpackages=""
+depends="php7-dev php7-fpm"
 source=""
 
 _giturl="https://github.com/nbs-system/snuffleupagus.git"
 
 prepare() {
   default_prepare
+  # Use tarball instead of git for release.
+  # https://wiki.alpinelinux.org/wiki/Creating_an_Alpine_package#APKBUILD_variables.2Ffunctions
   git clone "${_giturl}" "${srcdir}/${_pkgname}" || return 1
 }
 
