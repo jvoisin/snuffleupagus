@@ -5,7 +5,7 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-static zend_always_inline char* get_complete_function_path(
+static char* get_complete_function_path(
     zend_execute_data const* const execute_data) {
   if (!(execute_data->func->common.function_name)) {
     return NULL;
@@ -120,6 +120,93 @@ static const sp_node_t* get_config_node(const char* builtin_name) {
   return NULL;  // This should never happen.
 }
 
+static bool is_param_matching(zend_execute_data* execute_data,
+                              sp_disabled_function const* const config_node,
+                              const char* builtin_name,
+                              const char* builtin_param, const char** arg_name,
+                              const char* builtin_param_name,
+                              const char** arg_value_str) {
+  int nb_param = execute_data->func->common.num_args;
+  int i = 0;
+
+  if (config_node->pos != -1) {
+    if (config_node->pos <= nb_param) {
+      char* complete_function_path = get_complete_function_path(execute_data);
+      sp_log_err("config",
+                 "It seems that you wrote a rule filtering on the "
+                 "%d%s argument of the function '%s', but it takes only %d "
+                 "arguments. "
+                 "Matching on _all_ arguments instead.",
+                 config_node->pos, GET_SUFFIX(config_node->pos),
+                 complete_function_path, nb_param);
+      efree(complete_function_path);
+    } else {
+      i = config_node->pos;
+      nb_param = (config_node->pos) + 1;
+    }
+  }
+
+  if (builtin_name) {
+    // we are matching on a builtin param, but for PHP, it's not the same a
+    // function param
+    *arg_name = builtin_param_name;
+    *arg_value_str = builtin_param;
+    return sp_match_value(builtin_param, config_node->value,
+                          config_node->value_r);
+  } else {
+    for (; i < nb_param; i++) {
+      if (ZEND_USER_CODE(execute_data->func->type)) {  // yay consistency
+        *arg_name = ZSTR_VAL(execute_data->func->common.arg_info[i].name);
+      } else {
+        *arg_name = execute_data->func->internal_function.arg_info[i].name;
+      }
+
+      const bool arg_matching =
+          config_node->param && (0 == strcmp(*arg_name, config_node->param));
+      const bool pcre_matching =
+          config_node->r_param &&
+          (true == is_regexp_matching(config_node->r_param, *arg_name));
+
+      /* This is the parameter name we're looking for. */
+      if (true == arg_matching || true == pcre_matching ||
+          (config_node->pos != -1)) {
+        zval* arg_value = ZEND_CALL_VAR_NUM(execute_data, i);
+
+        if (config_node->param_type) {  // Are we matching on the `type`?
+          if (config_node->param_type == Z_TYPE_P(arg_value)) {
+            return true;
+          }
+        } else if (Z_TYPE_P(arg_value) == IS_ARRAY) {
+          *arg_value_str = estrdup("Array");
+          // match on arr -> match on all key content, if a key is an array,
+          // ignore it
+          // match on arr[foo] -> match only on key foo, if the key is an
+          // array, match on all keys content
+          if (config_node->param_is_array == true) {
+            if (true == sp_match_array_key_recurse(
+                            arg_value, config_node->param_array_keys,
+                            config_node->value, config_node->value_r)) {
+              return true;
+            }
+          } else {  // match on all keys, but don't go into subarray
+            if (true == sp_match_array_key(arg_value, config_node->value,
+                                           config_node->value_r)) {
+              return true;
+            }
+          }
+        } else {
+          *arg_value_str = sp_convert_to_string(arg_value);
+          if (true == sp_match_value(*arg_value_str, config_node->value,
+                                     config_node->value_r)) {
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
+
 bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
                     const char* builtin_param, const char* builtin_param_name) {
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
@@ -127,6 +214,10 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
   char* complete_path_function = get_complete_function_path(execute_data);
   char const* client_ip = sp_getenv("REMOTE_ADDR");
   const char* current_filename;
+
+  if (!config || !config->data) {
+    return false;
+  }
 
   if (builtin_name && !strcmp(builtin_name, "eval")) {
     current_filename = get_eval_filename(zend_get_executed_filename());
@@ -140,10 +231,6 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
     } else {
       return false;
     }
-  }
-
-  if (!config || !config->data) {
-    return false;
   }
 
   while (config) {
@@ -212,89 +299,9 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
     /* Check if we filter on parameter value*/
     if (config_node->param || config_node->r_param ||
         (config_node->pos != -1)) {
-      int nb_param = execute_data->func->common.num_args;
-      bool arg_matched = false;
-      int i = 0;
-
-      if (config_node->pos != -1) {
-        if (config_node->pos <= nb_param) {
-          sp_log_err("config",
-                     "It seems that you wrote a rule filtering on the "
-                     "%d%s argument of the function '%s', but it takes only %d "
-                     "arguments. "
-                     "Matching on _all_ arguments instead.",
-                     config_node->pos, GET_SUFFIX(config_node->pos),
-                     complete_path_function, nb_param);
-        } else {
-          i = config_node->pos;
-          nb_param = (config_node->pos) + 1;
-        }
-      }
-
-      if (builtin_name) {
-        // we are matching on a builtin param, but for PHP, it's not the same a
-        // function param
-        arg_matched = sp_match_value(builtin_param, config_node->value,
-                                     config_node->value_r);
-        arg_name = builtin_param_name;
-        arg_value_str = builtin_param;
-      } else {
-        for (; i < nb_param; i++) {
-          arg_matched = false;
-          if (ZEND_USER_CODE(execute_data->func->type)) {  // yay consistency
-            arg_name = ZSTR_VAL(execute_data->func->common.arg_info[i].name);
-          } else {
-            arg_name = execute_data->func->internal_function.arg_info[i].name;
-          }
-
-          const bool arg_matching =
-              config_node->param && (0 == strcmp(arg_name, config_node->param));
-          const bool pcre_matching =
-              config_node->r_param &&
-              (true == is_regexp_matching(config_node->r_param, arg_name));
-
-          /* This is the parameter name we're looking for. */
-          if (true == arg_matching || true == pcre_matching ||
-              (config_node->pos != -1)) {
-            zval* arg_value = ZEND_CALL_VAR_NUM(execute_data, i);
-
-            if (config_node->param_type) {  // Are we matching on the `type`?
-              if (config_node->param_type == Z_TYPE_P(arg_value)) {
-                arg_matched = true;
-                break;
-              }
-            } else if (Z_TYPE_P(arg_value) == IS_ARRAY) {
-              arg_value_str = estrdup("Array");
-              // match on arr -> match on all key content, if a key is an array,
-              // ignore it
-              // match on arr[foo] -> match only on key foo, if the key is an
-              // array, match on all keys content
-              if (config_node->param_is_array == true) {
-                if (true == sp_match_array_key_recurse(
-                                arg_value, config_node->param_array_keys,
-                                config_node->value, config_node->value_r)) {
-                  arg_matched = true;
-                  break;
-                }
-              } else {  // match on all keys, but don't go into subarray
-                if (true == sp_match_array_key(arg_value, config_node->value,
-                                               config_node->value_r)) {
-                  arg_matched = true;
-                  break;
-                }
-              }
-            } else {
-              arg_value_str = sp_convert_to_string(arg_value);
-              if (true == sp_match_value(arg_value_str, config_node->value,
-                                         config_node->value_r)) {
-                arg_matched = true;
-                break;
-              }
-            }
-          }
-        }
-      }
-      if (false == arg_matched) {
+      if (false == is_param_matching(execute_data, config_node, builtin_name,
+                                     builtin_param, &arg_name,
+                                     builtin_param_name, &arg_value_str)) {
         goto next;
       }
     }
