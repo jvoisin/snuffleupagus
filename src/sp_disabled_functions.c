@@ -102,7 +102,7 @@ static bool is_local_var_matching(zend_execute_data *execute_data, const sp_disa
 }
 
 bool should_disable(zend_execute_data* execute_data) {
-  char current_file_hash[SHA256_SIZE * 2] = {0};
+  char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const sp_node_t* config =
       SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions;
