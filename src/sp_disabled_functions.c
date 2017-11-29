@@ -7,7 +7,6 @@ ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 static zend_always_inline char* get_complete_function_path(
     zend_execute_data const* const execute_data) {
-
   if (!(execute_data->func->common.function_name)) {
     return NULL;
   }
@@ -28,20 +27,21 @@ static zend_always_inline char* get_complete_function_path(
   return complete_path_function;
 }
 
-static bool is_functions_list_matching(zend_execute_data *execute_data, sp_node_t *functions_list) {
+static bool is_functions_list_matching(zend_execute_data* execute_data,
+                                       sp_node_t* functions_list) {
   zend_execute_data *orig_execute_data, *current;
   orig_execute_data = current = execute_data;
-  sp_node_t *it = functions_list;
+  sp_node_t* it = functions_list;
 
   while (current) {
-    if (it == NULL) { // every function in the list matched, we've got a match!
+    if (it == NULL) {  // every function in the list matched, we've got a match!
       EG(current_execute_data) = orig_execute_data;
       return true;
     }
 
     EG(current_execute_data) = current;
 
-    char *complete_path_function = get_complete_function_path(current);
+    char* complete_path_function = get_complete_function_path(current);
     if (!complete_path_function) {
       goto end;
     }
@@ -61,36 +61,39 @@ end:
   return false;
 }
 
-static bool is_local_var_matching(zend_execute_data *execute_data, const sp_disabled_function *const config_node) {
-  zend_execute_data *orig_execute_data = execute_data;
+static bool is_local_var_matching(
+    zend_execute_data* execute_data,
+    const sp_disabled_function* const config_node) {
+  zend_execute_data* orig_execute_data = execute_data;
 
   /*because execute_data points to hooked function data,
    which we dont care about */
-  zend_execute_data *current = execute_data->prev_execute_data;
-  zval *value = NULL;
+  zend_execute_data* current = execute_data->prev_execute_data;
+  zval* value = NULL;
 
   while (current) {
-    zend_string *key = NULL;
+    zend_string* key = NULL;
     EG(current_execute_data) = current;
-    zend_array *symtable = zend_rebuild_symbol_table();
+    zend_array* symtable = zend_rebuild_symbol_table();
     ZEND_HASH_FOREACH_STR_KEY_VAL(symtable, key, value) {
-      if (0 == strcmp(config_node->var, key->val)) { // is the var name right?
+      if (0 == strcmp(config_node->var, key->val)) {  // is the var name right?
         if (Z_TYPE_P(value) == IS_INDIRECT) {
           value = Z_INDIRECT_P(value);
         }
-	if (Z_TYPE_P(value) != IS_ARRAY) {
-	  char *var_value_str = sp_convert_to_string(value);
-	  if (true == sp_match_value(var_value_str, config_node->value, config_node->value_r)) {
-	    efree(var_value_str);
-	    EG(current_execute_data) = orig_execute_data;
-	    return true;
-	  }
-	  efree(var_value_str);
-	}
-	else {
-	  EG(current_execute_data) = orig_execute_data;
-	  return sp_match_array_key_recurse(value, config_node->var_array_keys, config_node->value, NULL);
-	}
+        if (Z_TYPE_P(value) != IS_ARRAY) {
+          char* var_value_str = sp_convert_to_string(value);
+          if (true == sp_match_value(var_value_str, config_node->value,
+                                     config_node->value_r)) {
+            efree(var_value_str);
+            EG(current_execute_data) = orig_execute_data;
+            return true;
+          }
+          efree(var_value_str);
+        } else {
+          EG(current_execute_data) = orig_execute_data;
+          return sp_match_array_key_recurse(value, config_node->var_array_keys,
+                                            config_node->value, NULL);
+        }
       }
     }
     ZEND_HASH_FOREACH_END();
@@ -101,40 +104,40 @@ static bool is_local_var_matching(zend_execute_data *execute_data, const sp_disa
   return false;
 }
 
-static const sp_node_t *get_config_node(const char *builtin_name) {
+static const sp_node_t* get_config_node(const char* builtin_name) {
   if (!builtin_name) {
-    return SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions;
+    return SNUFFLEUPAGUS_G(config)
+        .config_disabled_functions->disabled_functions;
   } else if (!strcmp(builtin_name, "eval")) {
     return SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
   } else if (!strcmp(builtin_name, "include") ||
-      !strcmp(builtin_name, "include_once") || 
-      !strcmp(builtin_name, "require") || 
-      !strcmp(builtin_name, "require_once")) {
-    return SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
+             !strcmp(builtin_name, "include_once") ||
+             !strcmp(builtin_name, "require") ||
+             !strcmp(builtin_name, "require_once")) {
+    return SNUFFLEUPAGUS_G(config)
+        .config_disabled_constructs->construct_include;
   }
-  return NULL; // This should never happen.
+  return NULL;  // This should never happen.
 }
 
-bool should_disable(zend_execute_data* execute_data, const char *builtin_name, const char *builtin_param,
-		    const char *builtin_param_name) {
+bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
+                    const char* builtin_param, const char* builtin_param_name) {
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
-  const sp_node_t* config = get_config_node(builtin_name);      
+  const sp_node_t* config = get_config_node(builtin_name);
   char* complete_path_function = get_complete_function_path(execute_data);
   char const* client_ip = sp_getenv("REMOTE_ADDR");
   const char* current_filename;
 
   if (builtin_name && !strcmp(builtin_name, "eval")) {
     current_filename = get_eval_filename(zend_get_executed_filename());
-  }
-  else {
+  } else {
     current_filename = zend_get_executed_filename();
   }
-  
+
   if (!complete_path_function) {
     if (builtin_name) {
-      complete_path_function = (char *)builtin_name;
-    }
-    else {
+      complete_path_function = (char*)builtin_name;
+    } else {
       return false;
     }
   }
@@ -142,7 +145,6 @@ bool should_disable(zend_execute_data* execute_data, const char *builtin_name, c
   if (!config || !config->data) {
     return false;
   }
-
 
   while (config) {
     sp_disabled_function const* const config_node =
@@ -153,13 +155,14 @@ bool should_disable(zend_execute_data* execute_data, const char *builtin_name, c
     /* The order matters, since when we have `config_node->functions_list`,
     we also do have `config_node->function` */
     if (config_node->functions_list) {
-      if (false ==
-          is_functions_list_matching(execute_data, config_node->functions_list)) {
+      if (false == is_functions_list_matching(execute_data,
+                                              config_node->functions_list)) {
         goto next;
       }
-    } else if (config_node->function) { /* Litteral match against the function name. */
+    } else if (config_node
+                   ->function) { /* Litteral match against the function name. */
       if (0 != strcmp(config_node->function, complete_path_function)) {
-	goto next;
+        goto next;
       }
     } else if (config_node->r_function) {
       if (false ==
@@ -197,7 +200,7 @@ bool should_disable(zend_execute_data* execute_data, const char *builtin_name, c
 
     if (config_node->line) {
       if (config_node->line != zend_get_executed_lineno()) {
-	goto next;
+        goto next;
       }
     }
 
@@ -207,19 +210,21 @@ bool should_disable(zend_execute_data* execute_data, const char *builtin_name, c
     }
 
     /* Check if we filter on parameter value*/
-    if (config_node->param || config_node->r_param || (config_node->pos != -1)) {
+    if (config_node->param || config_node->r_param ||
+        (config_node->pos != -1)) {
       int nb_param = execute_data->func->common.num_args;
       bool arg_matched = false;
       int i = 0;
 
       if (config_node->pos != -1) {
         if (config_node->pos <= nb_param) {
-          sp_log_err("config", "It seems that you wrote a rule filtering on the "
-            "%d%s argument of the function '%s', but it takes only %d arguments. "
-            "Matching on _all_ arguments instead.",
-            config_node->pos,
-            GET_SUFFIX(config_node->pos),
-            complete_path_function, nb_param);
+          sp_log_err("config",
+                     "It seems that you wrote a rule filtering on the "
+                     "%d%s argument of the function '%s', but it takes only %d "
+                     "arguments. "
+                     "Matching on _all_ arguments instead.",
+                     config_node->pos, GET_SUFFIX(config_node->pos),
+                     complete_path_function, nb_param);
         } else {
           i = config_node->pos;
           nb_param = (config_node->pos) + 1;
@@ -227,65 +232,67 @@ bool should_disable(zend_execute_data* execute_data, const char *builtin_name, c
       }
 
       if (builtin_name) {
-	// we are matching on a builtin param, but for PHP, it's not the same a function param
-	arg_matched = sp_match_value(builtin_param, config_node->value, config_node->value_r);
-	arg_name = builtin_param_name;
-	arg_value_str = builtin_param;
-      }
-      else {
-	for (; i < nb_param; i++) {
-	  arg_matched = false;
-	  if (ZEND_USER_CODE(execute_data->func->type)) {  // yay consistency
-	    arg_name = ZSTR_VAL(execute_data->func->common.arg_info[i].name);
-	  } else {
-	    arg_name = execute_data->func->internal_function.arg_info[i].name;
-	  }
+        // we are matching on a builtin param, but for PHP, it's not the same a
+        // function param
+        arg_matched = sp_match_value(builtin_param, config_node->value,
+                                     config_node->value_r);
+        arg_name = builtin_param_name;
+        arg_value_str = builtin_param;
+      } else {
+        for (; i < nb_param; i++) {
+          arg_matched = false;
+          if (ZEND_USER_CODE(execute_data->func->type)) {  // yay consistency
+            arg_name = ZSTR_VAL(execute_data->func->common.arg_info[i].name);
+          } else {
+            arg_name = execute_data->func->internal_function.arg_info[i].name;
+          }
 
-	  const bool arg_matching =
-            config_node->param && (0 == strcmp(arg_name, config_node->param));
-	  const bool pcre_matching =
-            config_node->r_param &&
-            (true == is_regexp_matching(config_node->r_param, arg_name));
+          const bool arg_matching =
+              config_node->param && (0 == strcmp(arg_name, config_node->param));
+          const bool pcre_matching =
+              config_node->r_param &&
+              (true == is_regexp_matching(config_node->r_param, arg_name));
 
-	  /* This is the parameter name we're looking for. */
-	  if (true == arg_matching || true == pcre_matching || (config_node->pos != -1)) {
-	    zval* arg_value = ZEND_CALL_VAR_NUM(execute_data, i);
+          /* This is the parameter name we're looking for. */
+          if (true == arg_matching || true == pcre_matching ||
+              (config_node->pos != -1)) {
+            zval* arg_value = ZEND_CALL_VAR_NUM(execute_data, i);
 
-	    if (config_node->param_type) {  // Are we matching on the `type`?
-	      if (config_node->param_type == Z_TYPE_P(arg_value)) {
-		arg_matched = true;
-		break;
-	      }
-	    } else if (Z_TYPE_P(arg_value) == IS_ARRAY) {
-	      arg_value_str = estrdup("Array");
-	      // match on arr -> match on all key content, if a key is an array,
-	      // ignore it
-	      // match on arr[foo] -> match only on key foo, if the key is an
-	      // array, match on all keys content
-	      if (config_node->param_is_array == true) {
-		if (true == sp_match_array_key_recurse(
-						       arg_value, config_node->param_array_keys,
-						       config_node->value, config_node->value_r)) {
-		  arg_matched = true;
-		  break;
-		}
-	      } else {  // match on all keys, but don't go into subarray
-		if (true == sp_match_array_key(arg_value, config_node->value,
-					       config_node->value_r)) {
-		  arg_matched = true;
-		  break;
-		}
-	      }
-	    } else {
-	      arg_value_str = sp_convert_to_string(arg_value);
-	      if (true == sp_match_value(arg_value_str, config_node->value,
-					 config_node->value_r)) {
-		arg_matched = true;
-		break;
-	      }
-	    }
-	  }
-	}
+            if (config_node->param_type) {  // Are we matching on the `type`?
+              if (config_node->param_type == Z_TYPE_P(arg_value)) {
+                arg_matched = true;
+                break;
+              }
+            } else if (Z_TYPE_P(arg_value) == IS_ARRAY) {
+              arg_value_str = estrdup("Array");
+              // match on arr -> match on all key content, if a key is an array,
+              // ignore it
+              // match on arr[foo] -> match only on key foo, if the key is an
+              // array, match on all keys content
+              if (config_node->param_is_array == true) {
+                if (true == sp_match_array_key_recurse(
+                                arg_value, config_node->param_array_keys,
+                                config_node->value, config_node->value_r)) {
+                  arg_matched = true;
+                  break;
+                }
+              } else {  // match on all keys, but don't go into subarray
+                if (true == sp_match_array_key(arg_value, config_node->value,
+                                               config_node->value_r)) {
+                  arg_matched = true;
+                  break;
+                }
+              }
+            } else {
+              arg_value_str = sp_convert_to_string(arg_value);
+              if (true == sp_match_value(arg_value_str, config_node->value,
+                                         config_node->value_r)) {
+                arg_matched = true;
+                break;
+              }
+            }
+          }
+        }
       }
       if (false == arg_matched) {
         goto next;
@@ -300,21 +307,21 @@ bool should_disable(zend_execute_data* execute_data, const char *builtin_name, c
 
     if (config_node->functions_list) {
       sp_log_disable(config_node->function, arg_name, arg_value_str,
-        config_node);
+                     config_node);
     } else {
       sp_log_disable(complete_path_function, arg_name, arg_value_str,
-        config_node);
+                     config_node);
     }
     if (true == config_node->simulation) {
       goto next;
     } else {  // We've got a match, the function won't be executed
       if (builtin_name == NULL) {
-	efree(complete_path_function);
+        efree(complete_path_function);
       }
       return true;
     }
-next:
-config = config->next;
+  next:
+    config = config->next;
   }
 allow:
   if (builtin_name == NULL) {
@@ -379,10 +386,10 @@ static bool should_drop_on_ret(zval* return_value,
     ret_value_str = sp_convert_to_string(return_value);
 
     match_type = (config_node->ret_type) &&
-                      (config_node->ret_type == Z_TYPE_P(return_value));
+                 (config_node->ret_type == Z_TYPE_P(return_value));
     match_value = (config_node->ret || config_node->r_ret) &&
-                       (true == sp_match_value(ret_value_str, config_node->ret,
-                                               config_node->r_ret));
+                  (true == sp_match_value(ret_value_str, config_node->ret,
+                                          config_node->r_ret));
 
     if (true == match_type || true == match_value) {
       if (true == config_node->allow) {
