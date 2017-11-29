@@ -101,26 +101,24 @@ static bool is_local_var_matching(zend_execute_data *execute_data, const sp_disa
   return false;
 }
 
-static sp_node_t *get_config(const char *builtin_name) {
+static const sp_node_t *get_config_node(const char *builtin_name) {
   if (!builtin_name) {
     return SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions;
-  }
-  if (!strcmp(builtin_name, "eval")) {
+  } else if (!strcmp(builtin_name, "eval")) {
     return SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
-  }
-  if (!strcmp(builtin_name, "include") ||
+  } else if (!strcmp(builtin_name, "include") ||
       !strcmp(builtin_name, "include_once") || 
       !strcmp(builtin_name, "require") || 
       !strcmp(builtin_name, "require_once")) {
     return SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
   }
-  return NULL;
+  return NULL; // This should never happen.
 }
 
 bool should_disable(zend_execute_data* execute_data, const char *builtin_name, const char *builtin_param,
 		    const char *builtin_param_name) {
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
-  const sp_node_t* config = get_config(builtin_name);      
+  const sp_node_t* config = get_config_node(builtin_name);      
   char* complete_path_function = get_complete_function_path(execute_data);
   char const* client_ip = sp_getenv("REMOTE_ADDR");
   const char* current_filename;
