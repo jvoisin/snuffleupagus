@@ -265,7 +265,6 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
     }
 
     if (config_node->filename) { /* Check the current file name. */
-
       if (0 != strcmp(current_filename, config_node->filename)) {
         goto next;
       }
