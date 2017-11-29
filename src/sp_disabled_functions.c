@@ -331,7 +331,7 @@ static bool should_drop_on_ret(zval* return_value,
       SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions;
   char* complete_path_function = get_complete_function_path(execute_data);
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
-  char current_file_hash[SHA256_SIZE * 2] = {0};
+  char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
   bool match_type = false, match_value = false;
 
   if (!complete_path_function) {
