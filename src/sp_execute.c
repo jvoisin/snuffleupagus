@@ -28,49 +28,55 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   }
 }
 
-static void construct_include_handler(const char * const filename) {
-  if (SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include) {
-    const sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
-    if (!config || !config->data) {
-      return;
-    }
+static void is_builtin_matching(const char * const filename, char* function_name,
+    char *param_name, sp_node_t *config) {
+  if (!config || !config->data) {
+    return;
+  }
 
-    while (config) {
-      sp_disabled_function *config_node = (sp_disabled_function*)(config->data);
-      if (true == sp_match_value(filename, config_node->value, config_node->value_r)) {
-        if (true == config_node->allow) {
-          return;
-        }
-        sp_log_disable("include", "inclusion path", filename, config_node);
-        if (false == config_node->simulation) {
-          sp_terminate();
-        }
-      }
-      config = config->next;
-    }
+  if (true == should_disable(EG(current_execute_data), function_name, filename, param_name)) {
+    sp_terminate();
   }
 }
 
-static void sp_execute_ex(zend_execute_data *execute_data) {
-  if (NULL == execute_data->func->common.function_name) {
-    goto execute;
-  }
+char *get_eval_filename(const char *filename) {
+  size_t i = strlen(filename) - 1;
+  int count = 0;
+  char *clean_filename = estrdup(filename);
 
-  if (true == should_disable(execute_data)) {
+  //ghetto as fuck
+  //get the filename in which eval() is called from "foo.php(1) : eval()'d code"
+  while (i) {
+    if (clean_filename[i] == '(') {
+      if (count == 1) {
+	clean_filename[i] = 0;
+	break;
+      }
+      count++;
+    }
+    i--;
+  }
+  return clean_filename;
+}
+
+static void sp_execute_ex(zend_execute_data *execute_data) {
+  if (true == should_disable(execute_data, NULL, NULL, NULL)) {
     sp_terminate();
   }
-
+  
   if (execute_data->func->op_array.type == ZEND_EVAL_CODE) {
-    sp_log_debug("Currently in an eval\n");
+    sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
+    char *filename = get_eval_filename((char *)zend_get_executed_filename());
+    is_builtin_matching(filename, "eval", NULL, config);
+    efree(filename);
   }
 
   if (NULL != execute_data->func->op_array.filename) {
     if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
       terminate_if_writable(ZSTR_VAL(execute_data->func->op_array.filename));
     }
-}
+  }
 
-execute:
   orig_execute_ex(execute_data);
 }
 
@@ -86,7 +92,26 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
       if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
         terminate_if_writable(filename);
       }
-      construct_include_handler(filename);
+      sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
+      switch (data->opline->extended_value) {
+      case ZEND_INCLUDE:
+	is_builtin_matching(filename, "include", "inclusion path", config);
+	break;
+      case ZEND_REQUIRE:
+	is_builtin_matching(filename, "require", "inclusion path", config);
+	break;
+      case ZEND_REQUIRE_ONCE:
+	is_builtin_matching(filename, "require_once", "inclusion path", config);
+	break;
+      case ZEND_INCLUDE_ONCE:
+	is_builtin_matching(filename, "include_once", "inclusion path", config);
+	break;
+      case ZEND_EVAL:
+	is_builtin_matching(filename, "eval", NULL, config);
+	break;
+      default:
+	break;
+      }
   }
 
 end:

@@ -115,6 +115,7 @@ typedef struct {
 
 typedef struct {
   sp_node_t *construct_include; // list of rules for `(include|require)_(once)?`
+  sp_node_t *construct_eval;
   sp_node_t *construct_echo;
 } sp_config_disabled_constructs;
 

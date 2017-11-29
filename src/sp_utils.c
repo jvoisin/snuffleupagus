@@ -229,6 +229,8 @@ bool sp_match_value(const char* value, const char* to_match, const pcre* rx) {
     }
   } else if (rx) {
     return is_regexp_matching(rx, value);
+  } else {
+    return true;
   }
   return false;
 }

@@ -24,6 +24,9 @@ static int get_construct_type(sp_disabled_function const *const df) {
       .type = ZEND_STRLEN,
       .keys = {"strlen", NULL}
     },{
+      .type = ZEND_EVAL_CODE,
+      .keys = {"eval", NULL}
+    },{
       .type = 0,
       .keys = {NULL}
    }
@@ -298,6 +301,9 @@ int parse_disabled_functions(char *line) {
   switch (get_construct_type(df)) {
     case ZEND_INCLUDE_OR_EVAL:
       sp_list_insert(SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include, df);
+      return ret;
+    case ZEND_EVAL_CODE:
+      sp_list_insert(SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval, df);
       return ret;
     case ZEND_ECHO:
     default:
