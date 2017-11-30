@@ -28,8 +28,8 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   }
 }
 
-static void is_builtin_matching(const char * const filename, char* function_name,
-    char *param_name, sp_node_t *config) {
+static void is_builtin_matching(const char * restrict const filename,
+		char* restrict function_name, char* restrict param_name, sp_node_t *config) {
   if (!config || !config->data) {
     return;
   }
@@ -39,22 +39,22 @@ static void is_builtin_matching(const char * const filename, char* function_name
   }
 }
 
+/* This function gets the filename in which `eval()` is called from,
+ * since it looks like "foo.php(1) : eval()'d code", so we're starting
+ * from the end of the string until the second closing parenthesis. */
 char *get_eval_filename(const char *filename) {
-  size_t i = strlen(filename) - 1;
+  size_t i = strlen(filename);
   int count = 0;
   char *clean_filename = estrdup(filename);
 
-  //ghetto as fuck
-  //get the filename in which eval() is called from "foo.php(1) : eval()'d code"
-  while (i) {
+  while (i--) {
     if (clean_filename[i] == '(') {
       if (count == 1) {
-	clean_filename[i] = 0;
-	break;
+        clean_filename[i] = '\0';
+        break;
       }
       count++;
     }
-    i--;
   }
   return clean_filename;
 }
