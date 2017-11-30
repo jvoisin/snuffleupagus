@@ -4,6 +4,8 @@ php_path="/usr/bin/php7.0"
 libasan_path="/usr/lib/x86_64-linux-gnu/libasan.so.3"
 script_name="./preload_script"
 
+find / -name '*libasan*'
+
 _php_path=$(echo ${php_path} | sed 's/\//\\\//g')
 _script_name=$(echo ${script_name} | sed 's/\//\\\//g')
 
