@@ -1,6 +1,6 @@
 #!/bin/sh
 
-php_path="/usr/bin/php7.0"
+php_path="$(which php)"
 #libasan_path="/usr/lib/x86_64-linux-gnu/libasan.so.3"
 libasan_path="/usr/lib/gcc/x86_64-linux-gnu/4.8/libasan.so"
 script_name="./preload_script"
