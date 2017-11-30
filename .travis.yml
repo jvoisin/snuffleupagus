@@ -41,7 +41,9 @@ matrix:
     php: nightly
   - env: TARGET="ASAN" CC="gcc"
     php: '7.0'
-    script: cd scripts; ./asan.sh
+    script:
+      - cd scripts
+      - ./asan.sh
 
 script:
   - cd src
