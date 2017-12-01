@@ -10,35 +10,6 @@ env:
 
 matrix:
   include:
-  - env: TARGET="coverity"
-    php: nightly
-    script: echo "Coverity, nothing to do."
-    after_success: cat /home/travis/build/nbs-system/snuffleupagus/cov-int/scm_log.txt
-    addons:
-      coverity_scan:
-        project:
-          name: "nbs-system/snuffleupagus"
-          description: "Build submitted via Travis CI"
-        notification_email: devnull@nbs-system.com
-        build_command_prepend: "cd src; phpize; ./configure --enable-snuffleupagus; cd -"
-        build_command: "make debug -j2"
-        branch_pattern: master
-  - env: TARGET="gcc php7.0" CC="gcc"
-    php: '7.0'
-  - env: TARGET="gcc php7.1" CC="gcc"
-    php: '7.1'
-  - env: TARGET="gcc php7.2" CC="gcc"
-    php: '7.2'
-  - env: TARGET="gcc php nightly" CC="gcc"
-    php: nightly
-  - env: TARGET="clang php7.0" CC="clang"
-    php: '7.0'
-  - env: TARGET="clang php7.1" CC="clang"
-    php: '7.1'
-  - env: TARGET="clang php7.2" CC="clang"
-    php: '7.2'
-  - env: TARGET="clang php nightly" CC="clang"
-    php: nightly
   - env: TARGET="ASAN" CC="clang" CFLAGS="-fsanitize=address"
     php: '7.0'
 
