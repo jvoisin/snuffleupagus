@@ -132,45 +132,18 @@ int sp_log_request(const char* folder) {
   for (size_t i = 0; i < (sizeof(zones) / sizeof(zones[0])) - 1; i++) {
     zval* variable_value;
     zend_string* variable_key;
-    size_t params_len = strlen(zones[i].str) + 1;
-    char* param;
-    size_t size_max = 2048;
 
     if (Z_TYPE(PG(http_globals)[zones[i].key]) == IS_UNDEF) {
       continue;
     }
 
     HashTable* ht = Z_ARRVAL(PG(http_globals)[zones[i].key]);
-
-    // Compute the size of the allocation
+    fprintf(file, "%s:", zones[i].str);
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, variable_key, variable_value) {
-      params_len += snprintf(NULL, 0, "%s=%s&", ZSTR_VAL(variable_key),
-                             Z_STRVAL_P(variable_value));
+      fprintf(file, "%s=%s&", ZSTR_VAL(variable_key), Z_STRVAL_P(variable_value));
     }
     ZEND_HASH_FOREACH_END();
-
-    params_len = params_len>size_max?size_max:params_len;
-
-#define NCAT_AND_DEC(a, b, c) strncat(a, b, c); c -= strlen(b);
-
-    // Allocate and copy the data
-    // FIXME Why are we even allocating?
-    param = ecalloc(params_len, 1);
-    NCAT_AND_DEC(param, zones[i].str, params_len);
-    NCAT_AND_DEC(param, ":", params_len);
-    ZEND_HASH_FOREACH_STR_KEY_VAL(ht, variable_key, variable_value) {
-      NCAT_AND_DEC(param, ZSTR_VAL(variable_key), params_len);
-      NCAT_AND_DEC(param, "=", params_len);
-      NCAT_AND_DEC(param, Z_STRVAL_P(variable_value), params_len);
-      NCAT_AND_DEC(param, "&", params_len);
-    }
-    ZEND_HASH_FOREACH_END();
-
-    param[strlen(param) - 1] = '\0';
-
-    fputs(param, file);
     fputs("\n", file);
-    efree(param);
   }
   fclose(file);
 
