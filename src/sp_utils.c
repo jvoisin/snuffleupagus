@@ -118,13 +118,16 @@ int sp_log_request(const char* folder) {
     const char* str;
     const int key;
   } zones[] = {{"GET", TRACK_VARS_GET},       {"POST", TRACK_VARS_POST},
-               {"COOKIE", TRACK_VARS_COOKIE}, {"SERVER", TRACK_VARS_SERVER},
-               {"ENV", TRACK_VARS_ENV},       {NULL, 0}};
+               {"COOKIE", TRACK_VARS_COOKIE}, /*{"SERVER", TRACK_VARS_SERVER}, */
+               {"ENV", TRACK_VARS_ENV},			  /*{"REQUEST", TRACK_VARS_REQUEST},*/
+							 {NULL, 0}};
+	// Apparently, PHP has trouble always giving SERVER,
+	// and REQUEST is never used in its source code.
 
   if (0 != construct_filename(filename, folder)) {
     return -1;
   }
-  if (NULL == (file = fopen(filename, "a"))) {
+  if (NULL == (file = fopen(filename, "w+"))) {
     sp_log_err("request_logging", "Unable to open %s", filename);
     return -1;
   }
