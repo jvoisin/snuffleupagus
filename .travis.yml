@@ -10,7 +10,7 @@ env:
 
 matrix:
   include:
-  - env: TARGET="ASAN" CC="clang" CFLAGS="-fsanitize=address"
+  - env: TARGET="ASAN" CC="clang" CFLAGS="-fsanitize=address" LDFLAGS="-lasan"
     php: '7.0'
 
 script:
