@@ -39,7 +39,7 @@ matrix:
     php: '7.2'
   - env: TARGET="clang php nightly" CC="clang"
     php: nightly
-  - env: TARGET="ASAN" CC="gcc" CFLAGS="-fsanitize=address"
+  - env: TARGET="ASAN" CC="clang" CFLAGS="-fsanitize=address"
     php: '7.0'
 
 script:
