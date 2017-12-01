@@ -88,6 +88,7 @@ static int construct_filename(char* filename, const char* folder) {
   if (0 > mkdir(folder, 0700) && errno != EEXIST) {
     sp_log_err("request_logging", "Unable to create the folder '%s'.",
       folder);
+    return -1;
   }
 
   memcpy(filename, folder, strlen(folder));
