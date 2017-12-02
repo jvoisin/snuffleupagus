@@ -1,3 +1,4 @@
+# Maintainer NBS System Security Team <secu@nbs-system.com>
 pkgname="snuffleupagus"
 pkgver=r146.baa0d6d
 pkgrel=1
