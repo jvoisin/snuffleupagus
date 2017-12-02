@@ -2,7 +2,7 @@
 pkgname="snuffleupagus"
 pkgver=r146.baa0d6d
 pkgrel=1
-pkgdesc="Snuffleupagus module for PHP7."
+pkgdesc="Security module for PHP7."
 url="https://snuffleupagus.readthedocs.io"
 arch=('i686' 'x86_64')
 license=('LGPL3')
