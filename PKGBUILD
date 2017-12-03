@@ -1,13 +1,14 @@
+# Maintainer NBS System Security Team <secu@nbs-system.com>
 pkgname="snuffleupagus"
-pkgver=r146.baa0d6d
+pkgver=r169.424845a
 pkgrel=1
-pkgdesc="Snuffleupagus module for PHP7."
+pkgdesc="Security module for PHP7."
 url="https://snuffleupagus.readthedocs.io"
 arch=('i686' 'x86_64')
 license=('LGPL3')
 depends=('php' 'php-fpm')
 checkdepends=()
-source=("${pkgname}"::"git+https://github.com/nbs-system/${pkgname}.git")
+source=("${pkgname}::git+https://github.com/nbs-system/${pkgname}.git")
 md5sums=('SKIP')
 
 pkgver() {
