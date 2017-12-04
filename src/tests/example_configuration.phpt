@@ -6,7 +6,7 @@ Shipped configuration
 sp.configuration_file={PWD}/../../config/examples.ini
 --FILE--
 <?php 
-system("echo 0");
+echo 0;
 ?>
 --EXPECTF--
 0

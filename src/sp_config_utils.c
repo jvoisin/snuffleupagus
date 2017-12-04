@@ -20,7 +20,12 @@ static int validate_str(const char *value) {
       return -1;
     }
   }
-  return balance != 0;
+  if (balance != 0) {
+    sp_log_err("config", "You forgot to close %d bracket%c in the string '%s'",
+      balance, (balance>1)?'s':' ', value);
+    return -1;
+  }
+  return 0;
 }
 
 int parse_keywords(sp_config_functions *funcs, char *line) {
@@ -112,7 +117,7 @@ err:
     sp_log_err("error",
                "There is an issue with the parsing of '%s': it doesn't look like a valid string on line %zu.",
                original_line ? original_line : "NULL", sp_line_no);
-}
+  }
   line = NULL;
   return NULL;
 }
