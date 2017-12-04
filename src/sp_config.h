@@ -66,6 +66,8 @@ typedef struct {
 } sp_config_unserialize;
 
 typedef struct {
+  char *textual_representation;
+
   char *filename;
   pcre *r_filename;
 

@@ -287,6 +287,7 @@ int parse_disabled_functions(char *line) {
     }
   }
   df->allow = allow;
+  df->textual_representation = estrdup(line);
 
   if (df->function) {
     df->functions_list = parse_functions_list(df->function);

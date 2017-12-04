@@ -345,6 +345,11 @@ line number. By using the *right* set of restrictive rules (or by using the
 *overly* restrictives ones in ``simulation`` mode), you might be able
 to gather interesting vulnerabilities used against your website.
 
+Dumps are stored in the folder that you pass to the ``dump()`` filter,
+in files named ``sp_dump.SHA`` with ``SHA`` being the *sha256* of the
+rule that matched. This approach allows to mitigate denial of services attacks
+that could fill up your filesystem.
+
 
 Misc low-hanging fruits in the default configuration file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -80,7 +80,8 @@ int compute_hash(const char* const filename, char* file_hash) {
   return SUCCESS;
 }
 
-static int construct_filename(char* filename, const char* folder) {
+static int construct_filename(char* filename, const char* folder,
+		const char* textual) {
   time_t t = time(NULL);
   struct tm* tm = localtime(&t);  // FIXME use `localtime_r` instead
   struct timeval tval;
@@ -91,25 +92,22 @@ static int construct_filename(char* filename, const char* folder) {
     return -1;
   }
 
-  memcpy(filename, folder, strlen(folder));
-  strcat(filename, "sp_dump_");
-  strftime(filename + strlen(filename), 27, "%F_%T:", tm);
-  gettimeofday(&tval, NULL);
-  sprintf(filename + strlen(filename), "%04ld", tval.tv_usec);
-  strcat(filename, "_");
-
-  char* remote_addr = getenv("REMOTE_ADDR");
-  if (remote_addr) { // ipv6: 8*4 bytes + 7 colons = 39 chars max
-    strncat(filename, remote_addr, 40);
-  } else {
-    strcat(filename, "0.0.0.0");
-  }
-  strcat(filename, ".dump");
+  /* We're using the sha256 sum of the rule's textual representation
+   * as filename, in order to only have one dump per rule, to migitate
+   * DoS attacks. */
+  PHP_SHA256_CTX context;
+  unsigned char digest[SHA256_SIZE] = {0};
+  char strhash[65] = {0};
+  PHP_SHA256Init(&context);
+  PHP_SHA256Update(&context, (const unsigned char *) textual, strlen(textual));
+  PHP_SHA256Final(digest, &context);
+  make_digest_ex(strhash, digest, SHA256_SIZE);
+  snprintf(filename, MAX_FOLDER_LEN-1, "%s/sp_dump.%s", folder, strhash);
 
   return 0;
 }
 
-int sp_log_request(const char* folder) {
+int sp_log_request(const char* folder, const char* text_repr) {
   FILE* file;
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);
@@ -124,15 +122,18 @@ int sp_log_request(const char* folder) {
 	// Apparently, PHP has trouble always giving SERVER,
 	// and REQUEST is never used in its source code.
 
-  if (0 != construct_filename(filename, folder)) {
+  if (0 != construct_filename(filename, folder, text_repr)) {
     return -1;
   }
   if (NULL == (file = fopen(filename, "w+"))) {
-    sp_log_err("request_logging", "Unable to open %s", filename);
+    sp_log_err("request_logging", "Unable to open %s: %s", filename,
+				strerror(errno));
     return -1;
   }
 
-  fprintf(file, "%s:%d\n", current_filename, current_line);
+  fprintf(file, "RULE: %s\n", text_repr);
+
+  fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
   for (size_t i = 0; i < (sizeof(zones) / sizeof(zones[0])) - 1; i++) {
     zval* variable_value;
     zend_string* variable_key;
@@ -249,7 +250,7 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
     }
   }
   if (dump) {
-    sp_log_request(config_node->dump);
+    sp_log_request(config_node->dump, config_node->textual_representation);
   }
 }
 
@@ -273,7 +274,7 @@ void sp_log_disable_ret(const char* restrict path,
         zend_get_executed_lineno(TSRMLS_C), ret_value?ret_value:"?", path);
   }
   if (dump) {
-    sp_log_request(dump);
+    sp_log_request(dump, config_node->textual_representation);
   }
 }
 
