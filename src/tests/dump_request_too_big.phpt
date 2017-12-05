@@ -6,10 +6,10 @@ if (!extension_loaded("snuffleupagus")) {
     print "skip";
 } 
 
-foreach (glob("/tmp/dump_results/*.dump") as $dump) {
+foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
     @unlink($dump);
 }
-@rmdir("/tmp/tests/dump_results/");
+@rmdir("/tmp/tests/dump_result/");
 ?>
 --POST--
 post_a=data_post_a&post_b=data_post_b&post_c=c
