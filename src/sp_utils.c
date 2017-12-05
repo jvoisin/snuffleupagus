@@ -81,12 +81,12 @@ int compute_hash(const char* const filename, char* file_hash) {
 }
 
 static int construct_filename(char* filename, const char* folder,
-		const char* textual) {
-  time_t t = time(NULL);
-  struct tm* tm = localtime(&t);  // FIXME use `localtime_r` instead
-  struct timeval tval;
+    const char* textual) {
+  PHP_SHA256_CTX context;
+  unsigned char digest[SHA256_SIZE] = {0};
+  char strhash[65] = {0};
 
-  if (0 > mkdir(folder, 0700) && errno != EEXIST) {
+  if (-1 == mkdir(folder, 0700) && errno != EEXIST) {
     sp_log_err("request_logging", "Unable to create the folder '%s'.",
       folder);
     return -1;
@@ -95,9 +95,6 @@ static int construct_filename(char* filename, const char* folder,
   /* We're using the sha256 sum of the rule's textual representation
    * as filename, in order to only have one dump per rule, to migitate
    * DoS attacks. */
-  PHP_SHA256_CTX context;
-  unsigned char digest[SHA256_SIZE] = {0};
-  char strhash[65] = {0};
   PHP_SHA256Init(&context);
   PHP_SHA256Update(&context, (const unsigned char *) textual, strlen(textual));
   PHP_SHA256Final(digest, &context);
@@ -116,18 +113,15 @@ int sp_log_request(const char* folder, const char* text_repr) {
     const char* str;
     const int key;
   } zones[] = {{"GET", TRACK_VARS_GET},       {"POST", TRACK_VARS_POST},
-               {"COOKIE", TRACK_VARS_COOKIE}, /*{"SERVER", TRACK_VARS_SERVER}, */
-               {"ENV", TRACK_VARS_ENV},			  /*{"REQUEST", TRACK_VARS_REQUEST},*/
-							 {NULL, 0}};
-	// Apparently, PHP has trouble always giving SERVER,
-	// and REQUEST is never used in its source code.
+               {"COOKIE", TRACK_VARS_COOKIE}, {"SERVER", TRACK_VARS_SERVER},
+               {"ENV", TRACK_VARS_ENV}, {NULL, 0}};
 
   if (0 != construct_filename(filename, folder, text_repr)) {
     return -1;
   }
   if (NULL == (file = fopen(filename, "w+"))) {
     sp_log_err("request_logging", "Unable to open %s: %s", filename,
-				strerror(errno));
+        strerror(errno));
     return -1;
   }
 
@@ -145,7 +139,17 @@ int sp_log_request(const char* folder, const char* text_repr) {
     HashTable* ht = Z_ARRVAL(PG(http_globals)[zones[i].key]);
     fprintf(file, "%s:", zones[i].str);
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, variable_key, variable_value) {
-      fprintf(file, "%s=%s&", ZSTR_VAL(variable_key), Z_STRVAL_P(variable_value));
+      const char* key = ZSTR_VAL(variable_key);
+
+      if (Z_TYPE_INFO_P(variable_value) == IS_LONG) {
+        fprintf(file, "%s=%ld\n", key, Z_DVAL_P(variable_value));
+      } else if (Z_TYPE_INFO_P(variable_value) == IS_DOUBLE) {
+        fprintf(file, "%s=%lf\n", key, Z_DVAL_P(variable_value));
+      } else if (Z_TYPE_INFO_P(variable_value) == IS_ARRAY) {
+        fprintf(file, "%s=array", key);
+      } else {
+        fprintf(file, "%s=%s\n", key, Z_STRVAL_P(variable_value));
+      }
     }
     ZEND_HASH_FOREACH_END();
     fputs("\n", file);
@@ -245,7 +249,7 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
     } else {
       sp_log_msg("disabled_function", sim?SP_LOG_SIMULATION:SP_LOG_DROP,
                  "The call to the function '%s' in %s:%d has been disabled.",
-				 path, zend_get_executed_filename(TSRMLS_C),
+         path, zend_get_executed_filename(TSRMLS_C),
                  zend_get_executed_lineno(TSRMLS_C));
     }
   }
@@ -362,7 +366,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
                                          VAR_AND_LEN(original_name),
                                          func->handler) == NULL) {
       sp_log_err("function_pointer_saving",
-			  "Could not save function pointer for %s", original_name);
+        "Could not save function pointer for %s", original_name);
       return FAILURE;
     } else {
       func->handler = new_function;

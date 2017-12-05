@@ -6,10 +6,10 @@ if (!extension_loaded("snuffleupagus")) {
     print "skip";
 } 
 
-foreach (glob("/tmp/dump_results/*.dump") as $dump) {
+foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
     @unlink($dump);
 }
-@rmdir("/tmp/dump_results/");
+@rmdir("/tmp/dump_result/");
 ?>
 --POST--
 post_a=data_post_a&post_b=data_post_b
@@ -21,10 +21,10 @@ cookie_a=data_cookie_a&cookie_b=data_cookie_b
 sp.configuration_file={PWD}/config/dump_request.ini
 --FILE--
 <?php
-@mkdir("/tmp/dump_results/");
+@mkdir("/tmp/dump_result/");
 echo "1\n";
 echo system("echo 1337;");
-$filename = glob('/tmp/dump_results/*.dump')[0];
+$filename = glob('/tmp/dump_result/sp_dump.*')[0];
 $res = file($filename);
 if ($res[1] != "GET:get_a=data_get_a&get_b=data_get_b\n") {
     echo "1\n";

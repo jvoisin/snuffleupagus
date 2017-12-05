@@ -4,6 +4,8 @@ Disable functions ret val - dump
 <?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_functions_retval_dump.ini
+--ENV--
+DOCUMENT_ROOT=a
 --POST--
 post_a=data_post_a&post_b=data_post_b
 --GET--
