@@ -126,7 +126,7 @@ int sp_log_request(const char* folder, const char* text_repr) {
     return -1;
   }
 
-  fprintf(file, "RULE: %s\n", text_repr);
+  fprintf(file, "RULE: sp.disable_function%s\n", text_repr);
 
   fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
   for (size_t i = 0; i < (sizeof(zones) / sizeof(zones[0])) - 1; i++) {
@@ -137,20 +137,15 @@ int sp_log_request(const char* folder, const char* text_repr) {
       continue;
     }
 
-    HashTable* ht = Z_ARRVAL(PG(http_globals)[zones[i].key]);
+    const HashTable* const ht = Z_ARRVAL(PG(http_globals)[zones[i].key]);
     fprintf(file, "%s:", zones[i].str);
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, variable_key, variable_value) {
-      const char* key = ZSTR_VAL(variable_key);
+      smart_str a = {0};
 
-      if (Z_TYPE_INFO_P(variable_value) == IS_LONG) {
-        fprintf(file, "%s=%" PRId64 "\n", key, Z_LVAL_P(variable_value));
-      } else if (Z_TYPE_INFO_P(variable_value) == IS_DOUBLE) {
-        fprintf(file, "%s=%lf\n", key, Z_DVAL_P(variable_value));
-      } else if (Z_TYPE_INFO_P(variable_value) == IS_ARRAY) {
-        fprintf(file, "%s=array", key);
-      } else {
-        fprintf(file, "%s=%s\n", key, Z_STRVAL_P(variable_value));
-      }
+      php_var_export_ex(variable_value, 1, &a);
+      ZSTR_VAL(a.s)[ZSTR_LEN(a.s)] = '\0';
+      fprintf(file, "%s=%s ", ZSTR_VAL(variable_key), ZSTR_VAL(a.s));
+      zend_string_release(a.s);
     }
     ZEND_HASH_FOREACH_END();
     fputs("\n", file);
