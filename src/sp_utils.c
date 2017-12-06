@@ -1,6 +1,7 @@
 #include "php_snuffleupagus.h"
 
 #include <fcntl.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -142,7 +143,7 @@ int sp_log_request(const char* folder, const char* text_repr) {
       const char* key = ZSTR_VAL(variable_key);
 
       if (Z_TYPE_INFO_P(variable_value) == IS_LONG) {
-        fprintf(file, "%s=%ld\n", key, Z_DVAL_P(variable_value));
+        fprintf(file, "%s=%" PRId64 "\n", key, Z_LVAL_P(variable_value));
       } else if (Z_TYPE_INFO_P(variable_value) == IS_DOUBLE) {
         fprintf(file, "%s=%lf\n", key, Z_DVAL_P(variable_value));
       } else if (Z_TYPE_INFO_P(variable_value) == IS_ARRAY) {
