@@ -64,44 +64,16 @@ end:
 static bool is_local_var_matching(
     zend_execute_data* execute_data,
     const sp_disabled_function* const config_node) {
-  zend_execute_data* orig_execute_data = execute_data;
+  char *var_value_str;
+  bool ret = false;
 
-  /*because execute_data points to hooked function data,
-   which we dont care about */
-  zend_execute_data* current = execute_data->prev_execute_data;
-  zval* value = NULL;
-
-  while (current) {
-    zend_string* key = NULL;
-    EG(current_execute_data) = current;
-    zend_array* symtable = zend_rebuild_symbol_table();
-    ZEND_HASH_FOREACH_STR_KEY_VAL(symtable, key, value) {
-      if (0 == strcmp(config_node->var, key->val)) {  // is the var name right?
-        if (Z_TYPE_P(value) == IS_INDIRECT) {
-          value = Z_INDIRECT_P(value);
-        }
-        if (Z_TYPE_P(value) != IS_ARRAY) {
-          char* var_value_str = sp_convert_to_string(value);
-          if (true == sp_match_value(var_value_str, config_node->value,
-                                     config_node->value_r)) {
-            efree(var_value_str);
-            EG(current_execute_data) = orig_execute_data;
-            return true;
-          }
-          efree(var_value_str);
-        } else {
-          EG(current_execute_data) = orig_execute_data;
-          return sp_match_array_key_recurse(value, config_node->var_array_keys,
-                                            config_node->value, NULL);
-        }
-      }
-    }
-    ZEND_HASH_FOREACH_END();
-    current = current->prev_execute_data;
+  var_value_str = get_value(execute_data, config_node->var);
+  if (var_value_str) {
+    ret = (true == sp_match_value(var_value_str, config_node->value,
+				  config_node->value_r));
+    efree(var_value_str);
   }
-
-  EG(current_execute_data) = orig_execute_data;
-  return false;
+  return ret;
 }
 
 static const sp_node_t* get_config_node(const char* builtin_name) {

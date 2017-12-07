@@ -178,7 +178,7 @@ int parse_cookie(char *line) {
 int parse_disabled_functions(char *line) {
   int ret = 0;
   bool enable = true, disable = false, allow = false, drop = false;
-  char *pos = NULL;
+  char *pos = NULL, *var = NULL;
   char *line_number = NULL;
   sp_disabled_function *df = pecalloc(sizeof(*df), 1, 1);
   df->pos = -1;
@@ -205,7 +205,7 @@ int parse_disabled_functions(char *line) {
       {parse_cidr, SP_TOKEN_CIDR, &(df->cidr)},
       {parse_regexp, SP_TOKEN_RET_REGEXP, &(df->r_ret)},
       {parse_php_type, SP_TOKEN_RET_TYPE, &(df->ret_type)},
-      {parse_str, SP_TOKEN_LOCAL_VAR, &(df->var)},
+      {parse_str, SP_TOKEN_LOCAL_VAR, &(var)},
       {parse_str, SP_TOKEN_VALUE_ARG_POS, &(pos)},
       {parse_str, SP_TOKEN_LINE_NUMBER, &(line_number)},
       {0}};
@@ -301,13 +301,13 @@ int parse_disabled_functions(char *line) {
     df->param_is_array = 1;
   }
 
-  if (df->var && strchr(df->var, '[')) {  // assume that this is an array
-    df->var_array_keys = sp_list_new();
-    if (0 != array_to_list(&df->var, &df->var_array_keys)) {
-      pefree(df->var_array_keys, 1);
+  if (var) {
+    df->var = parse_var(var);
+    if (!df->var) {
+      sp_log_err("config", "Invalid value '%s' of `var` on line %zu.",
+		 var, sp_line_no);
       return -1;
     }
-    df->var_is_array = 1;
   }
 
   switch (get_construct_type(df)) {

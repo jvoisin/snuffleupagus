@@ -25,6 +25,7 @@
 #include "zend_extensions.h"
 
 #include "sp_list.h"
+#include "sp_var_parser.h"
 #include "sp_config.h"
 #include "sp_config_utils.h"
 #include "sp_config_keywords.h"

@@ -98,7 +98,7 @@ typedef struct {
 
   bool allow;
 
-  char *var;
+  arbre_du_ghetto *var;
 
   sp_cidr *cidr;
 } sp_disabled_function;
