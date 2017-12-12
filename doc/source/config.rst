@@ -312,11 +312,11 @@ The ``function`` filter is able to do various dereferencing:
 
 The ``param`` filter is also able to do some dereferencing:
 
-- ``param(foo[bar])`` will get a match on the value corresponding to the ``bar`` key in the hashtable ``foo``.
+- ``param($foo[bar])`` will get a match on the value corresponding to the ``bar`` key in the hashtable ``foo``.
   Remember that in PHP, almost every data structure is a hashtable. You can of course nest this like
-  ``param(foo[bar][baz][batman])``.
+  ``param($foo[bar][$object->array['123']][$batman])``.
 - The ``var`` filter will walk the calltrace until it finds the variable name, or the end of the calltrace,
-  allowing the filter to match global variables: ``.var("_GET[param]")`` will match on the GET parameter ``param``.
+  allowing the filter to match global variables: ``.var("$_GET[\"param\"]")`` will match on the GET parameter ``param``.
 
 The ``filename`` filter requires a leading ``/``, since paths are absolutes (like ``/var/www/mywebsite/lib/parse.php``).
 If you would like to have only one configuration file for several vhost in different folders,
