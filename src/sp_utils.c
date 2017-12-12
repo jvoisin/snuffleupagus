@@ -277,63 +277,47 @@ void sp_log_disable_ret(const char* restrict path,
   }
 }
 
-int sp_match_array_key(const zval* zv, const char* to_match, const pcre* rx) {
+bool sp_match_array_key(const zval* zv, const char* to_match, const pcre* rx) {
   zend_string* key;
   zval* value;
-  char* arg_value_str;
+  unsigned int idx;
 
-  ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(zv), key, value) {
-    if (Z_TYPE_P(value) == IS_ARRAY) {
-      continue;
-    }
-    arg_value_str = sp_convert_to_string(value);
-    if (!sp_match_value(arg_value_str, to_match, rx)) {
-      efree(arg_value_str);
-      continue;
+  ZEND_HASH_FOREACH_KEY_VAL_IND(Z_ARRVAL_P(zv), idx, key, value) {
+    if (key) {
+      if (sp_match_value(ZSTR_VAL(key), to_match, rx)) {
+	return true;
+      }
     } else {
-      efree(arg_value_str);
-      return 1;
+      char idx_str[11] = {};
+      snprintf(idx_str, 10, "%u", idx);
+      if (sp_match_value(idx_str, to_match, rx)) {
+	return true;
+      }
     }
   }
   ZEND_HASH_FOREACH_END();
-
-  (void)key;  // silence a compiler warning
-
-  return 0;
+  (void)value;  // silence a compiler warning
+  return false;
 }
 
-int sp_match_array_key_recurse(const zval* arr, sp_node_t* keys,
-                               const char* to_match, const pcre* rx) {
+bool sp_match_array_value(const zval* arr, const char* to_match, const pcre* rx) {
   zend_string* key;
   zval* value;
-  sp_node_t* current = keys;
-  if (current == NULL) {
-    return 0;
-  }
+
   ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(arr), key, value) {
-    if (Z_TYPE_P(value) == IS_ARRAY && !strcmp(ZSTR_VAL(key), current->data)) {
-      return sp_match_array_key_recurse(value, current->next, to_match, rx);
-    }
-    if (!strcmp(ZSTR_VAL(key), current->data) && current->next == NULL) {
-      if (!to_match && !rx) {
-        return 1;
-      }
-      if (Z_TYPE_P(value) == IS_ARRAY) {
-        return sp_match_array_key(value, to_match, rx);
+    if (Z_TYPE_P(value) != IS_ARRAY) {
+      char *value_str = sp_convert_to_string(value);
+      if (sp_match_value(value_str, to_match, rx)) {
+	efree(value_str);
+	return true;
       } else {
-        char *value_str = sp_convert_to_string(value);
-        if (sp_match_value(value_str, to_match, rx)) {
-          efree(value_str);
-          return 1;
-        } else {
-          efree (value_str);
-          return 0;
-        }
+	efree (value_str);
       }
     }
   }
   ZEND_HASH_FOREACH_END();
-  return 0;
+  (void)key;  // silence a compiler warning
+  return false;
 }
 
 

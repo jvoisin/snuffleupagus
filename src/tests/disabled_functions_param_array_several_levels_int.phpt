@@ -12,9 +12,9 @@ function foo($arr) {
 $a=Array("test2"=>Array("pof"=>"pif", "foo"=>Array("lol"=>"bbb")), "a"=>"cccc");
 foo($a);
 
-$a=Array("test2"=>Array("foo"=>Array("lol"=>"aaa")), "a"=>"dddd");
+$a=Array("test2"=>Array("foo"=>Array("123"=>"aaa")), "a"=>"dddd");
 foo($a);
 ?>
 --EXPECTF--
 cccc
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'foo' in %a/tests/disabled_functions_param_array_several_levels.php:3 has been disabled, because its argument 'arr' content (ARRAY) matched the rule '4'.
+[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'foo' in %a/tests/disabled_functions_param_array_several_levels_int.php:3 has been disabled, because its argument 'arr' content (ARRAY) matched the rule '4'.

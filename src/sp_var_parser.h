@@ -4,15 +4,16 @@
 # include "sp_list.h"
 
 typedef enum {
-  object = 1,
-  array = 2,
-  litteral = 3,
-  array_end = 4,
-  string_delimiter = 5,
-  namespace = 6,
-  class = 7,
-  var = 8,
-  esc_string_delimiter = 9
+  OBJECT = 1,
+  ARRAY,
+  LITTERAL,
+  ARRAY_END,
+  STRING_DELIMITER,
+  NAMESPACE,
+  CLASS,
+  VAR,
+  ESC_STRING_DELIMITER,
+  CONSTANT
 } elem_type;
 
 typedef struct sp_token_s {
@@ -21,7 +22,6 @@ typedef struct sp_token_s {
   unsigned int pos;
 } sp_token_t;
 
-/*TODO: rename this*/
 typedef struct parser_s {
   elem_type type;
   char *value;
@@ -29,7 +29,8 @@ typedef struct parser_s {
   struct parser_s *next;
 } arbre_du_ghetto;
 
-char *get_value(zend_execute_data *, const arbre_du_ghetto *);
+zval *get_value(zend_execute_data *, const arbre_du_ghetto *, bool);
+arbre_du_ghetto *arbre_du_ghetto_new();
 arbre_du_ghetto *parse_var(const char *);
 void print_type_list(const char *, arbre_du_ghetto*, int);
 void free_arbre_du_ghetto(arbre_du_ghetto *);

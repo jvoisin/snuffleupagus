@@ -9,6 +9,7 @@ typedef struct sp_node_s {
 } sp_node_t;
 
 sp_node_t *sp_list_new();
+sp_node_t *sp_list_sort(sp_node_t *, int (*)(sp_node_t *, sp_node_t *));
 void sp_list_insert(sp_node_t *, void *);
 void sp_list_free(sp_node_t *);
 void sp_list_prepend(sp_node_t *, void *);

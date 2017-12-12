@@ -5,7 +5,7 @@ Disable functions - match on a local variable
 --INI--
 sp.configuration_file={PWD}/config/disabled_function_local_var.ini
 --FILE--
-<?php 
+<?php
 namespace asd {
 function test(){
   strlen("qwe");

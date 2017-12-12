@@ -76,7 +76,7 @@ typedef struct {
   char *hash;
   int simulation;
 
-  char *param;
+  arbre_du_ghetto *param;
   pcre *r_param;
   sp_php_type param_type;
   int pos;
@@ -88,6 +88,9 @@ typedef struct {
 
   pcre *value_r;
   char *value;
+
+  pcre *r_key;
+  char *key;
 
   char *dump;
   char *alias;
@@ -191,6 +194,8 @@ typedef struct {
 #define SP_TOKEN_RET_TYPE ".ret_type("
 #define SP_TOKEN_VALUE ".value("
 #define SP_TOKEN_VALUE_REGEXP ".value_r("
+#define SP_TOKEN_KEY ".key("
+#define SP_TOKEN_KEY_REGEXP ".key_r("
 #define SP_TOKEN_VALUE_ARG_POS ".pos("
 #define SP_TOKEN_LINE_NUMBER ".line("
 

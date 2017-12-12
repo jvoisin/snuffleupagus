@@ -1,48 +1,16 @@
 #include "php_snuffleupagus.h"
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 
 static const sp_token_t jrr_token[] = {
-  {.type=object, .token=OBJECT_TOKEN},
-  {.type=array, .token=ARRAY_TOKEN},
-  {.type=array_end, .token=ARRAY_END_TOKEN},
-  {.type=string_delimiter, .token=STRING_TOKEN},
-  {.type=esc_string_delimiter, .token=ESC_STRING_TOKEN},
+  {.type=OBJECT, .token=OBJECT_TOKEN},
+  {.type=ARRAY, .token=ARRAY_TOKEN},
+  {.type=ARRAY_END, .token=ARRAY_END_TOKEN},
+  {.type=STRING_DELIMITER, .token=STRING_TOKEN},
+  {.type=ESC_STRING_DELIMITER, .token=ESC_STRING_TOKEN},
   /* Namespace seems to be useless. */
-  /*{.type=namespace, .token=NAMESPACE_TOKEN},*/
-  {.type=class, .token=CLASS_TOKEN},
+  /*{.type=NAMESPACE, .token=NAMESPACE_TOKEN},*/
+  {.type=CLASS, .token=CLASS_TOKEN},
   {.type=0, .token=NULL}
 };
-
-/*TODO: rename a lot of vars*/
-/*TODO: maybe a better algorythm ?*/
-static void sp_list_sort(sp_node_t *list) {
-  sp_node_t *head = list;
-  int change;
-  void *tmp;
-
-  do {
-    change = 0;
-    list = head;
-    while (list) {
-      if (list->next && list->next->data
-	  && 0 < ((int)((sp_token_t *)list->data)->pos -
-		  (int)((sp_token_t *)list->next->data)->pos)) {
-	  change = 1;
-	  tmp = list->next->data;
-	  list->next->data = list->data;
-	  list->data = tmp;
-	}
-      list = list->next;
-    }
-  } while (change);
-  for (list = head; list; list = list->next) {
-    list->head = head;
-  }
-}
-
 
 static int get_all_object(const char *str, const sp_token_t token,
 			  sp_node_t *tokens_list) {
@@ -75,14 +43,13 @@ static void create_var(arbre_du_ghetto *sapin, const char *value,
   } else {
     var_node = malloc(sizeof(arbre_du_ghetto));
   }
-  _type = (_type == string_delimiter) ? litteral : _type;
   var_node->value = NULL;
   var_node->next = NULL;
   var_node->idx = NULL;
   var_node->type = _type;
   /* Check if there is a var token. */
   if (value && value[0] == VARIABLE_TOKEN) {
-    var_node->type = (_type == litteral) ? var : _type;
+    var_node->type = (_type == LITTERAL || _type == CONSTANT) ? VAR : _type;
     var_node->value = strndup(&value[1], value_len - 1);
   }
   if (!var_node->value) {
@@ -97,33 +64,9 @@ static void create_var(arbre_du_ghetto *sapin, const char *value,
   }
 }
 
-static void free_sp_token_list(sp_node_t *tokens_list) {
-  sp_node_t *token_node = tokens_list;
-
-  for (; token_node; token_node = token_node->next) {
-    sp_token_t *tmp = (sp_token_t *)token_node->data;
-    free(tmp);
-  }
-  sp_list_free(tokens_list);
-}
-
-void free_arbre_du_ghetto(arbre_du_ghetto *sapin) {
-  while (sapin) {
-    arbre_du_ghetto *tmp;
-    free(sapin->value);
-    free_arbre_du_ghetto(sapin->idx);
-    tmp = sapin;
-    sapin = sapin->next;
-    free(tmp);
-  }
-}
-
-static arbre_du_ghetto *arbre_du_ghetto_new() {
-  arbre_du_ghetto *new = malloc(sizeof(arbre_du_ghetto));
-  new->next = new->idx = NULL;
-  new->value = NULL;
-  new->type = 0;
-  return new;
+int cmp_tokens(sp_node_t *list1, sp_node_t *list2) {
+  return ((int)((sp_token_t *)list1->data)->pos
+	  - (int)((sp_token_t *)list2->data)->pos);
 }
 
 static int check_empty_next_token(sp_token_t *token, sp_token_t *token_next,
@@ -144,8 +87,8 @@ static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
     token_next = (sp_token_t *)tokens_list->next->data;
   }
   switch (token->type) {
-    case esc_string_delimiter:
-      if (ignore == esc_string_delimiter) {
+    case ESC_STRING_DELIMITER:
+      if (ignore == ESC_STRING_DELIMITER) {
 	if (token_next && token_next->pos != token->pos + 1) {
 	  return -1;
 	} else if (!token_next && token->pos != strlen(str) - 1) {
@@ -153,8 +96,8 @@ static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
 	}
       }
       break;
-    case string_delimiter:
-      if (ignore == string_delimiter) {
+    case STRING_DELIMITER:
+      if (ignore == STRING_DELIMITER) {
 	if (token_next && token_next->pos != token->pos + 1) {
 	  return -1;
 	} else if (!token_next && token->pos != strlen(str) - 1) {
@@ -162,26 +105,26 @@ static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
 	}
       }
       break;
-    case array_end:
+    case ARRAY_END:
       if (!ignore) {
 	if (array_count < 1) {
 	    return -1;
 	} else if (!token_next && token->pos != strlen(str) - strlen(token->token)) {
 	    return -1;
 	} else if (token_next) {
-	  if (token_next->type == string_delimiter
-	      || token_next->type == esc_string_delimiter) {
+	  if (token_next->type == STRING_DELIMITER
+	      || token_next->type == ESC_STRING_DELIMITER) {
 	    return -1;
 	  }
 	}
       }
       break;
-    case object:
+    case OBJECT:
       if (!ignore && -1 == check_empty_next_token(token, token_next, str)) {
 	return -1;
       }
       break;
-    case class:
+    case CLASS:
       if (!ignore && -1 == check_empty_next_token(token, token_next, str)) {
 	return -1;
       }
@@ -205,32 +148,30 @@ static arbre_du_ghetto *parse_tokens(const char *str, sp_node_t *tokens_list) {
     if (-1 == check_error_token(tokens_list, ignore, array_count, str)) {
       goto error;
     }
-    if (token->type == string_delimiter || token->type == esc_string_delimiter) {
+    if (token->type == STRING_DELIMITER || token->type == ESC_STRING_DELIMITER) {
       pos = (!ignore && !array_count) ? pos + (int)strlen(token->token) : pos;
       ignore = (!ignore) ? token->type : (ignore == token->type) ? 0 : ignore;
     }
     if (ignore == 0) {
-      if (token->type == array) {
+      if (token->type == ARRAY) {
 	pos_idx_start = (array_count) ? pos_idx_start :
 	  (int)(token->pos + strlen(token->token));
 	array_count++;
-      } else if (token->type == array_end) {
+      } else if (token->type == ARRAY_END) {
 	array_count--;
-	token->type = array;
+	token->type = ARRAY;
       }
       if (array_count == 0) {
 	value_len = token->pos - pos;
-	if (token->type == array) {
+	if (token->type == ARRAY) {
 	  value_len -= strlen(token->token);
 	}
 	if (pos_idx_start > 0) {
-	  idx = strndup(&str[pos_idx_start], token->pos - pos_idx_start);
-	  strncpy(idx, &str[pos_idx_start], token->pos - pos_idx_start);
-	  idx[token->pos - pos_idx_start] = 0;
+	  idx = estrndup(&str[pos_idx_start], token->pos - pos_idx_start);
 	  value_len -= token->pos - pos_idx_start;
 	}
 	create_var(sapin, &str[pos], value_len, token->type, idx);
-	free(idx);
+	efree(idx);
 	pos = token->pos + strlen(token->token);
 	pos_idx_start = -1;
       }
@@ -243,7 +184,7 @@ error:
     return NULL;
   }
   if (pos != (int)strlen(str)) {
-    create_var(sapin, &str[pos], strlen(str) - pos, litteral, NULL);
+    create_var(sapin, &str[pos], strlen(str) - pos, CONSTANT, NULL);
   }
   return sapin;
 }
@@ -259,8 +200,12 @@ arbre_du_ghetto *parse_var(const char *line) {
   for (int i = 0; jrr_token[i].token; i++) {
     get_all_object(line, jrr_token[i], tokens_list);
   }
-  sp_list_sort(tokens_list);
+  tokens_list = sp_list_sort(tokens_list, cmp_tokens);
   sapin = parse_tokens(line, tokens_list);
-  free_sp_token_list(tokens_list);
+  sp_list_free(tokens_list);
+  if (sapin && sapin->next == NULL && sapin->type == 0) {
+    sapin->type = LITTERAL;
+    sapin->value = estrdup("");
+  }
   return sapin;
 }

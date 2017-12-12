@@ -1,9 +1,27 @@
 #include "php_snuffleupagus.h"
 
+static zval *get_param_var(zend_execute_data *ed, const char *var_name) {
+  int nb_param = ed->func->common.num_args;
+
+  for (int i = 0; i < nb_param; i++) {
+    const char *arg_name;
+    if (ZEND_USER_CODE(ed->func->type)) {
+      arg_name = ZSTR_VAL(ed->func->common.arg_info[i].name);
+    } else {
+      arg_name = ed->func->internal_function.arg_info[i].name;
+    }
+    if (0 == strcmp(arg_name, var_name)) {
+      return ZEND_CALL_VAR_NUM(ed, i);
+    }
+  }
+  return NULL;
+}
+
 static zval *get_local_var(zend_execute_data *ed, const char *var_name) {
-  zend_execute_data* orig_execute_data = ed;
-  zend_execute_data* current = ed;
-  zval* value = NULL;
+  zend_execute_data *orig_execute_data = ed;
+  zend_execute_data *current = ed;
+  zval *value = NULL;
+
   while (current) {
     zend_string* key = NULL;
     EG(current_execute_data) = current;
@@ -14,7 +32,7 @@ static zval *get_local_var(zend_execute_data *ed, const char *var_name) {
 	  value = Z_INDIRECT_P(value);
 	}
 	EG(current_execute_data) = orig_execute_data;
-	return (value);
+	return value;
       }
     }
     ZEND_HASH_FOREACH_END();
@@ -24,14 +42,29 @@ static zval *get_local_var(zend_execute_data *ed, const char *var_name) {
   return NULL;
 }
 
-/* If the entry is numeric it is casted to a long. */
-static void *get_entry_hashtable(HashTable *ht, const char *entry, int entry_len) {
+static zval *get_var_value(zend_execute_data *ed, const char *var_name,
+			   bool is_param) {
+  zval *zvalue = NULL;
+
+  if (is_param) {
+    zvalue = get_param_var(ed, var_name);
+    if (!zvalue) {
+      return get_local_var(ed, var_name);
+    }
+    return zvalue;
+  }
+  return get_local_var(ed, var_name);
+}
+
+static void *get_entry_hashtable(HashTable *ht, const char *entry,
+				 int entry_len) {
   zval *zvalue = zend_hash_str_find(ht, entry, entry_len);
 
   if (!zvalue) {
     zvalue = zend_hash_index_find(ht, atol(entry));
   }
-  while (zvalue && (Z_TYPE_P(zvalue) == IS_INDIRECT || Z_TYPE_P(zvalue) == IS_PTR)) {
+  while (zvalue && (Z_TYPE_P(zvalue) == IS_INDIRECT
+		    || Z_TYPE_P(zvalue) == IS_PTR)) {
     if (Z_TYPE_P(zvalue) == IS_INDIRECT) {
       zvalue = Z_INDIRECT_P(zvalue);
     } else {
@@ -41,24 +74,21 @@ static void *get_entry_hashtable(HashTable *ht, const char *entry, int entry_len
   return zvalue;
 }
 
-static zval *get_array_value(zend_execute_data *ed, zval *prev,
-		      const arbre_du_ghetto *sapin, const char *value) {
-  char *idx_value;
-  zval *zvalue = NULL;
+static zval *get_array_value(zend_execute_data *ed, zval *zvalue,
+			     const arbre_du_ghetto *sapin) {
+  zval *idx_value, *ret = NULL;
+  char *idx = NULL;
 
-  if (!prev) {
-    zvalue = get_local_var(ed, value);
-  } else {
-    zvalue = prev;
-  }
-  idx_value = get_value(ed, sapin->idx);
+  idx_value = get_value(ed, sapin->idx, false);
   if (!zvalue || !idx_value) {
     return NULL;
   }
   if (Z_TYPE_P(zvalue) == IS_ARRAY) {
-    return get_entry_hashtable(Z_ARRVAL_P(zvalue), idx_value, strlen(idx_value));
+    idx = sp_convert_to_string(idx_value);
+    ret = get_entry_hashtable(Z_ARRVAL_P(zvalue), idx, strlen(idx));
+    efree(idx);
   }
-  return NULL;
+  return ret;
 }
 
 static zval *get_object_property(zval *object, const char *property) {
@@ -68,99 +98,105 @@ static zval *get_object_property(zval *object, const char *property) {
   int len;
 
   zvalue = get_entry_hashtable(array, property, strlen(property));
-  /* Problem with heritage */
+  // Problem with heritage.
   if (!zvalue) {
-    char *protected_property = malloc(sizeof(char) * (strlen(property) + 4));
+    char *protected_property = emalloc(strlen(property) + 4);
     len = sprintf(protected_property, PROTECTED_PROP_FMT, 0, 0, property);
     zvalue = get_entry_hashtable(array, protected_property, len);
-    free(protected_property);
+    efree(protected_property);
   }
   if (!zvalue) {
-    char *private_property = malloc(sizeof(char) * (strlen(class_name) + 3
-						    + strlen(property)));
+    char *private_property = emalloc(strlen(class_name) + 3 + strlen(property));
     len = sprintf(private_property, PRIVATE_PROP_FMT, 0, class_name, 0, property);
     zvalue = get_entry_hashtable(array, private_property, len);
-    free(private_property);
+    efree(private_property);
   }
   return zvalue;
 }
 
-char *get_value(zend_execute_data *ed, const arbre_du_ghetto *sapin) {
-  char *value = NULL, *ret_value = NULL;
-  zval *zvalue = NULL;
-  HashTable *prev_array = NULL;
-  zend_string *name = NULL;
-  zend_class_entry *ce = NULL;
-  /*TODO: remove debug. */
-  char *debug = malloc(1000);
+static zend_class_entry *get_class(const char *value) {
+  zend_string *name;
+  zend_class_entry *ce;
 
-  debug[0] = 0;
+  name = zend_string_init(value, strlen(value), 0);
+  ce = zend_lookup_class(name);
+  zend_string_release(name);
+  return ce;
+}
+
+static zval *get_constant(const char *value, zval *zvalue,
+			 zend_class_entry *ce, const arbre_du_ghetto *sapin) {
+  if (ce) {
+    zvalue = get_entry_hashtable(&ce->constants_table, value, strlen(value));
+    ce = NULL;
+  } else if (zvalue && Z_TYPE_P(zvalue) == IS_OBJECT && value[0]) {
+    zvalue = get_object_property(zvalue, value);
+  } else if (!sapin->next && !zvalue) {
+    if (sapin->type == CONSTANT) {
+      zend_string *name = zend_string_init(value, strlen(value), 0);
+      zvalue = zend_get_constant_ex(name, NULL, 0);
+      zend_string_release(name);
+    }
+    if (!zvalue) {
+      zvalue = emalloc(sizeof(zval));
+      zvalue->value.str = zend_string_init(value, strlen(value), 0);
+      zvalue->u1.v.type = IS_STRING;
+    }
+  } else {
+    return NULL;
+  }
+  return zvalue;
+}
+
+zval *get_value(zend_execute_data *ed, const arbre_du_ghetto *sapin,
+		bool is_param) {
+  zval *zvalue = NULL;
+  zend_class_entry *ce = NULL;
+
   while (sapin) {
-    value = sapin->value;
     switch (sapin->type) {
-      case array:
-	if (prev_array) {
-	  zvalue = get_entry_hashtable(prev_array, value, strlen(value));
-	  prev_array = NULL;
+      case ARRAY:
+	if (ce) {
+	  zvalue = get_entry_hashtable(&ce->constants_table, sapin->value,
+				       strlen(sapin->value));
+	  ce = NULL;
+	} else if (!zvalue) {
+	  zvalue = get_var_value(ed, sapin->value, is_param);
 	}
-	sprintf(debug, "%s%s[%s]", strdup(debug), value, sapin->idx->value);
-	zvalue = get_array_value(ed, zvalue, sapin, value);
+	zvalue = get_array_value(ed, zvalue, sapin);
 	break;
-      case var:
-	sprintf(debug, "%s%s", strdup(debug), value);
-	zvalue = get_local_var(ed, value);
+      case VAR:
+	zvalue = get_var_value(ed, sapin->value, is_param);
 	break;
-      case object:
-	if (prev_array) {
-	  zvalue = get_entry_hashtable(prev_array, value, strlen(value));
-	  prev_array = NULL;
+      case OBJECT:
+	if (ce) {
+	  zvalue = get_entry_hashtable(&ce->constants_table, sapin->value,
+				       strlen(sapin->value));
+	  ce  = NULL;
 	}
 	if (!zvalue) {
-	  sprintf(debug, "%s%s->", strdup(debug), value);
-	  zvalue = get_local_var(ed, value);
+	  zvalue = get_var_value(ed, sapin->value, is_param);
 	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
-	  if (0 != strlen(value)) {
-	    sprintf(debug, "%s%s", strdup(debug), value);
-	    goto object_zval;
+	  if (0 != strlen(sapin->value)) {
+	    zvalue = get_constant(sapin->value, zvalue, ce, sapin);
 	  }
 	} else {
 	  return NULL;
 	}
 	break;
-      case class:
-	sprintf(debug, "%s%s::", strdup(debug), value);
-	name = zend_string_init(value, strlen(value), 0);
-	ce = zend_lookup_class(name);
-	zend_string_release(name);
+      case CLASS:
+	ce = get_class(sapin->value);
 	zvalue = NULL;
-	if (ce) {
-	  prev_array = &ce->constants_table;
-	}
 	break;
       default:
-	sprintf(debug, "%s%s", strdup(debug), value);
-	if (prev_array) {
-	  zvalue = get_entry_hashtable(prev_array, value, strlen(value));
-	  prev_array = NULL;
-	} else if (zvalue && Z_TYPE_P(zvalue) == IS_OBJECT && 0 != strlen(value)) {
-object_zval:
-	  zvalue = get_object_property(zvalue, value);
-	} else if (!sapin->next && !zvalue) {
-	  ret_value = strdup(value);
-	} else {
-	  return NULL;
-	}
+	zvalue = get_constant(sapin->value, zvalue, ce, sapin);
+	ce = NULL;
 	break;
     }
-    if (!zvalue && !ret_value && !prev_array) {
+    if (!zvalue && !ce) {
       return NULL;
     }
     sapin = sapin->next;
-    }
-    if (zvalue) {
-      ret_value = sp_convert_to_string(zvalue);
-    }
-    /*printf("value: %s = \"%s\"\n", debug, ret_value);*/
-    free(debug);
-    return ret_value;
   }
+  return zvalue;
+}

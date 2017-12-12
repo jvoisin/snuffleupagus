@@ -17,6 +17,34 @@ sp_node_t *sp_list_new() {
   return new;
 }
 
+// Thanks to https://en.wikipedia.org/wiki/Insertion_sort :>
+sp_node_t *sp_list_sort(sp_node_t *pList, int (*cmp_func)(sp_node_t *, sp_node_t *)) {
+  sp_node_t *head = NULL;
+
+  if(pList == NULL || pList->next == NULL)
+    return pList;
+  while(pList != NULL) {
+    sp_node_t *current = pList;
+    pList = pList->next;
+    if(head == NULL || 0 > cmp_func(current, head)) {
+      current->next = head;
+      head = current;
+    } else {
+      sp_node_t *p = head;
+      while(p != NULL) {
+	if(p->next == NULL || 0 > cmp_func(current, p->next))
+	{
+	  current->next = p->next;
+	  p->next = current;
+	  break;
+	}
+	p = p->next;
+      }
+    }
+  }
+  return head;
+}
+
 void sp_list_insert(sp_node_t *list, void *data) {
   if (list->head == NULL) {
     list->data = data;

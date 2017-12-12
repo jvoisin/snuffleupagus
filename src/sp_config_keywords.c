@@ -178,7 +178,7 @@ int parse_cookie(char *line) {
 int parse_disabled_functions(char *line) {
   int ret = 0;
   bool enable = true, disable = false, allow = false, drop = false;
-  char *pos = NULL, *var = NULL;
+  char *pos = NULL, *var = NULL, *param = NULL;
   char *line_number = NULL;
   sp_disabled_function *df = pecalloc(sizeof(*df), 1, 1);
   df->pos = -1;
@@ -196,9 +196,11 @@ int parse_disabled_functions(char *line) {
       {parse_empty, SP_TOKEN_ALLOW, &(allow)},
       {parse_empty, SP_TOKEN_DROP, &(drop)},
       {parse_str, SP_TOKEN_HASH, &(df->hash)},
-      {parse_str, SP_TOKEN_PARAM, &(df->param)},
+      {parse_str, SP_TOKEN_PARAM, &(param)},
       {parse_regexp, SP_TOKEN_VALUE_REGEXP, &(df->value_r)},
       {parse_str, SP_TOKEN_VALUE, &(df->value)},
+      {parse_str, SP_TOKEN_KEY, &(df->key)},
+      {parse_regexp, SP_TOKEN_KEY_REGEXP, &(df->r_key)},
       {parse_regexp, SP_TOKEN_PARAM_REGEXP, &(df->r_param)},
       {parse_php_type, SP_TOKEN_PARAM_TYPE, &(df->param_type)},
       {parse_str, SP_TOKEN_RET, &(df->ret)},
@@ -229,9 +231,10 @@ int parse_disabled_functions(char *line) {
   MUTUALLY_EXCLUSIVE(df->r_function, df->function, "r_function", "function");
   MUTUALLY_EXCLUSIVE(df->filename, df->r_filename, "r_filename", "filename");
   MUTUALLY_EXCLUSIVE(df->ret, df->r_ret, "r_ret", "ret");
+  MUTUALLY_EXCLUSIVE(df->key, df->r_key, "r_key", "key");
 #undef MUTUALLY_EXCLUSIVE
 
-  if (1 < ((df->r_param ? 1 : 0) + (df->param ? 1 : 0) +
+  if (1 < ((df->r_param ? 1 : 0) + (param ? 1 : 0) +
            ((-1 != df->pos) ? 1 : 0))) {
     sp_log_err(
         "config",
@@ -239,7 +242,13 @@ int parse_disabled_functions(char *line) {
         "'.r_param', '.param' and '.pos' are mutually exclusive on line %zu.",
         line, sp_line_no);
     return -1;
-  } else if ((df->r_ret || df->ret) && (df->r_param || df->param)) {
+  } else if ((df->r_key || df->key) && (df->value_r || df->value)) {
+    sp_log_err("config",
+               "Invalid configuration line: 'sp.disabled_functions%s':"
+               "`key` and `value` are mutually exclusive on line %zu.",
+               line, sp_line_no);
+    return -1;
+  } else if ((df->r_ret || df->ret) && (df->r_param || param)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                "`ret` and `param` are mutually exclusive on line %zu.",
@@ -292,17 +301,19 @@ int parse_disabled_functions(char *line) {
     df->functions_list = parse_functions_list(df->function);
   }
 
-  if (df->param && strchr(df->param, '[')) {  // assume that this is an array
-    df->param_array_keys = sp_list_new();
-    if (0 != array_to_list(&df->param, &df->param_array_keys)) {
-      pefree(df->param_array_keys, 1);
+  if (param) {
+    df->param = parse_var(param);
+    if (!df->param) {
+      sp_log_err("config", "Invalid value '%s' of `param` on line %zu.",
+		 param, sp_line_no);
       return -1;
     }
-    df->param_is_array = 1;
   }
 
   if (var) {
-    df->var = parse_var(var);
+    if (strlen(var)) {
+      df->var = parse_var(var);
+    }
     if (!df->var) {
       sp_log_err("config", "Invalid value '%s' of `var` on line %zu.",
 		 var, sp_line_no);
