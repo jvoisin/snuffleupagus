@@ -304,19 +304,23 @@ int parse_disabled_functions(char *line) {
   if (param) {
     df->param = parse_var(param);
     if (!df->param) {
-      sp_log_err("config", "Invalid value '%s' of `param` on line %zu.",
+      sp_log_err("config", "Invalid value '%s' for `param` on line %zu.",
 		 param, sp_line_no);
       return -1;
     }
   }
 
   if (var) {
-    if (strlen(var)) {
+    if (*var) {
       df->var = parse_var(var);
-    }
-    if (!df->var) {
-      sp_log_err("config", "Invalid value '%s' of `var` on line %zu.",
-		 var, sp_line_no);
+      if (!df->var) {
+	sp_log_err("config", "Invalid value '%s' for `var` on line %zu.",
+		   var, sp_line_no);
+	return -1;
+      }
+    } else {
+      sp_log_err("config", "Empty value in `var` on line %zu.",
+		 sp_line_no);
       return -1;
     }
   }

@@ -1,24 +1,12 @@
 #include "php_snuffleupagus.h"
 
-static const sp_token_t jrr_token[] = {
-  {.type=OBJECT, .token=OBJECT_TOKEN},
-  {.type=ARRAY, .token=ARRAY_TOKEN},
-  {.type=ARRAY_END, .token=ARRAY_END_TOKEN},
-  {.type=STRING_DELIMITER, .token=STRING_TOKEN},
-  {.type=ESC_STRING_DELIMITER, .token=ESC_STRING_TOKEN},
-  /* Namespace seems to be useless. */
-  /*{.type=NAMESPACE, .token=NAMESPACE_TOKEN},*/
-  {.type=CLASS, .token=CLASS_TOKEN},
-  {.type=0, .token=NULL}
-};
-
 static int get_all_object(const char *str, const sp_token_t token,
 			  sp_node_t *tokens_list) {
   const char *cur_str = str;
 
   while ((cur_str = strchr(cur_str, token.token[0]))) {
     if (0 == strncmp(cur_str, token.token, strlen(token.token))) {
-      sp_token_t *token_elm = malloc(sizeof(sp_token_t));
+      sp_token_t *token_elm = emalloc(sizeof(sp_token_t));
       token_elm->pos = cur_str - str;
       token_elm->token = token.token;
       token_elm->type = token.type;
@@ -31,37 +19,39 @@ static int get_all_object(const char *str, const sp_token_t token,
   return 0;
 }
 
-static void create_var(arbre_du_ghetto *sapin, const char *value,
-		       int value_len, elem_type _type, char *idx) {
+static int create_var(arbre_du_ghetto *sapin, const char *restrict value,
+		      int value_len, elem_type _type, const char *restrict idx) {
   arbre_du_ghetto *var_node = NULL;
 
   if (!sapin) {
-    return ;
+    return -1;
   }
   if (sapin->next == NULL && sapin->type == 0) {
     var_node = sapin;
   } else {
-    var_node = malloc(sizeof(arbre_du_ghetto));
+    var_node = emalloc(sizeof(arbre_du_ghetto));
   }
+
   var_node->value = NULL;
   var_node->next = NULL;
   var_node->idx = NULL;
   var_node->type = _type;
   /* Check if there is a var token. */
   if (value && value[0] == VARIABLE_TOKEN) {
-    var_node->type = (_type == LITTERAL || _type == CONSTANT) ? VAR : _type;
-    var_node->value = strndup(&value[1], value_len - 1);
+    var_node->type = (_type == CONSTANT) ? VAR : _type;
   }
-  if (!var_node->value) {
-    var_node->value = strndup(value, value_len);
+  if (!(var_node->value = pestrndup(value, value_len, 1))) {
+    return -1;
   }
   var_node->idx = parse_var(idx);
+
   if (sapin != var_node) {
     while (sapin->next) {
       sapin = sapin->next;
     }
     sapin->next = var_node;
   }
+  return 0;
 }
 
 int cmp_tokens(sp_node_t *list1, sp_node_t *list2) {
@@ -70,7 +60,7 @@ int cmp_tokens(sp_node_t *list1, sp_node_t *list2) {
 }
 
 static int check_empty_next_token(sp_token_t *token, sp_token_t *token_next,
-			    const char *str) {
+				  const char * restrict str) {
   if ((token_next && token_next->pos == token->pos + strlen(token->token))
       || (!token_next && token->pos == strlen(str) - strlen(token->token))) {
     return -1;
@@ -79,7 +69,8 @@ static int check_empty_next_token(sp_token_t *token, sp_token_t *token_next,
 }
 
 static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
-			     int array_count, const char *str) {
+			     int array_count, const char * restrict str,
+			     unsigned int pos) {
   sp_token_t *token = (sp_token_t *)tokens_list->data;
   sp_token_t *token_next = NULL;
 
@@ -108,9 +99,9 @@ static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
     case ARRAY_END:
       if (!ignore) {
 	if (array_count < 1) {
-	    return -1;
+	  return -1;
 	} else if (!token_next && token->pos != strlen(str) - strlen(token->token)) {
-	    return -1;
+	  return -1;
 	} else if (token_next) {
 	  if (token_next->type == STRING_DELIMITER
 	      || token_next->type == ESC_STRING_DELIMITER) {
@@ -121,6 +112,9 @@ static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
       break;
     case OBJECT:
       if (!ignore && -1 == check_empty_next_token(token, token_next, str)) {
+	return -1;
+      }
+      if (pos == 0 && *str != VARIABLE_TOKEN) {
 	return -1;
       }
       break;
@@ -135,8 +129,10 @@ static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
   return 0;
 }
 
-static arbre_du_ghetto *parse_tokens(const char *str, sp_node_t *tokens_list) {
-  int pos = 0, array_count = 0, pos_idx_start = -1;
+static arbre_du_ghetto *parse_tokens(const char * restrict str,
+				     sp_node_t *tokens_list) {
+  unsigned int pos = 0;
+  int array_count = 0, pos_idx_start = -1;
   elem_type ignore = 0;
   arbre_du_ghetto *sapin = arbre_du_ghetto_new();
 
@@ -145,11 +141,11 @@ static arbre_du_ghetto *parse_tokens(const char *str, sp_node_t *tokens_list) {
     int value_len;
     char *idx = NULL;
 
-    if (-1 == check_error_token(tokens_list, ignore, array_count, str)) {
+    if (-1 == check_error_token(tokens_list, ignore, array_count, str, pos)) {
       goto error;
     }
     if (token->type == STRING_DELIMITER || token->type == ESC_STRING_DELIMITER) {
-      pos = (!ignore && !array_count) ? pos + (int)strlen(token->token) : pos;
+      pos = (!ignore && !array_count) ? pos + strlen(token->token) : pos;
       ignore = (!ignore) ? token->type : (ignore == token->type) ? 0 : ignore;
     }
     if (ignore == 0) {
@@ -170,7 +166,9 @@ static arbre_du_ghetto *parse_tokens(const char *str, sp_node_t *tokens_list) {
 	  idx = estrndup(&str[pos_idx_start], token->pos - pos_idx_start);
 	  value_len -= token->pos - pos_idx_start;
 	}
-	create_var(sapin, &str[pos], value_len, token->type, idx);
+	if (create_var(sapin, &str[pos], value_len, token->type, idx)) {
+	  goto error;
+	}
 	efree(idx);
 	pos = token->pos + strlen(token->token);
 	pos_idx_start = -1;
@@ -183,28 +181,39 @@ error:
     free_arbre_du_ghetto(sapin);
     return NULL;
   }
-  if (pos != (int)strlen(str)) {
-    create_var(sapin, &str[pos], strlen(str) - pos, CONSTANT, NULL);
+  if (pos != strlen(str)
+      && create_var(sapin, &str[pos], strlen(str) - pos, CONSTANT, NULL)) {
+    goto error;
   }
   return sapin;
 }
 
-arbre_du_ghetto *parse_var(const char *line) {
+arbre_du_ghetto *parse_var(const char * restrict line) {
   sp_node_t *tokens_list = NULL;
   arbre_du_ghetto *sapin = NULL;
+  const sp_token_t delimiter_list[] = {
+    {.type=OBJECT, .token=OBJECT_TOKEN},
+    {.type=ARRAY, .token=ARRAY_TOKEN},
+    {.type=ARRAY_END, .token=ARRAY_END_TOKEN},
+    {.type=STRING_DELIMITER, .token=STRING_TOKEN},
+    {.type=ESC_STRING_DELIMITER, .token=ESC_STRING_TOKEN},
+    {.type=CLASS, .token=CLASS_TOKEN},
+    {.type=0, .token=NULL}
+  };
+
 
   if (!line) {
     return NULL;
   }
   tokens_list = sp_list_new();
-  for (int i = 0; jrr_token[i].token; i++) {
-    get_all_object(line, jrr_token[i], tokens_list);
+  for (int i = 0; delimiter_list[i].token; i++) {
+    get_all_object(line, delimiter_list[i], tokens_list);
   }
   tokens_list = sp_list_sort(tokens_list, cmp_tokens);
   sapin = parse_tokens(line, tokens_list);
   sp_list_free(tokens_list);
   if (sapin && sapin->next == NULL && sapin->type == 0) {
-    sapin->type = LITTERAL;
+    sapin->type = CONSTANT;
     sapin->value = estrdup("");
   }
   return sapin;

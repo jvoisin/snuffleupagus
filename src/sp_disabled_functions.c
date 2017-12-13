@@ -70,8 +70,8 @@ static bool is_local_var_matching(
   var_value = get_value(execute_data, config_node->var, false);
   if (var_value) {
     char *var_value_str = sp_convert_to_string(var_value);
-    ret = (sp_match_value(var_value_str, config_node->value,
-			  config_node->value_r));
+    ret = sp_match_value(var_value_str, config_node->value,
+			 config_node->value_r);
   }
   return ret;
 }
@@ -149,20 +149,20 @@ static bool is_param_matching(zend_execute_data* execute_data,
 	} else if (Z_TYPE_P(arg_value) == IS_ARRAY) {
 	  *arg_value_str = sp_convert_to_string(arg_value);
 	  if (config_node->key || config_node->r_key) {
-	    if (true == sp_match_array_key(arg_value, config_node->key,
-					   config_node->r_key)) {
+	    if (sp_match_array_key(arg_value, config_node->key,
+				   config_node->r_key)) {
 	      return true;
 	    }
 	  } else {
-	    if (true == sp_match_array_value(arg_value, config_node->value,
-					     config_node->value_r)) {
+	    if (sp_match_array_value(arg_value, config_node->value,
+				     config_node->value_r)) {
 	      return true;
 	    }
 	  }
 	} else {
 	  *arg_value_str = sp_convert_to_string(arg_value);
-          if (true == sp_match_value(*arg_value_str, config_node->value,
-                                     config_node->value_r)) {
+	  if (sp_match_value(*arg_value_str, config_node->value,
+			     config_node->value_r)) {
             return true;
           }
         }
@@ -181,21 +181,17 @@ static bool is_param_matching(zend_execute_data* execute_data,
 	}
       } else if (Z_TYPE_P(arg_value) == IS_ARRAY) {
 	if (config_node->key || config_node->r_key) {
-	  if (true == sp_match_array_key(arg_value, config_node->key,
-					 config_node->r_key)) {
+	  if (sp_match_array_key(arg_value, config_node->key,
+				 config_node->r_key)) {
 	    return true;
 	  }
-	} else {
-	  if (true == sp_match_array_value(arg_value, config_node->value,
-					   config_node->value_r)) {
-	    return true;
-	  }
-	}
-      } else {
-	if (true == sp_match_value(*arg_value_str, config_node->value,
-				   config_node->value_r)) {
+	} else if (sp_match_array_value(arg_value, config_node->value,
+					config_node->value_r)) {
 	  return true;
 	}
+      } else if (sp_match_value(*arg_value_str, config_node->value,
+				config_node->value_r)) {
+	return true;
       }
     }
   }

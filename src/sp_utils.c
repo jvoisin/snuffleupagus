@@ -279,32 +279,33 @@ void sp_log_disable_ret(const char* restrict path,
 
 bool sp_match_array_key(const zval* zv, const char* to_match, const pcre* rx) {
   zend_string* key;
-  zval* value;
   unsigned int idx;
 
-  ZEND_HASH_FOREACH_KEY_VAL_IND(Z_ARRVAL_P(zv), idx, key, value) {
+  ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(zv), idx, key) {
     if (key) {
       if (sp_match_value(ZSTR_VAL(key), to_match, rx)) {
 	return true;
       }
     } else {
-      char idx_str[11] = {};
-      snprintf(idx_str, 10, "%u", idx);
+      char *idx_str = NULL;
+
+      idx_str = emalloc(snprintf(NULL, 0, "%u", idx));
+      sprintf(idx_str, "%u", idx);
       if (sp_match_value(idx_str, to_match, rx)) {
+	efree(idx_str);
 	return true;
       }
+      efree(idx_str);
     }
   }
   ZEND_HASH_FOREACH_END();
-  (void)value;  // silence a compiler warning
   return false;
 }
 
 bool sp_match_array_value(const zval* arr, const char* to_match, const pcre* rx) {
-  zend_string* key;
   zval* value;
 
-  ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(arr), key, value) {
+  ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(arr), value) {
     if (Z_TYPE_P(value) != IS_ARRAY) {
       char *value_str = sp_convert_to_string(value);
       if (sp_match_value(value_str, to_match, rx)) {
@@ -316,7 +317,6 @@ bool sp_match_array_value(const zval* arr, const char* to_match, const pcre* rx)
     }
   }
   ZEND_HASH_FOREACH_END();
-  (void)key;  // silence a compiler warning
   return false;
 }
 

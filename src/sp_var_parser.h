@@ -6,10 +6,8 @@
 typedef enum {
   OBJECT = 1,
   ARRAY,
-  LITTERAL,
   ARRAY_END,
   STRING_DELIMITER,
-  NAMESPACE,
   CLASS,
   VAR,
   ESC_STRING_DELIMITER,
@@ -31,7 +29,7 @@ typedef struct parser_s {
 
 zval *get_value(zend_execute_data *, const arbre_du_ghetto *, bool);
 arbre_du_ghetto *arbre_du_ghetto_new();
-arbre_du_ghetto *parse_var(const char *);
+arbre_du_ghetto *parse_var(const char * restrict);
 void print_type_list(const char *, arbre_du_ghetto*, int);
 void free_arbre_du_ghetto(arbre_du_ghetto *);
 
@@ -40,7 +38,6 @@ void free_arbre_du_ghetto(arbre_du_ghetto *);
 # define ARRAY_END_TOKEN "]"
 # define STRING_TOKEN "\""
 # define ESC_STRING_TOKEN "\'"
-# define NAMESPACE_TOKEN "\\"
 # define CLASS_TOKEN "::"
 
 # define VARIABLE_TOKEN '$'

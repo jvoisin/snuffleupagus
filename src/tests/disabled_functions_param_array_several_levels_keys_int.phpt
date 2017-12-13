@@ -17,4 +17,4 @@ foo($a);
 ?>
 --EXPECTF--
 cccc
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'foo' in %a/tests/disabled_functions_param_array_several_levels_keys_int.php:3 has been disabled, because its argument 'arr' content (ARRAY) matched the rule '6'.
+[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'foo' in %a/tests/disabled_functions_param_array_several_levels_keys_int.php:3 has been disabled, because its argument '$arr' content (ARRAY) matched the rule '6'.

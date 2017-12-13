@@ -42,10 +42,27 @@ static zval *get_local_var(zend_execute_data *ed, const char *var_name) {
   return NULL;
 }
 
+static zval *get_constant(const char *value) {
+  zend_string *name = zend_string_init(value, strlen(value), 0);
+  zval *zvalue = NULL;
+
+  zvalue = zend_get_constant_ex(name, NULL, 0);
+  zend_string_release(name);
+  return zvalue;
+}
+
 static zval *get_var_value(zend_execute_data *ed, const char *var_name,
 			   bool is_param) {
   zval *zvalue = NULL;
 
+  if (!var_name) {
+    return NULL;
+  }
+  if (*var_name != '$') {
+    return get_constant(var_name);
+  } else {
+    var_name++;
+  }
   if (is_param) {
     zvalue = get_param_var(ed, var_name);
     if (!zvalue) {
@@ -56,7 +73,7 @@ static zval *get_var_value(zend_execute_data *ed, const char *var_name,
   return get_local_var(ed, var_name);
 }
 
-static void *get_entry_hashtable(HashTable *ht, const char *entry,
+static void *get_entry_hashtable(const HashTable *ht, const char *entry,
 				 int entry_len) {
   zval *zvalue = zend_hash_str_find(ht, entry, entry_len);
 
@@ -98,7 +115,6 @@ static zval *get_object_property(zval *object, const char *property) {
   int len;
 
   zvalue = get_entry_hashtable(array, property, strlen(property));
-  // Problem with heritage.
   if (!zvalue) {
     char *protected_property = emalloc(strlen(property) + 4);
     len = sprintf(protected_property, PROTECTED_PROP_FMT, 0, 0, property);
@@ -124,8 +140,8 @@ static zend_class_entry *get_class(const char *value) {
   return ce;
 }
 
-static zval *get_constant(const char *value, zval *zvalue,
-			 zend_class_entry *ce, const arbre_du_ghetto *sapin) {
+static zval *get_default(const char *value, zval *zvalue, zend_class_entry *ce,
+			 const arbre_du_ghetto *sapin) {
   if (ce) {
     zvalue = get_entry_hashtable(&ce->constants_table, value, strlen(value));
     ce = NULL;
@@ -133,9 +149,7 @@ static zval *get_constant(const char *value, zval *zvalue,
     zvalue = get_object_property(zvalue, value);
   } else if (!sapin->next && !zvalue) {
     if (sapin->type == CONSTANT) {
-      zend_string *name = zend_string_init(value, strlen(value), 0);
-      zvalue = zend_get_constant_ex(name, NULL, 0);
-      zend_string_release(name);
+      zvalue = get_constant(value);
     }
     if (!zvalue) {
       zvalue = emalloc(sizeof(zval));
@@ -162,6 +176,8 @@ zval *get_value(zend_execute_data *ed, const arbre_du_ghetto *sapin,
 	  ce = NULL;
 	} else if (!zvalue) {
 	  zvalue = get_var_value(ed, sapin->value, is_param);
+	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
+	  zvalue = get_object_property(zvalue, sapin->value);
 	}
 	zvalue = get_array_value(ed, zvalue, sapin);
 	break;
@@ -169,16 +185,11 @@ zval *get_value(zend_execute_data *ed, const arbre_du_ghetto *sapin,
 	zvalue = get_var_value(ed, sapin->value, is_param);
 	break;
       case OBJECT:
-	if (ce) {
-	  zvalue = get_entry_hashtable(&ce->constants_table, sapin->value,
-				       strlen(sapin->value));
-	  ce  = NULL;
-	}
 	if (!zvalue) {
 	  zvalue = get_var_value(ed, sapin->value, is_param);
 	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
 	  if (0 != strlen(sapin->value)) {
-	    zvalue = get_constant(sapin->value, zvalue, ce, sapin);
+	    zvalue = get_object_property(zvalue, sapin->value);
 	  }
 	} else {
 	  return NULL;
@@ -189,7 +200,7 @@ zval *get_value(zend_execute_data *ed, const arbre_du_ghetto *sapin,
 	zvalue = NULL;
 	break;
       default:
-	zvalue = get_constant(sapin->value, zvalue, ce, sapin);
+	zvalue = get_default(sapin->value, zvalue, ce, sapin);
 	ce = NULL;
 	break;
     }

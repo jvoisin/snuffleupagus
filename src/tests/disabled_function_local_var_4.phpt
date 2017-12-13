@@ -11,17 +11,18 @@ namespace qwe {
 }
 namespace asd {
 $b = Array();
-$b["qwe"] = Array();
+$b['_GET[obj->nop]'] = Array();
+$b['_GET[obj->nop]']["qwe"] = Array();
 $b[456] = Array();
 $b[456]['zxc'] = "qwe";
 $b[456]['nop'] = "nop";
-$b["qwe"][321] = "Yeay";
+$b['_GET[obj->nop]']["qwe"][321] = "Yeay";
 $b["123"] = "qwe";
 $b["123a"] = "foo";
 $b["asd"] = "zxc";
-$b["qwe"][1337] = (Object)(['uio' => "valeur de apres"]);
-$b["qwe"][1338] = (Object)(['uio' => "valeur de a"]);
-$c = (Object)(['qwe' => 'zxc']);
+$b['_GET[obj->nop]']["qwe"][1337] = (Object)(['uio' => "valeur de apres"]);
+$b['_GET[obj->nop]']["qwe"][1338] = (Object)(['uio' => "valeur de a"]);
+$c = (Object)(['qwe' => Array(\qwe\UNE_CONSTANTE => 'zxc')]);
 $class_name = 'test_object';
 class test_object {
   const TEST_VALUE = ['constant' => 'truc'];
@@ -40,11 +41,11 @@ $a = 1338;
 function test(){
   strlen("qwe");
 }
-echo "Valeur: " . $b["qwe"][$a]->uio . "\n";
+echo "Valeur: " . $b['_GET[obj->nop]']["qwe"][$a]->uio . "\n";
 test();
 
 $a = 1337;
-echo "Valeur: " . $b["qwe"][$a]->uio . "\n";
+echo "Valeur: " . $b['_GET[obj->nop]']["qwe"][$a]->uio . "\n";
 test();
 }
 ?>

@@ -6,4 +6,4 @@ Broken configuration
 sp.configuration_file={PWD}/config/broken_conf_local_var_2.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][config][error] Invalid value '""asd' of `var` on line 1.
+[snuffleupagus][0.0.0.0][config][error] Invalid value '""asd' for `var` on line 1.
