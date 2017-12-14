@@ -19,6 +19,30 @@ static int get_all_object(const char *str, const sp_token_t token,
   return 0;
 }
 
+static bool check_var_name(const char *name) {
+  pcre *regexp_const;
+  pcre *regexp_var;
+  const char *pcre_error;
+  int pcre_error_offset;
+
+  if (!name) {
+    return false;
+  }
+  // I don't think we should compile it every time :D
+  regexp_var = sp_pcre_compile(REGEXP_VAR, PCRE_CASELESS, &pcre_error,
+			       &pcre_error_offset, NULL);
+  regexp_const = sp_pcre_compile(REGEXP_CONST, PCRE_CASELESS, &pcre_error,
+				&pcre_error_offset, NULL);
+  if (NULL == regexp_var || NULL == regexp_const) {
+    return false;
+  }
+  if(0 > sp_pcre_exec(regexp_var, NULL, name, strlen(name), 0, 0, NULL, 0)
+     && 0 > sp_pcre_exec(regexp_const, NULL, name, strlen(name), 0, 0, NULL, 0)) {
+    return false;
+  }
+  return true;
+}
+
 static int create_var(arbre_du_ghetto *sapin, const char *restrict value,
 		      int value_len, elem_type _type, const char *restrict idx) {
   arbre_du_ghetto *var_node = NULL;
@@ -36,11 +60,13 @@ static int create_var(arbre_du_ghetto *sapin, const char *restrict value,
   var_node->next = NULL;
   var_node->idx = NULL;
   var_node->type = _type;
-  /* Check if there is a var token. */
-  if (value && value[0] == VARIABLE_TOKEN) {
-    var_node->type = (_type == CONSTANT) ? VAR : _type;
+  if (value && value[0] == VARIABLE_TOKEN && _type == CONSTANT) {
+    var_node->type = VAR;
   }
   if (!(var_node->value = pestrndup(value, value_len, 1))) {
+    return -1;
+  }
+  if (var_node->type != STRING_DELIMITER && !check_var_name(var_node->value)) {
     return -1;
   }
   var_node->idx = parse_var(idx);
@@ -70,7 +96,7 @@ static int check_empty_next_token(sp_token_t *token, sp_token_t *token_next,
 
 static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
 			     int array_count, const char * restrict str,
-			     unsigned int pos) {
+			     size_t pos) {
   sp_token_t *token = (sp_token_t *)tokens_list->data;
   sp_token_t *token_next = NULL;
 
@@ -131,7 +157,7 @@ static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
 
 static arbre_du_ghetto *parse_tokens(const char * restrict str,
 				     sp_node_t *tokens_list) {
-  unsigned int pos = 0;
+  size_t pos = 0;
   int array_count = 0, pos_idx_start = -1;
   elem_type ignore = 0;
   arbre_du_ghetto *sapin = arbre_du_ghetto_new();
@@ -147,6 +173,7 @@ static arbre_du_ghetto *parse_tokens(const char * restrict str,
     if (token->type == STRING_DELIMITER || token->type == ESC_STRING_DELIMITER) {
       pos = (!ignore && !array_count) ? pos + strlen(token->token) : pos;
       ignore = (!ignore) ? token->type : (ignore == token->type) ? 0 : ignore;
+      token->type = STRING_DELIMITER;
     }
     if (ignore == 0) {
       if (token->type == ARRAY) {
@@ -188,7 +215,7 @@ error:
   return sapin;
 }
 
-arbre_du_ghetto *parse_var(const char * restrict line) {
+arbre_du_ghetto *parse_var(const char *line) {
   sp_node_t *tokens_list = NULL;
   arbre_du_ghetto *sapin = NULL;
   const sp_token_t delimiter_list[] = {

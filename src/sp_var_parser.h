@@ -29,7 +29,7 @@ typedef struct parser_s {
 
 zval *get_value(zend_execute_data *, const arbre_du_ghetto *, bool);
 arbre_du_ghetto *arbre_du_ghetto_new();
-arbre_du_ghetto *parse_var(const char * restrict);
+arbre_du_ghetto *parse_var(const char *);
 void print_type_list(const char *, arbre_du_ghetto*, int);
 void free_arbre_du_ghetto(arbre_du_ghetto *);
 
@@ -44,5 +44,8 @@ void free_arbre_du_ghetto(arbre_du_ghetto *);
 
 # define PRIVATE_PROP_FMT "%c%s%c%s"
 # define PROTECTED_PROP_FMT "%c*%c%s"
+
+# define REGEXP_VAR "^\\$[a-z_][a-z0-9_]*$"
+# define REGEXP_CONST "^[a-z_0-9\\\\]*$"
 
 #endif

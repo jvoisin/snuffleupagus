@@ -279,7 +279,7 @@ void sp_log_disable_ret(const char* restrict path,
 
 bool sp_match_array_key(const zval* zv, const char* to_match, const pcre* rx) {
   zend_string* key;
-  unsigned int idx;
+  zend_ulong idx;
 
   ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(zv), idx, key) {
     if (key) {
@@ -289,8 +289,9 @@ bool sp_match_array_key(const zval* zv, const char* to_match, const pcre* rx) {
     } else {
       char *idx_str = NULL;
 
-      idx_str = emalloc(snprintf(NULL, 0, "%u", idx));
-      sprintf(idx_str, "%u", idx);
+      // Could use a log.
+      idx_str = emalloc(snprintf(NULL, 0, "%lu", idx));
+      sprintf(idx_str, "%lu", idx);
       if (sp_match_value(idx_str, to_match, rx)) {
 	efree(idx_str);
 	return true;

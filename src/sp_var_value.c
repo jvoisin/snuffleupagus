@@ -44,9 +44,8 @@ static zval *get_local_var(zend_execute_data *ed, const char *var_name) {
 
 static zval *get_constant(const char *value) {
   zend_string *name = zend_string_init(value, strlen(value), 0);
-  zval *zvalue = NULL;
+  zval *zvalue = zend_get_constant_ex(name, NULL, 0);
 
-  zvalue = zend_get_constant_ex(name, NULL, 0);
   zend_string_release(name);
   return zvalue;
 }
@@ -58,7 +57,7 @@ static zval *get_var_value(zend_execute_data *ed, const char *var_name,
   if (!var_name) {
     return NULL;
   }
-  if (*var_name != '$') {
+  if (*var_name != VARIABLE_TOKEN) {
     return get_constant(var_name);
   } else {
     var_name++;
@@ -140,8 +139,9 @@ static zend_class_entry *get_class(const char *value) {
   return ce;
 }
 
-static zval *get_default(const char *value, zval *zvalue, zend_class_entry *ce,
-			 const arbre_du_ghetto *sapin) {
+static zval *get_unknown_type(const char *restrict value, zval *zvalue,
+			      zend_class_entry *ce,
+			      const arbre_du_ghetto *sapin) {
   if (ce) {
     zvalue = get_entry_hashtable(&ce->constants_table, value, strlen(value));
     ce = NULL;
@@ -200,7 +200,7 @@ zval *get_value(zend_execute_data *ed, const arbre_du_ghetto *sapin,
 	zvalue = NULL;
 	break;
       default:
-	zvalue = get_default(sapin->value, zvalue, ce, sapin);
+	zvalue = get_unknown_type(sapin->value, zvalue, ce, sapin);
 	ce = NULL;
 	break;
     }
