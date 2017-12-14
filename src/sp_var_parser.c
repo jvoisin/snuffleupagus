@@ -40,8 +40,6 @@ static bool check_var_name(const char *name) {
       && 0 > sp_pcre_exec(regexp_const, NULL, name, strlen(name), 0, 0, NULL, 0)) {
     ret = false;
   }
-  pcre_free(regexp_var);
-  pcre_free(regexp_const);
   return ret;
 }
 
