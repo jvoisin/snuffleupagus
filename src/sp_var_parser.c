@@ -24,23 +24,25 @@ static bool check_var_name(const char *name) {
   pcre *regexp_var;
   const char *pcre_error;
   int pcre_error_offset;
+  bool ret = true;
 
   if (!name) {
     return false;
   }
-  // I don't think we should compile it every time :D
   regexp_var = sp_pcre_compile(REGEXP_VAR, PCRE_CASELESS, &pcre_error,
 			       &pcre_error_offset, NULL);
   regexp_const = sp_pcre_compile(REGEXP_CONST, PCRE_CASELESS, &pcre_error,
 				&pcre_error_offset, NULL);
   if (NULL == regexp_var || NULL == regexp_const) {
-    return false;
+    ret = false;
   }
-  if(0 > sp_pcre_exec(regexp_var, NULL, name, strlen(name), 0, 0, NULL, 0)
-     && 0 > sp_pcre_exec(regexp_const, NULL, name, strlen(name), 0, 0, NULL, 0)) {
-    return false;
+  if (0 > sp_pcre_exec(regexp_var, NULL, name, strlen(name), 0, 0, NULL, 0)
+      && 0 > sp_pcre_exec(regexp_const, NULL, name, strlen(name), 0, 0, NULL, 0)) {
+    ret = false;
   }
-  return true;
+  pcre_free(regexp_var);
+  pcre_free(regexp_const);
+  return ret;
 }
 
 static int create_var(arbre_du_ghetto *sapin, const char *restrict value,
