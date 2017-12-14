@@ -6,7 +6,7 @@ static int get_all_object(const char *str, const sp_token_t token,
 
   while ((cur_str = strchr(cur_str, token.token[0]))) {
     if (0 == strncmp(cur_str, token.token, strlen(token.token))) {
-      sp_token_t *token_elm = emalloc(sizeof(sp_token_t));
+      sp_token_t *token_elm = pecalloc(sizeof(sp_token_t), 1, 1);
       token_elm->pos = cur_str - str;
       token_elm->token = token.token;
       token_elm->type = token.type;
@@ -55,7 +55,7 @@ static int create_var(arbre_du_ghetto *sapin, const char *restrict value,
   if (sapin->next == NULL && sapin->type == 0) {
     var_node = sapin;
   } else {
-    var_node = emalloc(sizeof(arbre_du_ghetto));
+    var_node = pecalloc(sizeof(arbre_du_ghetto), 1, 1);
   }
 
   var_node->value = NULL;
@@ -243,7 +243,7 @@ arbre_du_ghetto *parse_var(const char *line) {
   sp_list_free(tokens_list);
   if (sapin && sapin->next == NULL && sapin->type == 0) {
     sapin->type = CONSTANT;
-    sapin->value = estrdup("");
+    sapin->value = pestrdup("", 1);
   }
   return sapin;
 }

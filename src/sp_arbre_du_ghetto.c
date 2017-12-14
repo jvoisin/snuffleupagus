@@ -7,12 +7,12 @@ void free_arbre_du_ghetto(arbre_du_ghetto *sapin) {
     free_arbre_du_ghetto(sapin->idx);
     tmp = sapin;
     sapin = sapin->next;
-    efree(tmp);
+    pefree(tmp, 1);
   }
 }
 
 arbre_du_ghetto *arbre_du_ghetto_new() {
-  arbre_du_ghetto *new = emalloc(sizeof(arbre_du_ghetto));
+  arbre_du_ghetto *new = pecalloc(sizeof(arbre_du_ghetto), 1, 1);
   new->next = new->idx = NULL;
   new->value = NULL;
   new->type = 0;

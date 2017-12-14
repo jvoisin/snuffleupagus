@@ -189,6 +189,10 @@ void sp_disabled_function_list_free(sp_node_t* list) {
       sp_disabled_function* df = cursor->data;
       if (df && df->functions_list)
           sp_list_free(df->functions_list);
+      if (df) {
+	free_arbre_du_ghetto(df->param);
+	free_arbre_du_ghetto(df->var);
+      }
       cursor = cursor->next;
   }
 }
