@@ -180,7 +180,7 @@ PHP_FUNCTION(sp_setcookie) {
   }
 
   /* Shall we encrypt the cookie's value? */
-  if (httponly && value) {
+  if (cookie_node && cookie_node->encrypt && value) {
     zend_string *encrypted_data = encrypt_data(value->val, value->len);
     ZVAL_STR_COPY(&params[1], encrypted_data);
     zend_string_release(encrypted_data);

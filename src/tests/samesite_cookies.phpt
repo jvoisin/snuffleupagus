@@ -16,11 +16,13 @@ EOF;
 <?php
 setcookie("super_cookie", "super_value");
 setcookie("awful_cookie", "awful_value");
+setcookie("not_encrypted", "test_value", 1, "1", "1", false, true);
 setcookie("nice_cookie", "nice_value", 1, "1", "1", true, true);
 
 $expected = array(
     'Set-Cookie: super_cookie=super_value; path=; samesite=Lax',
     'Set-Cookie: awful_cookie=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFyZcYjfEskB0AU0V3%2BvwazcRuU%2Ft6KpcUahvxw%3D; path=; samesite=Strict; HttpOnly',
+    'Set-Cookie: not_encrypted=test_value; expires=Thu, 01-Jan-1970 00:00:01 GMT; Max-Age=0; path=1; domain=1; HttpOnly',
     'Set-Cookie: nice_cookie=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJ8ko%2ByA4y%2Bmw5MGBx8fgc3TWOAvhIu%2BfF%2Bx2g%3D%3D; expires=Thu, 01-Jan-1970 00:00:01 GMT; Max-Age=0; path=1; samesite=Strict; domain=1; secure; HttpOnly',
     );
 
