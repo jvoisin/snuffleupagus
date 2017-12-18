@@ -315,6 +315,8 @@ bool sp_match_array_value(const zval* arr, const char* to_match, const pcre* rx)
       } else {
 	efree (value_str);
       }
+    } else if (sp_match_array_value(value, to_match, rx)) {
+      return true;
     }
   }
   ZEND_HASH_FOREACH_END();

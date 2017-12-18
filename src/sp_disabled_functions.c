@@ -65,15 +65,30 @@ static bool is_local_var_matching(
     zend_execute_data* execute_data,
     const sp_disabled_function* const config_node) {
   zval *var_value;
-  bool ret = false;
 
   var_value = get_value(execute_data, config_node->var, false);
   if (var_value) {
     char *var_value_str = sp_convert_to_string(var_value);
-    ret = sp_match_value(var_value_str, config_node->value,
-			 config_node->value_r);
+    if (Z_TYPE_P(var_value) == IS_ARRAY) {
+      if (config_node->key || config_node->r_key) {
+	if (sp_match_array_key(var_value, config_node->key,
+			       config_node->r_key)) {
+	  efree(var_value_str);
+	  return true;
+	}
+      } else if (sp_match_array_value(var_value, config_node->value,
+				      config_node->value_r)) {
+	efree(var_value_str);
+	return true;
+      }
+    } else if (sp_match_value(var_value_str, config_node->value,
+			      config_node->value_r)) {
+      efree(var_value_str);
+      return true;
+    }
+    efree(var_value_str);
   }
-  return ret;
+  return false;
 }
 
 static const sp_node_t* get_config_node(const char* builtin_name) {
@@ -153,11 +168,9 @@ static bool is_param_matching(zend_execute_data* execute_data,
 				   config_node->r_key)) {
 	      return true;
 	    }
-	  } else {
-	    if (sp_match_array_value(arg_value, config_node->value,
-				     config_node->value_r)) {
-	      return true;
-	    }
+	  } else if (sp_match_array_value(arg_value, config_node->value,
+					  config_node->value_r)) {
+	    return true;
 	  }
 	} else {
 	  *arg_value_str = sp_convert_to_string(arg_value);

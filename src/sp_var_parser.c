@@ -35,6 +35,7 @@ static bool check_var_name(const char *name) {
 				   &pcre_error_offset, NULL);
   }
   if (NULL == regexp_var || NULL == regexp_const) {
+    sp_log_err("config", "Could not compile regexp.");
     return false;
   }
   if (0 > sp_pcre_exec(regexp_var, NULL, name, strlen(name), 0, 0, NULL, 0)

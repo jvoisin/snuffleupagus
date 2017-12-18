@@ -23,6 +23,7 @@ $b["asd"] = "zxc";
 $b['_GET[obj->nop]']["qwe"][1337] = (Object)(['uio' => "valeur de apres"]);
 $b['_GET[obj->nop]']["qwe"][1338] = (Object)(['uio' => "valeur de a"]);
 $c = (Object)(['qwe' => Array(\qwe\UNE_CONSTANTE => 'zxc')]);
+$idk = 'test_asd';
 $class_name = 'test_object';
 class test_object {
   const TEST_VALUE = ['constant' => 'truc'];

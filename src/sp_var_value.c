@@ -107,12 +107,21 @@ static zval *get_array_value(zend_execute_data *ed, zval *zvalue,
   return ret;
 }
 
-static zval *get_object_property(zval *object, const char *property) {
+static zval *get_object_property(zend_execute_data *ed, zval *object,
+				 const char *property, bool is_param) {
   char *class_name = object->value.obj->ce->name->val;
   HashTable *array = Z_OBJPROP_P(object);
   zval *zvalue = NULL;
+  zval *property_val = get_var_value(ed, property, is_param);
   int len;
 
+  if (property_val) {
+    if (Z_TYPE_P(property_val) != IS_STRING) {
+      return NULL;
+    } else {
+      property = Z_STRVAL_P(property_val);
+    }
+  }
   zvalue = get_entry_hashtable(array, property, strlen(property));
   if (!zvalue) {
     char *protected_property = emalloc(strlen(property) + 4);
@@ -140,13 +149,13 @@ static zend_class_entry *get_class(const char *value) {
 }
 
 static zval *get_unknown_type(const char *restrict value, zval *zvalue,
-			      zend_class_entry *ce,
-			      const arbre_du_ghetto *sapin) {
+			      zend_class_entry *ce, zend_execute_data *ed,
+			      const arbre_du_ghetto *sapin, bool is_param) {
   if (ce) {
     zvalue = get_entry_hashtable(&ce->constants_table, value, strlen(value));
     ce = NULL;
   } else if (zvalue && Z_TYPE_P(zvalue) == IS_OBJECT && value[0]) {
-    zvalue = get_object_property(zvalue, value);
+    zvalue = get_object_property(ed, zvalue, value, is_param);
   } else if (!sapin->next && !zvalue) {
     if (sapin->type == CONSTANT) {
       zvalue = get_constant(value);
@@ -177,19 +186,23 @@ zval *get_value(zend_execute_data *ed, const arbre_du_ghetto *sapin,
 	} else if (!zvalue) {
 	  zvalue = get_var_value(ed, sapin->value, is_param);
 	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
-	  zvalue = get_object_property(zvalue, sapin->value);
+	  zvalue = get_object_property(ed, zvalue, sapin->value, is_param);
 	}
 	zvalue = get_array_value(ed, zvalue, sapin);
 	break;
       case VAR:
-	zvalue = get_var_value(ed, sapin->value, is_param);
+	if (zvalue && Z_TYPE_P(zvalue) == IS_OBJECT) {
+	  zvalue = get_object_property(ed, zvalue, sapin->value, is_param);
+	} else {
+	  zvalue = get_var_value(ed, sapin->value, is_param);
+	}
 	break;
       case OBJECT:
 	if (!zvalue) {
 	  zvalue = get_var_value(ed, sapin->value, is_param);
 	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
 	  if (0 != strlen(sapin->value)) {
-	    zvalue = get_object_property(zvalue, sapin->value);
+	    zvalue = get_object_property(ed, zvalue, sapin->value, is_param);
 	  }
 	} else {
 	  return NULL;
@@ -200,7 +213,7 @@ zval *get_value(zend_execute_data *ed, const arbre_du_ghetto *sapin,
 	zvalue = NULL;
 	break;
       default:
-	zvalue = get_unknown_type(sapin->value, zvalue, ce, sapin);
+	zvalue = get_unknown_type(sapin->value, zvalue, ce, ed, sapin, is_param);
 	ce = NULL;
 	break;
     }
