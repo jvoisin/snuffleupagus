@@ -45,9 +45,9 @@ static bool check_var_name(const char *name) {
   return true;
 }
 
-static int create_var(arbre_du_ghetto *sapin, const char *restrict value,
+static int create_var(sp_tree *sapin, const char *restrict value,
 		      int value_len, elem_type _type, const char *restrict idx) {
-  arbre_du_ghetto *var_node = NULL;
+  sp_tree *var_node = NULL;
 
   if (!sapin) {
     return -1;
@@ -55,7 +55,7 @@ static int create_var(arbre_du_ghetto *sapin, const char *restrict value,
   if (sapin->next == NULL && sapin->type == 0) {
     var_node = sapin;
   } else {
-    var_node = pecalloc(sizeof(arbre_du_ghetto), 1, 1);
+    var_node = pecalloc(sizeof(sp_tree), 1, 1);
   }
 
   var_node->value = NULL;
@@ -157,12 +157,12 @@ static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
   return 0;
 }
 
-static arbre_du_ghetto *parse_tokens(const char * restrict str,
+static sp_tree *parse_tokens(const char * restrict str,
 				     sp_node_t *tokens_list) {
   size_t pos = 0;
   int array_count = 0, pos_idx_start = -1;
   elem_type ignore = 0;
-  arbre_du_ghetto *sapin = arbre_du_ghetto_new();
+  sp_tree *sapin = sp_tree_new();
 
   for (; tokens_list && tokens_list->data; tokens_list = tokens_list->next) {
     sp_token_t *token = (sp_token_t *)tokens_list->data;
@@ -207,7 +207,7 @@ static arbre_du_ghetto *parse_tokens(const char * restrict str,
 
   if (ignore != 0 || array_count != 0) {
 error:
-    free_arbre_du_ghetto(sapin);
+    free_sp_tree(sapin);
     return NULL;
   }
   if (pos != strlen(str)
@@ -217,9 +217,9 @@ error:
   return sapin;
 }
 
-arbre_du_ghetto *parse_var(const char *line) {
+sp_tree *parse_var(const char *line) {
   sp_node_t *tokens_list = NULL;
-  arbre_du_ghetto *sapin = NULL;
+  sp_tree *sapin = NULL;
   const sp_token_t delimiter_list[] = {
     {.type=OBJECT, .token=OBJECT_TOKEN},
     {.type=ARRAY, .token=ARRAY_TOKEN},

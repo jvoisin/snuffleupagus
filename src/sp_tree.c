@@ -1,18 +1,18 @@
 #include "php_snuffleupagus.h"
 
-void free_arbre_du_ghetto(arbre_du_ghetto *sapin) {
+void free_sp_tree(sp_tree *sapin) {
   while (sapin) {
-    arbre_du_ghetto *tmp;
+    sp_tree *tmp;
     pefree(sapin->value, 1);
-    free_arbre_du_ghetto(sapin->idx);
+    free_sp_tree(sapin->idx);
     tmp = sapin;
     sapin = sapin->next;
     pefree(tmp, 1);
   }
 }
 
-arbre_du_ghetto *arbre_du_ghetto_new() {
-  arbre_du_ghetto *new = pecalloc(sizeof(arbre_du_ghetto), 1, 1);
+sp_tree *sp_tree_new() {
+  sp_tree *new = pecalloc(sizeof(sp_tree), 1, 1);
   new->next = new->idx = NULL;
   new->value = NULL;
   new->type = 0;

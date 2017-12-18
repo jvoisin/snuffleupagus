@@ -76,7 +76,7 @@ typedef struct {
   char *hash;
   int simulation;
 
-  arbre_du_ghetto *param;
+  sp_tree *param;
   pcre *r_param;
   sp_php_type param_type;
   int pos;
@@ -101,7 +101,7 @@ typedef struct {
 
   bool allow;
 
-  arbre_du_ghetto *var;
+  sp_tree *var;
 
   sp_cidr *cidr;
 } sp_disabled_function;

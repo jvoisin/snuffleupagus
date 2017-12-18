@@ -25,13 +25,13 @@ typedef struct parser_s {
   char *value;
   struct parser_s *idx;
   struct parser_s *next;
-} arbre_du_ghetto;
+} sp_tree;
 
-zval *get_value(zend_execute_data *, const arbre_du_ghetto *, bool);
-arbre_du_ghetto *arbre_du_ghetto_new();
-arbre_du_ghetto *parse_var(const char *);
-void print_type_list(const char *, arbre_du_ghetto*, int);
-void free_arbre_du_ghetto(arbre_du_ghetto *);
+zval *get_value(zend_execute_data *, const sp_tree *, bool);
+sp_tree *sp_tree_new();
+sp_tree *parse_var(const char *);
+void print_type_list(const char *, sp_tree*, int);
+void free_sp_tree(sp_tree *);
 
 # define OBJECT_TOKEN "->"
 # define ARRAY_TOKEN "["

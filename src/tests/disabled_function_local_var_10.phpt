@@ -41,4 +41,4 @@ array(2) {
     }
   }
 }
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'strlen' in /home/slefevre/snuffleupagus/src/tests/disabled_function_local_var_10.php:7 has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'strlen' in %a/tests/disabled_function_local_var_10.php:%d has been disabled.
