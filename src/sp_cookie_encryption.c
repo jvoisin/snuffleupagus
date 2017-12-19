@@ -209,10 +209,10 @@ PHP_FUNCTION(sp_setcookie) {
     cookie_samesite = (cookie_node->samesite == lax) ? SAMESITE_COOKIE_FORMAT SP_TOKEN_SAMESITE_LAX
       : SAMESITE_COOKIE_FORMAT SP_TOKEN_SAMESITE_STRICT;
     /* Concatenating everything, as is in PHP internals */
-    samesite = zend_string_extend(path, ZSTR_LEN(path) + strlen(cookie_samesite) + 1, 0);
+    samesite = zend_string_init(ZSTR_VAL(path), ZSTR_LEN(path), 0);
+    samesite = zend_string_extend(samesite, ZSTR_LEN(path) + strlen(cookie_samesite) + 1, 0);
     memcpy(ZSTR_VAL(samesite) + ZSTR_LEN(path), cookie_samesite, strlen(cookie_samesite) + 1);
     ZVAL_STR_COPY(&params[3], samesite);
-    zend_string_release(path);
   } else if (path) {
     ZVAL_STR_COPY(&params[3], path);
   }
