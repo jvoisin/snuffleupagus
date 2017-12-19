@@ -190,8 +190,8 @@ void sp_disabled_function_list_free(sp_node_t* list) {
       if (df && df->functions_list)
           sp_list_free(df->functions_list);
       if (df) {
-	free_sp_tree(df->param);
-	free_sp_tree(df->var);
+	sp_tree_free(df->param);
+	sp_tree_free(df->var);
       }
       cursor = cursor->next;
   }

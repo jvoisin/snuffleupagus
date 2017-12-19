@@ -205,7 +205,7 @@ static sp_tree *parse_tokens(const char * restrict str,
 
   if (ignore != 0 || array_count != 0) {
 error:
-    free_sp_tree(tree);
+    sp_tree_free(tree);
     return NULL;
   }
   if (pos != strlen(str)

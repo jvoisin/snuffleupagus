@@ -31,7 +31,7 @@ zval *get_value(zend_execute_data *, const sp_tree *, bool);
 sp_tree *sp_tree_new();
 sp_tree *parse_var(const char *);
 void print_type_list(const char *, sp_tree*, int);
-void free_sp_tree(sp_tree *);
+void sp_tree_free(sp_tree *);
 
 # define OBJECT_TOKEN "->"
 # define ARRAY_TOKEN "["
