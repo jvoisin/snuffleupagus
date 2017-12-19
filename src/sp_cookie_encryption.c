@@ -56,7 +56,7 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
 
   generate_key(key);
 
-  value_len = php_url_decode(Z_STRVAL_P(pDest), Z_STRLEN_P(pDest));
+  value_len = Z_STRLEN_P(pDest);
 
   if (value_len == 0) {
     return ZEND_HASH_APPLY_KEEP;
