@@ -42,7 +42,6 @@ static inline void generate_key(unsigned char *key) {
 int decrypt_cookie(zval *pDest, int num_args, va_list args,
                    zend_hash_key *hash_key) {
   unsigned char key[crypto_secretbox_KEYBYTES] = {0};
-  size_t value_len;
   zend_string *debase64;
   unsigned char *decrypted;
   sp_cookie *cookie = zend_hash_find_ptr(SNUFFLEUPAGUS_G(config).config_cookie->cookies,
@@ -54,15 +53,13 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
     return ZEND_HASH_APPLY_KEEP;
   }
 
-  generate_key(key);
-
-  value_len = php_url_decode(Z_STRVAL_P(pDest), Z_STRLEN_P(pDest));
-
-  if (value_len == 0) {
+	/* If the cookie has no value, it shouldn't be encrypted. */
+  if (0 == Z_STRLEN_P(pDest)) {
     return ZEND_HASH_APPLY_KEEP;
   }
 
-  debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)), value_len);
+  debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)),
+			Z_STRLEN_P(pDest));
 
   if (ZSTR_LEN(debase64) <
       crypto_secretbox_NONCEBYTES + crypto_secretbox_ZEROBYTES) {
@@ -70,6 +67,8 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
         "Buffer underflow tentative detected in cookie encryption handling.");
     return ZEND_HASH_APPLY_REMOVE;
   }
+
+  generate_key(key);
 
   decrypted = pecalloc(ZSTR_LEN(debase64), 1, 0);
 
