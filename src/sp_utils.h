@@ -63,7 +63,6 @@ void sp_log_disable(const char *restrict, const char *restrict,
                     const char *restrict, const sp_disabled_function *);
 void sp_log_disable_ret(const char *restrict, const char *restrict,
                         const sp_disabled_function *);
-char *sp_getenv(char *);
 int is_regexp_matching(const pcre *, const char *);
 int hook_function(const char *, HashTable *,
                   void (*)(INTERNAL_FUNCTION_PARAMETERS), bool);

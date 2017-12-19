@@ -91,11 +91,11 @@ static void *get_entry_hashtable(const HashTable *ht, const char *entry,
 }
 
 static zval *get_array_value(zend_execute_data *ed, zval *zvalue,
-			     const sp_tree *sapin) {
+			     const sp_tree *tree) {
   zval *idx_value, *ret = NULL;
   char *idx = NULL;
 
-  idx_value = get_value(ed, sapin->idx, false);
+  idx_value = get_value(ed, tree->idx, false);
   if (!zvalue || !idx_value) {
     return NULL;
   }
@@ -150,14 +150,14 @@ static zend_class_entry *get_class(const char *value) {
 
 static zval *get_unknown_type(const char *restrict value, zval *zvalue,
 			      zend_class_entry *ce, zend_execute_data *ed,
-			      const sp_tree *sapin, bool is_param) {
+			      const sp_tree *tree, bool is_param) {
   if (ce) {
     zvalue = get_entry_hashtable(&ce->constants_table, value, strlen(value));
     ce = NULL;
   } else if (zvalue && Z_TYPE_P(zvalue) == IS_OBJECT && value[0]) {
     zvalue = get_object_property(ed, zvalue, value, is_param);
-  } else if (!sapin->next && !zvalue) {
-    if (sapin->type == CONSTANT) {
+  } else if (!tree->next && !zvalue) {
+    if (tree->type == CONSTANT) {
       zvalue = get_constant(value);
     }
     if (!zvalue) {
@@ -171,56 +171,56 @@ static zval *get_unknown_type(const char *restrict value, zval *zvalue,
   return zvalue;
 }
 
-zval *get_value(zend_execute_data *ed, const sp_tree *sapin,
+zval *get_value(zend_execute_data *ed, const sp_tree *tree,
 		bool is_param) {
   zval *zvalue = NULL;
   zend_class_entry *ce = NULL;
 
-  while (sapin) {
-    switch (sapin->type) {
+  while (tree) {
+    switch (tree->type) {
       case ARRAY:
 	if (ce) {
-	  zvalue = get_entry_hashtable(&ce->constants_table, sapin->value,
-				       strlen(sapin->value));
+	  zvalue = get_entry_hashtable(&ce->constants_table, tree->value,
+				       strlen(tree->value));
 	  ce = NULL;
 	} else if (!zvalue) {
-	  zvalue = get_var_value(ed, sapin->value, is_param);
+	  zvalue = get_var_value(ed, tree->value, is_param);
 	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
-	  zvalue = get_object_property(ed, zvalue, sapin->value, is_param);
+	  zvalue = get_object_property(ed, zvalue, tree->value, is_param);
 	}
-	zvalue = get_array_value(ed, zvalue, sapin);
+	zvalue = get_array_value(ed, zvalue, tree);
 	break;
       case VAR:
 	if (zvalue && Z_TYPE_P(zvalue) == IS_OBJECT) {
-	  zvalue = get_object_property(ed, zvalue, sapin->value, is_param);
+	  zvalue = get_object_property(ed, zvalue, tree->value, is_param);
 	} else {
-	  zvalue = get_var_value(ed, sapin->value, is_param);
+	  zvalue = get_var_value(ed, tree->value, is_param);
 	}
 	break;
       case OBJECT:
 	if (!zvalue) {
-	  zvalue = get_var_value(ed, sapin->value, is_param);
+	  zvalue = get_var_value(ed, tree->value, is_param);
 	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
-	  if (0 != strlen(sapin->value)) {
-	    zvalue = get_object_property(ed, zvalue, sapin->value, is_param);
+	  if (0 != strlen(tree->value)) {
+	    zvalue = get_object_property(ed, zvalue, tree->value, is_param);
 	  }
 	} else {
 	  return NULL;
 	}
 	break;
       case CLASS:
-	ce = get_class(sapin->value);
+	ce = get_class(tree->value);
 	zvalue = NULL;
 	break;
       default:
-	zvalue = get_unknown_type(sapin->value, zvalue, ce, ed, sapin, is_param);
+	zvalue = get_unknown_type(tree->value, zvalue, ce, ed, tree, is_param);
 	ce = NULL;
 	break;
     }
     if (!zvalue && !ce) {
       return NULL;
     }
-    sapin = sapin->next;
+    tree = tree->next;
   }
   return zvalue;
 }

@@ -24,18 +24,9 @@ void sp_log_msg(char const *feature, char const *level, const char* fmt, ...) {
   vspprintf(&msg, 0, fmt, args);
   va_end(args);
 
-  char const * const client_ip = sp_getenv("REMOTE_ADDR");
+  char const * const client_ip = getenv("REMOTE_ADDR");
   _sp_log_err("[snuffleupagus][%s][%s][%s] %s", client_ip?client_ip:"0.0.0.0",
     feature, level, msg);
-}
-
-
-zend_always_inline char* sp_getenv(char* var) {
-  if (sapi_module.getenv) {
-    return sapi_module.getenv(ZEND_STRL(var));
-  } else {
-    return getenv(var);
-  }
 }
 
 zend_always_inline int is_regexp_matching(const pcre* regexp, const char* str) {

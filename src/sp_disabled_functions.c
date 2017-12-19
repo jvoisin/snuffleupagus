@@ -216,7 +216,7 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
   const sp_node_t* config = get_config_node(builtin_name);
   char* complete_path_function = get_complete_function_path(execute_data);
-  char const* client_ip = sp_getenv("REMOTE_ADDR");
+  char const* client_ip = getenv("REMOTE_ADDR");
   const char* current_filename;
 
   if (!config || !config->data) {

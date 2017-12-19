@@ -1,12 +1,12 @@
 #include "php_snuffleupagus.h"
 
-void free_sp_tree(sp_tree *sapin) {
-  while (sapin) {
+void free_sp_tree(sp_tree *tree) {
+  while (tree) {
     sp_tree *tmp;
-    pefree(sapin->value, 1);
-    free_sp_tree(sapin->idx);
-    tmp = sapin;
-    sapin = sapin->next;
+    pefree(tree->value, 1);
+    free_sp_tree(tree->idx);
+    tmp = tree;
+    tree = tree->next;
     pefree(tmp, 1);
   }
 }
