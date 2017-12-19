@@ -281,8 +281,8 @@ Filters
 - ``value(value)``: match on a literal ``value``
 - ``value_r(regexp)``: match on a value matching the ``regexp``
 - ``var(name)``: match on a **local variable** ``name``
-- ``key(name)``: match on the presence of ``name`` as a hashtable entry
-- ``key_r(regexp)``: match with ``regexp`` on hashtable entries
+- ``key(name)``: match on the presence of ``name`` as a key in the hashtable
+- ``key_r(regexp)``: match with ``regexp`` on keys in the hashtable
 
 The ``type`` must be one of the following values:
 
