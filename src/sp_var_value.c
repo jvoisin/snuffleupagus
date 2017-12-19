@@ -1,9 +1,9 @@
 #include "php_snuffleupagus.h"
 
 static zval *get_param_var(zend_execute_data *ed, const char *var_name) {
-  int nb_param = ed->func->common.num_args;
+  unsigned int nb_param = ed->func->common.num_args;
 
-  for (int i = 0; i < nb_param; i++) {
+  for (unsigned int i = 0; i < nb_param; i++) {
     const char *arg_name;
     if (ZEND_USER_CODE(ed->func->type)) {
       arg_name = ZSTR_VAL(ed->func->common.arg_info[i].name);
@@ -73,7 +73,7 @@ static zval *get_var_value(zend_execute_data *ed, const char *var_name,
 }
 
 static void *get_entry_hashtable(const HashTable *ht, const char *entry,
-				 int entry_len) {
+				 size_t entry_len) {
   zval *zvalue = zend_hash_str_find(ht, entry, entry_len);
 
   if (!zvalue) {
@@ -113,7 +113,7 @@ static zval *get_object_property(zend_execute_data *ed, zval *object,
   HashTable *array = Z_OBJPROP_P(object);
   zval *zvalue = NULL;
   zval *property_val = get_var_value(ed, property, is_param);
-  int len;
+  size_t len;
 
   if (property_val) {
     if (Z_TYPE_P(property_val) != IS_STRING) {

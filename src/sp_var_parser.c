@@ -1,7 +1,7 @@
 #include "php_snuffleupagus.h"
 
-static int get_all_object(const char *str, const sp_token_t token,
-			  sp_node_t *tokens_list) {
+static int parse_str_tokens(const char *str, const sp_token_t token,
+			    sp_node_t *tokens_list) {
   const char *cur_str = str;
 
   while ((cur_str = strchr(cur_str, token.token[0]))) {
@@ -19,7 +19,7 @@ static int get_all_object(const char *str, const sp_token_t token,
   return 0;
 }
 
-static bool check_var_name(const char *name) {
+static bool is_var_name_valid(const char *name) {
   static pcre *regexp_const = NULL;
   static pcre *regexp_var = NULL;
   const char *pcre_error;
@@ -46,7 +46,7 @@ static bool check_var_name(const char *name) {
 }
 
 static int create_var(sp_tree *tree, const char *restrict value,
-		      int value_len, elem_type _type, const char *restrict idx) {
+		      size_t value_len, elem_type _type, const char *restrict idx) {
   sp_tree *var_node = NULL;
 
   if (!tree) {
@@ -62,14 +62,15 @@ static int create_var(sp_tree *tree, const char *restrict value,
   var_node->next = NULL;
   var_node->idx = NULL;
   var_node->type = _type;
+  // Check if a constant is a variable
   if (value && value[0] == VARIABLE_TOKEN && _type == CONSTANT) {
     var_node->type = VAR;
   }
   if (!(var_node->value = pestrndup(value, value_len, 1))) {
-    sp_log_err("config", "Alloc error.");
+    sp_log_err("config", "Can't allocate a strndup");
     return -1;
   }
-  if (var_node->type != STRING_DELIMITER && !check_var_name(var_node->value)) {
+  if (var_node->type != STRING_DELIMITER && !is_var_name_valid(var_node->value)) {
     sp_log_err("config", "Invalid var name: %s.", var_node->value);
     return -1;
   }
@@ -85,12 +86,12 @@ static int create_var(sp_tree *tree, const char *restrict value,
 }
 
 int cmp_tokens(sp_node_t *list1, sp_node_t *list2) {
-  return (int)(((sp_token_t *)list1->data)->pos
-	       - ((sp_token_t *)list2->data)->pos);
+  return (((sp_token_t *)list1->data)->pos
+	  - ((sp_token_t *)list2->data)->pos);
 }
 
-static int check_empty_next_token(sp_token_t *token, sp_token_t *token_next,
-				  const char * restrict str) {
+static int is_next_token_empty(sp_token_t *token, sp_token_t *token_next,
+			       const char * restrict str) {
   if ((token_next && token_next->pos == token->pos + strlen(token->token))
       || (!token_next && token->pos == strlen(str) - strlen(token->token))) {
     return -1;
@@ -98,9 +99,9 @@ static int check_empty_next_token(sp_token_t *token, sp_token_t *token_next,
   return 0;
 }
 
-static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
-			     int array_count, const char * restrict str,
-			     size_t pos) {
+static int is_token_valid(sp_node_t *tokens_list, elem_type ignore,
+			  int array_count, const char * restrict str,
+			  size_t pos) {
   sp_token_t *token = (sp_token_t *)tokens_list->data;
   sp_token_t *token_next = NULL;
 
@@ -109,18 +110,8 @@ static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
   }
   switch (token->type) {
     case ESC_STRING_DELIMITER:
-      if (ignore == ESC_STRING_DELIMITER) {
-	if (token_next) {
-	  if (token_next->pos != token->pos + 1) {
-	    return -1;
-	  }
-	} else if (token->pos != strlen(str) - 1) {
-	  return -1;
-	}
-      }
-      break;
     case STRING_DELIMITER:
-      if (ignore == STRING_DELIMITER) {
+      if (ignore == token->type) {
 	if (token_next) {
 	  if (token_next->pos != token->pos + 1) {
 	    return -1;
@@ -145,7 +136,7 @@ static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
       }
       break;
     case OBJECT:
-      if (!ignore && -1 == check_empty_next_token(token, token_next, str)) {
+      if (!ignore && -1 == is_next_token_empty(token, token_next, str)) {
 	return -1;
       }
       if (pos == 0 && *str != VARIABLE_TOKEN) {
@@ -153,7 +144,7 @@ static int check_error_token(sp_node_t *tokens_list, elem_type ignore,
       }
       break;
     case CLASS:
-      if (!ignore && -1 == check_empty_next_token(token, token_next, str)) {
+      if (!ignore && -1 == is_next_token_empty(token, token_next, str)) {
 	return -1;
       }
       break;
@@ -172,10 +163,10 @@ static sp_tree *parse_tokens(const char * restrict str,
 
   for (; tokens_list && tokens_list->data; tokens_list = tokens_list->next) {
     sp_token_t *token = (sp_token_t *)tokens_list->data;
-    int value_len;
+    size_t value_len;
     char *idx = NULL;
 
-    if (-1 == check_error_token(tokens_list, ignore, array_count, str, pos)) {
+    if (-1 == is_token_valid(tokens_list, ignore, array_count, str, pos)) {
       sp_log_err("config", "Invalid `%s` position.", token->token);
       goto error;
     }
@@ -242,7 +233,7 @@ sp_tree *parse_var(const char *line) {
   }
   tokens_list = sp_list_new();
   for (unsigned int i = 0; i < sizeof(delimiter_list) / sizeof(sp_token_t); i++) {
-    get_all_object(line, delimiter_list[i], tokens_list);
+    parse_str_tokens(line, delimiter_list[i], tokens_list);
   }
   tokens_list = sp_list_sort(tokens_list, cmp_tokens);
   tree = parse_tokens(line, tokens_list);
