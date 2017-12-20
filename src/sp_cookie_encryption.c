@@ -232,6 +232,7 @@ PHP_FUNCTION(sp_setcookie) {
   call_user_function(CG(function_table), NULL, &func_name, &ret_val, 7, params);
 
   func->handler = PHP_FN(sp_setcookie);
+  RETURN_TRUE;
 }
 
 int hook_cookies() {
