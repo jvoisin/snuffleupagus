@@ -14,10 +14,18 @@ HTTPS=1
 EOF;
 --FILE--
 <?php
-setcookie("super_cookie", "super_value");
-setcookie("awful_cookie", "awful_value");
-setcookie("not_encrypted", "test_value", 1, "1", "1", false, true);
-setcookie("nice_cookie", "nice_value", 1, "1", "1", true, true);
+if (!setcookie("super_cookie", "super_value")) {
+  echo "setcookie failed.\n";
+}
+if (!setcookie("awful_cookie", "awful_value")) {
+  echo "setcookie failed.\n";
+}
+if (!setcookie("not_encrypted", "test_value", 1, "1", "1", false, true)) {
+  echo "setcookie failed.\n";
+}
+if (!setcookie("nice_cookie", "nice_value", 1, "1", "1", true, true)) {
+  echo "setcookie failed.\n";
+}
 
 $expected = array(
     'Set-Cookie: super_cookie=super_value; path=; samesite=Lax',
