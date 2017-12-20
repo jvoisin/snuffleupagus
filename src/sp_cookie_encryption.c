@@ -137,7 +137,6 @@ PHP_FUNCTION(sp_setcookie) {
   zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL, *samesite = NULL;
   zend_long expires = 0;
   zend_bool secure = 0, httponly = 0;
-  zval ret_val;
   const sp_cookie *cookie_node = NULL;
   zval func_name;
   char *cookie_samesite;
@@ -229,7 +228,7 @@ PHP_FUNCTION(sp_setcookie) {
       CG(function_table), "setcookie", strlen("setcookie"));
   func->handler = handler;
 
-  call_user_function(CG(function_table), NULL, &func_name, &ret_val, 7, params);
+  call_user_function(CG(function_table), NULL, &func_name, return_value, 7, params);
 
   func->handler = PHP_FN(sp_setcookie);
   RETURN_TRUE;
