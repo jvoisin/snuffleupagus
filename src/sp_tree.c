@@ -15,6 +15,6 @@ sp_tree *sp_tree_new() {
   sp_tree *new = pecalloc(sizeof(sp_tree), 1, 1);
   new->next = new->idx = NULL;
   new->value = NULL;
-  new->type = 0;
+  new->type = UNDEFINED;
   return new;
 }

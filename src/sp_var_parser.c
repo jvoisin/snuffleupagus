@@ -52,7 +52,7 @@ static int create_var(sp_tree *tree, const char *restrict value,
   if (!tree) {
     return -1;
   }
-  if (tree->next == NULL && tree->type == 0) {
+  if (tree->next == NULL && tree->type == UNDEFINED) {
     var_node = tree;
   } else {
     var_node = pecalloc(sizeof(sp_tree), 1, 1);
@@ -239,7 +239,7 @@ sp_tree *parse_var(const char *line) {
   tree = parse_tokens(line, tokens_list);
   sp_list_free(tokens_list);
   // Check if tree is empty.
-  if (tree && tree->next == NULL && tree->type == 0) {
+  if (tree && tree->next == NULL && tree->type == UNDEFINED) {
     tree->type = CONSTANT;
     tree->value = pestrdup("", 1);
   }
