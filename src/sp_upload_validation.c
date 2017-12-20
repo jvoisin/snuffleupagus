@@ -51,7 +51,7 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
       cmd[2] = NULL;
 
       spprintf(&env[0], 0, "SP_FILENAME=%s", filename);
-      spprintf(&env[1], 0, "SP_REMOTE_ADDR=%s", sp_getenv("REMOTE_ADDR"));
+      spprintf(&env[1], 0, "SP_REMOTE_ADDR=%s", getenv("REMOTE_ADDR"));
       spprintf(&env[2], 0, "SP_CURRENT_FILE=%s",
                zend_get_executed_filename(TSRMLS_C));
       spprintf(&env[3], 0, "SP_FILESIZE=%zu", filesize);
@@ -77,7 +77,7 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
       int waitstatus;
       wait(&waitstatus);
       if (WEXITSTATUS(waitstatus) != 0) {  // Nope
-        char *uri = sp_getenv("REQUEST_URI");
+        char *uri = getenv("REQUEST_URI");
         int sim = SNUFFLEUPAGUS_G(config).config_upload_validation->simulation;
         sp_log_msg("upload_validation", sim?SP_LOG_SIMULATION:SP_LOG_DROP,
           "The upload of %s on %s was rejected.", filename, uri?uri:"?");

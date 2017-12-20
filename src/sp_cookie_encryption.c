@@ -8,9 +8,9 @@ static zend_long nonce_d = 0;
 
 static inline void generate_key(unsigned char *key) {
   PHP_SHA256_CTX ctx;
-  const char *user_agent = sp_getenv("HTTP_USER_AGENT");
+  const char *user_agent = getenv("HTTP_USER_AGENT");
   const char *env_var =
-    sp_getenv(SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var);
+    getenv(SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var);
   const char *encryption_key =
       SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key;
 

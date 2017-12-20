@@ -255,7 +255,7 @@ In the situation where you have a call to ``system()`` that lacks proper user-in
 ::
    
   # Allow `id.php` to restrict system() calls to `id`
-  sp.disable_function.function("system").filename("id.php").param("cmd").value("id").allow();
+  sp.disable_function.function("system").filename("id.php").param("$cmd").value("id").allow();
   sp.disable_function.function("system").filename("id.php").drop()
 
 Of course, this is a trivial example,  a lot can be achieved with this feature, as you will see below.
@@ -281,6 +281,8 @@ Filters
 - ``value(value)``: match on a literal ``value``
 - ``value_r(regexp)``: match on a value matching the ``regexp``
 - ``var(name)``: match on a **local variable** ``name``
+- ``key(name)``: match on the presence of ``name`` as a key in the hashtable
+- ``key_r(regexp)``: match with ``regexp`` on keys in the hashtable
 
 The ``type`` must be one of the following values:
 
@@ -312,11 +314,11 @@ The ``function`` filter is able to do various dereferencing:
 
 The ``param`` filter is also able to do some dereferencing:
 
-- ``param(foo[bar])`` will get a match on the value corresponding to the ``bar`` key in the hashtable ``foo``.
+- ``param($foo[bar])`` will get a match on the value corresponding to the ``bar`` key in the hashtable ``foo``.
   Remember that in PHP, almost every data structure is a hashtable. You can of course nest this like
-  ``param(foo[bar][baz][batman])``.
+  ``param($foo[bar][$object->array['123']][$batman])``.
 - The ``var`` filter will walk the calltrace until it finds the variable name, or the end of the calltrace,
-  allowing the filter to match global variables: ``.var("_GET[param]")`` will match on the GET parameter ``param``.
+  allowing the filter to match global variables: ``.var("$_GET[\"param\"]")`` will match on the GET parameter ``param``.
 
 The ``filename`` filter requires a leading ``/``, since paths are absolutes (like ``/var/www/mywebsite/lib/parse.php``).
 If you would like to have only one configuration file for several vhost in different folders,
@@ -351,9 +353,9 @@ The following rules will:
 
 ::
 
-  sp.disable_function.function("system").param("cmd").value("id").allow();
-  sp.disable_function.function("system").param("cmd").value_r("^ping").drop().simulation();
-  sp.disable_function.function("system").param("cmd").drop();
+  sp.disable_function.function("system").param("$cmd").value("id").allow();
+  sp.disable_function.function("system").param("$cmd").value_r("^ping").drop().simulation();
+  sp.disable_function.function("system").param("$cmd").drop();
 
 Miscellaneous examples
 """"""""""""""""""""""

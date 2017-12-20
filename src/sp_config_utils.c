@@ -133,50 +133,6 @@ char *get_param(size_t *consumed, char *restrict line, sp_type type,
   return NULL;
 }
 
-// FIXME this is leaking like hell @blotus
-int array_to_list(char **name_ptr, sp_node_t **keys) {
-  int in_key = 0;
-  size_t i = 0;
-  char *name = *name_ptr;
-  char *key_name = ecalloc(strlen(name) + 1, 1);  // im way too lazy for
-                                                       // now
-  char *tmp = ecalloc(strlen(name) + 1, 1);
-
-  for (i = 0; name[i] != '['; i++) {
-    tmp[i] = name[i];
-  }
-  tmp[i] = 0;
-
-  for (size_t j = 0; name[i]; i++) {
-    const char c = name[i];
-    if (c == '[') {
-      if (in_key == 0) {
-        in_key = 1;
-      } else {
-        efree(key_name);
-        return -1;
-      }
-    } else if (c == ']') {
-      if (in_key == 0) {
-        efree(key_name);
-        return -1;
-      } else {
-        in_key = 0;
-        j = 0;
-        sp_list_insert(*keys, pestrdup(key_name, 1));
-        memset(key_name, 0, strlen(name) + 1);
-      }
-    } else if (in_key == 1) {
-      key_name[j] = c;
-      j++;
-    }
-  }
-  efree(key_name);
-  *name_ptr = pestrdup(tmp, 1);
-  return in_key;
-}
-
-
 zend_always_inline sp_node_t *parse_functions_list(char *value) {
   const char *sep = ">";
 

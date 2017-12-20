@@ -25,18 +25,9 @@ void sp_log_msg(char const *feature, char const *level, const char* fmt, ...) {
   vspprintf(&msg, 0, fmt, args);
   va_end(args);
 
-  char const * const client_ip = sp_getenv("REMOTE_ADDR");
+  char const * const client_ip = getenv("REMOTE_ADDR");
   _sp_log_err("[snuffleupagus][%s][%s][%s] %s", client_ip?client_ip:"0.0.0.0",
     feature, level, msg);
-}
-
-
-zend_always_inline char* sp_getenv(char* var) {
-  if (sapi_module.getenv) {
-    return sapi_module.getenv(ZEND_STRL(var));
-  } else {
-    return getenv(var);
-  }
 }
 
 zend_always_inline int is_regexp_matching(const pcre* regexp, const char* str) {
@@ -278,63 +269,50 @@ void sp_log_disable_ret(const char* restrict path,
   }
 }
 
-int sp_match_array_key(const zval* zv, const char* to_match, const pcre* rx) {
+bool sp_match_array_key(const zval* zv, const char* to_match, const pcre* rx) {
   zend_string* key;
-  zval* value;
-  char* arg_value_str;
+  zend_ulong idx;
 
-  ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(zv), key, value) {
-    if (Z_TYPE_P(value) == IS_ARRAY) {
-      continue;
-    }
-    arg_value_str = sp_convert_to_string(value);
-    if (!sp_match_value(arg_value_str, to_match, rx)) {
-      efree(arg_value_str);
-      continue;
+  ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(zv), idx, key) {
+    if (key) {
+      if (sp_match_value(ZSTR_VAL(key), to_match, rx)) {
+	return true;
+      }
     } else {
-      efree(arg_value_str);
-      return 1;
+      char *idx_str = NULL;
+
+      // Could use a log.
+      idx_str = emalloc(snprintf(NULL, 0, "%lu", idx));
+      sprintf(idx_str, "%lu", idx);
+      if (sp_match_value(idx_str, to_match, rx)) {
+	efree(idx_str);
+	return true;
+      }
+      efree(idx_str);
     }
   }
   ZEND_HASH_FOREACH_END();
-
-  (void)key;  // silence a compiler warning
-
-  return 0;
+  return false;
 }
 
-int sp_match_array_key_recurse(const zval* arr, sp_node_t* keys,
-                               const char* to_match, const pcre* rx) {
-  zend_string* key;
+bool sp_match_array_value(const zval* arr, const char* to_match, const pcre* rx) {
   zval* value;
-  sp_node_t* current = keys;
-  if (current == NULL) {
-    return 0;
-  }
-  ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(arr), key, value) {
-    if (Z_TYPE_P(value) == IS_ARRAY && !strcmp(ZSTR_VAL(key), current->data)) {
-      return sp_match_array_key_recurse(value, current->next, to_match, rx);
-    }
-    if (!strcmp(ZSTR_VAL(key), current->data) && current->next == NULL) {
-      if (!to_match && !rx) {
-        return 1;
-      }
-      if (Z_TYPE_P(value) == IS_ARRAY) {
-        return sp_match_array_key(value, to_match, rx);
+
+  ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(arr), value) {
+    if (Z_TYPE_P(value) != IS_ARRAY) {
+      char *value_str = sp_convert_to_string(value);
+      if (sp_match_value(value_str, to_match, rx)) {
+	efree(value_str);
+	return true;
       } else {
-        char *value_str = sp_convert_to_string(value);
-        if (sp_match_value(value_str, to_match, rx)) {
-          efree(value_str);
-          return 1;
-        } else {
-          efree (value_str);
-          return 0;
-        }
+	efree (value_str);
       }
+    } else if (sp_match_array_value(value, to_match, rx)) {
+      return true;
     }
   }
   ZEND_HASH_FOREACH_END();
-  return 0;
+  return false;
 }
 
 
