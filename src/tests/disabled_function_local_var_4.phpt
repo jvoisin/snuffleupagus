@@ -20,8 +20,8 @@ $b['_GET[obj->nop]']["qwe"][321] = "Yeay";
 $b["123"] = "qwe";
 $b["123a"] = "foo";
 $b["asd"] = "zxc";
-$b['_GET[obj->nop::qwe]']["qwe"][1337] = (Object)(['uio' => "valeur de apres"]);
-$b['_GET[obj->nop::qwe]']["qwe"][1338] = (Object)(['uio' => "valeur de a"]);
+$b['_GET["obj->nop::qwe']["qwe"][1337] = (Object)(['uio' => "valeur de apres"]);
+$b['_GET["obj->nop::qwe']["qwe"][1338] = (Object)(['uio' => "valeur de a"]);
 $c = (Object)(['qwe' => Array(\qwe\UNE_CONSTANTE => 'zxc')]);
 $idk = 'test_asd';
 $class_name = 'test_object';
@@ -42,11 +42,11 @@ $a = 1338;
 function test(){
   strlen("qwe");
 }
-echo "Valeur: " . $b['_GET[obj->nop::qwe]']["qwe"][$a]->uio . "\n";
+echo "Valeur: " . $b['_GET["obj->nop::qwe']["qwe"][$a]->uio . "\n";
 test();
 
 $a = 1337;
-echo "Valeur: " . $b['_GET[obj->nop::qwe]']["qwe"][$a]->uio . "\n";
+echo "Valeur: " . $b['_GET["obj->nop::qwe']["qwe"][$a]->uio . "\n";
 test();
 }
 ?>
