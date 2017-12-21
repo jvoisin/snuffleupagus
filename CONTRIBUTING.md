@@ -127,8 +127,11 @@ Maintainers need to do the following to push out a release:
   git checkout master
   git pull origin master
   make coverage
+  git config user.signingkey 498C46FF087EDC36E7EAF9D445414A82A9B22D78
+  git config user.email security@nbs-system.com
   git tag -s $MAJOR.$MINOR.$PATCH
   git push --tags
   ```
 
-4. Do the *secret release dance*
+4. Create the [release on github](https://github.com/nbs-system/snuffleupagus/releases)
+5. Do the *secret release dance*
