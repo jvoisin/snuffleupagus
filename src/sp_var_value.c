@@ -154,9 +154,9 @@ static zval *get_unknown_type(const char *restrict value, zval *zvalue,
   if (ce) {
     zvalue = get_entry_hashtable(&ce->constants_table, value, strlen(value));
     ce = NULL;
-  } else if (zvalue && Z_TYPE_P(zvalue) == IS_OBJECT && value[0]) {
+  } else if (zvalue && Z_TYPE_P(zvalue) == IS_OBJECT) {
     zvalue = get_object_property(ed, zvalue, value, is_param);
-  } else if (!tree->next && !zvalue) {
+  } else if (!zvalue) {
     if (tree->type == CONSTANT) {
       zvalue = get_constant(value);
     }
