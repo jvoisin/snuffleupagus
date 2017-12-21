@@ -62,7 +62,7 @@ static int create_var(sp_tree *tree, const char *restrict value,
   var_node->next = NULL;
   var_node->idx = NULL;
   var_node->type = _type;
-  /* We consider `$` as part of the variable name, to differentiate them of
+  /* We consider `$` as part of the variable name, to tell them appart from
    * php's constant
    */
   if (value && value[0] == VARIABLE_TOKEN && _type == CONSTANT) {
