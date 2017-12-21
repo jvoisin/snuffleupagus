@@ -16,6 +16,7 @@ Documentation
    installation
    config
    download
+   changelog
    faq
    papers
 
