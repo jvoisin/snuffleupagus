@@ -322,7 +322,7 @@ The ``param`` filter is also able to do some dereferencing:
 
 The ``filename`` filter requires a leading ``/``, since paths are absolutes (like ``/var/www/mywebsite/lib/parse.php``).
 If you would like to have only one configuration file for several vhost in different folders,
-you can use the the ``filename_r`` directive to match on the filename (like ``/lib/parse\.php``).
+you can use the ``filename_r`` directive to match on the filename (like ``/lib/parse\.php``).
 
 For clarity, the presence of the ``allow`` or ``drop`` action is **mandatory**.
 
@@ -333,9 +333,22 @@ For clarity, the presence of the ``allow`` or ``drop`` action is **mandatory**.
   more narrowed way later, the call will be denied,
   because it'll match the deny first.
 
-If you're paranoid, we're providing a php script to automatically generate
-hash of files containing dangerous functions,
-and blacklisting them everywhere else.
+If you're paranoid, we're providing a `php script
+<https://github.com/nbs-system/snuffleupagus/blob/master/scripts/generate_rules.php>`__
+to automatically generate hash of files containing dangerous functions, and
+blacklisting them everywhere else.
+
+Limitations
+^^^^^^^^^^^
+
+It's currently not possible to:
+
+- Hook every `language construct <https://secure.php.net/manual/en/reserved.keywords.php>`__,
+  because each of them requires a specific implementation.
+- Hook on the return value of user-defined functions
+- Use extra-convoluted rulesfor matching, like ``${$A}$$B->${'}[1]``, because if you're writing
+  things like this, odds are that you're doing something wrong anyway.
+
 
 Examples
 ^^^^^^^^
