@@ -1,5 +1,3 @@
-# ALPHA SOFTWARE : DO NOT USE IN PRODUCTION #
-
 [![Build Status](https://travis-ci.org/nbs-system/snuffleupagus.svg?branch=master)](https://travis-ci.org/nbs-system/snuffleupagus)
 [![Coverity status](https://scan.coverity.com/projects/13821/badge.svg?flat=1)](https://scan.coverity.com/projects/nbs-system-snuffleupagus)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/1267/badge)](https://bestpractices.coreinfrastructure.org/projects/1267)
