@@ -3,35 +3,35 @@
 #include <stdlib.h>
 #include "php_snuffleupagus.h"
 
-void sp_list_free(sp_node_t *node) {
+void sp_list_free(sp_list_node *node) {
   while(node) {
-    sp_node_t *tmp = node->next;
+    sp_list_node *tmp = node->next;
     pefree(node, 1);
     node = tmp;
   }
 }
 
-sp_node_t *sp_list_new() {
-  sp_node_t *new = pecalloc(sizeof(*new), 1, 1);
+sp_list_node *sp_list_new() {
+  sp_list_node *new = pecalloc(sizeof(*new), 1, 1);
   new->next = new->data = new->head = NULL;
   return new;
 }
 
 // Thanks to https://en.wikipedia.org/wiki/Insertion_sort :>
-sp_node_t *sp_list_sort(sp_node_t *pList, int (*cmp_func)(sp_node_t *, sp_node_t *)) {
-  sp_node_t *head = NULL;
+sp_list_node *sp_list_sort(sp_list_node *pList, int (*cmp_func)(sp_list_node *, sp_list_node *)) {
+  sp_list_node *head = NULL;
 
   if (pList == NULL || pList->next == NULL) {
     return pList;
   }
   while (pList != NULL) {
-    sp_node_t *current = pList;
+    sp_list_node *current = pList;
     pList = pList->next;
     if (head == NULL || 0 > cmp_func(current, head)) {
       current->next = head;
       head = current;
     } else {
-      sp_node_t *p = head;
+      sp_list_node *p = head;
       while (p != NULL) {
 	if (p->next == NULL || 0 > cmp_func(current, p->next)) {
 	  current->next = p->next;
@@ -45,13 +45,13 @@ sp_node_t *sp_list_sort(sp_node_t *pList, int (*cmp_func)(sp_node_t *, sp_node_t
   return head;
 }
 
-void sp_list_insert(sp_node_t *list, void *data) {
+void sp_list_insert(sp_list_node *list, void *data) {
   if (list->head == NULL) {
     list->data = data;
     list->next = NULL;
     list->head = list;
   } else {
-    sp_node_t *new = pecalloc(sizeof(*new), 1, 1);
+    sp_list_node *new = pecalloc(sizeof(*new), 1, 1);
 
     new->data = data;
     new->next = NULL;
@@ -64,13 +64,13 @@ void sp_list_insert(sp_node_t *list, void *data) {
   }
 }
 
-void sp_list_prepend(sp_node_t *list, void *data) {
+void sp_list_prepend(sp_list_node *list, void *data) {
   if (list->head == NULL) {
     list->data = data;
     list->next = NULL;
     list->head = list;
   } else {
-    sp_node_t *new = pecalloc(sizeof(*new), 1, 1);
+    sp_list_node *new = pecalloc(sizeof(*new), 1, 1);
 
     new->next = list->next;
     list->next = new;

@@ -28,10 +28,10 @@ static char* get_complete_function_path(
 }
 
 static bool is_functions_list_matching(zend_execute_data* execute_data,
-                                       sp_node_t* functions_list) {
+                                       sp_list_node* functions_list) {
   zend_execute_data *orig_execute_data, *current;
   orig_execute_data = current = execute_data;
-  sp_node_t* it = functions_list;
+  sp_list_node* it = functions_list;
 
   while (current) {
     if (it == NULL) {  // every function in the list matched, we've got a match!
@@ -91,7 +91,7 @@ static bool is_local_var_matching(
   return false;
 }
 
-static const sp_node_t* get_config_node(const char* builtin_name) {
+static const sp_list_node* get_config_node(const char* builtin_name) {
   if (!builtin_name) {
     return SNUFFLEUPAGUS_G(config)
         .config_disabled_functions->disabled_functions;
@@ -214,7 +214,7 @@ static bool is_param_matching(zend_execute_data* execute_data,
 bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
                     const char* builtin_param, const char* builtin_param_name) {
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
-  const sp_node_t* config = get_config_node(builtin_name);
+  const sp_list_node* config = get_config_node(builtin_name);
   char* complete_path_function = get_complete_function_path(execute_data);
   char const* client_ip = getenv("REMOTE_ADDR");
   const char* current_filename;
@@ -341,7 +341,7 @@ allow:
 
 static bool should_drop_on_ret(zval* return_value,
                                const zend_execute_data* const execute_data) {
-  const sp_node_t* config =
+  const sp_list_node* config =
       SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions;
   char* complete_path_function = get_complete_function_path(execute_data);
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
@@ -445,7 +445,7 @@ ZEND_FUNCTION(check_disabled_function) {
   }
 }
 
-static int hook_functions(const sp_node_t* config) {
+static int hook_functions(const sp_list_node* config) {
   while (config && config->data) {
     const char* function_name = ((sp_disabled_function*)config->data)->function;
     const pcre* function_name_regexp =

@@ -29,7 +29,7 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
 }
 
 static void is_builtin_matching(const char * restrict const filename,
-		char* restrict function_name, char* restrict param_name, sp_node_t *config) {
+		char* restrict function_name, char* restrict param_name, sp_list_node *config) {
   if (!config || !config->data) {
     return;
   }
@@ -65,7 +65,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   }
   
   if (execute_data->func->op_array.type == ZEND_EVAL_CODE) {
-    sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
+    sp_list_node* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
     char *filename = get_eval_filename((char *)zend_get_executed_filename());
     is_builtin_matching(filename, "eval", NULL, config);
     efree(filename);
@@ -92,7 +92,7 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
       if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
         terminate_if_writable(filename);
       }
-      sp_node_t* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
+      sp_list_node* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
       switch (data->opline->extended_value) {
       case ZEND_INCLUDE:
 	is_builtin_matching(filename, "include", "inclusion path", config);

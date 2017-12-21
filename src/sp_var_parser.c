@@ -1,7 +1,7 @@
 #include "php_snuffleupagus.h"
 
 static int parse_str_tokens(const char *str, const sp_token_t token,
-			    sp_node_t *tokens_list) {
+			    sp_list_node *tokens_list) {
   const char *cur_str = str;
 
   while ((cur_str = strchr(cur_str, token.token[0]))) {
@@ -87,7 +87,7 @@ static int create_var(sp_tree *tree, const char *restrict value,
   return 0;
 }
 
-int cmp_tokens(sp_node_t *list1, sp_node_t *list2) {
+int cmp_tokens(sp_list_node *list1, sp_list_node *list2) {
   return (((sp_token_t *)list1->data)->pos
 	  - ((sp_token_t *)list2->data)->pos);
 }
@@ -101,7 +101,7 @@ static int is_next_token_empty(sp_token_t *token, sp_token_t *token_next,
   return 0;
 }
 
-static int is_token_valid(sp_node_t *tokens_list, elem_type ignore,
+static int is_token_valid(sp_list_node *tokens_list, elem_type ignore,
 			  int array_count, const char * restrict str,
 			  size_t pos) {
   sp_token_t *token = (sp_token_t *)tokens_list->data;
@@ -157,7 +157,7 @@ static int is_token_valid(sp_node_t *tokens_list, elem_type ignore,
 }
 
 static sp_tree *parse_tokens(const char * restrict str,
-			     sp_node_t *tokens_list) {
+			     sp_list_node *tokens_list) {
   size_t pos = 0;
   int array_count = 0, pos_idx_start = -1;
   elem_type ignore = 0;
@@ -217,7 +217,7 @@ error:
 }
 
 sp_tree *parse_var(const char *line) {
-  sp_node_t *tokens_list = NULL;
+  sp_list_node *tokens_list = NULL;
   sp_tree *tree = NULL;
   const sp_token_t delimiter_list[] = {
     {.type=OBJECT, .token=OBJECT_TOKEN},

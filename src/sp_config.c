@@ -183,8 +183,8 @@ int sp_parse_config(const char *conf_file) {
   return SUCCESS;
 }
 
-void sp_disabled_function_list_free(sp_node_t* list) {
-  sp_node_t* cursor = list;
+void sp_disabled_function_list_free(sp_list_node* list) {
+  sp_list_node* cursor = list;
   while(cursor) {
       sp_disabled_function* df = cursor->data;
       if (df && df->functions_list)

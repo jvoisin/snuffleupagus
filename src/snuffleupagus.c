@@ -111,7 +111,7 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
 
 #define FREE_LST(L) \
   do { \
-    sp_node_t* _n = SNUFFLEUPAGUS_G(L); \
+    sp_list_node* _n = SNUFFLEUPAGUS_G(L); \
     sp_disabled_function_list_free(_n); \
     sp_list_free(_n); \
   } while(0)

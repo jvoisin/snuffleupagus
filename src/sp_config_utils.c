@@ -133,14 +133,14 @@ char *get_param(size_t *consumed, char *restrict line, sp_type type,
   return NULL;
 }
 
-zend_always_inline sp_node_t *parse_functions_list(char *value) {
+zend_always_inline sp_list_node *parse_functions_list(char *value) {
   const char *sep = ">";
 
   if (NULL == strchr(value, sep[0])) {
     return NULL;
   }
 
-  sp_node_t *list = sp_list_new();
+  sp_list_node *list = sp_list_new();
   char* tmp = strdup(value);
   char* function_name;
   char *next_token = tmp;

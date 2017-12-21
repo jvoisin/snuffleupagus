@@ -73,7 +73,7 @@ typedef struct {
 
   char *function;
   pcre *r_function;
-  sp_node_t *functions_list;
+  sp_list_node *functions_list;
 
   char *hash;
   int simulation;
@@ -98,8 +98,8 @@ typedef struct {
   char *alias;
   bool param_is_array;
   bool var_is_array;
-  sp_node_t *param_array_keys;
-  sp_node_t *var_array_keys;
+  sp_list_node *param_array_keys;
+  sp_list_node *var_array_keys;
 
   bool allow;
 
@@ -109,7 +109,7 @@ typedef struct {
 } sp_disabled_function;
 
 typedef struct {
-  sp_node_t *disabled_functions;  // list of sp_disabled_function
+  sp_list_node *disabled_functions;  // list of sp_disabled_function
 } sp_config_disabled_functions;
 
 typedef struct {
@@ -117,9 +117,9 @@ typedef struct {
 } sp_config_cookie;
 
 typedef struct {
-  sp_node_t *construct_include; // list of rules for `(include|require)_(once)?`
-  sp_node_t *construct_eval;
-  sp_node_t *construct_echo;
+  sp_list_node *construct_include; // list of rules for `(include|require)_(once)?`
+  sp_list_node *construct_eval;
+  sp_list_node *construct_echo;
 } sp_config_disabled_constructs;
 
 typedef struct {
@@ -227,6 +227,6 @@ int parse_cidr(char *restrict, char *restrict, void *);
 int parse_php_type(char *restrict, char *restrict, void *);
 
 // cleanup
-void sp_disabled_function_list_free(sp_node_t*);
+void sp_disabled_function_list_free(sp_list_node*);
 
 #endif /* SP_CONFIG_H */
