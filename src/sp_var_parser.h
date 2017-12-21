@@ -4,9 +4,9 @@
 
 typedef struct sp_token_s {
   elem_type type;
-  char *token;
-  unsigned int pos;
-} sp_token_t;
+  char *text_repr;
+  size_t pos;
+} sp_conf_token;
 
 zval *get_value(zend_execute_data *, const sp_tree *, bool);
 sp_tree *parse_var(const char *);
