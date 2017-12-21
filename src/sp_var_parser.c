@@ -179,28 +179,27 @@ static sp_tree *parse_tokens(const char * restrict str,
     }
     if (ignore == 0) {
       if (token->type == ARRAY) {
-	pos_idx_start = (array_count) ? pos_idx_start :
-	  (int)(token->pos + strlen(token->token));
-	array_count++;
+        pos_idx_start = (array_count) ? pos_idx_start : (int)(token->pos + strlen(token->token));
+        array_count++;
       } else if (token->type == ARRAY_END) {
-	array_count--;
-	token->type = ARRAY;
+        array_count--;
+        token->type = ARRAY;
       }
       if (array_count == 0) {
-	value_len = token->pos - pos;
-	if (token->type == ARRAY) {
-	  value_len -= strlen(token->token);
-	}
-	if (pos_idx_start > 0) {
-	  idx = estrndup(&(str[pos_idx_start]), token->pos - pos_idx_start);
-	  value_len -= token->pos - pos_idx_start;
-	}
-	if (create_var(tree, &str[pos], value_len, token->type, idx)) {
-	  goto error;
-	}
-	efree(idx);
-	pos = token->pos + strlen(token->token);
-	pos_idx_start = -1;
+        value_len = token->pos - pos;
+        if (token->type == ARRAY) {
+          value_len -= strlen(token->token);
+        }
+        if (pos_idx_start > 0) {
+          idx = estrndup(&(str[pos_idx_start]), token->pos - pos_idx_start);
+          value_len -= token->pos - pos_idx_start;
+        }
+        if (create_var(tree, &str[pos], value_len, token->type, idx)) {
+          goto error;
+        }
+        efree(idx);
+        pos = token->pos + strlen(token->token);
+        pos_idx_start = -1;
       }
     }
   }
