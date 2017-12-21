@@ -2,32 +2,6 @@
 
 size_t sp_line_no;
 
-static int validate_str(const char *value) {
-  int balance = 0;  // ghetto [] validation
-
-  if (!strchr(value, '[')) {
-    return 0;
-  }
-
-  for (size_t i = 0; i < strlen(value); i++) {
-    if (value[i] == '[') {
-      balance++;
-    } else if (value[i] == ']') {
-      balance--;
-    }
-    if (balance < 0) {
-      sp_log_err("config", "The string '%s' contains unbalanced brackets.", value);
-      return -1;
-    }
-  }
-  if (balance != 0) {
-    sp_log_err("config", "You forgot to close %d bracket%c in the string '%s'",
-      balance, (balance>1)?'s':' ', value);
-    return -1;
-  }
-  return 0;
-}
-
 int parse_keywords(sp_config_functions *funcs, char *line) {
   int value_len = 0;
   const char *original_line = line;
@@ -58,8 +32,8 @@ int parse_keywords(sp_config_functions *funcs, char *line) {
   return 0;
 }
 
-static char *get_string(size_t *consumed, char *restrict line,
-                        const char *restrict keyword) {
+char *get_param(size_t *consumed, char *restrict line, sp_type type,
+		const char *restrict keyword) {
   enum { IN_ESCAPE, NONE } state = NONE;
   char *original_line = line;
   size_t j = 0;
@@ -122,19 +96,8 @@ err:
   return NULL;
 }
 
-char *get_param(size_t *consumed, char *restrict line, sp_type type,
-                const char *restrict keyword) {
-  char *retval = get_string(consumed, line, keyword);
-
-  if (retval && 0 == validate_str(retval)) {
-      return retval;
-  }
-
-  return NULL;
-}
-
 zend_always_inline sp_list_node *parse_functions_list(char *value) {
-  const char *sep = ">";
+  static const char *sep = ">";
 
   if (NULL == strchr(value, sep[0])) {
     return NULL;

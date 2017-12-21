@@ -72,7 +72,7 @@ static int create_var(sp_tree *tree, const char *restrict value,
     sp_log_err("config", "Can't allocate a strndup");
     return -1;
   }
-  if (var_node->type != STRING_DELIMITER && !is_var_name_valid(var_node->value)) {
+  if (var_node->type != INTERPRETED_STRING && !is_var_name_valid(var_node->value)) {
     sp_log_err("config", "Invalid var name: %s.", var_node->value);
     return -1;
   }
@@ -101,7 +101,7 @@ static int is_next_token_empty(sp_conf_token *token, sp_conf_token *token_next,
   return 0;
 }
 
-static int is_token_valid(sp_list_node *tokens_list, elem_type ignore,
+static int is_token_valid(sp_list_node *tokens_list, elem_type quote,
 			  int array_count, const char * restrict str,
 			  size_t pos) {
   sp_conf_token *token = (sp_conf_token *)tokens_list->data;
@@ -111,9 +111,9 @@ static int is_token_valid(sp_list_node *tokens_list, elem_type ignore,
     token_next = (sp_conf_token *)tokens_list->next->data;
   }
   switch (token->type) {
-    case ESC_STRING_DELIMITER:
-    case STRING_DELIMITER:
-      if (ignore == token->type) {
+    case LITERAL_STRING:
+    case INTERPRETED_STRING:
+      if (quote == token->type) {
 	if (token_next) {
 	  if (token_next->pos != token->pos + 1) {
 	    return -1;
@@ -124,12 +124,12 @@ static int is_token_valid(sp_list_node *tokens_list, elem_type ignore,
       }
       break;
     case ARRAY_END:
-      if (!ignore) {
+      if (!quote) {
 	if (array_count < 1) {
 	  return -1;
 	} else if (token_next) {
-	  if (token_next->type == STRING_DELIMITER
-	      || token_next->type == ESC_STRING_DELIMITER) {
+	  if (token_next->type == INTERPRETED_STRING
+	      || token_next->type == LITERAL_STRING) {
 	    return -1;
 	  }
 	} else if (token->pos != strlen(str) - strlen(token->text_repr)) {
@@ -138,7 +138,7 @@ static int is_token_valid(sp_list_node *tokens_list, elem_type ignore,
       }
       break;
     case OBJECT:
-      if (!ignore && -1 == is_next_token_empty(token, token_next, str)) {
+      if (!quote && -1 == is_next_token_empty(token, token_next, str)) {
 	return -1;
       }
       if (pos == 0 && *str != VARIABLE_TOKEN) {
@@ -146,7 +146,7 @@ static int is_token_valid(sp_list_node *tokens_list, elem_type ignore,
       }
       break;
     case CLASS:
-      if (!ignore && -1 == is_next_token_empty(token, token_next, str)) {
+      if (!quote && -1 == is_next_token_empty(token, token_next, str)) {
 	return -1;
       }
       break;
@@ -160,7 +160,7 @@ static sp_tree *parse_tokens(const char * restrict str,
 			     sp_list_node *tokens_list) {
   size_t pos = 0;
   int array_count = 0, pos_idx_start = -1;
-  elem_type ignore = 0;
+  elem_type quote = 0;
   sp_tree *tree = sp_tree_new();
 
   for (; tokens_list && tokens_list->data; tokens_list = tokens_list->next) {
@@ -168,16 +168,16 @@ static sp_tree *parse_tokens(const char * restrict str,
     size_t value_len;
     char *idx = NULL;
 
-    if (-1 == is_token_valid(tokens_list, ignore, array_count, str, pos)) {
+    if (-1 == is_token_valid(tokens_list, quote, array_count, str, pos)) {
       sp_log_err("config", "Invalid `%s` position.", token->text_repr);
       goto error;
     }
-    if (token->type == STRING_DELIMITER || token->type == ESC_STRING_DELIMITER) {
-      pos = (!ignore && !array_count) ? pos + strlen(token->text_repr) : pos;
-      ignore = (!ignore) ? token->type : (ignore == token->type) ? 0 : ignore;
-      token->type = STRING_DELIMITER;
+    if (token->type == INTERPRETED_STRING || token->type == LITERAL_STRING) {
+      pos = (!quote && !array_count) ? pos + strlen(token->text_repr) : pos;
+      quote = (!quote) ? token->type : (quote == token->type) ? 0 : quote;
+      token->type = INTERPRETED_STRING;
     }
-    if (ignore == 0) {
+    if (quote == 0) {
       if (token->type == ARRAY) {
         pos_idx_start = (array_count) ? pos_idx_start : (int)(token->pos + strlen(token->text_repr));
         array_count++;
@@ -204,7 +204,12 @@ static sp_tree *parse_tokens(const char * restrict str,
     }
   }
 
-  if (ignore != 0 || array_count != 0) {
+  if (array_count != 0) {
+    sp_log_err("config", "You forgot to close a bracket.");
+    goto error;
+  }
+  if (quote != 0) {
+    sp_log_err("config", "Missing a closing quote.");
 error:
     sp_tree_free(tree);
     return NULL;
@@ -223,8 +228,8 @@ sp_tree *parse_var(const char *line) {
     {.type=OBJECT, .text_repr=OBJECT_TOKEN},
     {.type=ARRAY, .text_repr=ARRAY_TOKEN},
     {.type=ARRAY_END, .text_repr=ARRAY_END_TOKEN},
-    {.type=STRING_DELIMITER, .text_repr=STRING_TOKEN},
-    {.type=ESC_STRING_DELIMITER, .text_repr=ESC_STRING_TOKEN},
+    {.type=INTERPRETED_STRING, .text_repr=STRING_TOKEN},
+    {.type=LITERAL_STRING, .text_repr=ESC_STRING_TOKEN},
     {.type=CLASS, .text_repr=CLASS_TOKEN}
   };
 
