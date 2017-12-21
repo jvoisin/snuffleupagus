@@ -6,4 +6,4 @@ Broken configuration - missing quote
 sp.configuration_file={PWD}/config/broken_conf_quotes.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][config][error] You forgot to close 1 bracket  in the string '_SERVER[PHP_SELF'
+[snuffleupagus][0.0.0.0][config][error] Invalid value '_SERVER[PHP_SELF' for `var` on line 1.
