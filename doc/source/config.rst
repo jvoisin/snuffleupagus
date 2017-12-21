@@ -27,7 +27,7 @@ Some rules apply in a specific ``function`` (context) on a specific ``variable``
   evaluate your threat model and write your configuration file accordingly.
 
 Most of the features can be used in ``simulation`` mode by appending the
-``.simulation()`` option to them (eg. ``sp.readonly_exec.simulation()enable();``) to see
+``.simulation()`` option to them (eg. ``sp.readonly_exec.simulation().enable();``) to see
 whether or not they could break your website. The simulation mode won't block the request,
 but will write a warning in the log.
 
