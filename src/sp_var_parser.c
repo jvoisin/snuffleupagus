@@ -62,7 +62,9 @@ static int create_var(sp_tree *tree, const char *restrict value,
   var_node->next = NULL;
   var_node->idx = NULL;
   var_node->type = _type;
-  // Check if a constant is a variable
+  /* We consider `$` as part of the variable name, to tell them appart from
+   * php's constant
+   */
   if (value && value[0] == VARIABLE_TOKEN && _type == CONSTANT) {
     var_node->type = VAR;
   }
@@ -155,7 +157,7 @@ static int is_token_valid(sp_node_t *tokens_list, elem_type ignore,
 }
 
 static sp_tree *parse_tokens(const char * restrict str,
-				     sp_node_t *tokens_list) {
+			     sp_node_t *tokens_list) {
   size_t pos = 0;
   int array_count = 0, pos_idx_start = -1;
   elem_type ignore = 0;
