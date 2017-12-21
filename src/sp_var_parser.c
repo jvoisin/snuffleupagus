@@ -204,7 +204,12 @@ static sp_tree *parse_tokens(const char * restrict str,
     }
   }
 
-  if (ignore != 0 || array_count != 0) {
+  if (array_count != 0) {
+    sp_log_err("config", "You forgot to close a bracket.");
+    goto error;
+  }
+  if (ignore != 0) {
+    sp_log_err("config", "Missing a closing quote.");
 error:
     sp_tree_free(tree);
     return NULL;
