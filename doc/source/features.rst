@@ -330,7 +330,7 @@ is when unauthorised commands are issued from a user that the application trusts
 For example, if a user is authenticated on a banking website,
 an other site might present something like 
 ``<img src="http://mybank.com/transfer?from=user&to=attack&amount=1337EUR">``,
-effectivement transfering money from the user's account to the attacker one.
+effectively transferring money from the user's account to the attacker one.
 
 Snuffleupagus can prevent this (in `supported browsers <https://caniuse.com/#search=samesite>`__)
 by setting the `samesite <https://tools.ietf.org/html/draft-ietf-httpbis-rfc6265bis-02#section-5.3.7>`__
