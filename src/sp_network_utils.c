@@ -23,28 +23,30 @@ static inline bool cidr4_match(const struct in_addr addr,
 
 static inline bool cidr6_match(const struct in6_addr address,
                                const struct in6_addr network, uint8_t bits) {
-  //#ifdef LINUX
-  const uint32_t *a = address.s6_addr32;
-  const uint32_t *n = network.s6_addr32;
-  /*
-#else
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
   const uint32_t *a = address.__u6_addr.__u6_addr32;
   const uint32_t *n = network.__u6_addr.__u6_addr32;
+#else
+  const uint32_t *a = address.s6_addr32;
+  const uint32_t *n = network.s6_addr32;
 #endif
-*/
+
   int bits_whole = bits >> 5;         // number of whole u32
   int bits_incomplete = bits & 0x1F;  // number of bits in incomplete u32
+
   if (bits_whole) {
     if (memcmp(a, n, bits_whole << 2)) {
       return false;
     }
   }
+
   if (bits_incomplete) {
     uint32_t mask = htonl((0xFFFFFFFFu) << (32 - bits_incomplete));
     if ((a[bits_whole] ^ n[bits_whole]) & mask) {
       return false;
     }
   }
+
   return true;
 }
 
