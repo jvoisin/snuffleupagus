@@ -15,6 +15,7 @@ Articles
 
 - `Killing php bug classes at berlinsides <https://dustri.org/b/killing-php-bug-classes-at-berlinsides.html>`_ - 2017-06-05
 - `Snuffleu…what? <https://fr33tux.org/post/snuffleupagus/>`_ - 2017-10-07
+- `First release of Snuffleupagus <https://dustri.org/b/first-release-of-snuffleupagus.html>`__ - 2017-12-21
 
 
 Notable users
