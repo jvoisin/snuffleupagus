@@ -39,15 +39,27 @@ static inline void generate_key(unsigned char *key) {
   PHP_SHA256Final((unsigned char *)key, &ctx);
 }
 
+sp_cookie *lookup_cookie(zend_hash_key *key) {
+  sp_list_node	*it = SNUFFLEUPAGUS_G(config).config_cookie->cookies;
+  sp_cookie	*config;
+  while (it) {
+    config = it->data;
+    if (sp_match_value(key->key, config->name, config->name_r))
+      return (config);
+    it = it->next;
+  }
+  return NULL;
+}
+
 int decrypt_cookie(zval *pDest, int num_args, va_list args,
                    zend_hash_key *hash_key) {
   unsigned char key[crypto_secretbox_KEYBYTES] = {0};
   zend_string *debase64;
   unsigned char *decrypted;
-  sp_cookie *cookie = zend_hash_find_ptr(SNUFFLEUPAGUS_G(config).config_cookie->cookies,
-					 hash_key->key);
+  sp_cookie *cookie = sp_lookup_cookie_config(hash_key);
   int ret = 0;
 
+  
   /* If the cookie isn't in the conf, it shouldn't be encrypted. */
   if (!cookie || !cookie->encrypt) {
     return ZEND_HASH_APPLY_KEEP;

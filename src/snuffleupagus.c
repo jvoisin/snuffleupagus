@@ -78,7 +78,7 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   snuffleupagus_globals->config.config_disabled_constructs->construct_eval = sp_list_new();
   snuffleupagus_globals->config.config_disabled_functions->disabled_functions = sp_list_new();
   snuffleupagus_globals->config.config_disabled_functions_ret->disabled_functions = sp_list_new();
-  SP_INIT_HT(snuffleupagus_globals->config.config_cookie->cookies);
+  snuffleupagus_globals->config.config_cookie->cookies = sp_list_new();
 
 #undef SP_INIT
 #undef SP_INIT_HT
@@ -96,7 +96,6 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   pefree(SNUFFLEUPAGUS_G(F), 1);
 
   FREE_HT(disabled_functions_hook);
-  FREE_HT(config.config_cookie->cookies);
 
 #undef FREE_HT
 
@@ -120,6 +119,7 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_LST(config.config_disabled_functions_ret->disabled_functions);
   FREE_LST(config.config_disabled_constructs->construct_include);
   FREE_LST(config.config_disabled_constructs->construct_eval);
+  FREE_LST(config.config_cookie->cookies);
 
 #undef FREE_LST
 
@@ -139,6 +139,7 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
 #endif
   if (NULL != SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
     if (NULL != SNUFFLEUPAGUS_G(config).config_cookie->cookies) {
+      //xxx ?
       zend_hash_apply_with_arguments(
 	  Z_ARRVAL(PG(http_globals)[TRACK_VARS_COOKIE]), decrypt_cookie, 0);
     }
