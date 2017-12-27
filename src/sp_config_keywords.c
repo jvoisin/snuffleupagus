@@ -106,7 +106,6 @@ int parse_cookie(char *line) {
   int ret = 0;
   char *samesite = NULL;
   sp_cookie *cookie = pecalloc(sizeof(sp_cookie), 1, 1);
-  zend_string *zend_name;
 
   sp_config_functions sp_config_funcs_cookie_encryption[] = {
       {parse_str, SP_TOKEN_NAME, &cookie->name},
@@ -176,7 +175,7 @@ int parse_cookie(char *line) {
     }
   }
   sp_list_insert(SNUFFLEUPAGUS_G(config).config_cookie->cookies,
-		 cookies);
+		 cookie);
   return SUCCESS;
 }
 
