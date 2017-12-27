@@ -50,7 +50,7 @@ often meaning an arbitrary code execution.
 
   --- `The PHP documentation about mail <https://secure.php.net/manual/en/function.mail.php>`_
 
-We're killing it by preventing any extra options in additional_parameters.
+We're killing it by preventing any extra options in ``additional_parameters``.
 
 
 Examples of related vulnerabilities
