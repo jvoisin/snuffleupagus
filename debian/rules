@@ -26,7 +26,6 @@ override_dh_auto_install:
 	dh_installdirs
 	mkdir -p debian/snuffleupagus/$$(/usr/bin/php-config --extension-dir)/
 	mkdir -p debian/snuffleupagus/etc/php/$$(/usr/bin/php-config --version | cut -d '.' -f1-2)/mods-available/
-	cp config/default.ini debian/
 	install -m 644 -o root -g root src/modules/snuffleupagus.so debian/snuffleupagus/$$(/usr/bin/php-config --extension-dir)/snuffleupagus.so
 	install -m 644 -o root -g root config/snuffleupagus.ini debian/snuffleupagus/etc/php/$$(/usr/bin/php-config --version | cut -d '.' -f1-2)/mods-available/snuffleupagus.ini
 
