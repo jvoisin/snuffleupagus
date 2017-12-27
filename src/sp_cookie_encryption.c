@@ -39,15 +39,23 @@ static inline void generate_key(unsigned char *key) {
   PHP_SHA256Final((unsigned char *)key, &ctx);
 }
 
-sp_cookie *lookup_cookie(zend_hash_key *key) {
+sp_cookie *sp_lookup_cookie_config(char *key) {
   sp_list_node	*it = SNUFFLEUPAGUS_G(config).config_cookie->cookies;
   sp_cookie	*config;
+  sp_log_msg("cookie_encryption", SP_LOG_DROP,
+	     "lookup cookie config for %s", key);
   while (it) {
     config = it->data;
-    if (sp_match_value(key->key, config->name, config->name_r))
+    if (sp_match_value(key, config->name, config->name_r)) {
+      sp_log_msg("cookie_encryption", SP_LOG_DROP,
+		 "found matching config %p", config);
       return (config);
+    }
     it = it->next;
   }
+  sp_log_msg("cookie_encryption", SP_LOG_DROP,
+	     "no matching config");
+  
   return NULL;
 }
 
@@ -56,9 +64,11 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
   unsigned char key[crypto_secretbox_KEYBYTES] = {0};
   zend_string *debase64;
   unsigned char *decrypted;
-  sp_cookie *cookie = sp_lookup_cookie_config(hash_key);
+  sp_cookie *cookie = sp_lookup_cookie_config(ZSTR_VAL(hash_key->key));
   int ret = 0;
-
+  
+  sp_log_msg("cookie_encryption", SP_LOG_DROP,
+	     "decrypt cookie called with '%s'.", ZSTR_VAL(hash_key->key));
   
   /* If the cookie isn't in the conf, it shouldn't be encrypted. */
   if (!cookie || !cookie->encrypt) {
@@ -167,6 +177,10 @@ PHP_FUNCTION(sp_setcookie) {
   ZEND_PARSE_PARAMETERS_END();
   // LCOV_EXCL_BR_END
 
+  sp_log_msg("cookie_encryption", SP_LOG_DROP,
+	     "encrypt cookie called with '%s'.", ZSTR_VAL(name));
+
+  
   /* If the request was issued over HTTPS, the cookie should be "secure" */
   if (SNUFFLEUPAGUS_G(config).config_auto_cookie_secure) {
     const zval server_vars = PG(http_globals)[TRACK_VARS_SERVER];
@@ -179,9 +193,8 @@ PHP_FUNCTION(sp_setcookie) {
     }
   }
 
-  cookie_node =
-    zend_hash_find_ptr(SNUFFLEUPAGUS_G(config).config_cookie->cookies, name);
-
+  cookie_node = sp_lookup_cookie_config(ZSTR_VAL(name));
+  
   /* If the cookie's value is encrypted, it won't be usable by
    * javascript anyway.
    */
