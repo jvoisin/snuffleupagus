@@ -63,9 +63,17 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
 
   if (ZSTR_LEN(debase64) <
       crypto_secretbox_NONCEBYTES + crypto_secretbox_ZEROBYTES) {
-    sp_log_msg("cookie_encryption", SP_LOG_DROP,
-        "Buffer underflow tentative detected in cookie encryption handling.");
-    return ZEND_HASH_APPLY_REMOVE;
+    if (true == cookie->simulation) {
+      sp_log_msg("cookie_encryption", SP_LOG_SIMULATION,
+          "Buffer underflow tentative detected in cookie encryption handling "
+					"for %s. Using the cookie 'as it' instead of decrypting it.",
+					ZSTR_VAL(hash_key->key)); 
+      return ZEND_HASH_APPLY_KEEP;
+    } else {
+      sp_log_msg("cookie_encryption", SP_LOG_DROP,
+          "Buffer underflow tentative detected in cookie encryption handling.");
+      return ZEND_HASH_APPLY_REMOVE;
+    }
   }
 
   generate_key(key);
@@ -78,11 +86,18 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
       ZSTR_LEN(debase64) - crypto_secretbox_NONCEBYTES,
       (unsigned char *)ZSTR_VAL(debase64), key);
 
-  if (ret == -1) {
-    sp_log_msg("cookie_encryption", SP_LOG_DROP,
-      "Something went wrong with the decryption of %s.",
-               ZSTR_VAL(hash_key->key));
-    return ZEND_HASH_APPLY_REMOVE;
+  if (-1 == ret) {
+    if (true == cookie->simulation) {
+      sp_log_msg("cookie_encryption", SP_LOG_SIMULATION,
+        "Something went wrong with the decryption of %s. Using the cookie "
+        "'as it' instead of decrypting it", ZSTR_VAL(hash_key->key));
+      return ZEND_HASH_APPLY_KEEP;
+    } else {
+      sp_log_msg("cookie_encryption", SP_LOG_DROP,
+        "Something went wrong with the decryption of %s.",
+        ZSTR_VAL(hash_key->key));
+      return ZEND_HASH_APPLY_REMOVE;
+    }
   }
 
   ZVAL_STRINGL(pDest, (char *)(decrypted + crypto_secretbox_ZEROBYTES),

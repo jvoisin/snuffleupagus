@@ -111,6 +111,7 @@ int parse_cookie(char *line) {
   sp_config_functions sp_config_funcs_cookie_encryption[] = {
       {parse_str, SP_TOKEN_NAME, &name},
       {parse_str, SP_TOKEN_SAMESITE, &samesite},
+      {parse_empty, SP_TOKEN_SIMULATION, &cookie->simulation},
       {parse_empty, SP_TOKEN_ENCRYPT, &cookie->encrypt},
       {0}};
 

@@ -58,6 +58,7 @@ typedef struct { bool enable; } sp_config_disable_xxe;
 typedef struct {
   enum samesite_type {strict=1, lax=2} samesite;
   bool encrypt;
+	bool simulation;
 } sp_cookie;
 
 typedef struct {
