@@ -104,12 +104,13 @@ int parse_global(char *line) {
 
 int parse_cookie(char *line) {
   int ret = 0;
-  char *samesite = NULL, *name = NULL;
+  char *samesite = NULL;
   sp_cookie *cookie = pecalloc(sizeof(sp_cookie), 1, 1);
   zend_string *zend_name;
 
   sp_config_functions sp_config_funcs_cookie_encryption[] = {
-      {parse_str, SP_TOKEN_NAME, &name},
+      {parse_str, SP_TOKEN_NAME, &cookie->name},
+      {parse_regexp, SP_TOKEN_NAME_REGEXP, &cookie->name_r},
       {parse_str, SP_TOKEN_SAMESITE, &samesite},
       {parse_empty, SP_TOKEN_ENCRYPT, &cookie->encrypt},
       {0}};
@@ -145,9 +146,16 @@ int parse_cookie(char *line) {
                sp_line_no);
     return -1;
   }
-  if (0 == strlen(name)) {
+  if (!cookie->name && !cookie->name_r) {
     sp_log_err("config",
-               "You must specify a cookie name on line "
+               "You must specify a cookie name/regexp on line "
+               "%zu.",
+               sp_line_no);
+    return -1;
+  }
+  if (cookie->name && cookie->name_r) {
+    sp_log_err("config",
+               "name and name_r are mutually exclusive on line "
                "%zu.",
                sp_line_no);
     return -1;
@@ -167,11 +175,8 @@ int parse_cookie(char *line) {
       return -1;
     }
   }
-
-  zend_name = zend_string_init(name, strlen(name), 1);
-  zend_hash_add_ptr(SNUFFLEUPAGUS_G(config).config_cookie->cookies, zend_name,
-                    cookie);
-
+  sp_list_insert(SNUFFLEUPAGUS_G(config).config_cookie->cookies,
+		 cookies);
   return SUCCESS;
 }
 
