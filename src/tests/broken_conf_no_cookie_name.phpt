@@ -6,4 +6,4 @@ Borken configuration - encrypted cookie with no name
 sp.configuration_file={PWD}/config/config_encrypted_cookies_noname.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][config][error] You must specify a cookie name on line 2.
+[snuffleupagus][0.0.0.0][config][error] You must specify a cookie name/regexp on line 2.
