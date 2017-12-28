@@ -58,7 +58,7 @@ launching it, in order to run the failing test inside GDB.
 
 Your patch should follow the same conventions & pass the same code quality
 checks as the rest of the project. We're using [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to
-ensure a consistent code-style. Please run it with `clang-format -style=google`
+ensure a consistent code-style. Please run it with `clang-format --style="{BasedOnStyle: google, SortIncludes: false}"`
 before committing, or even better, use a [pre-commit hook](https://github.com/andrewseidl/githook-clang-format).
 
 ### 6. Make a Pull Request
