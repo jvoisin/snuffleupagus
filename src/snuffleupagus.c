@@ -139,7 +139,6 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
 #endif
   if (NULL != SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
     if (NULL != SNUFFLEUPAGUS_G(config).config_cookie->cookies) {
-      //xxx ?
       zend_hash_apply_with_arguments(
 	  Z_ARRVAL(PG(http_globals)[TRACK_VARS_COOKIE]), decrypt_cookie, 0);
     }
