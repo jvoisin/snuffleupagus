@@ -17,7 +17,7 @@ static inline void _sp_log_err(const char* fmt, ...) {
   php_log_err(msg);
 }
 
-void sp_log_msg(char const *feature, char const *level, const char* fmt, ...) {
+void sp_log_msg(char const* feature, char const* level, const char* fmt, ...) {
   char* msg;
   va_list args;
 
@@ -25,9 +25,9 @@ void sp_log_msg(char const *feature, char const *level, const char* fmt, ...) {
   vspprintf(&msg, 0, fmt, args);
   va_end(args);
 
-  char const * const client_ip = getenv("REMOTE_ADDR");
-  _sp_log_err("[snuffleupagus][%s][%s][%s] %s", client_ip?client_ip:"0.0.0.0",
-    feature, level, msg);
+  char const* const client_ip = getenv("REMOTE_ADDR");
+  _sp_log_err("[snuffleupagus][%s][%s][%s] %s",
+              client_ip ? client_ip : "0.0.0.0", feature, level, msg);
 }
 
 zend_always_inline int is_regexp_matching(const pcre* regexp, const char* str) {
@@ -38,7 +38,7 @@ zend_always_inline int is_regexp_matching(const pcre* regexp, const char* str) {
   assert(NULL != str);
 
   ret = sp_pcre_exec(regexp, NULL, str, strlen(str), 0, 0, vec,
-   sizeof(vec)/sizeof(int));
+                     sizeof(vec) / sizeof(int));
 
   if (ret < 0) {
     if (ret != PCRE_ERROR_NOMATCH) {
@@ -58,7 +58,8 @@ int compute_hash(const char* const filename, char* file_hash) {
   php_stream* stream =
       php_stream_open_wrapper(filename, "rb", REPORT_ERRORS, NULL);
   if (!stream) {
-    sp_log_err("hash_computation", "Can not open the file %s to compute its hash.\n", filename);
+    sp_log_err("hash_computation",
+               "Can not open the file %s to compute its hash.\n", filename);
     return FAILURE;
   }
 
@@ -73,14 +74,13 @@ int compute_hash(const char* const filename, char* file_hash) {
 }
 
 static int construct_filename(char* filename, const char* folder,
-    const char* textual) {
+                              const char* textual) {
   PHP_SHA256_CTX context;
   unsigned char digest[SHA256_SIZE] = {0};
   char strhash[65] = {0};
 
   if (-1 == mkdir(folder, 0700) && errno != EEXIST) {
-    sp_log_err("request_logging", "Unable to create the folder '%s'.",
-      folder);
+    sp_log_err("request_logging", "Unable to create the folder '%s'.", folder);
     return -1;
   }
 
@@ -88,10 +88,10 @@ static int construct_filename(char* filename, const char* folder,
    * as filename, in order to only have one dump per rule, to migitate
    * DoS attacks. */
   PHP_SHA256Init(&context);
-  PHP_SHA256Update(&context, (const unsigned char *) textual, strlen(textual));
+  PHP_SHA256Update(&context, (const unsigned char*)textual, strlen(textual));
   PHP_SHA256Final(digest, &context);
   make_digest_ex(strhash, digest, SHA256_SIZE);
-  snprintf(filename, MAX_FOLDER_LEN-1, "%s/sp_dump.%s", folder, strhash);
+  snprintf(filename, MAX_FOLDER_LEN - 1, "%s/sp_dump.%s", folder, strhash);
 
   return 0;
 }
@@ -106,14 +106,14 @@ int sp_log_request(const char* folder, const char* text_repr) {
     const int key;
   } zones[] = {{"GET", TRACK_VARS_GET},       {"POST", TRACK_VARS_POST},
                {"COOKIE", TRACK_VARS_COOKIE}, {"SERVER", TRACK_VARS_SERVER},
-               {"ENV", TRACK_VARS_ENV}, {NULL, 0}};
+               {"ENV", TRACK_VARS_ENV},       {NULL, 0}};
 
   if (0 != construct_filename(filename, folder, text_repr)) {
     return -1;
   }
   if (NULL == (file = fopen(filename, "w+"))) {
     sp_log_err("request_logging", "Unable to open %s: %s", filename,
-        strerror(errno));
+               strerror(errno));
     return -1;
   }
 
@@ -147,7 +147,7 @@ int sp_log_request(const char* folder, const char* text_repr) {
   return 0;
 }
 
-static char *zv_str_to_char(zval *zv) {
+static char* zv_str_to_char(zval* zv) {
   zval copy;
 
   ZVAL_ZVAL(&copy, zv, 1, 0);
@@ -159,7 +159,6 @@ static char *zv_str_to_char(zval *zv) {
   return estrdup(Z_STRVAL(copy));
 }
 
-
 char* sp_convert_to_string(zval* zv) {
   switch (Z_TYPE_P(zv)) {
     case IS_FALSE:
@@ -169,18 +168,18 @@ char* sp_convert_to_string(zval* zv) {
     case IS_NULL:
       return estrdup("NULL");
     case IS_LONG: {
-        char *msg;
-        spprintf(&msg, 0, ZEND_LONG_FMT, Z_LVAL_P(zv));
-        return msg;
-      }
+      char* msg;
+      spprintf(&msg, 0, ZEND_LONG_FMT, Z_LVAL_P(zv));
+      return msg;
+    }
     case IS_DOUBLE: {
-        char *msg;
-        spprintf(&msg, 0, "%f", Z_DVAL_P(zv));
-        return msg;
-      }
-    case IS_STRING:{
+      char* msg;
+      spprintf(&msg, 0, "%f", Z_DVAL_P(zv));
+      return msg;
+    }
+    case IS_STRING: {
       return zv_str_to_char(zv);
-      }
+    }
     case IS_OBJECT:
       return estrdup("OBJECT");
     case IS_ARRAY:
@@ -212,31 +211,32 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
   const int sim = config_node->simulation;
   if (arg_name) {
     if (alias) {
-      sp_log_msg("disabled_function", sim?SP_LOG_SIMULATION:SP_LOG_DROP,
+      sp_log_msg(
+          "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
           "The call to the function '%s' in %s:%d has been disabled, "
           "because its argument '%s' content (%s) matched the rule '%s'.",
           path, zend_get_executed_filename(TSRMLS_C),
-          zend_get_executed_lineno(TSRMLS_C), arg_name, arg_value?arg_value:"?",
-           alias);
-    } else {
-      sp_log_msg("disabled_function", sim?SP_LOG_SIMULATION:SP_LOG_DROP,
-          "The call to the function '%s' in %s:%d has been disabled, "
-          "because its argument '%s' content (%s) matched a rule.",
-          path, zend_get_executed_filename(TSRMLS_C),
           zend_get_executed_lineno(TSRMLS_C), arg_name,
-           arg_value?arg_value:"?");
+          arg_value ? arg_value : "?", alias);
+    } else {
+      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
+                 "The call to the function '%s' in %s:%d has been disabled, "
+                 "because its argument '%s' content (%s) matched a rule.",
+                 path, zend_get_executed_filename(TSRMLS_C),
+                 zend_get_executed_lineno(TSRMLS_C), arg_name,
+                 arg_value ? arg_value : "?");
     }
   } else {
     if (alias) {
-      sp_log_msg("disabled_function", sim?SP_LOG_SIMULATION:SP_LOG_DROP,
-          "The call to the function '%s' in %s:%d has been disabled, "
-          "because of the the rule '%s'.",path,
-          zend_get_executed_filename(TSRMLS_C),
-          zend_get_executed_lineno(TSRMLS_C), alias);
+      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
+                 "The call to the function '%s' in %s:%d has been disabled, "
+                 "because of the the rule '%s'.",
+                 path, zend_get_executed_filename(TSRMLS_C),
+                 zend_get_executed_lineno(TSRMLS_C), alias);
     } else {
-      sp_log_msg("disabled_function", sim?SP_LOG_SIMULATION:SP_LOG_DROP,
+      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                  "The call to the function '%s' in %s:%d has been disabled.",
-         path, zend_get_executed_filename(TSRMLS_C),
+                 path, zend_get_executed_filename(TSRMLS_C),
                  zend_get_executed_lineno(TSRMLS_C));
     }
   }
@@ -252,17 +252,20 @@ void sp_log_disable_ret(const char* restrict path,
   const char* alias = config_node->alias;
   const int sim = config_node->simulation;
   if (alias) {
-    sp_log_msg("disabled_function", sim?SP_LOG_SIMULATION:SP_LOG_DROP,
+    sp_log_msg(
+        "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
         "The execution has been aborted in %s:%d, "
         "because the function '%s' returned '%s', which matched the rule '%s'.",
         zend_get_executed_filename(TSRMLS_C),
-        zend_get_executed_lineno(TSRMLS_C), path, ret_value?ret_value:"?", alias);
+        zend_get_executed_lineno(TSRMLS_C), path, ret_value ? ret_value : "?",
+        alias);
   } else {
-    sp_log_msg("disabled_function", sim?SP_LOG_SIMULATION:SP_LOG_DROP,
+    sp_log_msg(
+        "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
         "The execution has been aborted in %s:%d, "
         "because the return value (%s) of the function '%s' matched a rule.",
         zend_get_executed_filename(TSRMLS_C),
-        zend_get_executed_lineno(TSRMLS_C), ret_value?ret_value:"?", path);
+        zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?", path);
   }
   if (dump) {
     sp_log_request(dump, config_node->textual_representation);
@@ -276,17 +279,17 @@ bool sp_match_array_key(const zval* zv, const char* to_match, const pcre* rx) {
   ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(zv), idx, key) {
     if (key) {
       if (sp_match_value(ZSTR_VAL(key), to_match, rx)) {
-	return true;
+        return true;
       }
     } else {
-      char *idx_str = NULL;
+      char* idx_str = NULL;
 
       // Could use a log.
       idx_str = emalloc(snprintf(NULL, 0, "%lu", idx));
       sprintf(idx_str, "%lu", idx);
       if (sp_match_value(idx_str, to_match, rx)) {
-	efree(idx_str);
-	return true;
+        efree(idx_str);
+        return true;
       }
       efree(idx_str);
     }
@@ -295,17 +298,18 @@ bool sp_match_array_key(const zval* zv, const char* to_match, const pcre* rx) {
   return false;
 }
 
-bool sp_match_array_value(const zval* arr, const char* to_match, const pcre* rx) {
+bool sp_match_array_value(const zval* arr, const char* to_match,
+                          const pcre* rx) {
   zval* value;
 
   ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(arr), value) {
     if (Z_TYPE_P(value) != IS_ARRAY) {
-      char *value_str = sp_convert_to_string(value);
+      char* value_str = sp_convert_to_string(value);
       if (sp_match_value(value_str, to_match, rx)) {
-	efree(value_str);
-	return true;
+        efree(value_str);
+        return true;
       } else {
-	efree (value_str);
+        efree(value_str);
       }
     } else if (sp_match_array_value(value, to_match, rx)) {
       return true;
@@ -315,18 +319,17 @@ bool sp_match_array_value(const zval* arr, const char* to_match, const pcre* rx)
   return false;
 }
 
-
 int hook_function(const char* original_name, HashTable* hook_table,
                   void (*new_function)(INTERNAL_FUNCTION_PARAMETERS),
                   bool hook_execution_table) {
   zend_internal_function* func;
-  HashTable *ht = hook_execution_table==true?EG(function_table):CG(function_table);
+  HashTable* ht =
+      hook_execution_table == true ? EG(function_table) : CG(function_table);
 
   /* The `mb` module likes to hook functions, like strlen->mb_strlen,
    * so we have to hook both of them. */
 
-  if ((func = zend_hash_str_find_ptr(ht,
-                                     VAR_AND_LEN(original_name)))) {
+  if ((func = zend_hash_str_find_ptr(ht, VAR_AND_LEN(original_name)))) {
     if (func->handler == new_function) {
       return SUCCESS;
     }
@@ -340,7 +343,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
                                          VAR_AND_LEN(original_name),
                                          func->handler) == NULL) {
       sp_log_err("function_pointer_saving",
-        "Could not save function pointer for %s", original_name);
+                 "Could not save function pointer for %s", original_name);
       return FAILURE;
     } else {
       func->handler = new_function;
@@ -349,9 +352,9 @@ int hook_function(const char* original_name, HashTable* hook_table,
 
   if (0 == strncmp(original_name, "mb_", 3)) {
     CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
-    if (zend_hash_str_find(ht,
-                           VAR_AND_LEN(original_name + 3))) {
-      hook_function(original_name + 3, hook_table, new_function, hook_execution_table);
+    if (zend_hash_str_find(ht, VAR_AND_LEN(original_name + 3))) {
+      hook_function(original_name + 3, hook_table, new_function,
+                    hook_execution_table);
     }
   } else {  // TODO this can be moved somewhere else to gain some marginal perfs
     CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
@@ -370,13 +373,14 @@ int hook_regexp(const pcre* regexp, HashTable* hook_table,
                 void (*new_function)(INTERNAL_FUNCTION_PARAMETERS),
                 bool hook_execution_table) {
   zend_string* key;
-  HashTable *ht = hook_execution_table==true?EG(function_table):CG(function_table);
+  HashTable* ht =
+      hook_execution_table == true ? EG(function_table) : CG(function_table);
 
   ZEND_HASH_FOREACH_STR_KEY(ht, key) {
     if (key) {
       int vec[30];
       int ret = sp_pcre_exec(regexp, NULL, key->val, key->len, 0, 0, vec,
-       sizeof(vec)/sizeof(int));
+                             sizeof(vec) / sizeof(int));
       if (ret < 0) { /* Error or no match*/
         if (PCRE_ERROR_NOMATCH != ret) {
           sp_log_err("pcre", "Runtime error with pcre, error code: %d", ret);

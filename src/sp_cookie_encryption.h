@@ -14,6 +14,7 @@
 #define SAMESITE_COOKIE_FORMAT "; samesite="
 
 int hook_cookies();
-int decrypt_cookie(zval *pDest, int num_args, va_list args, zend_hash_key *hash_key);
+int decrypt_cookie(zval *pDest, int num_args, va_list args,
+                   zend_hash_key *hash_key);
 
 #endif /* __SP_COOKIE_ENCRYPTION */

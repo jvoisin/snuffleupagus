@@ -9,13 +9,13 @@
 #include "sp_list.h"
 
 #if defined(__GNUC__)
-# if __GNUC__ >= 3
-#  define sp_pure __attribute__((pure))
-#  define sp_const __attribute__((const))
-# else
-#  define sp_pure
-#  define sp_const
-# endif
+#if __GNUC__ >= 3
+#define sp_pure __attribute__((pure))
+#define sp_const __attribute__((const))
+#else
+#define sp_pure
+#define sp_const
+#endif
 #endif
 /* The dump filename are of the form
  * `sp_dump_DATE_IPADDR.dump`, with:
@@ -34,7 +34,8 @@
 #define SHA256_SIZE 32
 
 #define HOOK_FUNCTION(original_name, hook_table, new_function, execution) \
-  hook_function(original_name, SNUFFLEUPAGUS_G(hook_table), new_function, execution)
+  hook_function(original_name, SNUFFLEUPAGUS_G(hook_table), new_function, \
+                execution)
 
 #define HOOK_FUNCTION_BY_REGEXP(regexp, hook_table, new_function, execution) \
   hook_regexp(regexp, SNUFFLEUPAGUS_G(hook_table), new_function, execution)
@@ -46,14 +47,14 @@
 
 #define sp_log_err(feature, ...) sp_log_msg(feature, SP_LOG_ERROR, __VA_ARGS__)
 #ifdef SP_DEBUG
-    #define sp_log_debug(...) sp_log_msg("DEBUG", SP_LOG_DEBUG, __VA_ARGS__)
+#define sp_log_debug(...) sp_log_msg("DEBUG", SP_LOG_DEBUG, __VA_ARGS__)
 #else
-    #define sp_log_debug(...)
+#define sp_log_debug(...)
 #endif
 
-#define GET_SUFFIX(x) (x==1)?"st":((x==2)?"nd":"th")
+#define GET_SUFFIX(x) (x == 1) ? "st" : ((x == 2) ? "nd" : "th")
 
-void sp_log_msg(char const *feature, char const *level, const char* fmt, ...);
+void sp_log_msg(char const *feature, char const *level, const char *fmt, ...);
 int compute_hash(const char *const filename, char *file_hash);
 char *sp_convert_to_string(zval *);
 bool sp_match_value(const char *, const char *, const pcre *);

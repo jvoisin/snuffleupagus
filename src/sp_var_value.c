@@ -23,16 +23,16 @@ static zval *get_local_var(zend_execute_data *ed, const char *var_name) {
   zval *value = NULL;
 
   while (current) {
-    zend_string* key = NULL;
+    zend_string *key = NULL;
     EG(current_execute_data) = current;
-    zend_array* symtable = zend_rebuild_symbol_table();
+    zend_array *symtable = zend_rebuild_symbol_table();
     ZEND_HASH_FOREACH_STR_KEY_VAL(symtable, key, value) {
       if (0 == strcmp(var_name, key->val)) {
-	if (Z_TYPE_P(value) == IS_INDIRECT) {
-	  value = Z_INDIRECT_P(value);
-	}
-	EG(current_execute_data) = orig_execute_data;
-	return value;
+        if (Z_TYPE_P(value) == IS_INDIRECT) {
+          value = Z_INDIRECT_P(value);
+        }
+        EG(current_execute_data) = orig_execute_data;
+        return value;
       }
     }
     ZEND_HASH_FOREACH_END();
@@ -51,7 +51,7 @@ static zval *get_constant(const char *value) {
 }
 
 static zval *get_var_value(zend_execute_data *ed, const char *var_name,
-			   bool is_param) {
+                           bool is_param) {
   zval *zvalue = NULL;
 
   if (!var_name) {
@@ -73,14 +73,14 @@ static zval *get_var_value(zend_execute_data *ed, const char *var_name,
 }
 
 static void *get_entry_hashtable(const HashTable *ht, const char *entry,
-				 size_t entry_len) {
+                                 size_t entry_len) {
   zval *zvalue = zend_hash_str_find(ht, entry, entry_len);
 
   if (!zvalue) {
     zvalue = zend_hash_index_find(ht, atol(entry));
   }
-  while (zvalue && (Z_TYPE_P(zvalue) == IS_INDIRECT
-		    || Z_TYPE_P(zvalue) == IS_PTR)) {
+  while (zvalue &&
+         (Z_TYPE_P(zvalue) == IS_INDIRECT || Z_TYPE_P(zvalue) == IS_PTR)) {
     if (Z_TYPE_P(zvalue) == IS_INDIRECT) {
       zvalue = Z_INDIRECT_P(zvalue);
     } else {
@@ -91,7 +91,7 @@ static void *get_entry_hashtable(const HashTable *ht, const char *entry,
 }
 
 static zval *get_array_value(zend_execute_data *ed, zval *zvalue,
-			     const sp_tree *tree) {
+                             const sp_tree *tree) {
   zval *idx_value, *ret = NULL;
   char *idx = NULL;
 
@@ -108,7 +108,7 @@ static zval *get_array_value(zend_execute_data *ed, zval *zvalue,
 }
 
 static zval *get_object_property(zend_execute_data *ed, zval *object,
-				 const char *property, bool is_param) {
+                                 const char *property, bool is_param) {
   char *class_name = object->value.obj->ce->name->val;
   HashTable *array = Z_OBJPROP_P(object);
   zval *zvalue = NULL;
@@ -131,7 +131,8 @@ static zval *get_object_property(zend_execute_data *ed, zval *object,
   }
   if (!zvalue) {
     char *private_property = emalloc(strlen(class_name) + 3 + strlen(property));
-    len = sprintf(private_property, PRIVATE_PROP_FMT, 0, class_name, 0, property);
+    len =
+        sprintf(private_property, PRIVATE_PROP_FMT, 0, class_name, 0, property);
     zvalue = get_entry_hashtable(array, private_property, len);
     efree(private_property);
   }
@@ -149,8 +150,8 @@ static zend_class_entry *get_class(const char *value) {
 }
 
 static zval *get_unknown_type(const char *restrict value, zval *zvalue,
-			      zend_class_entry *ce, zend_execute_data *ed,
-			      const sp_tree *tree, bool is_param) {
+                              zend_class_entry *ce, zend_execute_data *ed,
+                              const sp_tree *tree, bool is_param) {
   if (ce) {
     zvalue = get_entry_hashtable(&ce->constants_table, value, strlen(value));
     ce = NULL;
@@ -171,51 +172,50 @@ static zval *get_unknown_type(const char *restrict value, zval *zvalue,
   return zvalue;
 }
 
-zval *get_value(zend_execute_data *ed, const sp_tree *tree,
-		bool is_param) {
+zval *get_value(zend_execute_data *ed, const sp_tree *tree, bool is_param) {
   zval *zvalue = NULL;
   zend_class_entry *ce = NULL;
 
   while (tree) {
     switch (tree->type) {
       case ARRAY:
-	if (ce) {
-	  zvalue = get_entry_hashtable(&ce->constants_table, tree->value,
-				       strlen(tree->value));
-	  ce = NULL;
-	} else if (!zvalue) {
-	  zvalue = get_var_value(ed, tree->value, is_param);
-	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
-	  zvalue = get_object_property(ed, zvalue, tree->value, is_param);
-	}
-	zvalue = get_array_value(ed, zvalue, tree);
-	break;
+        if (ce) {
+          zvalue = get_entry_hashtable(&ce->constants_table, tree->value,
+                                       strlen(tree->value));
+          ce = NULL;
+        } else if (!zvalue) {
+          zvalue = get_var_value(ed, tree->value, is_param);
+        } else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
+          zvalue = get_object_property(ed, zvalue, tree->value, is_param);
+        }
+        zvalue = get_array_value(ed, zvalue, tree);
+        break;
       case VAR:
-	if (zvalue && Z_TYPE_P(zvalue) == IS_OBJECT) {
-	  zvalue = get_object_property(ed, zvalue, tree->value, is_param);
-	} else {
-	  zvalue = get_var_value(ed, tree->value, is_param);
-	}
-	break;
+        if (zvalue && Z_TYPE_P(zvalue) == IS_OBJECT) {
+          zvalue = get_object_property(ed, zvalue, tree->value, is_param);
+        } else {
+          zvalue = get_var_value(ed, tree->value, is_param);
+        }
+        break;
       case OBJECT:
-	if (!zvalue) {
-	  zvalue = get_var_value(ed, tree->value, is_param);
-	} else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
-	  if (0 != strlen(tree->value)) {
-	    zvalue = get_object_property(ed, zvalue, tree->value, is_param);
-	  }
-	} else {
-	  return NULL;
-	}
-	break;
+        if (!zvalue) {
+          zvalue = get_var_value(ed, tree->value, is_param);
+        } else if (Z_TYPE_P(zvalue) == IS_OBJECT) {
+          if (0 != strlen(tree->value)) {
+            zvalue = get_object_property(ed, zvalue, tree->value, is_param);
+          }
+        } else {
+          return NULL;
+        }
+        break;
       case CLASS:
-	ce = get_class(tree->value);
-	zvalue = NULL;
-	break;
+        ce = get_class(tree->value);
+        zvalue = NULL;
+        break;
       default:
-	zvalue = get_unknown_type(tree->value, zvalue, ce, ed, tree, is_param);
-	ce = NULL;
-	break;
+        zvalue = get_unknown_type(tree->value, zvalue, ce, ed, tree, is_param);
+        ce = NULL;
+        break;
     }
     if (!zvalue && !ce) {
       return NULL;
