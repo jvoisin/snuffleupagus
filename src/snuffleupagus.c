@@ -108,20 +108,20 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   pefree(SNUFFLEUPAGUS_G(config.config_disable_xxe), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_upload_validation), 1);
 
-#define FREE_LST(L) \
+#define FREE_LST_DISABLE(L) \
   do { \
     sp_list_node* _n = SNUFFLEUPAGUS_G(L); \
     sp_disabled_function_list_free(_n); \
     sp_list_free(_n); \
   } while(0)
 
-  FREE_LST(config.config_disabled_functions->disabled_functions);
-  FREE_LST(config.config_disabled_functions_ret->disabled_functions);
-  FREE_LST(config.config_disabled_constructs->construct_include);
-  FREE_LST(config.config_disabled_constructs->construct_eval);
-  FREE_LST(config.config_cookie->cookies);
+  FREE_LST_DISABLE(config.config_disabled_functions->disabled_functions);
+  FREE_LST_DISABLE(config.config_disabled_functions_ret->disabled_functions);
+  FREE_LST_DISABLE(config.config_disabled_constructs->construct_include);
+  FREE_LST_DISABLE(config.config_disabled_constructs->construct_eval);
+  sp_list_free(SNUFFLEUPAGUS_G(config).config_cookie->cookies);
 
-#undef FREE_LST
+#undef FREE_LST_DISABLE
 
   pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions_ret), 1);
