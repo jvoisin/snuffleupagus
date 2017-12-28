@@ -43,8 +43,8 @@ typedef struct {
 } sp_config_global;
 
 typedef struct {
-	bool enable;
-	bool simulation;
+  bool enable;
+  bool simulation;
 } sp_config_readonly_exec;
 
 typedef struct { bool enable; } sp_config_global_strict;
@@ -56,7 +56,7 @@ typedef struct { bool enable; } sp_config_auto_cookie_secure;
 typedef struct { bool enable; } sp_config_disable_xxe;
 
 typedef struct {
-  enum samesite_type {strict=1, lax=2} samesite;
+  enum samesite_type { strict = 1, lax = 2 } samesite;
   bool encrypt;
   char *name;
   pcre *name_r;
@@ -116,11 +116,12 @@ typedef struct {
 } sp_config_disabled_functions;
 
 typedef struct {
-  sp_list_node *cookies; //list of sp_cookie for regexp/names
+  sp_list_node *cookies;  // list of sp_cookie for regexp/names
 } sp_config_cookie;
 
 typedef struct {
-  sp_list_node *construct_include; // list of rules for `(include|require)_(once)?`
+  sp_list_node
+      *construct_include;  // list of rules for `(include|require)_(once)?`
   sp_list_node *construct_eval;
   sp_list_node *construct_echo;
 } sp_config_disabled_constructs;
@@ -231,6 +232,6 @@ int parse_cidr(char *restrict, char *restrict, void *);
 int parse_php_type(char *restrict, char *restrict, void *);
 
 // cleanup
-void sp_disabled_function_list_free(sp_list_node*);
+void sp_disabled_function_list_free(sp_list_node *);
 
 #endif /* SP_CONFIG_H */

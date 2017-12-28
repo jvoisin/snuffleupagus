@@ -6,11 +6,12 @@ PHP_FUNCTION(sp_serialize) {
   void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
 
   /* Call the original `serialize` function. */
-  if ((orig_handler = zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
-                                             "serialize", 9))) {
+  if ((orig_handler = zend_hash_str_find_ptr(
+           SNUFFLEUPAGUS_G(sp_internal_functions_hook), "serialize", 9))) {
     orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   } else {
-    sp_log_err("disabled_functions",
+    sp_log_err(
+        "disabled_functions",
         "Unable to find the pointer to the original function 'serialize' in "
         "the hashtable.\n");
     return;
@@ -57,7 +58,8 @@ PHP_FUNCTION(sp_unserialize) {
 
   /* 64 is the length of HMAC-256 */
   if (buf_len < 64) {
-    sp_log_msg("unserialize", SP_LOG_DROP, "The serialized object is too small.");
+    sp_log_msg("unserialize", SP_LOG_DROP,
+               "The serialized object is too small.");
     RETURN_FALSE;
   }
 
@@ -82,19 +84,22 @@ PHP_FUNCTION(sp_unserialize) {
   }
 
   if (0 == status) {
-    if ((orig_handler = zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
-                                               "unserialize", 11))) {
+    if ((orig_handler = zend_hash_str_find_ptr(
+             SNUFFLEUPAGUS_G(sp_internal_functions_hook), "unserialize", 11))) {
       orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     }
   } else {
-    if ( true == SNUFFLEUPAGUS_G(config).config_unserialize->simulation) {
-      sp_log_msg("unserialize", SP_LOG_SIMULATION, "Invalid HMAC for %s", serialized_str);
-      if ((orig_handler = zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
-                                               "unserialize", 11))) {
+    if (true == SNUFFLEUPAGUS_G(config).config_unserialize->simulation) {
+      sp_log_msg("unserialize", SP_LOG_SIMULATION, "Invalid HMAC for %s",
+                 serialized_str);
+      if ((orig_handler = zend_hash_str_find_ptr(
+               SNUFFLEUPAGUS_G(sp_internal_functions_hook), "unserialize",
+               11))) {
         orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
       }
     } else {
-      sp_log_msg("unserialize", SP_LOG_DROP, "Invalid HMAC for %s", serialized_str);
+      sp_log_msg("unserialize", SP_LOG_DROP, "Invalid HMAC for %s",
+                 serialized_str);
     }
   }
   efree(serialized_str);
@@ -104,8 +109,10 @@ PHP_FUNCTION(sp_unserialize) {
 int hook_serialize(void) {
   TSRMLS_FETCH();
 
-  HOOK_FUNCTION("serialize", sp_internal_functions_hook, PHP_FN(sp_serialize), false);
-  HOOK_FUNCTION("unserialize", sp_internal_functions_hook, PHP_FN(sp_unserialize), false);
+  HOOK_FUNCTION("serialize", sp_internal_functions_hook, PHP_FN(sp_serialize),
+                false);
+  HOOK_FUNCTION("unserialize", sp_internal_functions_hook,
+                PHP_FN(sp_unserialize), false);
 
   return SUCCESS;
 }

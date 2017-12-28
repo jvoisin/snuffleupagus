@@ -30,7 +30,7 @@ ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 PHP_INI_BEGIN()
 PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM,
-  OnUpdateConfiguration)
+              OnUpdateConfiguration)
 PHP_INI_END()
 
 ZEND_DLEXPORT zend_extension zend_extension_entry = {
@@ -41,22 +41,22 @@ ZEND_DLEXPORT zend_extension zend_extension_entry = {
     PHP_SNUFFLEUPAGUS_COPYRIGHT,
     sp_zend_startup,
     NULL,
-    NULL,               /* activate_func_t */
-    NULL,               /* deactivate_func_t */
-    NULL,               /* message_handler_func_t */
-    sp_op_array_handler,//zend_global_strict, /* op_array_handler_func_t */
-    NULL,               /* statement_handler_func_t */
-    NULL,               /* fcall_begin_handler_func_t */
-    NULL,               /* fcall_end_handler_func_t */
-    NULL,               /* op_array_ctor_func_t */
-    NULL,               /* op_array_dtor_func_t */
+    NULL,                 /* activate_func_t */
+    NULL,                 /* deactivate_func_t */
+    NULL,                 /* message_handler_func_t */
+    sp_op_array_handler,  // zend_global_strict, /* op_array_handler_func_t */
+    NULL,                 /* statement_handler_func_t */
+    NULL,                 /* fcall_begin_handler_func_t */
+    NULL,                 /* fcall_end_handler_func_t */
+    NULL,                 /* op_array_ctor_func_t */
+    NULL,                 /* op_array_dtor_func_t */
     STANDARD_ZEND_EXTENSION_PROPERTIES};
 
 PHP_GINIT_FUNCTION(snuffleupagus) {
 #define SP_INIT(F) F = pecalloc(sizeof(*F), 1, 1);
-#define SP_INIT_HT(F) \
-	F = pemalloc(sizeof(*F), 1); \
-	zend_hash_init(F, 10, NULL, NULL, 1);
+#define SP_INIT_HT(F)          \
+  F = pemalloc(sizeof(*F), 1); \
+  zend_hash_init(F, 10, NULL, NULL, 1);
 
   SP_INIT_HT(snuffleupagus_globals->disabled_functions_hook);
   SP_INIT_HT(snuffleupagus_globals->sp_internal_functions_hook);
@@ -74,10 +74,14 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT(snuffleupagus_globals->config.config_cookie);
   SP_INIT(snuffleupagus_globals->config.config_disabled_constructs);
 
-  snuffleupagus_globals->config.config_disabled_constructs->construct_include = sp_list_new();
-  snuffleupagus_globals->config.config_disabled_constructs->construct_eval = sp_list_new();
-  snuffleupagus_globals->config.config_disabled_functions->disabled_functions = sp_list_new();
-  snuffleupagus_globals->config.config_disabled_functions_ret->disabled_functions = sp_list_new();
+  snuffleupagus_globals->config.config_disabled_constructs->construct_include =
+      sp_list_new();
+  snuffleupagus_globals->config.config_disabled_constructs->construct_eval =
+      sp_list_new();
+  snuffleupagus_globals->config.config_disabled_functions->disabled_functions =
+      sp_list_new();
+  snuffleupagus_globals->config.config_disabled_functions_ret
+      ->disabled_functions = sp_list_new();
   snuffleupagus_globals->config.config_cookie->cookies = sp_list_new();
 
 #undef SP_INIT
@@ -91,7 +95,7 @@ PHP_MINIT_FUNCTION(snuffleupagus) {
 }
 
 PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
-#define FREE_HT(F) \
+#define FREE_HT(F)                       \
   zend_hash_destroy(SNUFFLEUPAGUS_G(F)); \
   pefree(SNUFFLEUPAGUS_G(F), 1);
 
@@ -108,12 +112,12 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   pefree(SNUFFLEUPAGUS_G(config.config_disable_xxe), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_upload_validation), 1);
 
-#define FREE_LST_DISABLE(L) \
-  do { \
-    sp_list_node* _n = SNUFFLEUPAGUS_G(L); \
-    sp_disabled_function_list_free(_n); \
-    sp_list_free(_n); \
-  } while(0)
+#define FREE_LST_DISABLE(L)                \
+  do {                                     \
+    sp_list_node *_n = SNUFFLEUPAGUS_G(L); \
+    sp_disabled_function_list_free(_n);    \
+    sp_list_free(_n);                      \
+  } while (0)
 
   FREE_LST_DISABLE(config.config_disabled_functions->disabled_functions);
   FREE_LST_DISABLE(config.config_disabled_functions_ret->disabled_functions);
@@ -140,7 +144,7 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
   if (NULL != SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
     if (NULL != SNUFFLEUPAGUS_G(config).config_cookie->cookies) {
       zend_hash_apply_with_arguments(
-	  Z_ARRVAL(PG(http_globals)[TRACK_VARS_COOKIE]), decrypt_cookie, 0);
+          Z_ARRVAL(PG(http_globals)[TRACK_VARS_COOKIE]), decrypt_cookie, 0);
     }
   }
   return SUCCESS;
@@ -152,8 +156,9 @@ PHP_MINFO_FUNCTION(snuffleupagus) {
   php_info_print_table_start();
   php_info_print_table_row(2, "snuffleupagus support", "enabled");
   php_info_print_table_row(2, "Version", PHP_SNUFFLEUPAGUS_VERSION);
-  php_info_print_table_row(2, "Valid config",
-      (SNUFFLEUPAGUS_G(is_config_valid) == true)?"yes":"no");
+  php_info_print_table_row(
+      2, "Valid config",
+      (SNUFFLEUPAGUS_G(is_config_valid) == true) ? "yes" : "no");
   php_info_print_table_end();
   DISPLAY_INI_ENTRIES();
 }
@@ -169,7 +174,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
   config_file = strtok(new_value->val, ",");
   if (sp_parse_config(config_file) != SUCCESS) {
-      SNUFFLEUPAGUS_G(is_config_valid) = false;
+    SNUFFLEUPAGUS_G(is_config_valid) = false;
     return FAILURE;
   }
   while ((config_file = strtok(NULL, ","))) {
@@ -214,21 +219,21 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
 const zend_function_entry snuffleupagus_functions[] = {PHP_FE_END};
 
-zend_module_entry snuffleupagus_module_entry =
-    {STANDARD_MODULE_HEADER,
-     PHP_SNUFFLEUPAGUS_EXTNAME,
-     snuffleupagus_functions,
-     PHP_MINIT(snuffleupagus),
-     PHP_MSHUTDOWN(snuffleupagus),
-     PHP_RINIT(snuffleupagus),
-     PHP_RSHUTDOWN(snuffleupagus),
-     PHP_MINFO(snuffleupagus),
-     PHP_SNUFFLEUPAGUS_VERSION,
-     PHP_MODULE_GLOBALS(snuffleupagus),
-     PHP_GINIT(snuffleupagus),
-     NULL,
-     NULL,
-     STANDARD_MODULE_PROPERTIES_EX};
+zend_module_entry snuffleupagus_module_entry = {
+    STANDARD_MODULE_HEADER,
+    PHP_SNUFFLEUPAGUS_EXTNAME,
+    snuffleupagus_functions,
+    PHP_MINIT(snuffleupagus),
+    PHP_MSHUTDOWN(snuffleupagus),
+    PHP_RINIT(snuffleupagus),
+    PHP_RSHUTDOWN(snuffleupagus),
+    PHP_MINFO(snuffleupagus),
+    PHP_SNUFFLEUPAGUS_VERSION,
+    PHP_MODULE_GLOBALS(snuffleupagus),
+    PHP_GINIT(snuffleupagus),
+    NULL,
+    NULL,
+    STANDARD_MODULE_PROPERTIES_EX};
 
 #ifdef COMPILE_DL_SNUFFLEUPAGUS
 #ifdef ZTS

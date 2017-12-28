@@ -7,34 +7,37 @@ ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 static void (*orig_execute_ex)(zend_execute_data *execute_data);
 static int (*orig_zend_stream_open)(const char *filename,
-                                             zend_file_handle *handle);
+                                    zend_file_handle *handle);
 
 // FIXME handle symlink
 ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   if (0 == access(filename, W_OK)) {
     if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->simulation) {
       sp_log_msg("readonly_exec", SP_LOG_SIMULATION,
-        "Attempted execution of a writable file (%s).", filename);
+                 "Attempted execution of a writable file (%s).", filename);
     } else {
       sp_log_msg("readonly_exec", SP_LOG_DROP,
-        "Attempted execution of a writable file (%s).", filename);
+                 "Attempted execution of a writable file (%s).", filename);
       sp_terminate();
     }
   } else {
     if (EACCES != errno) {
       sp_log_err("Writable execution", "Error while accessing %s: %s", filename,
-        strerror(errno));
+                 strerror(errno));
     }
   }
 }
 
-static void is_builtin_matching(const char * restrict const filename,
-		char* restrict function_name, char* restrict param_name, sp_list_node *config) {
+static void is_builtin_matching(const char *restrict const filename,
+                                char *restrict function_name,
+                                char *restrict param_name,
+                                sp_list_node *config) {
   if (!config || !config->data) {
     return;
   }
 
-  if (true == should_disable(EG(current_execute_data), function_name, filename, param_name)) {
+  if (true == should_disable(EG(current_execute_data), function_name, filename,
+                             param_name)) {
     sp_terminate();
   }
 }
@@ -63,9 +66,10 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   if (true == should_disable(execute_data, NULL, NULL, NULL)) {
     sp_terminate();
   }
-  
+
   if (execute_data->func->op_array.type == ZEND_EVAL_CODE) {
-    sp_list_node* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
+    sp_list_node *config =
+        SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
     char *filename = get_eval_filename((char *)zend_get_executed_filename());
     is_builtin_matching(filename, "eval", NULL, config);
     efree(filename);
@@ -85,36 +89,40 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
 }
 
 static int sp_stream_open(const char *filename, zend_file_handle *handle) {
-  zend_execute_data const * const data = EG(current_execute_data);
+  zend_execute_data const *const data = EG(current_execute_data);
 
-  if ((NULL == data) || (NULL == data->opline) || (data->func->type != ZEND_USER_FUNCTION)) {
+  if ((NULL == data) || (NULL == data->opline) ||
+      (data->func->type != ZEND_USER_FUNCTION)) {
     goto end;
   }
 
-  switch(data->opline->opcode) {
+  switch (data->opline->opcode) {
     case ZEND_INCLUDE_OR_EVAL:
       if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
         terminate_if_writable(filename);
       }
-      sp_list_node* config = SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
+      sp_list_node *config =
+          SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
       switch (data->opline->extended_value) {
-      case ZEND_INCLUDE:
-	is_builtin_matching(filename, "include", "inclusion path", config);
-	break;
-      case ZEND_REQUIRE:
-	is_builtin_matching(filename, "require", "inclusion path", config);
-	break;
-      case ZEND_REQUIRE_ONCE:
-	is_builtin_matching(filename, "require_once", "inclusion path", config);
-	break;
-      case ZEND_INCLUDE_ONCE:
-	is_builtin_matching(filename, "include_once", "inclusion path", config);
-	break;
-      case ZEND_EVAL:
-	is_builtin_matching(filename, "eval", NULL, config);
-	break;
-      default:
-	break;
+        case ZEND_INCLUDE:
+          is_builtin_matching(filename, "include", "inclusion path", config);
+          break;
+        case ZEND_REQUIRE:
+          is_builtin_matching(filename, "require", "inclusion path", config);
+          break;
+        case ZEND_REQUIRE_ONCE:
+          is_builtin_matching(filename, "require_once", "inclusion path",
+                              config);
+          break;
+        case ZEND_INCLUDE_ONCE:
+          is_builtin_matching(filename, "include_once", "inclusion path",
+                              config);
+          break;
+        case ZEND_EVAL:
+          is_builtin_matching(filename, "eval", NULL, config);
+          break;
+        default:
+          break;
       }
   }
 

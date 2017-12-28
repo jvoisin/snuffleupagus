@@ -4,7 +4,7 @@
 #include "php_snuffleupagus.h"
 
 void sp_list_free(sp_list_node *node) {
-  while(node) {
+  while (node) {
     sp_list_node *tmp = node->next;
     pefree(node, 1);
     node = tmp;
@@ -18,7 +18,8 @@ sp_list_node *sp_list_new() {
 }
 
 // Thanks to https://en.wikipedia.org/wiki/Insertion_sort :>
-sp_list_node *sp_list_sort(sp_list_node *pList, int (*cmp_func)(sp_list_node *, sp_list_node *)) {
+sp_list_node *sp_list_sort(sp_list_node *pList,
+                           int (*cmp_func)(sp_list_node *, sp_list_node *)) {
   sp_list_node *head = NULL;
 
   if (pList == NULL || pList->next == NULL) {
@@ -33,12 +34,12 @@ sp_list_node *sp_list_sort(sp_list_node *pList, int (*cmp_func)(sp_list_node *, 
     } else {
       sp_list_node *p = head;
       while (p != NULL) {
-	if (p->next == NULL || 0 > cmp_func(current, p->next)) {
-	  current->next = p->next;
-	  p->next = current;
-	  break;
-	}
-	p = p->next;
+        if (p->next == NULL || 0 > cmp_func(current, p->next)) {
+          current->next = p->next;
+          p->next = current;
+          break;
+        }
+        p = p->next;
       }
     }
   }

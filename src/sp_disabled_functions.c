@@ -64,25 +64,25 @@ end:
 static bool is_local_var_matching(
     zend_execute_data* execute_data,
     const sp_disabled_function* const config_node) {
-  zval *var_value;
+  zval* var_value;
 
   var_value = get_value(execute_data, config_node->var, false);
   if (var_value) {
-    char *var_value_str = sp_convert_to_string(var_value);
+    char* var_value_str = sp_convert_to_string(var_value);
     if (Z_TYPE_P(var_value) == IS_ARRAY) {
       if (config_node->key || config_node->r_key) {
-	if (sp_match_array_key(var_value, config_node->key,
-			       config_node->r_key)) {
-	  efree(var_value_str);
-	  return true;
-	}
+        if (sp_match_array_key(var_value, config_node->key,
+                               config_node->r_key)) {
+          efree(var_value_str);
+          return true;
+        }
       } else if (sp_match_array_value(var_value, config_node->value,
-				      config_node->value_r)) {
-	efree(var_value_str);
-	return true;
+                                      config_node->value_r)) {
+        efree(var_value_str);
+        return true;
       }
     } else if (sp_match_value(var_value_str, config_node->value,
-			      config_node->value_r)) {
+                              config_node->value_r)) {
       efree(var_value_str);
       return true;
     }
@@ -115,7 +115,7 @@ static bool is_param_matching(zend_execute_data* execute_data,
                               const char** arg_value_str) {
   int nb_param = execute_data->func->common.num_args;
   int i = 0;
-  zval *arg_value;
+  zval* arg_value;
 
   if (config_node->pos != -1) {
     if (config_node->pos <= nb_param) {
@@ -150,8 +150,9 @@ static bool is_param_matching(zend_execute_data* execute_data,
       } else {
         *arg_name = execute_data->func->internal_function.arg_info[i].name;
       }
-      const bool pcre_matching = config_node->r_param
-	&& (true == is_regexp_matching(config_node->r_param, *arg_name));
+      const bool pcre_matching =
+          config_node->r_param &&
+          (true == is_regexp_matching(config_node->r_param, *arg_name));
 
       /* This is the parameter name we're looking for. */
       if (true == pcre_matching || config_node->pos != -1) {
@@ -159,23 +160,23 @@ static bool is_param_matching(zend_execute_data* execute_data,
 
         if (config_node->param_type) {  // Are we matching on the `type`?
           if (config_node->param_type == Z_TYPE_P(arg_value)) {
-	    return true;
-	  }
-	} else if (Z_TYPE_P(arg_value) == IS_ARRAY) {
-	  *arg_value_str = sp_convert_to_string(arg_value);
-	  if (config_node->key || config_node->r_key) {
-	    if (sp_match_array_key(arg_value, config_node->key,
-				   config_node->r_key)) {
-	      return true;
-	    }
-	  } else if (sp_match_array_value(arg_value, config_node->value,
-					  config_node->value_r)) {
-	    return true;
-	  }
-	} else {
-	  *arg_value_str = sp_convert_to_string(arg_value);
-	  if (sp_match_value(*arg_value_str, config_node->value,
-			     config_node->value_r)) {
+            return true;
+          }
+        } else if (Z_TYPE_P(arg_value) == IS_ARRAY) {
+          *arg_value_str = sp_convert_to_string(arg_value);
+          if (config_node->key || config_node->r_key) {
+            if (sp_match_array_key(arg_value, config_node->key,
+                                   config_node->r_key)) {
+              return true;
+            }
+          } else if (sp_match_array_value(arg_value, config_node->value,
+                                          config_node->value_r)) {
+            return true;
+          }
+        } else {
+          *arg_value_str = sp_convert_to_string(arg_value);
+          if (sp_match_value(*arg_value_str, config_node->value,
+                             config_node->value_r)) {
             return true;
           }
         }
@@ -188,23 +189,23 @@ static bool is_param_matching(zend_execute_data* execute_data,
     if (arg_value) {
       *arg_value_str = sp_convert_to_string(arg_value);
       if (config_node->param_type) {  // Are we matching on the `type`?
-	if (config_node->param_type
-	    && config_node->param_type == Z_TYPE_P(arg_value)) {
-	  return true;
-	}
+        if (config_node->param_type &&
+            config_node->param_type == Z_TYPE_P(arg_value)) {
+          return true;
+        }
       } else if (Z_TYPE_P(arg_value) == IS_ARRAY) {
-	if (config_node->key || config_node->r_key) {
-	  if (sp_match_array_key(arg_value, config_node->key,
-				 config_node->r_key)) {
-	    return true;
-	  }
-	} else if (sp_match_array_value(arg_value, config_node->value,
-					config_node->value_r)) {
-	  return true;
-	}
+        if (config_node->key || config_node->r_key) {
+          if (sp_match_array_key(arg_value, config_node->key,
+                                 config_node->r_key)) {
+            return true;
+          }
+        } else if (sp_match_array_value(arg_value, config_node->value,
+                                        config_node->value_r)) {
+          return true;
+        }
       } else if (sp_match_value(*arg_value_str, config_node->value,
-				config_node->value_r)) {
-	return true;
+                                config_node->value_r)) {
+        return true;
       }
     }
   }
@@ -340,7 +341,7 @@ allow:
 }
 
 bool should_drop_on_ret(zval* return_value,
-                               const zend_execute_data* const execute_data) {
+                        const zend_execute_data* const execute_data) {
   const sp_list_node* config =
       SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions;
   char* complete_path_function = get_complete_function_path(execute_data);

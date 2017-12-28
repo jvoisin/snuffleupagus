@@ -35,7 +35,8 @@ static int parse_line(char *line) {
   }
 
   if (strncmp(ptr, SP_TOKEN_BASE, strlen(SP_TOKEN_BASE))) {
-    sp_log_err("config", "Invalid configuration prefix for '%s' on line %zu.", line, sp_line_no);
+    sp_log_err("config", "Invalid configuration prefix for '%s' on line %zu.",
+               line, sp_line_no);
     return -1;
   }
   ptr += strlen(SP_TOKEN_BASE);
@@ -45,7 +46,8 @@ static int parse_line(char *line) {
       return sp_func[i].func(ptr + strlen(sp_func[i].token));
     }
   }
-  sp_log_err("config", "Invalid configuration section '%s' on line %zu.", line, sp_line_no);
+  sp_log_err("config", "Invalid configuration section '%s' on line %zu.", line,
+             sp_line_no);
   return -1;
 }
 
@@ -60,32 +62,35 @@ int parse_php_type(char *restrict line, char *restrict keyword, void *retval) {
   char *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
   if (value) {
     if (0 == strcasecmp("undef", value)) {
-      *(sp_php_type*)retval = SP_PHP_TYPE_UNDEF;
+      *(sp_php_type *)retval = SP_PHP_TYPE_UNDEF;
     } else if (0 == strcasecmp("null", value)) {
-      *(sp_php_type*)retval = SP_PHP_TYPE_NULL;
+      *(sp_php_type *)retval = SP_PHP_TYPE_NULL;
     } else if (0 == strcasecmp("true", value)) {
-      *(sp_php_type*)retval = SP_PHP_TYPE_TRUE;
+      *(sp_php_type *)retval = SP_PHP_TYPE_TRUE;
     } else if (0 == strcasecmp("false", value)) {
-      *(sp_php_type*)retval = SP_PHP_TYPE_FALSE;
+      *(sp_php_type *)retval = SP_PHP_TYPE_FALSE;
     } else if (0 == strcasecmp("long", value)) {
-      *(sp_php_type*)retval = SP_PHP_TYPE_LONG;
+      *(sp_php_type *)retval = SP_PHP_TYPE_LONG;
     } else if (0 == strcasecmp("double", value)) {
-      *(sp_php_type*)retval = SP_PHP_TYPE_DOUBLE;
+      *(sp_php_type *)retval = SP_PHP_TYPE_DOUBLE;
     } else if (0 == strcasecmp("string", value)) {
-      *(sp_php_type*)retval = SP_PHP_TYPE_STRING;
+      *(sp_php_type *)retval = SP_PHP_TYPE_STRING;
     } else if (0 == strcasecmp("array", value)) {
-      *(sp_php_type*)retval = SP_PHP_TYPE_ARRAY;
-    } else  if (0 == strcasecmp("object", value)) {
-      *(sp_php_type*)retval = SP_PHP_TYPE_OBJECT;
+      *(sp_php_type *)retval = SP_PHP_TYPE_ARRAY;
+    } else if (0 == strcasecmp("object", value)) {
+      *(sp_php_type *)retval = SP_PHP_TYPE_OBJECT;
     } else if (0 == strcasecmp("resource", value)) {
-      *(sp_php_type*)retval = SP_PHP_TYPE_RESOURCE;
+      *(sp_php_type *)retval = SP_PHP_TYPE_RESOURCE;
     } else if (0 == strcasecmp("reference", value)) {
-      *(sp_php_type*)retval = SP_PHP_TYPE_REFERENCE;
+      *(sp_php_type *)retval = SP_PHP_TYPE_REFERENCE;
     } else {
       pefree(value, 1);
-      sp_log_err("error", "%s) is expecting a valid php type ('false', 'true',"
-        " 'array'. 'object', 'long', 'double', 'null', 'resource', 'reference',"
-        " 'undef') on line %zu.", keyword, sp_line_no);
+      sp_log_err("error",
+                 "%s) is expecting a valid php type ('false', 'true',"
+                 " 'array'. 'object', 'long', 'double', 'null', 'resource', "
+                 "'reference',"
+                 " 'undef') on line %zu.",
+                 keyword, sp_line_no);
       return -1;
     }
     pefree(value, 1);
@@ -119,7 +124,8 @@ int parse_cidr(char *restrict line, char *restrict keyword, void *retval) {
     *(sp_cidr **)retval = cidr;
     return consumed;
   } else {
-    sp_log_err("config", "%s doesn't contain a valid cidr on line %zu.", line, sp_line_no);
+    sp_log_err("config", "%s doesn't contain a valid cidr on line %zu.", line,
+               sp_line_no);
     return -1;
   }
 }
@@ -135,9 +141,10 @@ int parse_regexp(char *restrict line, char *restrict keyword, void *retval) {
     const char *pcre_error;
     int pcre_error_offset;
     pcre *compiled_re = sp_pcre_compile(value, PCRE_CASELESS, &pcre_error,
-                                     &pcre_error_offset, NULL);
+                                        &pcre_error_offset, NULL);
     if (NULL == compiled_re) {
-      sp_log_err("config", "Failed to compile '%s': %s on line %zu.", value, pcre_error, sp_line_no);
+      sp_log_err("config", "Failed to compile '%s': %s on line %zu.", value,
+                 pcre_error, sp_line_no);
     } else {
       *(pcre **)retval = compiled_re;
       return consumed;
@@ -147,7 +154,8 @@ int parse_regexp(char *restrict line, char *restrict keyword, void *retval) {
   if (NULL != closing_paren) {
     closing_paren[0] = '\0';
   }
-  sp_log_err("config", "'%s)' is expecting a valid regexp, and not '%s' on line %zu.",
+  sp_log_err("config",
+             "'%s)' is expecting a valid regexp, and not '%s' on line %zu.",
              keyword, line, sp_line_no);
   return -1;
 }
@@ -183,12 +191,11 @@ int sp_parse_config(const char *conf_file) {
   return SUCCESS;
 }
 
-void sp_disabled_function_list_free(sp_list_node* list) {
-  sp_list_node* cursor = list;
-  while(cursor) {
-    sp_disabled_function* df = cursor->data;
-    if (df && df->functions_list)
-      sp_list_free(df->functions_list);
+void sp_disabled_function_list_free(sp_list_node *list) {
+  sp_list_node *cursor = list;
+  while (cursor) {
+    sp_disabled_function *df = cursor->data;
+    if (df && df->functions_list) sp_list_free(df->functions_list);
     if (df) {
       sp_tree_free(df->param);
       sp_tree_free(df->var);
