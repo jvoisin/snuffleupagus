@@ -58,7 +58,9 @@ typedef struct { bool enable; } sp_config_disable_xxe;
 typedef struct {
   enum samesite_type {strict=1, lax=2} samesite;
   bool encrypt;
-	bool simulation;
+  char *name;
+  pcre *name_r;
+  bool simulation;
 } sp_cookie;
 
 typedef struct {
@@ -114,7 +116,7 @@ typedef struct {
 } sp_config_disabled_functions;
 
 typedef struct {
-  HashTable *cookies;  // HashTable of sp_cookie
+  sp_list_node *cookies; //list of sp_cookie for regexp/names
 } sp_config_cookie;
 
 typedef struct {
@@ -204,6 +206,7 @@ typedef struct {
 
 // cookies encryption
 #define SP_TOKEN_NAME ".name("
+#define SP_TOKEN_NAME_REGEXP ".name_r("
 
 // cookies samesite
 #define SP_TOKEN_SAMESITE ".samesite("
