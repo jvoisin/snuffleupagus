@@ -60,6 +60,7 @@ typedef struct {
   bool encrypt;
   char *name;
   pcre *name_r;
+  bool simulation;
 } sp_cookie;
 
 typedef struct {

@@ -339,7 +339,7 @@ allow:
   return false;
 }
 
-static bool should_drop_on_ret(zval* return_value,
+bool should_drop_on_ret(zval* return_value,
                                const zend_execute_data* const execute_data) {
   const sp_list_node* config =
       SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions;
