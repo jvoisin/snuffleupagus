@@ -78,6 +78,10 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   }
 
   orig_execute_ex(execute_data);
+
+  if (true == should_drop_on_ret(execute_data->return_value, execute_data)) {
+    sp_terminate();
+  }
 }
 
 static int sp_stream_open(const char *filename, zend_file_handle *handle) {
