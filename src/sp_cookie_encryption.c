@@ -42,23 +42,18 @@ static inline void generate_key(unsigned char *key) {
 sp_cookie *sp_lookup_cookie_config(char *key) {
   sp_list_node	*it = SNUFFLEUPAGUS_G(config).config_cookie->cookies;
   sp_cookie	*config;
-  sp_log_msg("cookie_encryption", SP_LOG_DROP,
-	     "lookup cookie config for %s", key);
+  
   while (it) {
     config = it->data;
-    if (sp_match_value(key, config->name, config->name_r)) {
-      sp_log_msg("cookie_encryption", SP_LOG_DROP,
-		 "found matching config %p", config);
+    if (config && sp_match_value(key, config->name, config->name_r)) {
       return (config);
     }
     it = it->next;
   }
-  sp_log_msg("cookie_encryption", SP_LOG_DROP,
-	     "no matching config");
-  
   return NULL;
 }
 
+/* called at RINIT time with each cookie, eventually decrypt said cookie */
 int decrypt_cookie(zval *pDest, int num_args, va_list args,
                    zend_hash_key *hash_key) {
   unsigned char key[crypto_secretbox_KEYBYTES] = {0};
@@ -67,15 +62,12 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
   sp_cookie *cookie = sp_lookup_cookie_config(ZSTR_VAL(hash_key->key));
   int ret = 0;
   
-  sp_log_msg("cookie_encryption", SP_LOG_DROP,
-	     "decrypt cookie called with '%s'.", ZSTR_VAL(hash_key->key));
-  
   /* If the cookie isn't in the conf, it shouldn't be encrypted. */
   if (!cookie || !cookie->encrypt) {
     return ZEND_HASH_APPLY_KEEP;
   }
 
-	/* If the cookie has no value, it shouldn't be encrypted. */
+  /* If the cookie has no value, it shouldn't be encrypted. */
   if (0 == Z_STRLEN_P(pDest)) {
     return ZEND_HASH_APPLY_KEEP;
   }
@@ -114,10 +106,10 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
   return ZEND_HASH_APPLY_KEEP;
 }
 
-/**
-  This function will return the `data` of length `data_len` encrypted in the
-  form `base64(nonce | encrypted_data)` (with `|` being the concatenation
-  operation).
+/*
+** This function will return the `data` of length `data_len` encrypted in the
+** form `base64(nonce | encrypted_data)` (with `|` being the concatenation
+** operation).
 */
 static zend_string *encrypt_data(char *data, unsigned long long data_len) {
   const size_t encrypted_msg_len = crypto_secretbox_ZEROBYTES + data_len + 1;
@@ -177,10 +169,6 @@ PHP_FUNCTION(sp_setcookie) {
   ZEND_PARSE_PARAMETERS_END();
   // LCOV_EXCL_BR_END
 
-  sp_log_msg("cookie_encryption", SP_LOG_DROP,
-	     "encrypt cookie called with '%s'.", ZSTR_VAL(name));
-
-  
   /* If the request was issued over HTTPS, the cookie should be "secure" */
   if (SNUFFLEUPAGUS_G(config).config_auto_cookie_secure) {
     const zval server_vars = PG(http_globals)[TRACK_VARS_SERVER];
@@ -193,6 +181,7 @@ PHP_FUNCTION(sp_setcookie) {
     }
   }
 
+  /* lookup existing configuration for said cookie */
   cookie_node = sp_lookup_cookie_config(ZSTR_VAL(name));
   
   /* If the cookie's value is encrypted, it won't be usable by
