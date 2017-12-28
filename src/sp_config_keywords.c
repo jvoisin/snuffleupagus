@@ -142,7 +142,7 @@ int parse_cookie(char *line) {
                sp_line_no);
     return -1;
   }
-  if ((!cookie->name || strlen(cookie->name) == 0) && !cookie->name_r) {
+  if ((!cookie->name || '\0' == cookie->name[0]) && !cookie->name_r) {
     sp_log_err("config",
                "You must specify a cookie name/regexp on line "
                "%zu.",
