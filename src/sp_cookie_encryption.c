@@ -39,14 +39,13 @@ static inline void generate_key(unsigned char *key) {
   PHP_SHA256Final((unsigned char *)key, &ctx);
 }
 
-sp_cookie *sp_lookup_cookie_config(char *key) {
-  sp_list_node	*it = SNUFFLEUPAGUS_G(config).config_cookie->cookies;
-  sp_cookie	*config;
+static inline const sp_cookie *sp_lookup_cookie_config(const char *key) {
+  sp_list_node *it = SNUFFLEUPAGUS_G(config).config_cookie->cookies;
   
   while (it) {
-    config = it->data;
+  const sp_cookie *config = it->data;
     if (config && sp_match_value(key, config->name, config->name_r)) {
-      return (config);
+      return config;
     }
     it = it->next;
   }
@@ -59,7 +58,7 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
   unsigned char key[crypto_secretbox_KEYBYTES] = {0};
   zend_string *debase64;
   unsigned char *decrypted;
-  sp_cookie *cookie = sp_lookup_cookie_config(ZSTR_VAL(hash_key->key));
+  const sp_cookie *cookie = sp_lookup_cookie_config(ZSTR_VAL(hash_key->key));
   int ret = 0;
   
   /* If the cookie isn't in the conf, it shouldn't be encrypted. */
