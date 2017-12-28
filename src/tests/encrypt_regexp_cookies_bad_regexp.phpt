@@ -3,7 +3,7 @@ Cookie decryption in ipv4
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
 --INI--
-sp.configuration_file={PWD}/config/config/config_encrypted_regexp_cookies_bad_regexp.ini
+sp.configuration_file={PWD}/config/config_encrypted_regexp_cookies_bad_regexp.ini
 --COOKIE--
 super_cookie=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP3gV9YJZL/pUeNAjCKFW0U2ywmf1CwHzwd2pWM=;awful_cookie=awful_cookie_value;
 --ENV--
@@ -14,9 +14,7 @@ EOF;
 --FILE--
 <?php var_dump($_COOKIE); ?>
 --EXPECT--
-aray(2) {
-  ["super_cookie"]=>
-  string(11) "super_value"
-  ["awful_cookie"]=>
-  string(18) "awful_cookie_value"
+[snuffleupagus][0.0.0.0][config][error] Failed to compile '^super_co[a-z+$': missing terminating ] for character class on line %d.
+[snuffleupagus][0.0.0.0][config][error] '.name_r()' is expecting a valid regexp, and not '"^super_co[a-z+$"' on line %d.
+array(0) {
 }
