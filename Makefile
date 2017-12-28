@@ -35,7 +35,7 @@ else
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test
 	lcov --base-directory ./src --directory ./src -c -o ./src/COV.info --rc lcov_branch_coverage=1 
 	lcov --remove src/COV.info '/usr/*' --remove src/COV.info '*tweetnacl.c' -o src/COV.info --rc lcov_branch_coverage=1
-	genhtml -o src/COV.html ./src/COV.info  --branch-coverage
+	genhtml --show-details -o src/COV.html ./src/COV.info  --branch-coverage
 endif
 
 bench: joomla  ## run the benchmark

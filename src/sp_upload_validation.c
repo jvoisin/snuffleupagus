@@ -67,10 +67,12 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
           exit(1);
         }
       } else if (pid == -1) {
+        // LCOV_EXCL_START
         sp_log_err("upload_validation", "Could not fork process : %s\n",
                    strerror(errno));
         EFREE_3(env);
         continue;
+        // LCOV_EXCL_STOP
       }
 
       EFREE_3(env);
