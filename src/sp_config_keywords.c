@@ -112,6 +112,7 @@ int parse_cookie(char *line) {
     {parse_regexp, SP_TOKEN_NAME_REGEXP, &(cookie->name_r)},
     {parse_str, SP_TOKEN_SAMESITE, &samesite},
     {parse_empty, SP_TOKEN_ENCRYPT, &cookie->encrypt},
+    {parse_empty, SP_TOKEN_SIMULATION, &cookie->simulation},
     {0}};
 
   ret = parse_keywords(sp_config_funcs_cookie_encryption, line);
