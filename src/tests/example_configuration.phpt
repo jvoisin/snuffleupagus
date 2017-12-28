@@ -6,7 +6,15 @@ Shipped configuration
 sp.configuration_file={PWD}/../../config/examples.ini
 --FILE--
 <?php 
-echo 0;
+ob_start();
+phpinfo();
+$info = ob_get_clean();
+ob_get_clean();
+if (strstr($info, 'Valid config => yes') !== FALSE) {
+	echo "win";
+} else {
+	echo "lose";
+}
 ?>
 --EXPECTF--
-0
+win

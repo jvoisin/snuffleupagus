@@ -59,6 +59,7 @@ extern zend_module_entry snuffleupagus_module_entry;
 
 ZEND_BEGIN_MODULE_GLOBALS(snuffleupagus)
 sp_config config;
+bool is_config_valid;
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;
 ZEND_END_MODULE_GLOBALS(snuffleupagus)

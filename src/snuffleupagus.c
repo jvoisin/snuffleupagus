@@ -152,6 +152,8 @@ PHP_MINFO_FUNCTION(snuffleupagus) {
   php_info_print_table_start();
   php_info_print_table_row(2, "snuffleupagus support", "enabled");
   php_info_print_table_row(2, "Version", PHP_SNUFFLEUPAGUS_VERSION);
+  php_info_print_table_row(2, "Valid config",
+      (SNUFFLEUPAGUS_G(is_config_valid) == true)?"yes":"no");
   php_info_print_table_end();
   DISPLAY_INI_ENTRIES();
 }
@@ -167,13 +169,17 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
   config_file = strtok(new_value->val, ",");
   if (sp_parse_config(config_file) != SUCCESS) {
+      SNUFFLEUPAGUS_G(is_config_valid) = false;
     return FAILURE;
   }
   while ((config_file = strtok(NULL, ","))) {
     if (sp_parse_config(config_file) != SUCCESS) {
+      SNUFFLEUPAGUS_G(is_config_valid) = false;
       return FAILURE;
     }
   }
+
+  SNUFFLEUPAGUS_G(is_config_valid) = true;
 
   if (SNUFFLEUPAGUS_G(config).config_random->enable) {
     hook_rand();
