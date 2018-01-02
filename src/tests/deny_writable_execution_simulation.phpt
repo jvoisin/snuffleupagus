@@ -3,16 +3,6 @@ Readonly execution attempt (simulation mode)
 --SKIPIF--
 <?php
 if (!extension_loaded("snuffleupagus")) print "skip";
-
-$filename = __DIR__ . '/test.txt';
-
-@unlink($filename);
-
-file_put_contents($filename, 'a');
-chmod($filename, 0400);
-
-if (is_writable($filename)) print "skip";;
-@unlink($filename);
  ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disable_writable_simulation.ini
