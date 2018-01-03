@@ -151,7 +151,7 @@ static zend_string *encrypt_data(char *data, unsigned long long data_len) {
   if (0 == nonce_d) {
     /* A zend_long should be enough to avoid collisions */
     if (php_random_int_throw(0, ZEND_LONG_MAX, &nonce_d) == FAILURE) {
-      return NULL;
+      return NULL;  // LCOV_EXCL_LINE
     }
   }
   nonce_d++;

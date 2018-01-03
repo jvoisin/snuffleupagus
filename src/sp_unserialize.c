@@ -6,16 +6,9 @@ PHP_FUNCTION(sp_serialize) {
   void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
 
   /* Call the original `serialize` function. */
-  if ((orig_handler = zend_hash_str_find_ptr(
-           SNUFFLEUPAGUS_G(sp_internal_functions_hook), "serialize", 9))) {
-    orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-  } else {
-    sp_log_err(
-        "disabled_functions",
-        "Unable to find the pointer to the original function 'serialize' in "
-        "the hashtable.\n");
-    return;
-  }
+  orig_handler = zend_hash_str_find_ptr(
+           SNUFFLEUPAGUS_G(sp_internal_functions_hook), "serialize", 9);
+  orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 
   /* Compute the HMAC of the textual representation of the serialized data*/
   zval func_name;

@@ -430,19 +430,12 @@ ZEND_FUNCTION(check_disabled_function) {
     sp_terminate();
   }
 
-  if ((orig_handler = zend_hash_str_find_ptr(
+  orig_handler = zend_hash_str_find_ptr(
            SNUFFLEUPAGUS_G(disabled_functions_hook), current_function_name,
-           strlen(current_function_name)))) {
-    orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-    if (true == should_drop_on_ret(return_value, execute_data)) {
-      sp_terminate();
-    }
-  } else {
-    sp_log_err(
-        "disabled_functions",
-        "Unable to find the pointer to the original function '%s' in the "
-        "hashtable.\n",
-        current_function_name);
+           strlen(current_function_name));
+  orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+  if (true == should_drop_on_ret(return_value, execute_data)) {
+    sp_terminate();
   }
 }
 
