@@ -460,6 +460,28 @@ static int hook_functions(const sp_list_node* config) {
   return SUCCESS;
 }
 
+ZEND_FUNCTION(eval_filter_callback) {
+  void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
+  const char* current_function_name = get_active_function_name(TSRMLS_C);
+
+  if (SNUFFLEUPAGUS_G(in_eval) == true) {
+		if (1 == SNUFFLEUPAGUS_G(config).config_eval->simulation) {
+			sp_log_msg("eval", SP_LOG_SIMULATION,
+					"A call to %s was tried in eval, droping it.", current_function_name);
+		} else {
+			sp_log_msg("eval", SP_LOG_DROP,
+					"A call to %s was tried in eval, droping it.", current_function_name);
+			sp_terminate();
+		}
+	}
+
+  orig_handler = zend_hash_str_find_ptr(
+           SNUFFLEUPAGUS_G(sp_eval_filter_functions_hook),
+					 current_function_name,
+           strlen(current_function_name));
+  orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+
 int hook_disabled_functions(void) {
   TSRMLS_FETCH();
 
@@ -469,6 +491,16 @@ int hook_disabled_functions(void) {
       SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions);
   ret |= hook_functions(SNUFFLEUPAGUS_G(config)
                             .config_disabled_functions_ret->disabled_functions);
+
+	if ( NULL != SNUFFLEUPAGUS_G(config).config_eval->blacklist->data ) {
+		sp_list_node *it = SNUFFLEUPAGUS_G(config).config_eval->blacklist;
+
+		while (it) {
+			hook_function((char*)it->data,
+					SNUFFLEUPAGUS_G(sp_eval_filter_functions_hook), PHP_FN(eval_filter_callback), false);
+			it = it->next;
+		}
+	}
 
   return ret;
 }

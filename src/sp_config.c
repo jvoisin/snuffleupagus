@@ -19,6 +19,7 @@ sp_config_tokens const sp_func[] = {
     {.func = parse_global, .token = SP_TOKEN_GLOBAL},
     {.func = parse_auto_cookie_secure, .token = SP_TOKEN_AUTO_COOKIE_SECURE},
     {.func = parse_disable_xxe, .token = SP_TOKEN_DISABLE_XXE},
+    {.func = parse_eval_filter, .token = SP_TOKEN_EVAL},
     {NULL, NULL}};
 
 /* Top level keyword parsing */

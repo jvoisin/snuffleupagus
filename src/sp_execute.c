@@ -5,6 +5,8 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
+static zend_op_array *(*orig_compile_string)(zval *source_string,
+																						 char *filename TSRMLS_DC);
 static void (*orig_execute_ex)(zend_execute_data *execute_data);
 static int (*orig_zend_stream_open)(const char *filename,
                                     zend_file_handle *handle);
@@ -68,6 +70,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   }
 
   if (execute_data->func->op_array.type == ZEND_EVAL_CODE) {
+    SNUFFLEUPAGUS_G(in_eval) = true;
     sp_list_node *config =
         SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
     char *filename = get_eval_filename((char *)zend_get_executed_filename());
@@ -86,6 +89,8 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   if (true == should_drop_on_ret(execute_data->return_value, execute_data)) {
     sp_terminate();
   }
+
+	SNUFFLEUPAGUS_G(in_eval) = false;
 }
 
 static int sp_stream_open(const char *filename, zend_file_handle *handle) {

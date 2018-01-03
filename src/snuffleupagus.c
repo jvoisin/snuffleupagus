@@ -53,6 +53,8 @@ ZEND_DLEXPORT zend_extension zend_extension_entry = {
     STANDARD_ZEND_EXTENSION_PROPERTIES};
 
 PHP_GINIT_FUNCTION(snuffleupagus) {
+  snuffleupagus_globals->in_eval = false;
+
 #define SP_INIT(F) F = pecalloc(sizeof(*F), 1, 1);
 #define SP_INIT_HT(F)          \
   F = pemalloc(sizeof(*F), 1); \
@@ -60,6 +62,7 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
 
   SP_INIT_HT(snuffleupagus_globals->disabled_functions_hook);
   SP_INIT_HT(snuffleupagus_globals->sp_internal_functions_hook);
+  SP_INIT_HT(snuffleupagus_globals->sp_eval_filter_functions_hook);
 
   SP_INIT(snuffleupagus_globals->config.config_unserialize);
   SP_INIT(snuffleupagus_globals->config.config_random);
@@ -73,6 +76,7 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT(snuffleupagus_globals->config.config_disabled_functions_ret);
   SP_INIT(snuffleupagus_globals->config.config_cookie);
   SP_INIT(snuffleupagus_globals->config.config_disabled_constructs);
+  SP_INIT(snuffleupagus_globals->config.config_eval);
 
   snuffleupagus_globals->config.config_disabled_constructs->construct_include =
       sp_list_new();
@@ -83,6 +87,8 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   snuffleupagus_globals->config.config_disabled_functions_ret
       ->disabled_functions = sp_list_new();
   snuffleupagus_globals->config.config_cookie->cookies = sp_list_new();
+  snuffleupagus_globals->config.config_eval->blacklist = sp_list_new();
+  snuffleupagus_globals->config.config_eval->whitelist = sp_list_new();
 
 #undef SP_INIT
 #undef SP_INIT_HT
@@ -100,6 +106,7 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   pefree(SNUFFLEUPAGUS_G(F), 1);
 
   FREE_HT(disabled_functions_hook);
+  FREE_HT(sp_eval_filter_functions_hook);
 
 #undef FREE_HT
 
@@ -124,6 +131,8 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_LST_DISABLE(config.config_disabled_constructs->construct_include);
   FREE_LST_DISABLE(config.config_disabled_constructs->construct_eval);
   sp_list_free(SNUFFLEUPAGUS_G(config).config_cookie->cookies);
+  sp_list_free(SNUFFLEUPAGUS_G(config).config_eval->blacklist);
+  sp_list_free(SNUFFLEUPAGUS_G(config).config_eval->whitelist);
 
 #undef FREE_LST_DISABLE
 
