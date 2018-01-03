@@ -175,7 +175,11 @@ int sp_parse_config(const char *conf_file) {
   while (getline(&lineptr, &n, fd) > 0) {
     /* We trash the terminal `\n`. This simplify the display of logs. */
     if (lineptr[strlen(lineptr) - 1] == '\n') {
-      lineptr[strlen(lineptr) - 1] = '\0';
+      if (lineptr[strlen(lineptr) - 2] == '\r') {
+        lineptr[strlen(lineptr) - 2] = '\0';
+      } else {
+        lineptr[strlen(lineptr) - 1] = '\0';
+      }
     }
     if (parse_line(lineptr) == -1) {
       fclose(fd);
