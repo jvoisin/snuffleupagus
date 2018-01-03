@@ -23,7 +23,7 @@ so we can see what's happening.
 Snuffleupagus is crashing
 -------------------------
 
-While do do our very best to make snuffleupagus solid as possible, we're humans,
+While we do do our very best to make snuffleupagus solid as possible, we're humans,
 and computers are hard, so crashes can happen. If you're encountering one in production,
 please try to launch the `testsuite <https://github.com/nbs-system/snuffleupagus/blob/master/CONTRIBUTING.md#3-get-the-test-suite-running>`__
 to see if it's failing. If it does, please :ref:`tell us <testsuite_fail>`.
