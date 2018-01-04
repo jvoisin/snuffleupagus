@@ -467,11 +467,11 @@ ZEND_FUNCTION(eval_filter_callback) {
   if (SNUFFLEUPAGUS_G(in_eval) == true) {
     if (1 == SNUFFLEUPAGUS_G(config).config_eval->simulation) {
       sp_log_msg("eval", SP_LOG_SIMULATION,
-                 "A call to %s was tried in eval, droping it.",
+                 "A call to %s was tried in eval, dropping it.",
                  current_function_name);
     } else {
       sp_log_msg("eval", SP_LOG_DROP,
-                 "A call to %s was tried in eval, droping it.",
+                 "A call to %s was tried in eval, dropping it.",
                  current_function_name);
       sp_terminate();
     }

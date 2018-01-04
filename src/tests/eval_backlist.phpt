@@ -13,4 +13,4 @@ echo "After eval: $a\n";
 ?>
 --EXPECTF--
 Outside of eval: 14
-[snuffleupagus][0.0.0.0][eval][drop] A call to strlen was tried in eval, droping it.
+[snuffleupagus][0.0.0.0][eval][drop] A call to strlen was tried in eval, dropping it.
