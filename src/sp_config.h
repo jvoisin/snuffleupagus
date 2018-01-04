@@ -114,7 +114,7 @@ typedef struct {
 typedef struct {
   sp_list_node *blacklist;
   sp_list_node *whitelist;
-	bool simulation;
+  bool simulation;
 } sp_config_eval;
 
 typedef struct {

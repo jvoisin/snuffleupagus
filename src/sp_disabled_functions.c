@@ -431,8 +431,8 @@ ZEND_FUNCTION(check_disabled_function) {
   }
 
   orig_handler = zend_hash_str_find_ptr(
-           SNUFFLEUPAGUS_G(disabled_functions_hook), current_function_name,
-           strlen(current_function_name));
+      SNUFFLEUPAGUS_G(disabled_functions_hook), current_function_name,
+      strlen(current_function_name));
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   if (true == should_drop_on_ret(return_value, execute_data)) {
     sp_terminate();
@@ -465,20 +465,21 @@ ZEND_FUNCTION(eval_filter_callback) {
   const char* current_function_name = get_active_function_name(TSRMLS_C);
 
   if (SNUFFLEUPAGUS_G(in_eval) == true) {
-		if (1 == SNUFFLEUPAGUS_G(config).config_eval->simulation) {
-			sp_log_msg("eval", SP_LOG_SIMULATION,
-					"A call to %s was tried in eval, droping it.", current_function_name);
-		} else {
-			sp_log_msg("eval", SP_LOG_DROP,
-					"A call to %s was tried in eval, droping it.", current_function_name);
-			sp_terminate();
-		}
-	}
+    if (1 == SNUFFLEUPAGUS_G(config).config_eval->simulation) {
+      sp_log_msg("eval", SP_LOG_SIMULATION,
+                 "A call to %s was tried in eval, droping it.",
+                 current_function_name);
+    } else {
+      sp_log_msg("eval", SP_LOG_DROP,
+                 "A call to %s was tried in eval, droping it.",
+                 current_function_name);
+      sp_terminate();
+    }
+  }
 
   orig_handler = zend_hash_str_find_ptr(
-           SNUFFLEUPAGUS_G(sp_eval_filter_functions_hook),
-					 current_function_name,
-           strlen(current_function_name));
+      SNUFFLEUPAGUS_G(sp_eval_filter_functions_hook), current_function_name,
+      strlen(current_function_name));
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 
@@ -492,15 +493,16 @@ int hook_disabled_functions(void) {
   ret |= hook_functions(SNUFFLEUPAGUS_G(config)
                             .config_disabled_functions_ret->disabled_functions);
 
-	if ( NULL != SNUFFLEUPAGUS_G(config).config_eval->blacklist->data ) {
-		sp_list_node *it = SNUFFLEUPAGUS_G(config).config_eval->blacklist;
+  if (NULL != SNUFFLEUPAGUS_G(config).config_eval->blacklist->data) {
+    sp_list_node* it = SNUFFLEUPAGUS_G(config).config_eval->blacklist;
 
-		while (it) {
-			hook_function((char*)it->data,
-					SNUFFLEUPAGUS_G(sp_eval_filter_functions_hook), PHP_FN(eval_filter_callback), false);
-			it = it->next;
-		}
-	}
+    while (it) {
+      hook_function((char*)it->data,
+                    SNUFFLEUPAGUS_G(sp_eval_filter_functions_hook),
+                    PHP_FN(eval_filter_callback), false);
+      it = it->next;
+    }
+  }
 
   return ret;
 }

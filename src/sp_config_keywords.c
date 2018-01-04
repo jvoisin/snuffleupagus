@@ -103,23 +103,22 @@ int parse_global(char *line) {
 }
 
 int parse_eval_filter(char *line) {
-	char *token;
-	char *rest;
+  char *token;
+  char *rest;
   sp_config_functions sp_config_funcs[] = {
       {parse_str, SP_TOKEN_EVAL_BLACKLIST, &rest},
       {parse_empty, SP_TOKEN_SIMULATION,
-				&(SNUFFLEUPAGUS_G(config).config_eval->simulation)},
+       &(SNUFFLEUPAGUS_G(config).config_eval->simulation)},
       {0}};
   int ret = parse_keywords(sp_config_funcs, line);
-	if (0 != ret) {
-		return ret;
-	}
-	
-	while ((token = strtok_r(rest, ",", &rest))) {
-		sp_list_insert(
-				SNUFFLEUPAGUS_G(config).config_eval->blacklist, token);
-	}
-	return SUCCESS;
+  if (0 != ret) {
+    return ret;
+  }
+
+  while ((token = strtok_r(rest, ",", &rest))) {
+    sp_list_insert(SNUFFLEUPAGUS_G(config).config_eval->blacklist, token);
+  }
+  return SUCCESS;
 }
 
 int parse_cookie(char *line) {

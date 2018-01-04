@@ -7,7 +7,7 @@ PHP_FUNCTION(sp_serialize) {
 
   /* Call the original `serialize` function. */
   orig_handler = zend_hash_str_find_ptr(
-           SNUFFLEUPAGUS_G(sp_internal_functions_hook), "serialize", 9);
+      SNUFFLEUPAGUS_G(sp_internal_functions_hook), "serialize", 9);
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 
   /* Compute the HMAC of the textual representation of the serialized data*/

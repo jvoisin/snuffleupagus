@@ -88,7 +88,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
     sp_terminate();
   }
 
-	SNUFFLEUPAGUS_G(in_eval) = false;
+  SNUFFLEUPAGUS_G(in_eval) = false;
 }
 
 static int sp_stream_open(const char *filename, zend_file_handle *handle) {
