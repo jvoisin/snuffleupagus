@@ -6,6 +6,8 @@
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 static void (*orig_execute_ex)(zend_execute_data *execute_data);
+static void (*orig_zend_execute_internal)(zend_execute_data *execute_data,
+                                          zval *return_value);
 static int (*orig_zend_stream_open)(const char *filename,
                                     zend_file_handle *handle);
 
@@ -29,15 +31,44 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
 }
 
 static void is_builtin_matching(const char *restrict const filename,
-                                char *restrict function_name,
-                                char *restrict param_name,
-                                sp_list_node *config) {
+                                const char *restrict const function_name,
+                                const char *restrict const param_name,
+                                const sp_list_node *config) {
   if (!config || !config->data) {
     return;
   }
 
   if (true == should_disable(EG(current_execute_data), function_name, filename,
                              param_name)) {
+    sp_terminate();
+  }
+}
+
+static void is_in_eval_and_whitelisted(zend_execute_data *execute_data) {
+  if (EXPECTED(0 == SNUFFLEUPAGUS_G(in_eval))) {
+    return;
+  }
+
+  if (EXPECTED(NULL == SNUFFLEUPAGUS_G(config).config_eval->whitelist->data)) {
+    return;
+  }
+
+  const char *current_function = get_complete_function_path(execute_data);
+
+  if (EXPECTED(current_function)) {
+    const sp_list_node *it = SNUFFLEUPAGUS_G(config).config_eval->whitelist;
+    while (it) {
+      if (0 == strcmp(current_function, (char *)(it->data))) {
+        /* We've got a match, the function is whiteslited. */
+        return;
+      }
+      it = it->next;
+    }
+
+    sp_log_msg(
+        "Eval_whitelist", SP_LOG_DROP,
+        "The function '%s' isn't in the eval whitelist, dropping its call.",
+        current_function);
     sp_terminate();
   }
 }
@@ -67,28 +98,42 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
     sp_terminate();
   }
 
-  if (execute_data->func->op_array.type == ZEND_EVAL_CODE) {
+  if (EX(func)->op_array.type == ZEND_EVAL_CODE) {
     SNUFFLEUPAGUS_G(in_eval)++;
-    sp_list_node *config =
+    const sp_list_node *config =
         SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
     char *filename = get_eval_filename((char *)zend_get_executed_filename());
     is_builtin_matching(filename, "eval", NULL, config);
     efree(filename);
   }
 
-  if (NULL != execute_data->func->op_array.filename) {
+  is_in_eval_and_whitelisted(execute_data);
+
+  if (NULL != EX(func)->op_array.filename) {
     if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
-      terminate_if_writable(ZSTR_VAL(execute_data->func->op_array.filename));
+      terminate_if_writable(ZSTR_VAL(EX(func)->op_array.filename));
     }
   }
 
   orig_execute_ex(execute_data);
 
-  if (true == should_drop_on_ret(execute_data->return_value, execute_data)) {
+  if (true == should_drop_on_ret(EX(return_value), execute_data)) {
     sp_terminate();
   }
 
-  SNUFFLEUPAGUS_G(in_eval)--;
+  if (ZEND_EVAL_CODE == EX(func)->op_array.type) {
+    SNUFFLEUPAGUS_G(in_eval)--;
+  }
+}
+
+static void sp_zend_execute_internal(INTERNAL_FUNCTION_PARAMETERS) {
+  is_in_eval_and_whitelisted(execute_data);
+
+  EX(func)->internal_function.handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+
+  if (NULL != orig_zend_execute_internal) {
+    orig_zend_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+  }
 }
 
 static int sp_stream_open(const char *filename, zend_file_handle *handle) {
@@ -139,6 +184,10 @@ int hook_execute(void) {
   /* zend_execute_ex is used for "classic" function calls */
   orig_execute_ex = zend_execute_ex;
   zend_execute_ex = sp_execute_ex;
+
+  /* zend_execute_internal is used FIXME */
+  orig_zend_execute_internal = zend_execute_internal;
+  zend_execute_internal = sp_zend_execute_internal;
 
   /* zend_stream_open_function is used FIXME */
   orig_zend_stream_open = zend_stream_open_function;

@@ -62,7 +62,7 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
 
   SP_INIT_HT(snuffleupagus_globals->disabled_functions_hook);
   SP_INIT_HT(snuffleupagus_globals->sp_internal_functions_hook);
-  SP_INIT_HT(snuffleupagus_globals->sp_eval_filter_functions_hook);
+  SP_INIT_HT(snuffleupagus_globals->sp_eval_blacklist_functions_hook);
 
   SP_INIT(snuffleupagus_globals->config.config_unserialize);
   SP_INIT(snuffleupagus_globals->config.config_random);
@@ -106,7 +106,7 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   pefree(SNUFFLEUPAGUS_G(F), 1);
 
   FREE_HT(disabled_functions_hook);
-  FREE_HT(sp_eval_filter_functions_hook);
+  FREE_HT(sp_eval_blacklist_functions_hook);
 
 #undef FREE_HT
 

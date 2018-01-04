@@ -63,7 +63,7 @@ sp_config config;
 bool is_config_valid;
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;
-HashTable *sp_eval_filter_functions_hook;
+HashTable *sp_eval_blacklist_functions_hook;
 ZEND_END_MODULE_GLOBALS(snuffleupagus)
 
 #define SNUFFLEUPAGUS_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(snuffleupagus, v)
@@ -85,7 +85,7 @@ ZEND_TSRMLS_CACHE_EXTERN()
 #endif
 
 PHP_FUNCTION(check_disabled_function);
-PHP_FUNCTION(eval_filter_callback);
+PHP_FUNCTION(eval_blacklist_callback);
 
 static inline void sp_terminate() { zend_bailout(); }
 
