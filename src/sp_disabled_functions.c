@@ -465,14 +465,16 @@ ZEND_FUNCTION(eval_filter_callback) {
   const char* current_function_name = get_active_function_name(TSRMLS_C);
 
   if (SNUFFLEUPAGUS_G(in_eval) == true) {
+    const char* filename = get_eval_filename(zend_get_executed_filename());
+    const int line_number = zend_get_executed_lineno(TSRMLS_C);
     if (1 == SNUFFLEUPAGUS_G(config).config_eval->simulation) {
       sp_log_msg("eval", SP_LOG_SIMULATION,
-                 "A call to %s was tried in eval, dropping it.",
-                 current_function_name);
+                 "A call to %s was tried in eval, in %s:%d, dropping it.",
+                 current_function_name, filename, line_number);
     } else {
       sp_log_msg("eval", SP_LOG_DROP,
-                 "A call to %s was tried in eval, dropping it.",
-                 current_function_name);
+                 "A call to %s was tried in eval, in %s:%d, dropping it.",
+                 current_function_name, filename, line_number);
       sp_terminate();
     }
   }
