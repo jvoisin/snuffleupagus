@@ -246,6 +246,20 @@ disable_xxe
   sp.disable_xxe.enable();
 
 
+Eval white and blacklist
+^^^^^^^^^^^^^^^^^^^^^^^^
+ * `default: disabled`
+ * :ref:`more <eval-feature>`
+
+``eval_filter`` allows to specify white and blacklist of functions allowed and
+forbidden from being called inside ``eval``. The functions names are comma-separated.
+
+::
+
+  sp.eval_filter.blacklist("system,exec,shell_exec");
+  sp.eval_filter.whitelist("strlen,strcmp").simulation();
+
+
 Virtual-patching
 ----------------
 

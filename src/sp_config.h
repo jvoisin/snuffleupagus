@@ -112,6 +112,12 @@ typedef struct {
 } sp_disabled_function;
 
 typedef struct {
+  sp_list_node *blacklist;
+  sp_list_node *whitelist;
+  bool simulation;
+} sp_config_eval;
+
+typedef struct {
   sp_list_node *disabled_functions;  // list of sp_disabled_function
 } sp_config_disabled_functions;
 
@@ -145,6 +151,7 @@ typedef struct {
   sp_config_global_strict *config_global_strict;
   sp_config_disable_xxe *config_disable_xxe;
   sp_config_disabled_constructs *config_disabled_constructs;
+  sp_config_eval *config_eval;
 } sp_config;
 
 typedef struct {
@@ -170,6 +177,7 @@ typedef struct {
 #define SP_TOKEN_UNSERIALIZE_HMAC ".unserialize_hmac"
 #define SP_TOKEN_UPLOAD_VALIDATION ".upload_validation"
 #define SP_TOKEN_DISABLE_XXE ".disable_xxe"
+#define SP_TOKEN_EVAL ".eval_filter"
 
 // common tokens
 #define SP_TOKEN_ENABLE ".enable("
@@ -221,6 +229,10 @@ typedef struct {
 
 // upload_validator
 #define SP_TOKEN_UPLOAD_SCRIPT ".script("
+
+// eval blacklist
+#define SP_TOKEN_EVAL_BLACKLIST ".blacklist("
+#define SP_TOKEN_EVAL_WHITELIST ".whitelist("
 
 int sp_parse_config(const char *);
 int parse_array(sp_disabled_function *);

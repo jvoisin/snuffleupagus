@@ -321,6 +321,19 @@ Snuffleupagus can prevent the execution of this kind of file. A good practice
 would be to use a different user to run PHP than for administrating the website,
 and using this feature to lock this up.
 
+.. _eval-feature:
+
+White and blacklist in ``eval``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+While `eval <https://secure.php.net/manual/en/function.eval.php>`__ is a
+dangerous primitive, tricky to use right, with almost no legitimate usage
+besides templating and building mathematical expressions based on user input,
+it's broadly (mis)used all around the web.
+
+Snuffleupagus provides a white and blacklist mechanism, to explicitly allow
+and forbid specific functions call from being issued inside ``eval``.
+
 
 Protection against cross site request forgery
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

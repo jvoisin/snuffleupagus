@@ -56,9 +56,8 @@ PHP_FUNCTION(sp_rand) {
 
   /* call the original `rand` function,
    * since we might no be the only ones to hook it*/
-  orig_handler =
-    zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
-        "rand", strlen("rand"));
+  orig_handler = zend_hash_str_find_ptr(
+      SNUFFLEUPAGUS_G(sp_internal_functions_hook), "rand", strlen("rand"));
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 
   random_int_wrapper(INTERNAL_FUNCTION_PARAM_PASSTHRU);
@@ -70,8 +69,8 @@ PHP_FUNCTION(sp_mt_rand) {
   /* call the original `mt_rand` function,
    * since we might no be the only ones to hook it*/
   orig_handler =
-           zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
-                                  "mt_rand", strlen("mt_rand"));
+      zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
+                             "mt_rand", strlen("mt_rand"));
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 
   random_int_wrapper(INTERNAL_FUNCTION_PARAM_PASSTHRU);
