@@ -53,7 +53,7 @@ ZEND_DLEXPORT zend_extension zend_extension_entry = {
     STANDARD_ZEND_EXTENSION_PROPERTIES};
 
 PHP_GINIT_FUNCTION(snuffleupagus) {
-  snuffleupagus_globals->in_eval = false;
+  snuffleupagus_globals->in_eval = 0;
 
 #define SP_INIT(F) F = pecalloc(sizeof(*F), 1, 1);
 #define SP_INIT_HT(F)          \

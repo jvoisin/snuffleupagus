@@ -464,7 +464,7 @@ ZEND_FUNCTION(eval_filter_callback) {
   void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
   const char* current_function_name = get_active_function_name(TSRMLS_C);
 
-  if (SNUFFLEUPAGUS_G(in_eval) == true) {
+  if (SNUFFLEUPAGUS_G(in_eval) > 0) {
     const char* filename = get_eval_filename(zend_get_executed_filename());
     const int line_number = zend_get_executed_lineno(TSRMLS_C);
     if (1 == SNUFFLEUPAGUS_G(config).config_eval->simulation) {

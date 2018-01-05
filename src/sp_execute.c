@@ -68,7 +68,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   }
 
   if (execute_data->func->op_array.type == ZEND_EVAL_CODE) {
-    SNUFFLEUPAGUS_G(in_eval) = true;
+    SNUFFLEUPAGUS_G(in_eval)++;
     sp_list_node *config =
         SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
     char *filename = get_eval_filename((char *)zend_get_executed_filename());
@@ -88,7 +88,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
     sp_terminate();
   }
 
-  SNUFFLEUPAGUS_G(in_eval) = false;
+  SNUFFLEUPAGUS_G(in_eval)--;
 }
 
 static int sp_stream_open(const char *filename, zend_file_handle *handle) {
