@@ -7,6 +7,9 @@ ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 static char* get_complete_function_path(
     zend_execute_data const* const execute_data) {
+  if (zend_is_executing() && !EG(current_execute_data)->func) {
+    return NULL;
+  }
   if (!(execute_data->func->common.function_name)) {
     return NULL;
   }
