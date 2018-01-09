@@ -108,6 +108,7 @@ static const sp_list_node* get_config_node(const char* builtin_name) {
     return SNUFFLEUPAGUS_G(config)
         .config_disabled_constructs->construct_include;
   }
+  ZEND_ASSUME(0);
   return NULL;  // This should never happen.
 }
 

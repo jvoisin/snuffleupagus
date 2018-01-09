@@ -131,7 +131,7 @@ static void sp_zend_execute_internal(INTERNAL_FUNCTION_PARAMETERS) {
 
   EX(func)->internal_function.handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 
-  if (NULL != orig_zend_execute_internal) {
+  if (UNEXPECTED(NULL != orig_zend_execute_internal)) {
     orig_zend_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   }
 }
@@ -166,11 +166,7 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
           is_builtin_matching(filename, "include_once", "inclusion path",
                               config);
           break;
-        case ZEND_EVAL:
-          is_builtin_matching(filename, "eval", NULL, config);
-          break;
-        default:
-          break;
+        EMPTY_SWITCH_DEFAULT_CASE();
       }
   }
 
