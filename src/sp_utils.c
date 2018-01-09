@@ -397,7 +397,7 @@ int hook_regexp(const pcre* regexp, HashTable* hook_table,
 bool check_is_in_eval_whitelist(const char* const function_name) {
   const sp_list_node* it = SNUFFLEUPAGUS_G(config).config_eval->whitelist;
 
-  if (!it->head) {
+  if (!it) {
     return false;
   }
 

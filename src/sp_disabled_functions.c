@@ -501,7 +501,7 @@ int hook_disabled_functions(void) {
   ret |= hook_functions(SNUFFLEUPAGUS_G(config)
                             .config_disabled_functions_ret->disabled_functions);
 
-  if (NULL != SNUFFLEUPAGUS_G(config).config_eval->blacklist->data) {
+  if (NULL != SNUFFLEUPAGUS_G(config).config_eval->blacklist) {
     sp_list_node* it = SNUFFLEUPAGUS_G(config).config_eval->blacklist;
 
     while (it) {

@@ -50,7 +50,8 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
     return;
   }
 
-  if (EXPECTED(NULL == SNUFFLEUPAGUS_G(config).config_eval->whitelist->data)) {
+  if (EXPECTED(NULL == SNUFFLEUPAGUS_G(config).config_eval->whitelist ||
+        NULL == SNUFFLEUPAGUS_G(config).config_eval->whitelist->data)) {
     return;
   }
 
