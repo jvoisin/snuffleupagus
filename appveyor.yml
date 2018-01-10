@@ -1,4 +1,5 @@
 version: '{branch}.{build}'
+image: Visual Studio 2015
 install:
 - cmd: choco feature enable -n=allowGlobalConfirmation
 - cmd: cinst wget
