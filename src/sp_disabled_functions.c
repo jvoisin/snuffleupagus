@@ -5,9 +5,7 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-
-char* get_complete_function_path(
-    zend_execute_data const* const execute_data) {
+char* get_complete_function_path(zend_execute_data const* const execute_data) {
   if (zend_is_executing() && !EG(current_execute_data)->func) {
     return NULL;
   }
@@ -469,6 +467,10 @@ ZEND_FUNCTION(eval_blacklist_callback) {
   void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
   const char* current_function_name = get_active_function_name(TSRMLS_C);
 
+  if (true == check_is_in_eval_whitelist(current_function_name)) {
+    goto whitelisted;
+  }
+
   if (SNUFFLEUPAGUS_G(in_eval) > 0) {
     const char* filename = get_eval_filename(zend_get_executed_filename());
     const int line_number = zend_get_executed_lineno(TSRMLS_C);
@@ -484,6 +486,7 @@ ZEND_FUNCTION(eval_blacklist_callback) {
     }
   }
 
+whitelisted:
   orig_handler = zend_hash_str_find_ptr(
       SNUFFLEUPAGUS_G(sp_eval_blacklist_functions_hook), current_function_name,
       strlen(current_function_name));

@@ -44,7 +44,8 @@ static void is_builtin_matching(const char *restrict const filename,
   }
 }
 
-static void is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
+static void ZEND_HOT
+is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
   if (EXPECTED(0 == SNUFFLEUPAGUS_G(in_eval))) {
     return;
   }
@@ -61,25 +62,16 @@ static void is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
     return;
   }
 
-  char const* const current_function = ZSTR_VAL(EX(func)->common.function_name);
+  char const *const current_function = ZSTR_VAL(EX(func)->common.function_name);
 
-  if (EXPECTED(current_function)) {
-    const sp_list_node *it = SNUFFLEUPAGUS_G(config).config_eval->whitelist;
-    /* yes, we could use a HashTable instead, but since the list is pretty
-     * small, it doesn't maka a difference in practise. */
-    while (it) {
-      if (0 == strcmp(current_function, (char *)(it->data))) {
-        /* We've got a match, the function is whiteslited. */
-        return;
-      }
-      it = it->next;
+  if (EXPECTED(NULL != current_function)) {
+    if (false == check_is_in_eval_whitelist(current_function)) {
+      sp_log_msg(
+          "Eval_whitelist", SP_LOG_DROP,
+          "The function '%s' isn't in the eval whitelist, dropping its call.",
+          current_function);
+      sp_terminate();
     }
-
-    sp_log_msg(
-        "Eval_whitelist", SP_LOG_DROP,
-        "The function '%s' isn't in the eval whitelist, dropping its call.",
-        current_function);
-    sp_terminate();
   }
 }
 
@@ -104,6 +96,8 @@ char *get_eval_filename(const char *filename) {
 }
 
 static void sp_execute_ex(zend_execute_data *execute_data) {
+  is_in_eval_and_whitelisted(execute_data);
+
   if (true == should_disable(execute_data, NULL, NULL, NULL)) {
     sp_terminate();
   }
@@ -116,8 +110,6 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
     is_builtin_matching(filename, "eval", NULL, config);
     efree(filename);
   }
-
-  is_in_eval_and_whitelisted(execute_data);
 
   if (NULL != EX(func)->op_array.filename) {
     if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
@@ -176,7 +168,7 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
           is_builtin_matching(filename, "include_once", "inclusion path",
                               config);
           break;
-        EMPTY_SWITCH_DEFAULT_CASE();
+          EMPTY_SWITCH_DEFAULT_CASE();
       }
   }
 

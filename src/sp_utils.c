@@ -7,6 +7,8 @@
 #include <string.h>
 #include <unistd.h>
 
+ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
+
 static inline void _sp_log_err(const char* fmt, ...) {
   char* msg;
   va_list args;
@@ -393,4 +395,23 @@ int hook_regexp(const pcre* regexp, HashTable* hook_table,
   }
   ZEND_HASH_FOREACH_END();
   return SUCCESS;
+}
+
+bool check_is_in_eval_whitelist(const char* const function_name) {
+  const sp_list_node* it = SNUFFLEUPAGUS_G(config).config_eval->whitelist;
+
+  if (!it->head) {
+    return false;
+  }
+
+  /* yes, we could use a HashTable instead, but since the list is pretty
+   * small, it doesn't maka a difference in practise. */
+  while (it && it->data) {
+    if (0 == strcmp(function_name, (char*)(it->data))) {
+      /* We've got a match, the function is whiteslited. */
+      return true;
+    }
+    it = it->next;
+  }
+  return false;
 }

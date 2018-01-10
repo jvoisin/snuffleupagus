@@ -69,5 +69,6 @@ int hook_function(const char *, HashTable *,
                   void (*)(INTERNAL_FUNCTION_PARAMETERS), bool);
 int hook_regexp(const pcre *, HashTable *,
                 void (*)(INTERNAL_FUNCTION_PARAMETERS), bool);
+bool check_is_in_eval_whitelist(const char * const function_name);
 
 #endif /* SP_UTILS_H */

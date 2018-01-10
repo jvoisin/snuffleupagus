@@ -260,6 +260,9 @@ functions names are comma-separated.
   sp.eval_blacklist.list("system,exec,shell_exec");
   sp.eval_whitelist.list("strlen,strcmp").simulation();
 
+The whitelist comes before the black one: if a function is both whitelisted and
+blacklisted, it'll be allowed.
+
 
 Virtual-patching
 ----------------
