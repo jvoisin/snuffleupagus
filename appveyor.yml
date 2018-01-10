@@ -3,7 +3,7 @@ image: Visual Studio 2015
 install:
 - cmd: choco feature enable -n=allowGlobalConfirmation
 - cmd: cinst wget
-buid_script:
+build_script:
 - cmd: >-
     "C:\Program Files (x86)\Microsoft Visual Studio 15.0\VC\bin\vcvars32.bat"
 
