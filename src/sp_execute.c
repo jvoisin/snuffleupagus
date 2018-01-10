@@ -44,7 +44,7 @@ static void is_builtin_matching(const char *restrict const filename,
   }
 }
 
-static void is_in_eval_and_whitelisted(zend_execute_data *execute_data) {
+static void is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
   if (EXPECTED(0 == SNUFFLEUPAGUS_G(in_eval))) {
     return;
   }
@@ -65,6 +65,8 @@ static void is_in_eval_and_whitelisted(zend_execute_data *execute_data) {
 
   if (EXPECTED(current_function)) {
     const sp_list_node *it = SNUFFLEUPAGUS_G(config).config_eval->whitelist;
+    /* yes, we could use a HashTable instead, but since the list is pretty
+     * small, it doesn't maka a difference in practise. */
     while (it) {
       if (0 == strcmp(current_function, (char *)(it->data))) {
         /* We've got a match, the function is whiteslited. */
@@ -157,7 +159,7 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
       if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
         terminate_if_writable(filename);
       }
-      sp_list_node *config =
+      const sp_list_node *config =
           SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
       switch (data->opline->extended_value) {
         case ZEND_INCLUDE:
