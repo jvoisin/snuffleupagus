@@ -4,6 +4,7 @@ install:
 - cmd: choco feature enable -n=allowGlobalConfirmation
 - cmd: cinst wget
 - cmd: mkdir %APPVEYOR_BUILD_FOLDER%\bin
+
 build_script:
 - cmd: >-
     "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
