@@ -251,13 +251,14 @@ Eval white and blacklist
  * `default: disabled`
  * :ref:`more <eval-feature>`
 
-``eval_blacklist`` allows to specify white and blacklist of functions allowed and
-forbidden from being called inside ``eval``. The functions names are comma-separated.
+``eval_whitelist`` and ``eval_blacklist`` allow to respectively specify
+functions allowed and forbidden from being called inside ``eval``. The
+functions names are comma-separated.
 
 ::
 
   sp.eval_blacklist.list("system,exec,shell_exec");
-  sp.eval_blacklist.list("strlen,strcmp").simulation();
+  sp.eval_whitelist.list("strlen,strcmp").simulation();
 
 
 Virtual-patching
