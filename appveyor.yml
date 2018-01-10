@@ -18,7 +18,7 @@ build_script:
 
     mkdir C:\projects\php-src\ext\snuffleupagus
 
-    xcopy %APPVEYOR_BUILD_FOLDER% C:\projects\php-src\ext\snuffleupagus /s /e /y
+    xcopy %APPVEYOR_BUILD_FOLDER%\src C:\projects\php-src\ext\snuffleupagus /s /e /y
 
     wget http://windows.php.net/downloads/php-sdk/deps-7.1-vc14-x86.7z
 
