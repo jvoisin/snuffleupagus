@@ -177,7 +177,8 @@ typedef struct {
 #define SP_TOKEN_UNSERIALIZE_HMAC ".unserialize_hmac"
 #define SP_TOKEN_UPLOAD_VALIDATION ".upload_validation"
 #define SP_TOKEN_DISABLE_XXE ".disable_xxe"
-#define SP_TOKEN_EVAL ".eval_filter"
+#define SP_TOKEN_EVAL_BLACKLIST ".eval_blacklist"
+#define SP_TOKEN_EVAL_WHITELIST ".eval_whitelist"
 
 // common tokens
 #define SP_TOKEN_ENABLE ".enable("
@@ -231,8 +232,7 @@ typedef struct {
 #define SP_TOKEN_UPLOAD_SCRIPT ".script("
 
 // eval blacklist
-#define SP_TOKEN_EVAL_BLACKLIST ".blacklist("
-#define SP_TOKEN_EVAL_WHITELIST ".whitelist("
+#define SP_TOKEN_EVAL_LIST ".list("
 
 int sp_parse_config(const char *);
 int parse_array(sp_disabled_function *);

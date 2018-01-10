@@ -5,7 +5,8 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-static char* get_complete_function_path(
+
+char* get_complete_function_path(
     zend_execute_data const* const execute_data) {
   if (zend_is_executing() && !EG(current_execute_data)->func) {
     return NULL;
@@ -107,6 +108,7 @@ static const sp_list_node* get_config_node(const char* builtin_name) {
     return SNUFFLEUPAGUS_G(config)
         .config_disabled_constructs->construct_include;
   }
+  ZEND_ASSUME(0);
   return NULL;  // This should never happen.
 }
 
@@ -463,7 +465,7 @@ static int hook_functions(const sp_list_node* config) {
   return SUCCESS;
 }
 
-ZEND_FUNCTION(eval_filter_callback) {
+ZEND_FUNCTION(eval_blacklist_callback) {
   void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
   const char* current_function_name = get_active_function_name(TSRMLS_C);
 
@@ -483,7 +485,7 @@ ZEND_FUNCTION(eval_filter_callback) {
   }
 
   orig_handler = zend_hash_str_find_ptr(
-      SNUFFLEUPAGUS_G(sp_eval_filter_functions_hook), current_function_name,
+      SNUFFLEUPAGUS_G(sp_eval_blacklist_functions_hook), current_function_name,
       strlen(current_function_name));
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
@@ -503,8 +505,8 @@ int hook_disabled_functions(void) {
 
     while (it) {
       hook_function((char*)it->data,
-                    SNUFFLEUPAGUS_G(sp_eval_filter_functions_hook),
-                    PHP_FN(eval_filter_callback), false);
+                    SNUFFLEUPAGUS_G(sp_eval_blacklist_functions_hook),
+                    PHP_FN(eval_blacklist_callback), false);
       it = it->next;
     }
   }
