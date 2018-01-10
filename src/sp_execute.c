@@ -49,11 +49,11 @@ static void is_in_eval_and_whitelisted(zend_execute_data *execute_data) {
     return;
   }
 
-  if (zend_is_executing() && !EG(current_execute_data)->func) {
+  if (EXPECTED(NULL == SNUFFLEUPAGUS_G(config).config_eval->whitelist->data)) {
     return;
   }
 
-  if (EXPECTED(NULL == SNUFFLEUPAGUS_G(config).config_eval->whitelist->data)) {
+  if (zend_is_executing() && !EG(current_execute_data)->func) {
     return;
   }
 
