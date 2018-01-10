@@ -49,11 +49,19 @@ static void is_in_eval_and_whitelisted(zend_execute_data *execute_data) {
     return;
   }
 
+  if (zend_is_executing() && !EG(current_execute_data)->func) {
+    return;
+  }
+
   if (EXPECTED(NULL == SNUFFLEUPAGUS_G(config).config_eval->whitelist->data)) {
     return;
   }
 
-  const char *current_function = get_complete_function_path(execute_data);
+  if (!(execute_data->func->common.function_name)) {
+    return;
+  }
+
+  char const* const current_function = ZSTR_VAL(EX(func)->common.function_name);
 
   if (EXPECTED(current_function)) {
     const sp_list_node *it = SNUFFLEUPAGUS_G(config).config_eval->whitelist;
