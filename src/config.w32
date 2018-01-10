@@ -7,10 +7,11 @@
 // Otherwise, use ARG_ENABLE
 // ARG_ENABLE("snuffleupagus", "enable snuffleupagus support", "no");
 
-ARG_ENABLE("snuffleupagus", "wether to enable the fluffy elephant", no);
+ARG_ENABLE("snuffleupagus", "wether to enable the fluffy elephant", "no");
+
+
 
 if (PHP_SNUFFLEUPAGUS == "yes") {
-  var dll = get_define('PHPDLL');
 	var php_snuffleupagus_src_files;
  	php_snuffleupagus_src_files="snuffleupagus.c sp_config.c sp_config_utils.c sp_harden_rand.c"
 	php_snuffleupagus_src_files+=" sp_unserialize.c sp_utils.c sp_disable_xxe.c sp_list.c"
@@ -18,9 +19,12 @@ if (PHP_SNUFFLEUPAGUS == "yes") {
 	php_snuffleupagus_src_files+=" sp_cookie_encryption.c sp_network_utils.c tweetnacl.c"
 	php_snuffleupagus_src_files+=" sp_config_keywords.c sp_var_parser.c sp_var_value.c sp_tree.c"
 	
-  //EXTENSION("snuffleupagus", "snuffleupagus.c", PHP_EXTNAME_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1");
   EXTENSION("snuffleupagus", php_snuffleupagus_src_files, PHP_EXTNAME_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1");
+  //EXTENSION("snuffleupagus", "snuffleupagus.c", PHP_EXTNAME_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1");
 
-	AC_DEFINE('HAVE_IGBINARY', 1, 'Have igbinary support', false); 
+  ADD_SOURCES(configure_module_dirname, php_snuffleupagus_src_files, "snuffleupagus");
+  ADD_MAKEFILE_FRAGMENT();
+  AC_DEFINE('HAVE_SNUFFLEUPAGUS', 1, 'Have snuffleupagus support', false);
+  PHP_INSTALL_HEADERS("ext/snuffleupagus", "php_snuffleupagus.h");
 }
 
