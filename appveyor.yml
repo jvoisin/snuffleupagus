@@ -1,11 +1,11 @@
 version: '{branch}.{build}'
-image: Visual Studio 2015
+image: Visual Studio 2014
 install:
 - cmd: choco feature enable -n=allowGlobalConfirmation
 - cmd: cinst wget
 build_script:
 - cmd: >-
-    "C:\Program Files (x86)\Microsoft Visual Studio 15.0\VC\bin\vcvars32.bat"
+    "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
 
     wget http://windows.php.net/downloads/php-sdk/php-sdk-binary-tools-20110915.zip
 
