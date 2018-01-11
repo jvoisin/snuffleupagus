@@ -17,17 +17,6 @@
 #define sp_const
 #endif
 #endif
-/* The dump filename are of the form
- * `sp_dump_DATE_IPADDR.dump`, with:
- * - DATE being the output of asctime, 26 chars long
- * - IP_ADDR being an IP adress, with a maximum size of 15
- *
- *   We keep one char for the terminal \0, and one for the leading slash.
- */
-
-#define MAX_FOLDER_LEN                                        \
-  PATH_MAX - 1 - sizeof("sp_dump_") - 26 - sizeof("_") - 15 - \
-      sizeof(".dump") - 1
 
 #define VAR_AND_LEN(var) var, strlen(var)
 

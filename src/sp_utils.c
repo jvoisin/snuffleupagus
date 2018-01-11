@@ -93,7 +93,7 @@ static int construct_filename(char* filename, const char* folder,
   PHP_SHA256Update(&context, (const unsigned char*)textual, strlen(textual));
   PHP_SHA256Final(digest, &context);
   make_digest_ex(strhash, digest, SHA256_SIZE);
-  snprintf(filename, MAX_FOLDER_LEN - 1, "%s/sp_dump.%s", folder, strhash);
+  snprintf(filename, PATH_MAX - 1, "%s/sp_dump.%s", folder, strhash);
 
   return 0;
 }
@@ -102,7 +102,7 @@ int sp_log_request(const char* folder, const char* text_repr) {
   FILE* file;
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);
-  char filename[MAX_FOLDER_LEN] = {0};
+  char filename[PATH_MAX] = {0};
   const struct {
     const char* str;
     const int key;
