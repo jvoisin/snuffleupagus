@@ -1,0 +1,34 @@
+version: '{branch}.{build}'
+#image: Visual Studio 2014
+install:
+- cmd: choco feature enable -n=allowGlobalConfirmation
+- cmd: cinst wget
+- cmd: mkdir %APPVEYOR_BUILD_FOLDER%\bin
+
+build_script:
+- cmd: >-
+    "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\vcvars32.bat"
+
+    wget http://windows.php.net/downloads/php-sdk/php-sdk-binary-tools-20110915.zip
+
+    7z x -y php-sdk-binary-tools-20110915.zip -oC:\projects\php-sdk
+
+    C:\projects\php-sdk\bin\phpsdk_setvars.bat
+
+    git clone --depth=1 --branch=PHP-7.1 https://github.com/php/php-src C:\projects\php-src
+
+    mkdir C:\projects\php-src\ext\snuffleupagus
+
+    xcopy %APPVEYOR_BUILD_FOLDER%\src C:\projects\php-src\ext\snuffleupagus /s /e /y
+
+    wget http://windows.php.net/downloads/php-sdk/deps-7.1-vc14-x86.7z
+
+    7z x -y deps-7.1-vc14-x86.7z -oC:\projects\php-src
+
+    cd C:\projects\php-src
+
+    buildconf.bat
+
+    configure.bat --disable-all  --enable-cli --enable-cgi --enable-snuffleupagus --with-config-file-scan-dir=C:\projects\extension\bin\modules.d --with-prefix=%APPVEYOR_BUILD_FOLDER%\bin --with-php-build=deps
+
+    nmake
