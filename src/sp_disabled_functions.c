@@ -70,25 +70,26 @@ static bool is_local_var_matching(
 
   var_value = get_value(execute_data, config_node->var, false);
   if (var_value) {
-    char* var_value_str = sp_convert_to_string(var_value);
     if (Z_TYPE_P(var_value) == IS_ARRAY) {
       if (config_node->key || config_node->r_key) {
         if (sp_match_array_key(var_value, config_node->key,
                                config_node->r_key)) {
-          efree(var_value_str);
           return true;
         }
       } else if (sp_match_array_value(var_value, config_node->value,
                                       config_node->value_r)) {
-        efree(var_value_str);
         return true;
       }
-    } else if (sp_match_value(var_value_str, config_node->value,
-                              config_node->value_r)) {
+    } else {
+      char* var_value_str = sp_convert_to_string(var_value);
+      bool match = sp_match_value(var_value_str, config_node->value,
+                                 config_node->value_r);
       efree(var_value_str);
-      return true;
+
+      if (true == match) {
+        return true;
+      }
     }
-    efree(var_value_str);
   }
   return false;
 }
