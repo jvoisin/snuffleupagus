@@ -469,7 +469,7 @@ ZEND_FUNCTION(eval_blacklist_callback) {
   }
 
   if (SNUFFLEUPAGUS_G(in_eval) > 0) {
-    const char* filename = get_eval_filename(zend_get_executed_filename());
+    char* filename = get_eval_filename(zend_get_executed_filename());
     const int line_number = zend_get_executed_lineno(TSRMLS_C);
     if (1 == SNUFFLEUPAGUS_G(config).config_eval->simulation) {
       sp_log_msg("eval", SP_LOG_SIMULATION,
@@ -481,6 +481,7 @@ ZEND_FUNCTION(eval_blacklist_callback) {
                  current_function_name, filename, line_number);
       sp_terminate();
     }
+    efree(filename);
   }
 
 whitelisted:
