@@ -264,6 +264,8 @@ The whitelist comes before the black one: if a function is both whitelisted and
 blacklisted, it'll be allowed.
 
 
+.. _virtual-patching-config:
+
 Virtual-patching
 ----------------
 

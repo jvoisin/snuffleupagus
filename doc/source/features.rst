@@ -273,6 +273,9 @@ disable them - at the risk of breaking critical features.
 
 Snuffleupagus allows the user to restrict usage of specific functions per file, or per
 file with a matching (sha256) hash, thus allowing the use of such functions **only** in the intended places.
+It can also restrict per `CIDR <https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing>`__,
+to restrict execution to users on the LAN for example. There are a *lot*
+of different filters, so make sure to read the :ref:`corresponding documentation <virtual-patching-config>`.
 
 Furthermore, running the `following script <https://github.com/nbs-system/snuffleupagus/blob/master/scripts/generate_rules.php>`_  will generate an hash and line-based whitelist
 of dangerous functions, droping them everywhere else:
