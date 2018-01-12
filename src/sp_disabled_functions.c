@@ -83,7 +83,7 @@ static bool is_local_var_matching(
     } else {
       char* var_value_str = sp_convert_to_string(var_value);
       bool match = sp_match_value(var_value_str, config_node->value,
-                                 config_node->value_r);
+                                  config_node->value_r);
       efree(var_value_str);
 
       if (true == match) {
@@ -236,7 +236,7 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
 
   if (!complete_path_function) {
     if (builtin_name) {
-      complete_path_function = (char*)builtin_name;
+      complete_path_function = estrdup(builtin_name);
     } else {
       return false;
     }
@@ -329,18 +329,14 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
     if (true == config_node->simulation) {
       goto next;
     } else {  // We've got a match, the function won't be executed
-      if (builtin_name == NULL) {
-        efree(complete_path_function);
-      }
+      efree(complete_path_function);
       return true;
     }
   next:
     config = config->next;
   }
 allow:
-  if (builtin_name == NULL) {
-    efree(complete_path_function);
-  }
+  efree(complete_path_function);
   return false;
 }
 
