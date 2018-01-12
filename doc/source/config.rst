@@ -276,7 +276,7 @@ In the situation where you have a call to ``system()`` that lacks proper user-in
 ::
    
   # Allow `id.php` to restrict system() calls to `id`
-  sp.disable_function.function("system").filename("id.php").param("$cmd").value("id").allow();
+  sp.disable_function.function("system").filename("id.php").param("cmd").value("id").allow();
   sp.disable_function.function("system").filename("id.php").drop()
 
 Of course, this is a trivial example,  a lot can be achieved with this feature, as you will see below.
@@ -387,9 +387,9 @@ The following rules will:
 
 ::
 
-  sp.disable_function.function("system").param("$cmd").value("id").allow();
-  sp.disable_function.function("system").param("$cmd").value_r("^ping").drop().simulation();
-  sp.disable_function.function("system").param("$cmd").drop();
+  sp.disable_function.function("system").param("cmd").value("id").allow();
+  sp.disable_function.function("system").param("cmd").value_r("^ping").drop().simulation();
+  sp.disable_function.function("system").param("cmd").drop();
 
 Miscellaneous examples
 """"""""""""""""""""""
