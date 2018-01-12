@@ -61,6 +61,8 @@ Examples of related vulnerabilities
 - `CVE-2016-10033 <https://legalhackers.com/advisories/PHPMailer-Exploit-Remote-Code-Exec-CVE-2016-10033-Vuln.html>`_: remote code execution in PHPMailer
 - `CVE-2016-9920 <https://www.ripstech.com/blog/2016/roundcube-command-execution-via-email/>`_: Unauthenticated remote code execution in Roundcube
 
+.. _cookie-encryption-feature:
+
 Session-cookie stealing via XSS
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -81,6 +83,9 @@ The encryption is done via the `tweetnacl library <https://tweetnacl.cr.yp.to/>`
 thus using curve25519, xsalsa20 and poly1305 for the encryption. We chose this
 library because of its portability, simplicity and reduced size (a single `.h` and
 `.c` file.).
+
+
+.. _fileupload-feature:
 
 Remote code execution via file-upload
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -113,6 +118,8 @@ Examples of related vulnerabilities
 - `CVE-2013-5576 <https://developer.joomla.org/security/news/563-20130801-core-unauthorised-uploads>`_: Authenticated remote code execution in Joomla
 - `EDB-19154 <https://www.rapid7.com/db/modules/exploit/multi/http/qdpm_upload_exec>`_: Authenticated remote code execution in qdPM
 
+
+.. _unserialize-feature:
 
 Unserialize-related magic
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -191,11 +198,6 @@ It's worth noting that the PHP documentation contains the following warning:
 
 This is of course addressed as well by the ``harden_rand`` feature.
 
-.. warning::
-
-  Activating this feature will raise an `Error <https://secure.php.net/manual/en/class.error.php>`_
-  exception if ``min`` is superior to ``max``, while the default dehaviour is simply to swap them.
-
 
 Examples of related vulnerabilities
 """""""""""""""""""""""""""""""""""
@@ -208,6 +210,8 @@ Examples of related vulnerabilities
 - `CVE-2010-???? <http://www.sektioneins.com/advisories/advisory-022010-mybb-password-reset-weak-random-numbers-vulnerability.html>`_: Unauthenticated accounts takeover in MyBB
 - `CVE-2008-4102 <https://sektioneins.de/en/advisories/advisory-042008-joomla-weak-random-password-reset-token-vulnerability.html>`_: Unauthenticated accounts takeover in Joomla
 - `CVE-2006-0632 <https://www.cvedetails.com/cve/CVE-2006-0632/>`_: Unauthenticated account takeover in phpBB
+
+.. _xxe-feature:
 
 XXE
 ^^^
@@ -238,6 +242,8 @@ Examples of related vulnerabilities
 - `CVE-2014-8790 <https://github.com/GetSimpleCMS/GetSimpleCMS/issues/944>`_: Unauthenticated remote code execution in GetSimple CMS
 - `CVE-2011-4107 <https://www.phpmyadmin.net/security/PMASA-2011-17/>`_: Authenticated local file disclosure in PHPMyAdmin
 
+
+.. _auto-cookie-secure-feature:
 
 Cookie stealing via HTTP MITM
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -313,6 +319,8 @@ This feature is largely inspired from the
 `autostrict <https://github.com/krakjoe/autostrict>`_ module from `krakjoe <http://krakjoe.ninja>`__.
 
 
+.. _readonly-exec-feature:
+
 Preventing execution of writable PHP files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -337,6 +345,7 @@ it's broadly (mis)used all around the web.
 Snuffleupagus provides a white and blacklist mechanism, to explicitly allow
 and forbid specific functions call from being issued inside ``eval``.
 
+.. _samesite-feature:
 
 Protection against cross site request forgery
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -34,14 +34,34 @@ but will write a warning in the log.
 The rules are evaluated in the order that they are written, the **first** one
 to match will terminate the evaluation (except for rules in simulation mode).
 
+
+Miscellaneous
+-------------
+
+global
+^^^^^^
+
+This configuration variable contains parameters that are used by multiple features:
+
+- ``secret_key``: A secret key used by various cryptographic features,
+  like `cookies protection <features.html#session-cookie-stealing-via-xss>`__ or `unserialize protection <features.html#unserialize-related-magic>`__,
+  please ensure the length and complexity is sufficient.
+  You can generate it with functions such as: ``head -c 256 /dev/urandom | tr -dc 'a-zA-Z0-9'``.
+
+::
+
+  sp.global.secret_key("44239bd400aa82e125337c9d4eb8315767411ccd");
+
+- ``cookie_env_var``: A environment variable used as part of cookies encryption.
+  See the :ref:`relevant documentation <env-var-config>`.
+
 Bugclass-killer features
 ------------------------
 
 global_strict
 ^^^^^^^^^^^^^
-`default: disabled`
 
-``global_strict`` will enable the `strict <https://secure.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.strict>`_ mode globally, 
+:ref:`global_strict <global-strict-feature>`, disabled by default, will enable the `strict <https://secure.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.strict>`_ mode globally, 
 forcing PHP to throw a `TypeError <https://secure.php.net/manual/en/class.typeerror.php>`_
 exception if an argument type being passed to a function does not match its corresponding declared parameter type.
 
@@ -54,12 +74,13 @@ It can either be ``enabled`` or ``disabled``.
 
 harden_random
 ^^^^^^^^^^^^^
- * `default: enabled`
- * `more <features.html#weak-prng-via-rand-mt-rand>`__
  
-``harden_random`` will silently replace the insecure `rand <https://secure.php.net/manual/en/function.rand.php>`_
-and `mt_rand <https://secure.php.net/manual/en/function.mt-rand.php>`_ functions with
-the secure PRNG `random_int <https://secure.php.net/manual/en/function.random-int.php>`_.
+:ref:`harden_random <harden-rand-feature>`, enabled by default, will silently
+replace the insecure `rand
+<https://secure.php.net/manual/en/function.rand.php>`_ and `mt_rand
+<https://secure.php.net/manual/en/function.mt-rand.php>`_ functions with the
+secure PRNG `random_int
+<https://secure.php.net/manual/en/function.random-int.php>`_.
 
 It can either be ``enabled`` or ``disabled``.
 
@@ -70,27 +91,12 @@ It can either be ``enabled`` or ``disabled``.
 
 .. _config_global:
 
-global
-^^^^^^
-
-This configuration variable contains parameters that are used by multiple functions:
-
-- ``secret_key``: A secret key used by various cryptographic features,
-  like `cookies protection <features.html#session-cookie-stealing-via-xss>`__ or `unserialize protection <features.html#unserialize-related-magic>`__,
-  please ensure the length and complexity is sufficient.
-  You can generate it with functions such as: ``head -c 256 /dev/urandom | tr -dc 'a-zA-Z0-9'``.
-
-::
-
-  sp.global.secret_key("44239bd400aa82e125337c9d4eb8315767411ccd");
-
 unserialize_hmac
 ^^^^^^^^^^^^^^^^
- * `default: disabled`
- * `more <features.html#unserialize-related-magic>`__
  
-``unserialize_hmac`` will add an integrity check to ``unserialize`` calls, preventing
-abritrary code execution in their context.
+:ref:`unserialize_hmac <unserialize-feature>`, disabled by default, will add an
+integrity check to ``unserialize`` calls, preventing arbitrary code execution
+in their context.
 
 It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` mode.
 
@@ -102,11 +108,11 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 
 auto_cookie_secure
 ^^^^^^^^^^^^^^^^^^
- * `default: disabled`
- * `more <features.html#session-cookie-stealing-via-xss>`__
  
-``auto_cookie_secure`` will automatically mark cookies as `secure <https://en.wikipedia.org/wiki/HTTP_cookie#Secure_cookie>`_
-when the web page is requested over HTTPS.
+:ref:`auto_cookie_secure <auto-cookie-secure-feature>`, disabled by default,
+will automatically mark cookies as `secure
+<https://en.wikipedia.org/wiki/HTTP_cookie#Secure_cookie>`_ when the web page
+is requested over HTTPS.
 
 It can either be ``enabled`` or ``disabled``.
 
@@ -117,11 +123,12 @@ It can either be ``enabled`` or ``disabled``.
 
 cookie_samesite
 ^^^^^^^^^^^^^^^^
- * `default: disabled`
  
-``samesite`` will add the `samesite <https://tools.ietf.org/html/draft-west-first-party-cookies-07>`_
-attribute to cookies. It `prevents CSRF <https://www.owasp.org/index.php/SameSite>`_
-but is not implemented by `all web browsers <https://caniuse.com/#search=samesite>`_ yet.
+:ref:`samesite <samesite-feature>`, disabled by default, will add the `samesite
+<https://tools.ietf.org/html/draft-west-first-party-cookies-07>`_ attribute to
+cookies. It `prevents CSRF <https://www.owasp.org/index.php/SameSite>`_ but is
+not implemented by `all web browsers <https://caniuse.com/#search=samesite>`_
+yet.
 
 It can either be set to ``strict`` or ``lax``:
 
@@ -139,9 +146,6 @@ It can either be set to ``strict`` or ``lax``:
 
 cookie_encryption
 ^^^^^^^^^^^^^^^^^
-
- * `default: disabled`
- * `more <features.html#session-cookie-stealing-via-xss>`__
    
 .. warning::
 
@@ -151,7 +155,7 @@ cookie_encryption
   `trivially bruteforcing <https://www.idontplaydarts.com/2011/11/decrypting-suhosin-sessions-and-cookies/>`_
   or re-using session cookies.
 
-``cookie_secure`` will activate transparent encryption of specific cookies.
+:ref:`cookie_secure <cookie-encryption-feature>`, disabled by default, will activate transparent encryption of specific cookies.
 
 It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` mode.
 
@@ -173,6 +177,8 @@ it to your php process.
 
 We think that this use case is too exotic to be worth implementing as a
 proper configuration directive.
+
+.. _env-var-config:
 
 Choosing the proper environment variable
 """"""""""""""""""""""""""""""""""""""""
@@ -197,9 +203,9 @@ or ``X-Real-IP`` if you're behind a reverse proxy.
 
 readonly_exec
 ^^^^^^^^^^^^^
- * `default: disabled`
 
-``readonly_exec`` will prevent the execution of writable PHP files.
+:ref:`readonly_exec <readonly-exec-feature>`, disabled by default, will prevent
+the execution of writeable PHP files.
 
 It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` mode.
 
@@ -209,11 +215,10 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 
 upload_validation
 ^^^^^^^^^^^^^^^^^
- * `default: disabled`
- * `more <features.html#remote-code-execution-via-file-upload>`__
 
-``upload_validation`` will call a given script upon a file upload, with the path 
-to the file being uploaded as argument and various information about it in the environment:
+:ref:`upload_validation <fileupload-feature>`, disabled by default, will call a
+given script upon a file upload, with the path to the file being uploaded as
+argument and various information about it in the environment:
 
 * ``SP_FILENAME``: the name of the uploaded file
 * ``SP_FILESIZE``: the size of the file being uploaded
@@ -236,10 +241,8 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 
 disable_xxe
 ^^^^^^^^^^^
- * `default: enabled`
- * `more <features.html#xxe>`__
 
-``disable_xxe`` will prevent XXE attacks by disabling the loading of external entities (``libxml_disable_entity_loader``) in the XML parser.
+:ref:`disable_xxe <xxe-feature>`, enabled by default, will prevent XXE attacks by disabling the loading of external entities (``libxml_disable_entity_loader``) in the XML parser.
 
 ::
 
@@ -248,12 +251,10 @@ disable_xxe
 
 Eval white and blacklist
 ^^^^^^^^^^^^^^^^^^^^^^^^
- * `default: disabled`
- * :ref:`more <eval-feature>`
 
-``eval_whitelist`` and ``eval_blacklist`` allow to respectively specify
-functions allowed and forbidden from being called inside ``eval``. The
-functions names are comma-separated.
+:ref:`eval_whitelist and eval_blacklist <eval-feature>`, disabled by default,
+allow to respectively specify functions allowed and forbidden from being called
+inside ``eval``. The functions names are comma-separated.
 
 ::
 
@@ -366,7 +367,7 @@ It's currently not possible to:
 - Hook every `language construct <https://secure.php.net/manual/en/reserved.keywords.php>`__,
   because each of them requires a specific implementation.
 - Hook on the return value of user-defined functions
-- Use extra-convoluted rulesfor matching, like ``${$A}$$B->${'}[1]``, because if you're writing
+- Use extra-convoluted rules for matching, like ``${$A}$$B->${'}[1]``, because if you're writing
   things like this, odds are that you're doing something wrong anyway.
 
 
