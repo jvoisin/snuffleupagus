@@ -92,19 +92,20 @@ static void *get_entry_hashtable(const HashTable *ht, const char *entry,
 
 static zval *get_array_value(zend_execute_data *ed, zval *zvalue,
                              const sp_tree *tree) {
-  zval *idx_value, *ret = NULL;
-  char *idx = NULL;
+  zval *idx_value = get_value(ed, tree->idx, false);
 
-  idx_value = get_value(ed, tree->idx, false);
   if (!zvalue || !idx_value) {
     return NULL;
   }
+
   if (Z_TYPE_P(zvalue) == IS_ARRAY) {
-    idx = sp_convert_to_string(idx_value);
-    ret = get_entry_hashtable(Z_ARRVAL_P(zvalue), idx, strlen(idx));
+    char *idx = sp_convert_to_string(idx_value);
+    zval *ret = get_entry_hashtable(Z_ARRVAL_P(zvalue), idx, strlen(idx));
     efree(idx);
+    return ret;
   }
-  return ret;
+
+  return NULL;
 }
 
 static zval *get_object_property(zend_execute_data *ed, zval *object,
