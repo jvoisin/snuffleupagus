@@ -20,12 +20,13 @@ static zval *get_param_var(zend_execute_data *ed, const char *var_name) {
 static zval *get_local_var(zend_execute_data *ed, const char *var_name) {
   zend_execute_data *orig_execute_data = ed;
   zend_execute_data *current = ed;
-  zval *value = NULL;
 
   while (current) {
+    zval *value = NULL;
     zend_string *key = NULL;
     EG(current_execute_data) = current;
     zend_array *symtable = zend_rebuild_symbol_table();
+
     ZEND_HASH_FOREACH_STR_KEY_VAL(symtable, key, value) {
       if (0 == strcmp(var_name, key->val)) {
         if (Z_TYPE_P(value) == IS_INDIRECT) {
@@ -52,23 +53,24 @@ static zval *get_constant(const char *value) {
 
 static zval *get_var_value(zend_execute_data *ed, const char *var_name,
                            bool is_param) {
-  zval *zvalue = NULL;
-
   if (!var_name) {
     return NULL;
   }
+
   if (*var_name != VARIABLE_TOKEN) {
     return get_constant(var_name);
   } else {
     var_name++;
   }
+
   if (is_param) {
-    zvalue = get_param_var(ed, var_name);
+    zval *zvalue = get_param_var(ed, var_name);
     if (!zvalue) {
       return get_local_var(ed, var_name);
     }
     return zvalue;
   }
+
   return get_local_var(ed, var_name);
 }
 
@@ -79,6 +81,7 @@ static void *get_entry_hashtable(const HashTable *ht, const char *entry,
   if (!zvalue) {
     zvalue = zend_hash_index_find(ht, atol(entry));
   }
+
   while (zvalue &&
          (Z_TYPE_P(zvalue) == IS_INDIRECT || Z_TYPE_P(zvalue) == IS_PTR)) {
     if (Z_TYPE_P(zvalue) == IS_INDIRECT) {
@@ -141,11 +144,8 @@ static zval *get_object_property(zend_execute_data *ed, zval *object,
 }
 
 static zend_class_entry *get_class(const char *value) {
-  zend_string *name;
-  zend_class_entry *ce;
-
-  name = zend_string_init(value, strlen(value), 0);
-  ce = zend_lookup_class(name);
+  zend_string *name = zend_string_init(value, strlen(value), 0);
+  zend_class_entry *ce = zend_lookup_class(name);
   zend_string_release(name);
   return ce;
 }
