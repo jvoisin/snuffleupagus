@@ -57,7 +57,7 @@ PHP_FUNCTION(sp_unserialize) {
   }
 
   hmac = buf + buf_len - 64;
-  serialized_str = ecalloc(sizeof(*serialized_str) * (buf_len - 64 + 1), 1);
+  serialized_str = ecalloc(buf_len - 64 + 1, 1);
   memcpy(serialized_str, buf, buf_len - 64);
 
   zval func_name;

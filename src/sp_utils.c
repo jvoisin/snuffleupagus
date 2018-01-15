@@ -360,7 +360,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
     }
   } else {  // TODO this can be moved somewhere else to gain some marginal perfs
     CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
-    char* mb_name = pecalloc(strlen(original_name) + 3 + 1, 1, 0);
+    char* mb_name = ecalloc(strlen(original_name) + 3 + 1, 1);
     memcpy(mb_name, "mb_", 3);
     memcpy(mb_name + 3, VAR_AND_LEN(original_name));
     if (zend_hash_str_find(CG(function_table), VAR_AND_LEN(mb_name))) {

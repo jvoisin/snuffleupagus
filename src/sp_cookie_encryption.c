@@ -94,7 +94,7 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
 
   generate_key(key);
 
-  decrypted = pecalloc(ZSTR_LEN(debase64), 1, 0);
+  decrypted = ecalloc(ZSTR_LEN(debase64), 1);
 
   ret = crypto_secretbox_open(
       decrypted,
@@ -137,8 +137,8 @@ static zend_string *encrypt_data(char *data, unsigned long long data_len) {
 
   unsigned char key[crypto_secretbox_KEYBYTES] = {0};
   unsigned char nonce[crypto_secretbox_NONCEBYTES] = {0};
-  unsigned char *data_to_encrypt = pecalloc(encrypted_msg_len, 1, 0);
-  unsigned char *encrypted_data = pecalloc(emsg_and_nonce_len, 1, 1);
+  unsigned char *data_to_encrypt = ecalloc(encrypted_msg_len, 1);
+  unsigned char *encrypted_data = ecalloc(emsg_and_nonce_len, 1);
 
   generate_key(key);
 

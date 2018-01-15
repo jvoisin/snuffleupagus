@@ -164,8 +164,7 @@ static zval *get_unknown_type(const char *restrict value, zval *zvalue,
     }
     if (!zvalue) {
       zvalue = emalloc(sizeof(zval));
-      zvalue->value.str = zend_string_init(value, strlen(value), 0);
-      zvalue->u1.v.type = IS_STRING;
+      ZVAL_PSTRING(zvalue, value);
     }
   } else {
     return NULL;
