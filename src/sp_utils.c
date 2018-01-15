@@ -284,11 +284,9 @@ bool sp_match_array_key(const zval* zv, const char* to_match, const pcre* rx) {
         return true;
       }
     } else {
-      char* idx_str = NULL;
+      char* idx_str = emalloc(snprintf(NULL, 0, "%lu", idx) + 1);
 
-      // Could use a log.
-      idx_str = emalloc(snprintf(NULL, 0, "%lu", idx));
-      sprintf(idx_str, "%lu", idx);
+      sprintf(idx_str, "%lu", idx); // This could use a log.
       if (sp_match_value(idx_str, to_match, rx)) {
         efree(idx_str);
         return true;
