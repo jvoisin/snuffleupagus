@@ -2,3 +2,7 @@ blockquote {
     border-left: 2px solid #999;
     padding-left: 20px;
 }
+
+div.body h5 {
+	font-size: 115%;
+}

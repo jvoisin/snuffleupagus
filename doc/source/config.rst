@@ -105,9 +105,14 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
   sp.unserialize_hmac.enable();
   sp.unserialize_hmac.disable();
 
+Cookies-related mitigations
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ 
+.. warning::
+  Those features are **not** available for session cookies `yet <https://github.com/nbs-system/snuffleupagus/issues/122>`_.
 
 auto_cookie_secure
-^^^^^^^^^^^^^^^^^^
+""""""""""""""""""
  
 :ref:`auto_cookie_secure <auto-cookie-secure-feature>`, disabled by default,
 will automatically mark cookies as `secure
@@ -122,7 +127,7 @@ It can either be ``enabled`` or ``disabled``.
   sp.auto_cookie_secure.disable();
 
 cookie_samesite
-^^^^^^^^^^^^^^^^
+"""""""""""""""
  
 :ref:`samesite <samesite-feature>`, disabled by default, will add the `samesite
 <https://tools.ietf.org/html/draft-west-first-party-cookies-07>`_ attribute to
@@ -145,7 +150,7 @@ It can either be set to ``strict`` or ``lax``:
 .. _cookie-encryption_config:
 
 cookie_encryption
-^^^^^^^^^^^^^^^^^
+"""""""""""""""""
    
 .. warning::
 
@@ -166,7 +171,7 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 
 
 Removing the user-agent part
-""""""""""""""""""""""""""""
+............................
 
 Some web browser extensions, such as `uMatrix <https://github.com/gorhill/uMatrix/wiki>`__
 might be configured to change the user-agent on a regular basis. If you think that
@@ -181,7 +186,7 @@ proper configuration directive.
 .. _env-var-config:
 
 Choosing the proper environment variable
-""""""""""""""""""""""""""""""""""""""""
+........................................
 
 It's up to you to choose a meaningful environment variable to derive the key from.
 Suhosin `is using <https://www.suhosin.org/stories/configuration.html#suhosin-session-cryptraddr>`_
