@@ -11,12 +11,6 @@ void sp_list_free(sp_list_node *node) {
   }
 }
 
-sp_list_node *sp_list_new() {
-  sp_list_node *new = pecalloc(sizeof(*new), 1, 1);
-  new->next = new->data = new->head = NULL;
-  return new;
-}
-
 // Thanks to https://en.wikipedia.org/wiki/Insertion_sort :>
 sp_list_node *sp_list_sort(sp_list_node *pList,
                            int (*cmp_func)(sp_list_node *, sp_list_node *)) {
@@ -46,39 +40,26 @@ sp_list_node *sp_list_sort(sp_list_node *pList,
   return head;
 }
 
-void sp_list_insert(sp_list_node *list, void *data) {
-  if (list->head == NULL) {
-    list->data = data;
-    list->next = NULL;
-    list->head = list;
+sp_list_node *sp_list_insert(sp_list_node *list, void *data) {
+  sp_list_node *new = pecalloc(sizeof(*new), 1, 1);
+  sp_list_node *origin = list;
+  new->data = data;
+  new->next = NULL;
+
+  if (list == NULL) {
+    origin = new;
   } else {
-    sp_list_node *new = pecalloc(sizeof(*new), 1, 1);
-
-    new->data = data;
-    new->next = NULL;
-    new->head = list;
-
     while (list->next) {
       list = list->next;
     }
     list->next = new;
   }
+  return origin;
 }
 
-void sp_list_prepend(sp_list_node *list, void *data) {
-  if (list->head == NULL) {
-    list->data = data;
-    list->next = NULL;
-    list->head = list;
-  } else {
-    sp_list_node *new = pecalloc(sizeof(*new), 1, 1);
-
-    new->next = list->next;
-    list->next = new;
-
-    new->head = list;
-
-    new->data = list->data;
-    list->data = data;
-  }
+sp_list_node *sp_list_prepend(sp_list_node *list, void *data) {
+  sp_list_node *new = pecalloc(sizeof(*new), 1, 1);
+  new->next = list;
+  new->data = data;
+  return new;
 }

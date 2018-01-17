@@ -105,12 +105,12 @@ zend_always_inline sp_list_node *parse_functions_list(char *value) {
     return NULL;
   }
 
-  sp_list_node *list = sp_list_new();
+  sp_list_node *list = NULL;
   char *tmp = strdup(value);
   char *function_name;
   char *next_token = tmp;
   while ((function_name = strtok_r(NULL, sep, &next_token))) {
-    sp_list_prepend(list, strdup(function_name));
+    list = sp_list_prepend(list, strdup(function_name));
   }
   free(tmp);
 
