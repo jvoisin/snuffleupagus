@@ -193,8 +193,7 @@ static bool is_param_matching(zend_execute_data* execute_data,
     if (arg_value) {
       *arg_value_str = sp_convert_to_string(arg_value);
       if (config_node->param_type) {  // Are we matching on the `type`?
-        if (config_node->param_type &&
-            config_node->param_type == Z_TYPE_P(arg_value)) {
+        if (config_node->param_type == Z_TYPE_P(arg_value)) {
           return true;
         }
       } else if (Z_TYPE_P(arg_value) == IS_ARRAY) {
