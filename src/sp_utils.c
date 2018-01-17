@@ -130,7 +130,7 @@ int sp_log_request(const char* folder, const char* text_repr) {
       continue;
     }
 
-    const HashTable* const ht = Z_ARRVAL(PG(http_globals)[zones[i].key]);
+    const HashTable* ht = Z_ARRVAL(PG(http_globals)[zones[i].key]);
     fprintf(file, "%s:", zones[i].str);
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, variable_key, variable_value) {
       smart_str a = {0};
