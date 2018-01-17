@@ -15,4 +15,4 @@ register_tick_function('my_super_function');
 ?>
 --EXPECTF--
 1337
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'my_super_function' in %a/src/tests/disabled_functions_register_tick_function.php:4 has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'my_super_function' in %a/tests/disabled_functions_register_tick_function.php:4 has been disabled.
