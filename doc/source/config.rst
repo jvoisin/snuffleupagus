@@ -4,10 +4,10 @@ Configuration
 Since PHP *ini-like* configuration model isn't flexible enough,
 Snuffleupagus is using its own format in the file specified by
 the directive ``sp.configuration_file`` (in your ``php.ini`` file),
-like ``sp.configuration_file=/etc/php/conf.d/snuffleupagus.ini``.
+like ``sp.configuration_file=/etc/php/conf.d/snuffleupagus.rules``.
 
 You can use the ``,`` separator to include multiple configuration files :
-``sp.configuration_file=/etc/php/conf.d/snuffleupagus.ini,/etc/php/conf.d/sp_wordpress.ini``
+``sp.configuration_file=/etc/php/conf.d/snuffleupagus.rules,/etc/php/conf.d/sp_wordpress.rules``
 
 Options are chainable by using dots (``.``) and string parameters
 **must** be quoted, while booleans and integers aren't.
@@ -399,5 +399,5 @@ The following rules will:
 Miscellaneous examples
 """"""""""""""""""""""
 
-.. literalinclude:: ../../config/examples.ini
+.. literalinclude:: ../../config/examples.rules
    :language: python
