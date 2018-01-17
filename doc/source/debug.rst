@@ -4,6 +4,8 @@
    because its content is pretty technical, and "normal users" shouldn't
    need to read it.
 
+..  _debug:
+
 Debugging crashes
 =================
 

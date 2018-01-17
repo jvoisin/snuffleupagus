@@ -226,6 +226,9 @@ such as your operating system, your version of PHP 7, your version of Snuffleupa
 your logs, the problematic php code, the request, a brief description, … long story short,
 give us everything that you can.
 
+If you're feeling extra-nice, you can try to :ref:`debug it yourself <debug>`,
+it's not that hard.
+
 Where can I find even more help?
 """"""""""""""""""""""""""""""""
 The :doc:`configuration page <config>` might be what you're looking for.
