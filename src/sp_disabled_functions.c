@@ -117,12 +117,12 @@ static bool is_param_matching(zend_execute_data* execute_data,
                               const char* builtin_param, const char** arg_name,
                               const char* builtin_param_name,
                               const char** arg_value_str) {
-  int nb_param = execute_data->func->common.num_args;
+  int nb_param = ZEND_CALL_NUM_ARGS(execute_data);
   int i = 0;
   zval* arg_value;
 
   if (config_node->pos != -1) {
-    if (config_node->pos <= nb_param) {
+    if (config_node->pos > nb_param - 1) {
       char* complete_function_path = get_complete_function_path(execute_data);
       sp_log_err("config",
                  "It seems that you wrote a rule filtering on the "
@@ -160,7 +160,7 @@ static bool is_param_matching(zend_execute_data* execute_data,
 
       /* This is the parameter name we're looking for. */
       if (true == pcre_matching || config_node->pos != -1) {
-        arg_value = ZEND_CALL_VAR_NUM(execute_data, i);
+        arg_value = ZEND_CALL_ARG(execute_data, i + 1);
 
         if (config_node->param_type) {  // Are we matching on the `type`?
           if (config_node->param_type == Z_TYPE_P(arg_value)) {
