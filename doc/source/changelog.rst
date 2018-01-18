@@ -9,7 +9,7 @@ New features
 
 - `Glob <https://en.wikipedia.org/wiki/Glob_%28programming%29>`__ support in ``sp.configuration_file``
 - Whitelist/blacklist functions in ``eval``
-- ``phpinfo`` shows is the configuration is valid or not
+- ``phpinfo`` shows if the configuration is valid or not
 
 Bug fixes
 ^^^^^^^^^
