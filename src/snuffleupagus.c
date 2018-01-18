@@ -190,6 +190,8 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   int ret = glob(config_file, GLOB_BRACE|GLOB_NOCHECK, NULL, &globbuf);
 
   if (ret != 0) {
+    SNUFFLEUPAGUS_G(is_config_valid) = false;
+    globfree(&globbuf);
     return FAILURE;
   }
   
@@ -197,6 +199,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   while (globbuf.gl_pathv[i]) {
     if (sp_parse_config(globbuf.gl_pathv[i]) != SUCCESS) {
       SNUFFLEUPAGUS_G(is_config_valid) = false;
+      globfree(&globbuf);
       return FAILURE;
     }
     i++;
@@ -207,11 +210,14 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   while ((config_file = strtok(NULL, ","))) {
     ret = glob(config_file, GLOB_BRACE|GLOB_NOCHECK, NULL, &globbuf);
     if (ret != 0 ) {
+      SNUFFLEUPAGUS_G(is_config_valid) = false;
+      globfree(&globbuf);
       return FAILURE;
     }
     while (globbuf.gl_pathv[i]) {
       if (sp_parse_config(globbuf.gl_pathv[i]) != SUCCESS) {
 	SNUFFLEUPAGUS_G(is_config_valid) = false;
+	globfree(&globbuf);
 	return FAILURE;
       }
       i++;
