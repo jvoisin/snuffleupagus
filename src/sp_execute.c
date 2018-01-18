@@ -50,8 +50,7 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
     return;
   }
 
-  if (EXPECTED(NULL == SNUFFLEUPAGUS_G(config).config_eval->whitelist ||
-        NULL == SNUFFLEUPAGUS_G(config).config_eval->whitelist->data)) {
+  if (EXPECTED(NULL == SNUFFLEUPAGUS_G(config).config_eval->whitelist)) {
     return;
   }
 
@@ -59,14 +58,14 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
     return;
   }
 
-  if (!(execute_data->func->common.function_name)) {
+  if (UNEXPECTED(!(execute_data->func->common.function_name))) {
     return;
   }
 
   char const *const current_function = ZSTR_VAL(EX(func)->common.function_name);
 
   if (EXPECTED(NULL != current_function)) {
-    if (false == check_is_in_eval_whitelist(current_function)) {
+    if (UNEXPECTED(false == check_is_in_eval_whitelist(current_function))) {
       sp_log_msg(
           "Eval_whitelist", SP_LOG_DROP,
           "The function '%s' isn't in the eval whitelist, dropping its call.",
@@ -79,7 +78,7 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
 /* This function gets the filename in which `eval()` is called from,
  * since it looks like "foo.php(1) : eval()'d code", so we're starting
  * from the end of the string until the second closing parenthesis. */
-char *get_eval_filename(const char *filename) {
+char *get_eval_filename(const char *const filename) {
   size_t i = strlen(filename);
   int count = 0;
   char *clean_filename = estrdup(filename);
@@ -99,11 +98,11 @@ char *get_eval_filename(const char *filename) {
 static void sp_execute_ex(zend_execute_data *execute_data) {
   is_in_eval_and_whitelisted(execute_data);
 
-  if (true == should_disable(execute_data, NULL, NULL, NULL)) {
+  if (UNEXPECTED(true == should_disable(execute_data, NULL, NULL, NULL))) {
     sp_terminate();
   }
 
-  if (EX(func)->op_array.type == ZEND_EVAL_CODE) {
+  if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
     SNUFFLEUPAGUS_G(in_eval)++;
     const sp_list_node *config =
         SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
@@ -120,11 +119,11 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
 
   orig_execute_ex(execute_data);
 
-  if (true == should_drop_on_ret(EX(return_value), execute_data)) {
+  if (UNEXPECTED(true == should_drop_on_ret(EX(return_value), execute_data))) {
     sp_terminate();
   }
 
-  if (ZEND_EVAL_CODE == EX(func)->op_array.type) {
+  if (UNEXPECTED(ZEND_EVAL_CODE == EX(func)->op_array.type)) {
     SNUFFLEUPAGUS_G(in_eval)--;
   }
 }
