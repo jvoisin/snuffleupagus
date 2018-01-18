@@ -81,11 +81,11 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT(snuffleupagus_globals->config.config_eval);
 
   snuffleupagus_globals->config.config_disabled_constructs->construct_include =
-    NULL;
+      NULL;
   snuffleupagus_globals->config.config_disabled_constructs->construct_eval =
-    NULL;
+      NULL;
   snuffleupagus_globals->config.config_disabled_functions->disabled_functions =
-    NULL;
+      NULL;
   snuffleupagus_globals->config.config_disabled_functions_ret
       ->disabled_functions = NULL;
   snuffleupagus_globals->config.config_cookie->cookies = NULL;
@@ -177,50 +177,42 @@ PHP_MINFO_FUNCTION(snuffleupagus) {
 static PHP_INI_MH(OnUpdateConfiguration) {
   TSRMLS_FETCH();
 
-  char *config_file = NULL;
-
   if (!new_value || !new_value->len) {
     return FAILURE;
   }
 
-  config_file = strtok(new_value->val, ",");
-
   glob_t globbuf;
-
-  int ret = glob(config_file, GLOB_BRACE|GLOB_NOCHECK, NULL, &globbuf);
+  char *config_file = strtok(new_value->val, ",");
+  int ret = glob(config_file, GLOB_BRACE | GLOB_NOCHECK, NULL, &globbuf);
 
   if (ret != 0) {
     SNUFFLEUPAGUS_G(is_config_valid) = false;
     globfree(&globbuf);
     return FAILURE;
   }
-  
-  size_t i = 0;
-  while (globbuf.gl_pathv[i]) {
+
+  for (size_t i = 0; globbuf.gl_pathv[i]; i++) {
     if (sp_parse_config(globbuf.gl_pathv[i]) != SUCCESS) {
       SNUFFLEUPAGUS_G(is_config_valid) = false;
       globfree(&globbuf);
       return FAILURE;
     }
-    i++;
   }
   globfree(&globbuf);
-  i = 0;
-  
+
   while ((config_file = strtok(NULL, ","))) {
-    ret = glob(config_file, GLOB_BRACE|GLOB_NOCHECK, NULL, &globbuf);
-    if (ret != 0 ) {
+    ret = glob(config_file, GLOB_BRACE | GLOB_NOCHECK, NULL, &globbuf);
+    if (ret != 0) {
       SNUFFLEUPAGUS_G(is_config_valid) = false;
       globfree(&globbuf);
       return FAILURE;
     }
-    while (globbuf.gl_pathv[i]) {
+    for (size_t i = 0; globbuf.gl_pathv[i]; i++) {
       if (sp_parse_config(globbuf.gl_pathv[i]) != SUCCESS) {
-	SNUFFLEUPAGUS_G(is_config_valid) = false;
-	globfree(&globbuf);
-	return FAILURE;
+        SNUFFLEUPAGUS_G(is_config_valid) = false;
+        globfree(&globbuf);
+        return FAILURE;
       }
-      i++;
     }
     globfree(&globbuf);
   }
