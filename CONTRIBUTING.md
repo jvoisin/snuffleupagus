@@ -119,9 +119,10 @@ Any maintainer is allowed to merge a PR if all of these conditions are met.
 
 Maintainers need to do the following to push out a release:
 
-1. Make sure all pull requests are in and that changelog is current
-2. Update `snuffleupagus.h` file and changelog with new version number
-3. Create a tag for that release:
+1. Make sure that all pending and mergeable pull requests are in
+2. Update the `snuffleupagus.h` file with the new version number
+3. Update the changelog page in the documentation
+4. Create a tag for the release:
 
   ```sh
   git checkout master
@@ -133,5 +134,5 @@ Maintainers need to do the following to push out a release:
   git push --tags
   ```
 
-4. Create the [release on github](https://github.com/nbs-system/snuffleupagus/releases)
-5. Do the *secret release dance*
+5. Create the [release on github](https://github.com/nbs-system/snuffleupagus/releases)
+6. Do the *secret release dance*
