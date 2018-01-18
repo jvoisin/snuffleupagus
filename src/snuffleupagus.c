@@ -182,31 +182,18 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   }
 
   glob_t globbuf;
-  char *config_file = strtok(new_value->val, ",");
-  int ret = glob(config_file, GLOB_BRACE | GLOB_NOCHECK, NULL, &globbuf);
+  char *config_file;
+  char *rest = new_value->val;
 
-  if (ret != 0) {
-    SNUFFLEUPAGUS_G(is_config_valid) = false;
-    globfree(&globbuf);
-    return FAILURE;
-  }
+  while ((config_file = strtok_r(rest, ",", &rest))) {
+    int ret = glob(config_file, GLOB_BRACE | GLOB_NOCHECK, NULL, &globbuf);
 
-  for (size_t i = 0; globbuf.gl_pathv[i]; i++) {
-    if (sp_parse_config(globbuf.gl_pathv[i]) != SUCCESS) {
-      SNUFFLEUPAGUS_G(is_config_valid) = false;
-      globfree(&globbuf);
-      return FAILURE;
-    }
-  }
-  globfree(&globbuf);
-
-  while ((config_file = strtok(NULL, ","))) {
-    ret = glob(config_file, GLOB_BRACE | GLOB_NOCHECK, NULL, &globbuf);
     if (ret != 0) {
       SNUFFLEUPAGUS_G(is_config_valid) = false;
       globfree(&globbuf);
       return FAILURE;
     }
+
     for (size_t i = 0; globbuf.gl_pathv[i]; i++) {
       if (sp_parse_config(globbuf.gl_pathv[i]) != SUCCESS) {
         SNUFFLEUPAGUS_G(is_config_valid) = false;
