@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.2.0 - `Elephant Rally <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.3.0>`__ - 2018/01/18
+0.2.0 - `Elephant Rally <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.2.0>`__ - 2018/01/18
 ---------------------------------------------------------------------------------------------------------
 
 New features
