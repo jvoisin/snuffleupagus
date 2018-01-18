@@ -6,8 +6,13 @@ Snuffleupagus is using its own format in the file specified by
 the directive ``sp.configuration_file`` (in your ``php.ini`` file),
 like ``sp.configuration_file=/etc/php/conf.d/snuffleupagus.rules``.
 
-You can use the ``,`` separator to include multiple configuration files :
-``sp.configuration_file=/etc/php/conf.d/snuffleupagus.rules,/etc/php/conf.d/sp_wordpress.rules``
+You can use the ``,`` separator to include multiple configuration files:
+``sp.configuration_file=/etc/php/conf.d/snuffleupagus.rules,/etc/php/conf.d/sp_wordpress.rules``.
+
+We're also also supporting `glob <https://en.wikipedia.org/wiki/Glob_%28programming%29>`__,
+so you can write something like:
+``sp.configuration_file=/etc/php/conf.d/*.rules,/etc/php/conf.d/extra/test.rules``.
+
 
 Options are chainable by using dots (``.``) and string parameters
 **must** be quoted, while booleans and integers aren't.
