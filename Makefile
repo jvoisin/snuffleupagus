@@ -46,7 +46,7 @@ joomla:
 	fi
 	cd joomla-cms; composer install >/dev/null 2>/dev/null
 	echo "\nWith snuffleupagus:"
-	cd joomla-cms; time libraries/vendor/phpunit/phpunit/phpunit -d "extension=./src/modules/snuffleupagus.so" -d "sp.configuration_file=config/default.ini" --no-coverage >/dev/null
+	cd joomla-cms; time libraries/vendor/phpunit/phpunit/phpunit -d "extension=./src/modules/snuffleupagus.so" -d "sp.configuration_file=config/default.rules" --no-coverage >/dev/null
 	echo "\nWithout snuffleupagus:"
 	cd joomla-cms; time libraries/vendor/phpunit/phpunit/phpunit --no-coverage >/dev/null
 

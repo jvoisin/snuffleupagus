@@ -32,6 +32,6 @@ check() {
 
 package() {
   make -C "${srcdir}/${_pkgname}/src" INSTALL_ROOT="${pkgdir}" install || return 1
-  install -D -m644 "${srcdir}/${_pkgname}/config/default.ini" "${pkgdir}/etc/php/conf.d/${_pkgname}.rules" || return 1
-  install -D -m644 "${srcdir}/${_pkgname}/config/${_pkgname}.ini" "${pkgdir}/etc/php7/conf.d/${_pkgname}.ini" || return 1
+  install -D -m644 "${srcdir}/${_pkgname}/config/default.rules" "${pkgdir}/etc/php/conf.d/${_pkgname}.rules" || return 1
+  install -D -m644 "${srcdir}/${_pkgname}/config/${_pkgname}.rules" "${pkgdir}/etc/php7/conf.d/${_pkgname}.rules" || return 1
 }
