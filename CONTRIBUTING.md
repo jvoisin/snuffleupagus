@@ -122,7 +122,8 @@ Maintainers need to do the following to push out a release:
 1. Make sure that all pending and mergeable pull requests are in
 2. Update the `snuffleupagus.h` file with the new version number
 3. Update the changelog page in the documentation
-4. Create a tag for the release:
+4. Update the Debian changelog in ./debian/changelog with `dch`
+5. Create a tag for the release:
 
   ```sh
   git checkout master
@@ -134,5 +135,5 @@ Maintainers need to do the following to push out a release:
   git push --tags
   ```
 
-5. Create the [release on github](https://github.com/nbs-system/snuffleupagus/releases)
-6. Do the *secret release dance*
+6. Create the [release on github](https://github.com/nbs-system/snuffleupagus/releases)
+7. Do the *secret release dance*
