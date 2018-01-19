@@ -3,7 +3,17 @@ Readonly execution attempt (simulation mode)
 --SKIPIF--
 <?php
 if (!extension_loaded("snuffleupagus")) print "skip";
-if (0 == posix_getuid()) print "skip"; // root has write privileges on any file
+
+// root has write privileges on any file
+if (TRUE == function_exists("posix_getuid")) {
+	if (0 == posix_getuid()) {
+		print "skip";
+	}
+} elseif (TRUE == function_exists("shell_exec")) {
+	if ("root" == trim(shell_exec("whoami"))) {
+		print "skip";
+	}
+}
  ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disable_writable_simulation.ini
