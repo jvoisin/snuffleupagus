@@ -131,10 +131,10 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
 static void sp_zend_execute_internal(INTERNAL_FUNCTION_PARAMETERS) {
   is_in_eval_and_whitelisted(execute_data);
 
-  EX(func)->internal_function.handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-
   if (UNEXPECTED(NULL != orig_zend_execute_internal)) {
     orig_zend_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+  } else {
+    EX(func)->internal_function.handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   }
 }
 
