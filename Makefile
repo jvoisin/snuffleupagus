@@ -6,7 +6,6 @@ clean:  ## clean everything
 	cd src; phpize --clean
 
 release:  ## compile with releases flags
-	sed -i "s/#define PHP_SNUFFLEUPAGUS_COMMIT \"\"/#define PHP_SNUFFLEUPAGUS_COMMIT \"($$(git log --pretty=format:'%h' -n 1))\"/" ./src/php_snuffleupagus.h
 	cd src; phpize
 	cd src; ./configure --enable-snuffleupagus
 	make -C src
