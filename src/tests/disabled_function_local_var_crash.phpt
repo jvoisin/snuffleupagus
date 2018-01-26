@@ -10,8 +10,10 @@ function test(){
 //    $a = "1337";
     echo strlen("id") . "\n";
 }
-ob_start(test);
-echo "lol\n";
+ob_start(test());
+echo "test\n";
 ?>
 --EXPECTF--
-Notice: Use of undefined constant test - assumed 'test' in %a/disabled_function_local_var_crash.php on line %d
+2
+test
+
