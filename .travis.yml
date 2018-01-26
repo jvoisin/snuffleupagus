@@ -34,13 +34,13 @@ matrix:
     php: '7.0'
   - env: TARGET="clang php7.1" CC="clang"
     php: '7.1'
-  - env: TARGET="clang php7.2" CC="clang"
+  - env: TARGET="clang php7.2 with valgrind" CC="clang"
     php: '7.2'
-  allow_failures:
-  - env: TARGET="clang php nightly with valgrind" CC="clang"
-    php: nightly
   - env: TARGET="gcc php nightly" CC="gcc"
     before_install: pip install --user cpp-coveralls
+    php: nightly
+  allow_failures:
+  - env: TARGET="clang php nightly" CC="clang"  # https://bugs.llvm.org/show_bug.cgi?id=9295
     php: nightly
 
 script:
@@ -48,7 +48,7 @@ script:
   - phpize
   - ./configure --enable-snuffleupagus --enable-coverage
   - make -j 2
-  - 'if [ "${TARGET}" = "clang php nightly with valgrind" ]; then
+  - 'if [ "${TARGET}" = "clang php7.2 with valgrind" ]; then
       TEST_PHP_ARGS="-q -m" REPORT_EXIT_STATUS=1 make test ;
     else
       TEST_PHP_ARGS="-q"    REPORT_EXIT_STATUS=1 make test ;

@@ -59,7 +59,7 @@ typedef struct {
   enum samesite_type { strict = 1, lax = 2 } samesite;
   bool encrypt;
   char *name;
-  pcre *name_r;
+  sp_pcre *name_r;
   bool simulation;
 } sp_cookie;
 
@@ -72,29 +72,29 @@ typedef struct {
   char *textual_representation;
 
   char *filename;
-  pcre *r_filename;
+  sp_pcre *r_filename;
 
   char *function;
-  pcre *r_function;
+  sp_pcre *r_function;
   sp_list_node *functions_list;
 
   char *hash;
   int simulation;
 
   sp_tree *param;
-  pcre *r_param;
+  sp_pcre *r_param;
   sp_php_type param_type;
   int pos;
   unsigned int line;
 
   char *ret;
-  pcre *r_ret;
+  sp_pcre *r_ret;
   sp_php_type ret_type;
 
-  pcre *value_r;
+  sp_pcre *value_r;
   char *value;
 
-  pcre *r_key;
+  sp_pcre *r_key;
   char *key;
 
   char *dump;

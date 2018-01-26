@@ -155,7 +155,7 @@ static bool is_param_matching(zend_execute_data* execute_data,
       }
       const bool pcre_matching =
           config_node->r_param &&
-          (true == is_regexp_matching(config_node->r_param, *arg_name));
+          (true == sp_is_regexp_matching(config_node->r_param, *arg_name));
 
       /* This is the parameter name we're looking for. */
       if (true == pcre_matching || config_node->pos != -1) {
@@ -259,7 +259,7 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
       }
     } else if (config_node->r_function) {
       if (false ==
-          is_regexp_matching(config_node->r_function, complete_path_function)) {
+          sp_is_regexp_matching(config_node->r_function, complete_path_function)) {
         goto next;
       }
     }
@@ -276,7 +276,7 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
       }
     } else if (config_node->r_filename) {
       if (false ==
-          is_regexp_matching(config_node->r_filename, current_filename)) {
+          sp_is_regexp_matching(config_node->r_filename, current_filename)) {
         goto next;
       }
     }
@@ -366,7 +366,7 @@ bool should_drop_on_ret(zval* return_value,
       }
     } else if (config_node->r_function) {
       if (false ==
-          is_regexp_matching(config_node->r_function, complete_path_function)) {
+          sp_is_regexp_matching(config_node->r_function, complete_path_function)) {
         goto next;
       }
     }
@@ -377,7 +377,7 @@ bool should_drop_on_ret(zval* return_value,
       }
     } else if (config_node->r_filename) {
       if (false ==
-          is_regexp_matching(config_node->r_filename, current_filename)) {
+          sp_is_regexp_matching(config_node->r_filename, current_filename)) {
         goto next;
       }
     }
@@ -440,7 +440,7 @@ ZEND_FUNCTION(check_disabled_function) {
 static int hook_functions(const sp_list_node* config) {
   while (config && config->data) {
     const char* function_name = ((sp_disabled_function*)config->data)->function;
-    const pcre* function_name_regexp =
+    const sp_pcre* function_name_regexp =
         ((sp_disabled_function*)config->data)->r_function;
 
     if (NULL != function_name) {  // hook function by name
