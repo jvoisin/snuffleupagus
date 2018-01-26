@@ -7,7 +7,6 @@ sp.configuration_file={PWD}/config/disabled_function_local_var.ini
 --FILE--
 <?php 
 function test(){
-//    $a = "1337";
     echo strlen("id") . "\n";
 }
 ob_start(test());
