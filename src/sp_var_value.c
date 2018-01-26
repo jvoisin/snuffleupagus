@@ -27,6 +27,11 @@ static zval *get_local_var(zend_execute_data *ed, const char *var_name) {
     EG(current_execute_data) = current;
     zend_array *symtable = zend_rebuild_symbol_table();
 
+    if (UNEXPECTED(symtable == NULL)) {
+      EG(current_execute_data) = orig_execute_data;
+      return NULL;
+    }
+
     ZEND_HASH_FOREACH_STR_KEY_VAL(symtable, key, value) {
       if (0 == strcmp(var_name, key->val)) {
         if (Z_TYPE_P(value) == IS_INDIRECT) {
