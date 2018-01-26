@@ -45,7 +45,7 @@ static bool is_functions_list_matching(zend_execute_data* execute_data,
 
     char* complete_path_function = get_complete_function_path(current);
     if (!complete_path_function) {
-      goto end;
+      break;
     }
     int match = strcmp(((char*)it->data), complete_path_function);
     efree(complete_path_function);
@@ -54,11 +54,10 @@ static bool is_functions_list_matching(zend_execute_data* execute_data,
       it = it->next;
       current = current->prev_execute_data;
     } else {
-      goto end;
+      break;
     }
   }
 
-end:
   EG(current_execute_data) = orig_execute_data;
   return false;
 }
