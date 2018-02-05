@@ -120,10 +120,11 @@ Any maintainer is allowed to merge a PR if all of these conditions are met.
 Maintainers need to do the following to push out a release:
 
 1. Make sure that all pending and mergeable pull requests are in
-2. Update the `snuffleupagus.h` file: drop the -dev suffix and check new version comply with [semantic versioning](https://semver.org/)
-3. Update the changelog page in the documentation
-4. Update the Debian changelog in ./debian/changelog with `dch`
-5. Create a tag for the release:
+2. Run `valgrind` and check that everything is ok
+3. Update the `snuffleupagus.h` file: drop the -dev suffix and check new version comply with [semantic versioning](https://semver.org/)
+4. Update the changelog page in the documentation
+5. Update the Debian changelog in ./debian/changelog with `dch`
+6. Create a tag for the release:
 
   ```sh
   git checkout master
@@ -135,6 +136,6 @@ Maintainers need to do the following to push out a release:
   git push --tags
   ```
 
-6. Create the [release on github](https://github.com/nbs-system/snuffleupagus/releases)
-7. Update the `snuffleupagus.h` file: bump the version 3rd digit and add the -dev suffix
-8. Do the *secret release dance*
+7. Create the [release on github](https://github.com/nbs-system/snuffleupagus/releases)
+8. Update the `snuffleupagus.h` file: bump the version 3rd digit and add the -dev suffix
+9. Do the *secret release dance*
