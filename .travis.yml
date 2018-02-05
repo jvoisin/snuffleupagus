@@ -1,10 +1,5 @@
 language: php
 
-addons:
-  apt:
-    packages:
-    - valgrind
-
 env:
   - secure: "fjx/arfcdoqWUIzlQXzQdW9gqXRG7Vpo8dTwJip0uJH8oFeTfYhw1V9EMS4JtKVGwQo3vaagehMflVr7swaoe9Nf4YoCjaEq8x6ZMJH3bLHNgtigfS03Uqop9FI/a/Jau/BL7ibIEkZRNfEIx8z+NyfY4bAeK35W/Ru5k2BHyp1GLKwBpizHdJsshG/ukM+4W8PY9BAeXVavqxQRywseQEsqmGruGLcYFuuh04D7cnNqyuYgbdaq7YMKZfVGxM7N5eeL5xSlw0Sl9yOutRzkxUmL1WSmYMFrkRLcc37hRTu67tCmP60tiGLGY2Ll8nUh6rkc3RwBgc1wOC7jRMrtoGvlgsLxz7kLOtpQ31PdJKefe99rQMkcYKLwCxXf7WQdOHY4YsTmjqlPyzfTKT3mNtGhUwp1rEvlcygZZK8osHtc46BUD6BKNRCvTyLNyLTx2IoA4WfrzWOaQ+A1gNRD5L9Jbqi0kY6teENCzzlHUe80mH7wBarCTRoDAD73w/EPgSn3+CeLALXXEu+r9Sm/e5YpaFfLdeKDC6fr1KwU69ddHUKWZqjFM8vEHjrIbmAdNwVsuCo8LeWdCCXdQlWrISQ4OUDBBEmnwlKoojSjIYP5SKoH1txZemGok1/TN/tvjlyrx2RYYxy7AdUulENKXXeqlwWsiwVZCZLR4tt+wEQ="
 
@@ -34,7 +29,7 @@ matrix:
     php: '7.0'
   - env: TARGET="clang php7.1" CC="clang"
     php: '7.1'
-  - env: TARGET="clang php7.2 with valgrind" CC="clang"
+  - env: TARGET="clang php7.2" CC="clang"
     php: '7.2'
   - env: TARGET="gcc php nightly" CC="gcc"
     before_install: pip install --user cpp-coveralls
@@ -48,11 +43,7 @@ script:
   - phpize
   - ./configure --enable-snuffleupagus --enable-coverage
   - make -j 2
-  - 'if [ "${TARGET}" = "clang php7.2 with valgrind" ]; then
-      TEST_PHP_ARGS="-q -m" REPORT_EXIT_STATUS=1 make test ;
-    else
-      TEST_PHP_ARGS="-q"    REPORT_EXIT_STATUS=1 make test ;
-    fi'
+  - TEST_PHP_ARGS="-q" REPORT_EXIT_STATUS=1 make test
 
 after_success:
   - 'if [ "${TARGET}" = "gcc php nightly" ]; then
