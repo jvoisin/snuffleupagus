@@ -46,17 +46,16 @@
 void sp_log_msg(char const *feature, char const *level, const char *fmt, ...);
 int compute_hash(const char *const filename, char *file_hash);
 char *sp_convert_to_string(zval *);
-bool sp_match_value(const char *, const char *, const pcre *);
-bool sp_match_array_key(const zval *, const char *, const pcre *);
-bool sp_match_array_value(const zval *, const char *, const pcre *);
+bool sp_match_value(const char *, const char *, const sp_pcre *);
+bool sp_match_array_key(const zval *, const char *, const sp_pcre *);
+bool sp_match_array_value(const zval *, const char *, const sp_pcre *);
 void sp_log_disable(const char *restrict, const char *restrict,
                     const char *restrict, const sp_disabled_function *);
 void sp_log_disable_ret(const char *restrict, const char *restrict,
                         const sp_disabled_function *);
-int is_regexp_matching(const pcre *, const char *);
 int hook_function(const char *, HashTable *,
                   void (*)(INTERNAL_FUNCTION_PARAMETERS), bool);
-int hook_regexp(const pcre *, HashTable *,
+int hook_regexp(const sp_pcre *, HashTable *,
                 void (*)(INTERNAL_FUNCTION_PARAMETERS), bool);
 bool check_is_in_eval_whitelist(const char * const function_name);
 

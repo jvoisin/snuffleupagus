@@ -6,6 +6,7 @@ sources="$sources sp_unserialize.c sp_utils.c sp_disable_xxe.c sp_list.c"
 sources="$sources sp_disabled_functions.c sp_execute.c sp_upload_validation.c"
 sources="$sources sp_cookie_encryption.c sp_network_utils.c tweetnacl.c"
 sources="$sources sp_config_keywords.c sp_var_parser.c sp_var_value.c sp_tree.c"
+sources="$sources sp_pcre_compat.c"
 
 PHP_ARG_ENABLE(snuffleupagus, whether to enable snuffleupagus support,
 [  --enable-snuffleupagus           Enable snuffleupagus support])

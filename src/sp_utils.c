@@ -32,25 +32,6 @@ void sp_log_msg(char const* feature, char const* level, const char* fmt, ...) {
               client_ip ? client_ip : "0.0.0.0", feature, level, msg);
 }
 
-zend_always_inline int is_regexp_matching(const pcre* regexp, const char* str) {
-  int vec[30];
-  int ret = 0;
-
-  assert(NULL != regexp);
-  assert(NULL != str);
-
-  ret = sp_pcre_exec(regexp, NULL, str, strlen(str), 0, 0, vec,
-                     sizeof(vec) / sizeof(int));
-
-  if (ret < 0) {
-    if (ret != PCRE_ERROR_NOMATCH) {
-      sp_log_err("regexp", "Something went wrong with a regexp (%d).", ret);
-    }
-    return false;
-  }
-  return true;
-}
-
 int compute_hash(const char* const filename, char* file_hash) {
   unsigned char buf[1024];
   unsigned char digest[SHA256_SIZE];
@@ -192,13 +173,13 @@ char* sp_convert_to_string(zval* zv) {
   return estrdup("");
 }
 
-bool sp_match_value(const char* value, const char* to_match, const pcre* rx) {
+bool sp_match_value(const char* value, const char* to_match, const sp_pcre* rx) {
   if (to_match) {
     if (0 == strcmp(to_match, value)) {
       return true;
     }
   } else if (rx) {
-    return is_regexp_matching(rx, value);
+    return sp_is_regexp_matching(rx, value);
   } else {
     return true;
   }
@@ -274,7 +255,7 @@ void sp_log_disable_ret(const char* restrict path,
   }
 }
 
-bool sp_match_array_key(const zval* zv, const char* to_match, const pcre* rx) {
+bool sp_match_array_key(const zval* zv, const char* to_match, const sp_pcre* rx) {
   zend_string* key;
   zend_ulong idx;
 
@@ -298,7 +279,7 @@ bool sp_match_array_key(const zval* zv, const char* to_match, const pcre* rx) {
 }
 
 bool sp_match_array_value(const zval* arr, const char* to_match,
-                          const pcre* rx) {
+                          const sp_pcre* rx) {
   zval* value;
 
   ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(arr), value) {
@@ -368,7 +349,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
   return SUCCESS;
 }
 
-int hook_regexp(const pcre* regexp, HashTable* hook_table,
+int hook_regexp(const sp_pcre* regexp, HashTable* hook_table,
                 void (*new_function)(INTERNAL_FUNCTION_PARAMETERS),
                 bool hook_execution_table) {
   zend_string* key;
@@ -377,9 +358,7 @@ int hook_regexp(const pcre* regexp, HashTable* hook_table,
 
   ZEND_HASH_FOREACH_STR_KEY(ht, key) {
     if (key) {
-      int vec[30];
-      int ret = sp_pcre_exec(regexp, NULL, key->val, key->len, 0, 0, vec,
-                             sizeof(vec) / sizeof(int));
+      int ret = sp_is_regexp_matching_len(regexp, key->val, key->len);
       if (ret < 0) { /* Error or no match*/
         if (PCRE_ERROR_NOMATCH != ret) {
           sp_log_err("pcre", "Runtime error with pcre, error code: %d", ret);

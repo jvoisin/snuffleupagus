@@ -140,15 +140,9 @@ int parse_regexp(char *restrict line, char *restrict keyword, void *retval) {
   char *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
 
   if (value) {
-    const char *pcre_error;
-    int pcre_error_offset;
-    pcre *compiled_re = sp_pcre_compile(value, PCRE_CASELESS, &pcre_error,
-                                        &pcre_error_offset, NULL);
-    if (NULL == compiled_re) {
-      sp_log_err("config", "Failed to compile '%s': %s on line %zu.", value,
-                 pcre_error, sp_line_no);
-    } else {
-      *(pcre **)retval = compiled_re;
+    sp_pcre *compiled_re = sp_pcre_compile(value);
+		if (NULL != compiled_re) {
+      *(sp_pcre **)retval = compiled_re;
       return consumed;
     }
   }

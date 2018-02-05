@@ -20,26 +20,22 @@ static sp_list_node *parse_str_tokens(const char *str, const sp_conf_token token
 }
 
 static bool is_var_name_valid(const char *name) {
-  static pcre *regexp_const = NULL;
-  static pcre *regexp_var = NULL;
-  const char *pcre_error;
-  int pcre_error_offset;
+  static sp_pcre *regexp_const = NULL;
+  static sp_pcre *regexp_var = NULL;
 
   if (!name) {
     return false;
   }
   if (NULL == regexp_var || NULL == regexp_const) {
-    regexp_var = sp_pcre_compile(REGEXP_VAR, PCRE_CASELESS, &pcre_error,
-                                 &pcre_error_offset, NULL);
-    regexp_const = sp_pcre_compile(REGEXP_CONST, PCRE_CASELESS, &pcre_error,
-                                   &pcre_error_offset, NULL);
+    regexp_var = sp_pcre_compile(REGEXP_VAR);
+    regexp_const = sp_pcre_compile(REGEXP_CONST);
   }
   if (NULL == regexp_var || NULL == regexp_const) {
     sp_log_err("config", "Could not compile regexp.");
     return false;
   }
-  if (0 > sp_pcre_exec(regexp_var, NULL, name, strlen(name), 0, 0, NULL, 0) &&
-      0 > sp_pcre_exec(regexp_const, NULL, name, strlen(name), 0, 0, NULL, 0)) {
+  if ((false == sp_is_regexp_matching(regexp_var, name)) &&
+      (false == sp_is_regexp_matching(regexp_const, name))) {
     return false;
   }
   return true;

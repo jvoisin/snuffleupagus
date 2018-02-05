@@ -16,7 +16,7 @@ if (strstr($info, 'Valid config => no') !== FALSE) {
 	echo "lose";
 }
 ?>
---EXPECT--
-[snuffleupagus][0.0.0.0][config][error] Failed to compile '*.': nothing to repeat on line 1.
+--EXPECTF--
+[snuffleupagus][0.0.0.0][config][error] Failed to compile '*.': %aon line 1.
 [snuffleupagus][0.0.0.0][config][error] '.filename_r()' is expecting a valid regexp, and not '"*."' on line 1.
 win

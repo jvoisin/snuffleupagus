@@ -167,7 +167,7 @@ static zend_string *encrypt_data(char *data, unsigned long long data_len) {
 }
 
 PHP_FUNCTION(sp_setcookie) {
-  zval params[7] = {0};
+  zval params[7] = {{{0}}};
   zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL,
               *samesite = NULL;
   zend_long expires = 0;

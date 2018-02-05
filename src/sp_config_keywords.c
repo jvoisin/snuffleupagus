@@ -25,7 +25,7 @@ static int get_construct_type(sp_disabled_function const *const df) {
         }
       } else {
         if (true ==
-            is_regexp_matching(df->r_function, CONSTRUCTS_TYPES[i].keys[j])) {
+            sp_is_regexp_matching(df->r_function, CONSTRUCTS_TYPES[i].keys[j])) {
           return CONSTRUCTS_TYPES[i].type;
         }
       }
