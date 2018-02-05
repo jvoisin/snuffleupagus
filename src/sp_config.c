@@ -141,7 +141,7 @@ int parse_regexp(char *restrict line, char *restrict keyword, void *retval) {
 
   if (value) {
     sp_pcre *compiled_re = sp_pcre_compile(value);
-		if (NULL != compiled_re) {
+    if (NULL != compiled_re) {
       *(sp_pcre **)retval = compiled_re;
       return consumed;
     }

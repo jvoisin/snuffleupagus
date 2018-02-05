@@ -19,7 +19,7 @@ int hook_libxml_disable_entity_loader() {
   call_user_function(CG(function_table), NULL, &func_name, &hmac, 1, params);
 
   HOOK_FUNCTION("libxml_disable_entity_loader", sp_internal_functions_hook,
-                PHP_FN(sp_libxml_disable_entity_loader), false);
+                PHP_FN(sp_libxml_disable_entity_loader));
 
   return SUCCESS;
 }

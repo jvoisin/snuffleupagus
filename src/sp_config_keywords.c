@@ -24,8 +24,8 @@ static int get_construct_type(sp_disabled_function const *const df) {
           return CONSTRUCTS_TYPES[i].type;
         }
       } else {
-        if (true ==
-            sp_is_regexp_matching(df->r_function, CONSTRUCTS_TYPES[i].keys[j])) {
+        if (true == sp_is_regexp_matching(df->r_function,
+                                          CONSTRUCTS_TYPES[i].keys[j])) {
           return CONSTRUCTS_TYPES[i].type;
         }
       }
@@ -122,13 +122,13 @@ static int parse_eval_filter_conf(char *line, sp_list_node **list) {
 }
 
 int parse_eval_blacklist(char *line) {
-  return parse_eval_filter_conf(line,
-                                &SNUFFLEUPAGUS_G(config).config_eval->blacklist);
+  return parse_eval_filter_conf(
+      line, &SNUFFLEUPAGUS_G(config).config_eval->blacklist);
 }
 
 int parse_eval_whitelist(char *line) {
-  return parse_eval_filter_conf(line,
-                                &SNUFFLEUPAGUS_G(config).config_eval->whitelist);
+  return parse_eval_filter_conf(
+      line, &SNUFFLEUPAGUS_G(config).config_eval->whitelist);
 }
 
 int parse_cookie(char *line) {
@@ -204,8 +204,8 @@ int parse_cookie(char *line) {
       return -1;
     }
   }
-  SNUFFLEUPAGUS_G(config).config_cookie->cookies = sp_list_insert(
-      SNUFFLEUPAGUS_G(config).config_cookie->cookies, cookie);
+  SNUFFLEUPAGUS_G(config).config_cookie->cookies =
+      sp_list_insert(SNUFFLEUPAGUS_G(config).config_cookie->cookies, cookie);
   return SUCCESS;
 }
 
@@ -338,9 +338,9 @@ int parse_disabled_functions(char *line) {
 
   if (param) {
     if (strlen(param) > 0 && param[0] != '$') {
-			/* This is an ugly hack. We're prefixing with a `$` because otherwise
-			 * the parser treats this as a constant.
-			 * FIXME: Remove this, and improve our (weird) parser. */
+      /* This is an ugly hack. We're prefixing with a `$` because otherwise
+       * the parser treats this as a constant.
+       * FIXME: Remove this, and improve our (weird) parser. */
       char *new = pecalloc(strlen(param) + 2, 1, 1);
       new[0] = '$';
       memcpy(new + 1, param, strlen(param));
@@ -372,12 +372,14 @@ int parse_disabled_functions(char *line) {
 
   switch (get_construct_type(df)) {
     case ZEND_INCLUDE_OR_EVAL:
-      SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include = sp_list_insert(
+      SNUFFLEUPAGUS_G(config)
+          .config_disabled_constructs->construct_include = sp_list_insert(
           SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include,
           df);
       return ret;
     case ZEND_EVAL_CODE:
-      SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval = sp_list_insert(
+      SNUFFLEUPAGUS_G(config)
+          .config_disabled_constructs->construct_eval = sp_list_insert(
           SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval,
           df);
       return ret;
@@ -391,11 +393,13 @@ int parse_disabled_functions(char *line) {
   }
 
   if (df->ret || df->r_ret || df->ret_type) {
-    SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions = sp_list_insert(
-        SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions,
-        df);
+    SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions =
+        sp_list_insert(SNUFFLEUPAGUS_G(config)
+                           .config_disabled_functions_ret->disabled_functions,
+                       df);
   } else {
-    SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions = sp_list_insert(
+    SNUFFLEUPAGUS_G(config)
+        .config_disabled_functions->disabled_functions = sp_list_insert(
         SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions,
         df);
   }

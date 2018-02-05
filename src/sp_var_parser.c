@@ -1,7 +1,8 @@
 #include "php_snuffleupagus.h"
 
-static sp_list_node *parse_str_tokens(const char *str, const sp_conf_token token,
-                            sp_list_node *tokens_list) {
+static sp_list_node *parse_str_tokens(const char *str,
+                                      const sp_conf_token token,
+                                      sp_list_node *tokens_list) {
   const char *cur_str = str;
 
   while ((cur_str = strchr(cur_str, token.text_repr[0]))) {
@@ -31,7 +32,6 @@ static bool is_var_name_valid(const char *name) {
     regexp_const = sp_pcre_compile(REGEXP_CONST);
   }
   if (NULL == regexp_var || NULL == regexp_const) {
-    sp_log_err("config", "Could not compile regexp.");
     return false;
   }
   if ((false == sp_is_regexp_matching(regexp_var, name)) &&

@@ -102,10 +102,9 @@ PHP_FUNCTION(sp_unserialize) {
 int hook_serialize(void) {
   TSRMLS_FETCH();
 
-  HOOK_FUNCTION("serialize", sp_internal_functions_hook, PHP_FN(sp_serialize),
-                false);
+  HOOK_FUNCTION("serialize", sp_internal_functions_hook, PHP_FN(sp_serialize));
   HOOK_FUNCTION("unserialize", sp_internal_functions_hook,
-                PHP_FN(sp_unserialize), false);
+                PHP_FN(sp_unserialize));
 
   return SUCCESS;
 }

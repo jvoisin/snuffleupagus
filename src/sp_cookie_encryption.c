@@ -273,8 +273,7 @@ PHP_FUNCTION(sp_setcookie) {
 }
 
 int hook_cookies() {
-  HOOK_FUNCTION("setcookie", sp_internal_functions_hook, PHP_FN(sp_setcookie),
-                false);
+  HOOK_FUNCTION("setcookie", sp_internal_functions_hook, PHP_FN(sp_setcookie));
 
   return SUCCESS;
 }

@@ -79,9 +79,8 @@ PHP_FUNCTION(sp_mt_rand) {
 int hook_rand() {
   TSRMLS_FETCH();
 
-  HOOK_FUNCTION("rand", sp_internal_functions_hook, PHP_FN(sp_rand), false);
-  HOOK_FUNCTION("mt_rand", sp_internal_functions_hook, PHP_FN(sp_mt_rand),
-                false);
+  HOOK_FUNCTION("rand", sp_internal_functions_hook, PHP_FN(sp_rand));
+  HOOK_FUNCTION("mt_rand", sp_internal_functions_hook, PHP_FN(sp_mt_rand));
 
   return SUCCESS;
 }

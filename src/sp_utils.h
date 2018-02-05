@@ -22,12 +22,11 @@
 
 #define SHA256_SIZE 32
 
-#define HOOK_FUNCTION(original_name, hook_table, new_function, execution) \
-  hook_function(original_name, SNUFFLEUPAGUS_G(hook_table), new_function, \
-                execution)
+#define HOOK_FUNCTION(original_name, hook_table, new_function) \
+  hook_function(original_name, SNUFFLEUPAGUS_G(hook_table), new_function)
 
-#define HOOK_FUNCTION_BY_REGEXP(regexp, hook_table, new_function, execution) \
-  hook_regexp(regexp, SNUFFLEUPAGUS_G(hook_table), new_function, execution)
+#define HOOK_FUNCTION_BY_REGEXP(regexp, hook_table, new_function) \
+  hook_regexp(regexp, SNUFFLEUPAGUS_G(hook_table), new_function)
 
 #define SP_LOG_SIMULATION "simulation"
 #define SP_LOG_DROP "drop"
@@ -54,9 +53,9 @@ void sp_log_disable(const char *restrict, const char *restrict,
 void sp_log_disable_ret(const char *restrict, const char *restrict,
                         const sp_disabled_function *);
 int hook_function(const char *, HashTable *,
-                  void (*)(INTERNAL_FUNCTION_PARAMETERS), bool);
+                  void (*)(INTERNAL_FUNCTION_PARAMETERS));
 int hook_regexp(const sp_pcre *, HashTable *,
-                void (*)(INTERNAL_FUNCTION_PARAMETERS), bool);
+                void (*)(INTERNAL_FUNCTION_PARAMETERS));
 bool check_is_in_eval_whitelist(const char * const function_name);
 
 #endif /* SP_UTILS_H */

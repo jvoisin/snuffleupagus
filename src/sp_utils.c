@@ -173,7 +173,8 @@ char* sp_convert_to_string(zval* zv) {
   return estrdup("");
 }
 
-bool sp_match_value(const char* value, const char* to_match, const sp_pcre* rx) {
+bool sp_match_value(const char* value, const char* to_match,
+                    const sp_pcre* rx) {
   if (to_match) {
     if (0 == strcmp(to_match, value)) {
       return true;
@@ -255,7 +256,8 @@ void sp_log_disable_ret(const char* restrict path,
   }
 }
 
-bool sp_match_array_key(const zval* zv, const char* to_match, const sp_pcre* rx) {
+bool sp_match_array_key(const zval* zv, const char* to_match,
+                        const sp_pcre* rx) {
   zend_string* key;
   zend_ulong idx;
 
@@ -300,16 +302,14 @@ bool sp_match_array_value(const zval* arr, const char* to_match,
 }
 
 int hook_function(const char* original_name, HashTable* hook_table,
-                  void (*new_function)(INTERNAL_FUNCTION_PARAMETERS),
-                  bool hook_execution_table) {
+                  void (*new_function)(INTERNAL_FUNCTION_PARAMETERS)) {
   zend_internal_function* func;
-  HashTable* ht =
-      hook_execution_table == true ? EG(function_table) : CG(function_table);
 
   /* The `mb` module likes to hook functions, like strlen->mb_strlen,
    * so we have to hook both of them. */
 
-  if ((func = zend_hash_str_find_ptr(ht, VAR_AND_LEN(original_name)))) {
+  if ((func = zend_hash_str_find_ptr(CG(function_table),
+                                     VAR_AND_LEN(original_name)))) {
     if (func->handler == new_function) {
       return SUCCESS;
     }
@@ -332,9 +332,9 @@ int hook_function(const char* original_name, HashTable* hook_table,
 
   if (0 == strncmp(original_name, "mb_", 3)) {
     CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
-    if (zend_hash_str_find(ht, VAR_AND_LEN(original_name + 3))) {
-      hook_function(original_name + 3, hook_table, new_function,
-                    hook_execution_table);
+    if (zend_hash_str_find(CG(function_table),
+                           VAR_AND_LEN(original_name + 3))) {
+      hook_function(original_name + 3, hook_table, new_function);
     }
   } else {  // TODO this can be moved somewhere else to gain some marginal perfs
     CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
@@ -342,7 +342,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
     memcpy(mb_name, "mb_", 3);
     memcpy(mb_name + 3, VAR_AND_LEN(original_name));
     if (zend_hash_str_find(CG(function_table), VAR_AND_LEN(mb_name))) {
-      hook_function(mb_name, hook_table, new_function, hook_execution_table);
+      hook_function(mb_name, hook_table, new_function);
     }
   }
 
@@ -350,26 +350,17 @@ int hook_function(const char* original_name, HashTable* hook_table,
 }
 
 int hook_regexp(const sp_pcre* regexp, HashTable* hook_table,
-                void (*new_function)(INTERNAL_FUNCTION_PARAMETERS),
-                bool hook_execution_table) {
+                void (*new_function)(INTERNAL_FUNCTION_PARAMETERS)) {
   zend_string* key;
-  HashTable* ht =
-      hook_execution_table == true ? EG(function_table) : CG(function_table);
 
-  ZEND_HASH_FOREACH_STR_KEY(ht, key) {
-    if (key) {
-      int ret = sp_is_regexp_matching_len(regexp, key->val, key->len);
-      if (ret < 0) { /* Error or no match*/
-        if (PCRE_ERROR_NOMATCH != ret) {
-          sp_log_err("pcre", "Runtime error with pcre, error code: %d", ret);
-          return FAILURE;
-        }
-        continue;
-      }
-      hook_function(key->val, hook_table, new_function, hook_execution_table);
+  ZEND_HASH_FOREACH_STR_KEY(CG(function_table), key)
+  if (key) {
+    if (true == sp_is_regexp_matching_len(regexp, key->val, key->len)) {
+      hook_function(key->val, hook_table, new_function);
     }
   }
   ZEND_HASH_FOREACH_END();
+
   return SUCCESS;
 }
 

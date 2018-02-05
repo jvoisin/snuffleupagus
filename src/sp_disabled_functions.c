@@ -258,8 +258,8 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
         goto next;
       }
     } else if (config_node->r_function) {
-      if (false ==
-          sp_is_regexp_matching(config_node->r_function, complete_path_function)) {
+      if (false == sp_is_regexp_matching(config_node->r_function,
+                                         complete_path_function)) {
         goto next;
       }
     }
@@ -365,8 +365,8 @@ bool should_drop_on_ret(zval* return_value,
         goto next;
       }
     } else if (config_node->r_function) {
-      if (false ==
-          sp_is_regexp_matching(config_node->r_function, complete_path_function)) {
+      if (false == sp_is_regexp_matching(config_node->r_function,
+                                         complete_path_function)) {
         goto next;
       }
     }
@@ -445,10 +445,10 @@ static int hook_functions(const sp_list_node* config) {
 
     if (NULL != function_name) {  // hook function by name
       HOOK_FUNCTION(function_name, disabled_functions_hook,
-                    PHP_FN(check_disabled_function), false);
+                    PHP_FN(check_disabled_function));
     } else if (NULL != function_name_regexp) {  // hook function by regexp
       HOOK_FUNCTION_BY_REGEXP(function_name_regexp, disabled_functions_hook,
-                              PHP_FN(check_disabled_function), false);
+                              PHP_FN(check_disabled_function));
     } else {
       return FAILURE;
     }
@@ -505,7 +505,7 @@ int hook_disabled_functions(void) {
     while (it) {
       hook_function((char*)it->data,
                     SNUFFLEUPAGUS_G(sp_eval_blacklist_functions_hook),
-                    PHP_FN(eval_blacklist_callback), false);
+                    PHP_FN(eval_blacklist_callback));
       it = it->next;
     }
   }
