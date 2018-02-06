@@ -344,10 +344,10 @@ int parse_disabled_functions(char *line) {
       char *new = pecalloc(strlen(param) + 2, 1, 1);
       new[0] = '$';
       memcpy(new + 1, param, strlen(param));
-      df->param = parse_var(new);
+      df->param = sp_parse_var(new);
       free(new);
     } else {
-      df->param = parse_var(param);
+      df->param = sp_parse_var(param);
     }
     if (!df->param) {
       sp_log_err("config", "Invalid value '%s' for `param` on line %zu.", param,
@@ -358,7 +358,7 @@ int parse_disabled_functions(char *line) {
 
   if (var) {
     if (*var) {
-      df->var = parse_var(var);
+      df->var = sp_parse_var(var);
       if (!df->var) {
         sp_log_err("config", "Invalid value '%s' for `var` on line %zu.", var,
                    sp_line_no);

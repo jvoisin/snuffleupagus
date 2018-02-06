@@ -67,7 +67,7 @@ static bool is_local_var_matching(
     const sp_disabled_function* const config_node) {
   zval* var_value;
 
-  var_value = get_value(execute_data, config_node->var, false);
+  var_value = sp_get_var_value(execute_data, config_node->var, false);
   if (var_value) {
     if (Z_TYPE_P(var_value) == IS_ARRAY) {
       if (config_node->key || config_node->r_key) {
@@ -187,7 +187,7 @@ static bool is_param_matching(zend_execute_data* execute_data,
     }
   } else if (config_node->param) {
     *arg_name = config_node->param->value;
-    arg_value = get_value(execute_data, config_node->param, true);
+    arg_value = sp_get_var_value(execute_data, config_node->param, true);
 
     if (arg_value) {
       *arg_value_str = sp_convert_to_string(arg_value);

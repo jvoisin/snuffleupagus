@@ -8,8 +8,8 @@ typedef struct sp_token_s {
   size_t pos;
 } sp_conf_token;
 
-zval *get_value(zend_execute_data *, const sp_tree *, bool);
-sp_tree *parse_var(const char *);
+zval *sp_get_var_value(zend_execute_data *, const sp_tree *, bool);
+sp_tree *sp_parse_var(const char *);
 
 #define OBJECT_TOKEN "->"
 #define ARRAY_TOKEN "["

@@ -100,7 +100,7 @@ static void *get_entry_hashtable(const HashTable *ht, const char *entry,
 
 static zval *get_array_value(zend_execute_data *ed, zval *zvalue,
                              const sp_tree *tree) {
-  zval *idx_value = get_value(ed, tree->idx, false);
+  zval *idx_value = sp_get_var_value(ed, tree->idx, false);
 
   if (!zvalue || !idx_value) {
     return NULL;
@@ -177,7 +177,7 @@ static zval *get_unknown_type(const char *restrict value, zval *zvalue,
   return zvalue;
 }
 
-zval *get_value(zend_execute_data *ed, const sp_tree *tree, bool is_param) {
+zval *sp_get_var_value(zend_execute_data *ed, const sp_tree *tree, bool is_param) {
   zval *zvalue = NULL;
   zend_class_entry *ce = NULL;
 

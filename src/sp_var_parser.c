@@ -74,7 +74,7 @@ static int create_var(sp_tree *tree, const char *restrict value,
     sp_log_err("config", "Invalid var name: %s.", var_node->value);
     return -1;
   }
-  var_node->idx = parse_var(idx);
+  var_node->idx = sp_parse_var(idx);
 
   if (tree != var_node) {
     while (tree->next) {
@@ -222,7 +222,7 @@ static sp_tree *parse_tokens(const char *restrict str,
   return tree;
 }
 
-sp_tree *parse_var(const char *line) {
+sp_tree *sp_parse_var(const char *line) {
   sp_list_node *tokens_list = NULL;
   sp_tree *tree = NULL;
   const sp_conf_token delimiter_list[] = {
