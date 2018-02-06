@@ -1,4 +1,22 @@
-snuffleupagus (0.1) UNRELEASED; urgency=medium
+snuffleupagus (0.2.0) UNRELEASED; urgency=medium
+
+  * Glob support in `sp.configuration_file`
+  * Whitelist/blacklist functions in `eval`
+  * `phpinfo` shows is the configuration is valid or not
+  * Off-by-one in configuration parsing fixed
+  * Minor cookie-encryption related memory leaks fixes
+  * Various crashes fixes
+  * Configuration files with windows EOL are correctly handled
+  * General code clean-up
+  * Documentation overhaul
+  * Compilation on FreeBSD and CentOS
+  * Select which cookies to encrypt via regular expressions
+  * Match on return values from user-defined functions
+  * Simplification and clean up of our linked-list implementation
+
+ -- jvoisin <snuffleupagus@nbs-system.com>  Tue, 18 Jan 2018 13:00:00 +0200
+
+snuffleupagus (0.1.0) UNRELEASED; urgency=medium
 
   * Initial release.
 

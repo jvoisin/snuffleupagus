@@ -14,10 +14,9 @@ sp.unserialize_hmac.enable();
 
 # AbanteCart 1.2.8 - Multiple SQL Injections
 # https://blog.ripstech.com/2016/abantecart-multiple-sql-injections/ 
-sp.disable_function.function("ALanguageManager::_clone_language_rows").filename("/core/lib/language_manager.php").param("from_language").value_r("[^0-9]").drop();
-sp.disable_function.function("echo").filename("/static_pages/index.php").var("_SERVER[HTTP_HOST]").value_r("[^0-9a-z-.]").drop();
-sp.disable_function.function("ModelToolBackup::createBackupTask").filename("/admin/model/tool/backup.php").param("data[table_list]").value_r("'").drop();
-
+sp.disable_function.function("ALanguageManager::_clone_language_rows").filename_r("/core/lib/language_manager.php").param("from_language").value_r("[^0-9]").drop();
+sp.disable_function.function("define").filename_r("/static_pages/index.php").var("$_SERVER[PHP_SELF]").value_r("\"").drop();
+sp.disable_function.function("ModelToolBackup::createBackupTask").filename_r("/admin/model/tool/backup.php").param("data[table_list]").value_r("'").drop();
 
 
 # osClass 3.6.1: Remote Code Execution via Image File

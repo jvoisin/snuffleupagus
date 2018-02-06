@@ -102,17 +102,46 @@ int parse_global(char *line) {
   return parse_keywords(sp_config_funcs_global, line);
 }
 
+static int parse_eval_filter_conf(char *line, sp_list_node **list) {
+  char *token;
+  char *rest;
+  sp_config_functions sp_config_funcs[] = {
+      {parse_str, SP_TOKEN_EVAL_LIST, &rest},
+      {parse_empty, SP_TOKEN_SIMULATION,
+       &(SNUFFLEUPAGUS_G(config).config_eval->simulation)},
+      {0}};
+  int ret = parse_keywords(sp_config_funcs, line);
+  if (0 != ret) {
+    return ret;
+  }
+
+  while ((token = strtok_r(rest, ",", &rest))) {
+    *list = sp_list_insert(*list, token);
+  }
+  return SUCCESS;
+}
+
+int parse_eval_blacklist(char *line) {
+  return parse_eval_filter_conf(line,
+                                &SNUFFLEUPAGUS_G(config).config_eval->blacklist);
+}
+
+int parse_eval_whitelist(char *line) {
+  return parse_eval_filter_conf(line,
+                                &SNUFFLEUPAGUS_G(config).config_eval->whitelist);
+}
+
 int parse_cookie(char *line) {
   int ret = 0;
-  char *samesite = NULL, *name = NULL;
+  char *samesite = NULL;
   sp_cookie *cookie = pecalloc(sizeof(sp_cookie), 1, 1);
-  zend_string *zend_name;
 
   sp_config_functions sp_config_funcs_cookie_encryption[] = {
-      {parse_str, SP_TOKEN_NAME, &name},
+      {parse_str, SP_TOKEN_NAME, &(cookie->name)},
+      {parse_regexp, SP_TOKEN_NAME_REGEXP, &(cookie->name_r)},
       {parse_str, SP_TOKEN_SAMESITE, &samesite},
-      {parse_empty, SP_TOKEN_SIMULATION, &cookie->simulation},
       {parse_empty, SP_TOKEN_ENCRYPT, &cookie->encrypt},
+      {parse_empty, SP_TOKEN_SIMULATION, &cookie->simulation},
       {0}};
 
   ret = parse_keywords(sp_config_funcs_cookie_encryption, line);
@@ -146,9 +175,16 @@ int parse_cookie(char *line) {
                sp_line_no);
     return -1;
   }
-  if (0 == strlen(name)) {
+  if ((!cookie->name || '\0' == cookie->name[0]) && !cookie->name_r) {
     sp_log_err("config",
-               "You must specify a cookie name on line "
+               "You must specify a cookie name/regexp on line "
+               "%zu.",
+               sp_line_no);
+    return -1;
+  }
+  if (cookie->name && cookie->name_r) {
+    sp_log_err("config",
+               "name and name_r are mutually exclusive on line "
                "%zu.",
                sp_line_no);
     return -1;
@@ -168,11 +204,8 @@ int parse_cookie(char *line) {
       return -1;
     }
   }
-
-  zend_name = zend_string_init(name, strlen(name), 1);
-  zend_hash_add_ptr(SNUFFLEUPAGUS_G(config).config_cookie->cookies, zend_name,
-                    cookie);
-
+  SNUFFLEUPAGUS_G(config).config_cookie->cookies = sp_list_insert(
+      SNUFFLEUPAGUS_G(config).config_cookie->cookies, cookie);
   return SUCCESS;
 }
 
@@ -235,8 +268,8 @@ int parse_disabled_functions(char *line) {
   MUTUALLY_EXCLUSIVE(df->key, df->r_key, "r_key", "key");
 #undef MUTUALLY_EXCLUSIVE
 
-  if (1 < ((df->r_param ? 1 : 0) + (param ? 1 : 0) +
-           ((-1 != df->pos) ? 1 : 0))) {
+  if (1 <
+      ((df->r_param ? 1 : 0) + (param ? 1 : 0) + ((-1 != df->pos) ? 1 : 0))) {
     sp_log_err(
         "config",
         "Invalid configuration line: 'sp.disabled_functions%s':"
@@ -304,10 +337,21 @@ int parse_disabled_functions(char *line) {
   }
 
   if (param) {
-    df->param = parse_var(param);
+    if (strlen(param) > 0 && param[0] != '$') {
+			/* This is an ugly hack. We're prefixing with a `$` because otherwise
+			 * the parser treats this as a constant.
+			 * FIXME: Remove this, and improve our (weird) parser. */
+      char *new = pecalloc(strlen(param) + 2, 1, 1);
+      new[0] = '$';
+      memcpy(new + 1, param, strlen(param));
+      df->param = parse_var(new);
+      free(new);
+    } else {
+      df->param = parse_var(param);
+    }
     if (!df->param) {
-      sp_log_err("config", "Invalid value '%s' for `param` on line %zu.",
-		 param, sp_line_no);
+      sp_log_err("config", "Invalid value '%s' for `param` on line %zu.", param,
+                 sp_line_no);
       return -1;
     }
   }
@@ -316,25 +360,24 @@ int parse_disabled_functions(char *line) {
     if (*var) {
       df->var = parse_var(var);
       if (!df->var) {
-	sp_log_err("config", "Invalid value '%s' for `var` on line %zu.",
-		   var, sp_line_no);
-	return -1;
+        sp_log_err("config", "Invalid value '%s' for `var` on line %zu.", var,
+                   sp_line_no);
+        return -1;
       }
     } else {
-      sp_log_err("config", "Empty value in `var` on line %zu.",
-		 sp_line_no);
+      sp_log_err("config", "Empty value in `var` on line %zu.", sp_line_no);
       return -1;
     }
   }
 
   switch (get_construct_type(df)) {
     case ZEND_INCLUDE_OR_EVAL:
-      sp_list_insert(
+      SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include = sp_list_insert(
           SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include,
           df);
       return ret;
     case ZEND_EVAL_CODE:
-      sp_list_insert(
+      SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval = sp_list_insert(
           SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval,
           df);
       return ret;
@@ -348,11 +391,11 @@ int parse_disabled_functions(char *line) {
   }
 
   if (df->ret || df->r_ret || df->ret_type) {
-    sp_list_insert(SNUFFLEUPAGUS_G(config)
-                       .config_disabled_functions_ret->disabled_functions,
-                   df);
+    SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions = sp_list_insert(
+        SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions,
+        df);
   } else {
-    sp_list_insert(
+    SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions = sp_list_insert(
         SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions,
         df);
   }

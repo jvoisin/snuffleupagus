@@ -4,15 +4,16 @@ Readonly execution attempt (simulation mode)
 <?php
 if (!extension_loaded("snuffleupagus")) print "skip";
 
-$filename = __DIR__ . '/test.txt';
-
-@unlink($filename);
-
-file_put_contents($filename, 'a');
-chmod($filename, 0400);
-
-if (is_writable($filename)) print "skip";;
-@unlink($filename);
+// root has write privileges on any file
+if (TRUE == function_exists("posix_getuid")) {
+	if (0 == posix_getuid()) {
+		print "skip";
+	}
+} elseif (TRUE == function_exists("shell_exec")) {
+	if ("root" == trim(shell_exec("whoami"))) {
+		print "skip";
+	}
+}
  ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disable_writable_simulation.ini

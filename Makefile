@@ -35,7 +35,7 @@ else
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test
 	lcov --base-directory ./src --directory ./src -c -o ./src/COV.info --rc lcov_branch_coverage=1 
 	lcov --remove src/COV.info '/usr/*' --remove src/COV.info '*tweetnacl.c' -o src/COV.info --rc lcov_branch_coverage=1
-	genhtml -o src/COV.html ./src/COV.info  --branch-coverage
+	genhtml --show-details -o src/COV.html ./src/COV.info  --branch-coverage
 endif
 
 bench: joomla  ## run the benchmark
@@ -46,7 +46,7 @@ joomla:
 	fi
 	cd joomla-cms; composer install >/dev/null 2>/dev/null
 	echo "\nWith snuffleupagus:"
-	cd joomla-cms; time libraries/vendor/phpunit/phpunit/phpunit -d "extension=./src/modules/snuffleupagus.so" -d "sp.configuration_file=config/default.ini" --no-coverage >/dev/null
+	cd joomla-cms; time libraries/vendor/phpunit/phpunit/phpunit -d "extension=./src/modules/snuffleupagus.so" -d "sp.configuration_file=config/default.rules" --no-coverage >/dev/null
 	echo "\nWithout snuffleupagus:"
 	cd joomla-cms; time libraries/vendor/phpunit/phpunit/phpunit --no-coverage >/dev/null
 

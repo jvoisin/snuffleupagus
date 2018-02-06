@@ -3,7 +3,7 @@ Non-existent configuration file in a list
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
-sp.configuration_file={PWD}/../../config/default.ini,{PWD}/non_existent_configuration_file
+sp.configuration_file={PWD}/../../config/default.rules,{PWD}/non_existent_configuration_file
 --FILE--
 <?php ?>
 --EXPECTF--

@@ -26,14 +26,14 @@ int parse_keywords(sp_config_functions *funcs, char *line) {
 
   if (*line) {
     sp_log_err("config", "Trailing chars '%s' at the end of '%s' on line %zu.",
-     line, original_line, sp_line_no);
+               line, original_line, sp_line_no);
     return -1;
   }
   return 0;
 }
 
 char *get_param(size_t *consumed, char *restrict line, sp_type type,
-		const char *restrict keyword) {
+                const char *restrict keyword) {
   enum { IN_ESCAPE, NONE } state = NONE;
   char *original_line = line;
   size_t j = 0;
@@ -86,10 +86,12 @@ char *get_param(size_t *consumed, char *restrict line, sp_type type,
   }
 err:
   if (0 == j) {
-    sp_log_err("error", "A valid string as parameter is expected on line %zu.", sp_line_no);
+    sp_log_err("error", "A valid string as parameter is expected on line %zu.",
+               sp_line_no);
   } else {
     sp_log_err("error",
-               "There is an issue with the parsing of '%s': it doesn't look like a valid string on line %zu.",
+               "There is an issue with the parsing of '%s': it doesn't look "
+               "like a valid string on line %zu.",
                original_line ? original_line : "NULL", sp_line_no);
   }
   line = NULL;
@@ -103,12 +105,12 @@ zend_always_inline sp_list_node *parse_functions_list(char *value) {
     return NULL;
   }
 
-  sp_list_node *list = sp_list_new();
-  char* tmp = strdup(value);
-  char* function_name;
+  sp_list_node *list = NULL;
+  char *tmp = strdup(value);
+  char *function_name;
   char *next_token = tmp;
   while ((function_name = strtok_r(NULL, sep, &next_token))) {
-    sp_list_prepend(list, strdup(function_name));
+    list = sp_list_prepend(list, strdup(function_name));
   }
   free(tmp);
 

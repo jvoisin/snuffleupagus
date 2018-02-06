@@ -5,6 +5,7 @@
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/1267/badge)](https://bestpractices.coreinfrastructure.org/projects/1267)
 [![Documentation Status](https://readthedocs.org/projects/snuffleupagus/badge/?version=latest)](http://snuffleupagus.readthedocs.io/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/nbs-system/snuffleupagus/badge.svg?branch=master)](https://coveralls.io/github/nbs-system/snuffleupagus?branch=master)
+[![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/sp_php.svg?style=social&label=Follow%20%40sp_php)](https://twitter.com/sp_php)
 
 
 Snuffleupagus is a [PHP 7+](https://secure.php.net/) module designed to

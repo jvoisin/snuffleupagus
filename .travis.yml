@@ -30,16 +30,17 @@ matrix:
     php: '7.1'
   - env: TARGET="gcc php7.2" CC="gcc"
     php: '7.2'
-  - env: TARGET="gcc php nightly" CC="gcc"
-    before_install: pip install --user cpp-coveralls
-    php: nightly
   - env: TARGET="clang php7.0" CC="clang"
     php: '7.0'
   - env: TARGET="clang php7.1" CC="clang"
     php: '7.1'
   - env: TARGET="clang php7.2" CC="clang"
     php: '7.2'
+  allow_failures:
   - env: TARGET="clang php nightly with valgrind" CC="clang"
+    php: nightly
+  - env: TARGET="gcc php nightly" CC="gcc"
+    before_install: pip install --user cpp-coveralls
     php: nightly
 
 script:

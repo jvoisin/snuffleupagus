@@ -16,8 +16,9 @@ PHP_ARG_ENABLE(coverage, whether to enable coverage support,
 PHP_ARG_ENABLE(debug, whether to enable debug messages,
 [  --enable-debug           Enable debug messages], no, no)
 
+AC_PROG_CC_STDC()
+
 CFLAGS="$CFLAGS"
-CFLAGS="$CFLAGS -D_DEFAULT_SOURCE=1 -std=c99"
 CFLAGS="$CFLAGS -Wall -Wextra -Wno-unused-parameter"
 CFLAGS="$CFLAGS -Wformat=2 -Wformat-security -D_FORTIFY_SOURCE=2"
 CFLAGS="$CFLAGS -fstack-protector"

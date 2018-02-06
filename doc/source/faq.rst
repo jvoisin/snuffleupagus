@@ -110,7 +110,7 @@ issues, as stated in their `documentation <https://wiki.php.net/security#not_a_s
 We do think that a security issue that "requires the use of code or settings known to be insecure"
 is still a security issue, and should be treated as such.
 
-We don't have the pretention to state that Snuffleupagus will magically solve
+We don't have the pretension to state that Snuffleupagus will magically solve
 all your security issues, but we believe that it might definitely help.
 
 Why should I send you bugs, security issues and patches?
@@ -225,6 +225,9 @@ Please make sure to include as much information as possible when reporting your 
 such as your operating system, your version of PHP 7, your version of Snuffleupagus,
 your logs, the problematic php code, the request, a brief description, … long story short,
 give us everything that you can.
+
+If you're feeling extra-nice, you can try to :ref:`debug it yourself <debug>`,
+it's not that hard.
 
 Where can I find even more help?
 """"""""""""""""""""""""""""""""

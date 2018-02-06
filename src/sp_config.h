@@ -43,8 +43,8 @@ typedef struct {
 } sp_config_global;
 
 typedef struct {
-	bool enable;
-	bool simulation;
+  bool enable;
+  bool simulation;
 } sp_config_readonly_exec;
 
 typedef struct { bool enable; } sp_config_global_strict;
@@ -56,9 +56,11 @@ typedef struct { bool enable; } sp_config_auto_cookie_secure;
 typedef struct { bool enable; } sp_config_disable_xxe;
 
 typedef struct {
-  enum samesite_type {strict=1, lax=2} samesite;
+  enum samesite_type { strict = 1, lax = 2 } samesite;
   bool encrypt;
-	bool simulation;
+  char *name;
+  pcre *name_r;
+  bool simulation;
 } sp_cookie;
 
 typedef struct {
@@ -110,15 +112,22 @@ typedef struct {
 } sp_disabled_function;
 
 typedef struct {
+  sp_list_node *blacklist;
+  sp_list_node *whitelist;
+  bool simulation;
+} sp_config_eval;
+
+typedef struct {
   sp_list_node *disabled_functions;  // list of sp_disabled_function
 } sp_config_disabled_functions;
 
 typedef struct {
-  HashTable *cookies;  // HashTable of sp_cookie
+  sp_list_node *cookies;  // list of sp_cookie for regexp/names
 } sp_config_cookie;
 
 typedef struct {
-  sp_list_node *construct_include; // list of rules for `(include|require)_(once)?`
+  sp_list_node
+      *construct_include;  // list of rules for `(include|require)_(once)?`
   sp_list_node *construct_eval;
   sp_list_node *construct_echo;
 } sp_config_disabled_constructs;
@@ -142,6 +151,7 @@ typedef struct {
   sp_config_global_strict *config_global_strict;
   sp_config_disable_xxe *config_disable_xxe;
   sp_config_disabled_constructs *config_disabled_constructs;
+  sp_config_eval *config_eval;
 } sp_config;
 
 typedef struct {
@@ -167,6 +177,8 @@ typedef struct {
 #define SP_TOKEN_UNSERIALIZE_HMAC ".unserialize_hmac"
 #define SP_TOKEN_UPLOAD_VALIDATION ".upload_validation"
 #define SP_TOKEN_DISABLE_XXE ".disable_xxe"
+#define SP_TOKEN_EVAL_BLACKLIST ".eval_blacklist"
+#define SP_TOKEN_EVAL_WHITELIST ".eval_whitelist"
 
 // common tokens
 #define SP_TOKEN_ENABLE ".enable("
@@ -204,6 +216,7 @@ typedef struct {
 
 // cookies encryption
 #define SP_TOKEN_NAME ".name("
+#define SP_TOKEN_NAME_REGEXP ".name_r("
 
 // cookies samesite
 #define SP_TOKEN_SAMESITE ".samesite("
@@ -218,6 +231,9 @@ typedef struct {
 // upload_validator
 #define SP_TOKEN_UPLOAD_SCRIPT ".script("
 
+// eval blacklist
+#define SP_TOKEN_EVAL_LIST ".list("
+
 int sp_parse_config(const char *);
 int parse_array(sp_disabled_function *);
 
@@ -228,6 +244,6 @@ int parse_cidr(char *restrict, char *restrict, void *);
 int parse_php_type(char *restrict, char *restrict, void *);
 
 // cleanup
-void sp_disabled_function_list_free(sp_list_node*);
+void sp_disabled_function_list_free(sp_list_node *);
 
 #endif /* SP_CONFIG_H */
