@@ -107,7 +107,6 @@ static const sp_list_node* get_config_node(const char* builtin_name) {
         .config_disabled_constructs->construct_include;
   }
   ZEND_ASSUME(0);
-  return NULL;  // This should never happen.
 }
 
 static bool is_param_matching(zend_execute_data* execute_data,
@@ -360,6 +359,8 @@ bool should_drop_on_ret(zval* return_value,
     sp_disabled_function const* const config_node =
         (sp_disabled_function*)(config->data);
 
+    assert(config_node->function || config_node->r_function);
+
     if (config_node->function) {
       if (0 != strcmp(config_node->function, complete_path_function)) {
         goto next;
@@ -443,14 +444,14 @@ static int hook_functions(const sp_list_node* config) {
     const sp_pcre* function_name_regexp =
         ((sp_disabled_function*)config->data)->r_function;
 
+    assert(function_name || function_name_regexp);
+
     if (NULL != function_name) {  // hook function by name
       HOOK_FUNCTION(function_name, disabled_functions_hook,
                     PHP_FN(check_disabled_function));
     } else if (NULL != function_name_regexp) {  // hook function by regexp
       HOOK_FUNCTION_BY_REGEXP(function_name_regexp, disabled_functions_hook,
                               PHP_FN(check_disabled_function));
-    } else {
-      return FAILURE;
     }
 
     config = config->next;

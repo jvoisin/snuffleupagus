@@ -24,9 +24,8 @@ static bool is_var_name_valid(const char *name) {
   static sp_pcre *regexp_const = NULL;
   static sp_pcre *regexp_var = NULL;
 
-  if (!name) {
-    return false;
-  }
+  assert(name);
+
   if (NULL == regexp_var || NULL == regexp_const) {
     regexp_var = sp_pcre_compile(REGEXP_VAR);
     regexp_const = sp_pcre_compile(REGEXP_CONST);
@@ -46,9 +45,8 @@ static int create_var(sp_tree *tree, const char *restrict value,
                       const char *restrict idx) {
   sp_tree *var_node = NULL;
 
-  if (!tree) {
-    return -1;
-  }
+  assert(tree);
+
   if (tree->next == NULL && tree->type == UNDEFINED) {
     var_node = tree;
   } else {
