@@ -1,3 +1,13 @@
+snuffleupagus (0.2.1) UNRELEASED; urgency=medium
+  * The testsuite can now be successfully run as root
+  * Fix a double execution when snuffleupagus is used with some other extensions
+  * Fix an execution-context related crash
+  * Support PCRE2, since it's required for PHP7.3
+  * Improve a bit the portability of the code
+  * Minor code simplification
+
+ -- jvoisin <snuffleupagus@nbs-system.com>  Tue, 07 Feb 2018 11:00:00 +0200
+
 snuffleupagus (0.2.0) UNRELEASED; urgency=medium
 
   * Glob support in `sp.configuration_file`

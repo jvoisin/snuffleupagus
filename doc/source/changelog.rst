@@ -1,6 +1,23 @@
 Changelog
 =========
 
+0.2.1 - `Elephant Point <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.2.1>`__ 2018/02/07
+-------------------------------------------------------------------------------------------------------
+
+Bug fixes
+^^^^^^^^^
+
+- The testsuite can now be successfully run as root
+- Fix a double execution when snuffleupagus is used with some other extensions
+- Fix an execution-context related crash
+
+Improvements
+^^^^^^^^^^^^
+
+- Support PCRE2, since it's `required for PHP7.3 <https://wiki.php.net/rfc/pcre2-migration>`__
+- Improve a bit the portability of the code
+- Minor code simplification
+
 0.2.0 - `Elephant Rally <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.2.0>`__ - 2018/01/18
 ---------------------------------------------------------------------------------------------------------
 
