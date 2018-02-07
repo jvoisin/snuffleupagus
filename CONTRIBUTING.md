@@ -121,10 +121,12 @@ Maintainers need to do the following to push out a release:
 
 1. Make sure that all pending and mergeable pull requests are in
 2. Run `valgrind` and check that everything is ok
-3. Update the `snuffleupagus.h` file: drop the -dev suffix and check new version comply with [semantic versioning](https://semver.org/)
+3. Update the `src/php_snuffleupagus.h` file: drop the `-dev` suffix and check new version comply with [semantic versioning](https://semver.org/)
 4. Update the changelog page in the documentation
-5. Update the Debian changelog in ./debian/changelog with `dch`
-6. Create a tag for the release:
+5. Update the Debian changelog in `./debian/changelog` with `dch`
+6. Commit the result
+7. Clean up the folder `make clean; git clean -xdf`
+8. Create a tag for the release:
 
   ```sh
   git checkout master
@@ -132,10 +134,11 @@ Maintainers need to do the following to push out a release:
   make coverage
   git config user.signingkey 498C46FF087EDC36E7EAF9D445414A82A9B22D78
   git config user.email security@nbs-system.com
-  git tag -s $MAJOR.$MINOR.$PATCH
+  git tag -s v$MAJOR.$MINOR.$PATCH -m "v$MAJOR.$MINOR.$PATCH"
   git push --tags
   ```
 
-7. Create the [release on github](https://github.com/nbs-system/snuffleupagus/releases)
-8. Update the `snuffleupagus.h` file: bump the version 3rd digit and add the -dev suffix
-9. Do the *secret release dance*
+9. Build the debian package with `make debian`
+10. Create the [release on github](https://github.com/nbs-system/snuffleupagus/releases)
+11. Update the `src/php_snuffleupagus.h` file: bump the version 3rd digit and add the `-dev` suffix
+12. Do the *secret release dance*
