@@ -1,0 +1,1 @@
+sp.disable_function.function("define").filename_r("/static_pages/index.php").var("$_SERVER[PHP_SELF]").value_r("\"").drop();
