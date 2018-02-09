@@ -354,6 +354,8 @@ The ``param`` filter is also able to do some dereferencing:
 The ``filename`` filter requires a leading ``/``, since paths are absolutes (like ``/var/www/mywebsite/lib/parse.php``).
 If you would like to have only one configuration file for several vhost in different folders,
 you can use the ``filename_r`` directive to match on the filename (like ``/lib/parse\.php``).
+Please do note that this filter matches on the file where the function is **defined**,
+not the one where the function is **called from**.
 
 For clarity, the presence of the ``allow`` or ``drop`` action is **mandatory**.
 
