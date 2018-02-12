@@ -236,8 +236,8 @@ argument and various information about it in the environment:
 * ``SP_CURRENT_FILE``: the current file being executed
 
 This feature can be used, for example, to check if an uploaded file contains php
-code, with something like `vld <https://derickrethans.nl/projects.html#vld>`_
-(``php -d vld.execute=0 -d vld.active=1 -d extension=vld.so yourfile.php``).
+code, using `vld <https://derickrethans.nl/projects.html#vld>`_,
+via `this script <https://github.com/nbs-system/snuffleupagus/tree/master/scripts/upload_validation.py>`__.
 
 The upload will be **allowed** if the script returns the value ``0``. Every other
 value will prevent the file from being uploaded.
