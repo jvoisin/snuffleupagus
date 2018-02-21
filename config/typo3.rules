@@ -14,7 +14,6 @@ sp.disable_function.function_r("^require|include$").drop();
 
 # Prevent `system`-related injections
 sp.disable_function.function("system").param("command").value_r("[$|;&`\\n]").drop();
-#sp.disable_function.function("shell_exec").param("command").filename_r("vendor/symfony/console/Helper/QuestionHelper.php").cidr("1.2.3.4/12").value_r(";").allow();
 sp.disable_function.function("shell_exec").param("command").filename_r("vendor/nikic/php-parser/grammar/rebuildParsers.php").value_r("2>&1").allow();
 sp.disable_function.function("shell_exec").param("command").value_r("[$|;&`\\n]").drop();
 sp.disable_function.function("exec").param("command").filename_r("typo3/sysext/core/Classes/Utility/CommandUtility.php").value_r("2>&1").allow();
