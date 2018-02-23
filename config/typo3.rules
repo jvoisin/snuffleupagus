@@ -1,11 +1,9 @@
 # Harden the `chmod` function
 sp.disable_function.function("chmod").param("mode").filename_r("typo3/sysext/core/Classes/Utility/GeneralUtility.php$").value_r("^[0-9]{2}6$").allow();
-sp.disable_function.function("chmod").param("mode").filename_r("typo3/sysext/install/Classes/FolderStructure/AbstractNode.php$").value_r("^[0-9]{2}6$").allow();
-#sp.disable_function.function("chmod").param("mode").value_r("^[0-9]{2}[67]$").drop();
+sp.disable_function.function("chmod").param("mode").value_r("^[0-9]{2}[67]$").drop();
 
 # Prevent various `mail`-related vulnerabilities
-#sp.disable_function.function("mail").param("additional_parameters").value_r("\-f").allow();
-sp.disable_function.function("mail").param("additional_parameters").value_r("\\-").drop();
+sp.disable_function.function("mail").drop();
 
 ##Prevent various `include`-related vulnerabilities
 sp.disable_function.function_r("^(?:require|include)_once$").value_r("\.php$").allow();
@@ -15,15 +13,9 @@ sp.disable_function.function_r("^require|include$").drop();
 
 # Prevent `system`-related injections
 sp.disable_function.function("system").drop();
-sp.disable_function.function("shell_exec").param("command").filename_r("vendor/nikic/php-parser/grammar/rebuildParsers.php$").value_r("2>&1$").allow();
 sp.disable_function.function("shell_exec").param("command").value_r("[$|;&`\\n]").drop();
-sp.disable_function.function("exec").param("command").filename_r("typo3/sysext/core/Classes/Utility/CommandUtility.php$").value_r("2>&1$").allow();
-sp.disable_function.function("exec").param("command").filename_r("vendor/symfony/intl/Resources/bin/common.php$").value_r("2>&1$").allow();
-sp.disable_function.function("exec").param("command").filename_r("vendor/symfony/console/Helper/QuestionHelper.php$").value_r("2>&1$").allow();
-sp.disable_function.function("exec").param("command").filename_r("typo3/sysext/core/Classes/Resource/Processing/LocalPreviewHelper.php$").value_r("2>&1$").allow();
-sp.disable_function.function("exec").param("command").filename_r("typo3/sysext/install/Classes/Service/CoreUpdateService.php$").value_r("2>&1$").allow();
+sp.disable_function.function("exec").param("command").filename_r("typo3/sysext/core/Classes/Utility/CommandUtility.php$").value_r("^'/usr/bin/convert' [a-zA-Z0-9_\\-\\.\\*'\+\\[\\] \/]+ 2>&1$").allow();
 sp.disable_function.function("exec").param("command").value_r("[$|;&`\\n]").drop();
-sp.disable_function.function("proc_open").param("command").filename_r("vendor/symfony/console/Terminal.php$").value_r("|").allow();
 sp.disable_function.function("proc_open").param("command").value_r("[$|;&`\\n]").drop();
 
 # Prevent runtime modification of interesting things
@@ -35,10 +27,10 @@ sp.disable_function.function("ini_set").param("var_name").value("include_path").
 sp.disable_function.function("ini_set").param("var_name").value("open_basedir").drop();
 
 # Detect some backdoors via environnement recon
-sp.disable_function.function("ini_get").param("var_name").filename_r("typo3/sysext/core/Classes/Cache/Backend/SimpleFileBackend.php$").value_r("open_basedir").allow();
-sp.disable_function.function("ini_get").param("var_name").filename_r("typo3/sysext/install/Classes/SystemEnvironment/Check.php$").value_r("open_basedir").allow();
-sp.disable_function.function("ini_get").param("var_name").filename_r("typo3/sysext/install/Classes/SystemEnvironment/SetupCheck.php$").value_r("allow_url_fopen").allow();
-sp.disable_function.function("ini_get").param("var_name").filename_r("vendor/guzzlehttp/guzzle/src/functions.php$").value_r("allow_url_fopen").allow();
+sp.disable_function.function("ini_get").param("var_name").filename_r("typo3/sysext/core/Classes/Cache/Backend/SimpleFileBackend.php$").value("open_basedir").allow();
+sp.disable_function.function("ini_get").param("var_name").filename_r("typo3/sysext/install/Classes/SystemEnvironment/Check.php$").value("open_basedir").allow();
+sp.disable_function.function("ini_get").param("var_name").filename_r("typo3/sysext/install/Classes/SystemEnvironment/SetupCheck.php$").value("allow_url_fopen").allow();
+sp.disable_function.function("ini_get").param("var_name").filename_r("vendor/guzzlehttp/guzzle/src/functions.php$").value("allow_url_fopen").allow();
 sp.disable_function.function("ini_get").param("var_name").value_r("(?:allow_url_fopen|open_basedir|suhosin)").drop();
 
 #need to be allow for example to execute Scheduled tasks
