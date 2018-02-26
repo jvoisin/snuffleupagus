@@ -4,6 +4,9 @@ sp.disable_function.function("chmod").param("mode").value_r("^[0-9]{2}[67]$").dr
 # Prevent various `mail`-related vulnerabilities
 sp.disable_function.function("mail").param("additional_parameters").value_r("\\-").drop();
 
+# Since it's now burned, me might as well mitigate it publicly
+sp.disable_function.function("putenv").param("setting").value_r("LD_PRELOAD").drop()
+
 ##Prevent various `include`-related vulnerabilities
 sp.disable_function.function_r("^(?:require|include)_once$").value_r("\\.(?:php|php7|inc|tpl)$").allow();
 sp.disable_function.function_r("^require|include$").value_r("\\.(?:php|php7|inc|tpl)$").allow();
