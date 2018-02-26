@@ -41,6 +41,7 @@
   <a href="#download">Download</a> •
 	<a href="https://snuffleupagus.readthedocs.io/">Documentation</a> •
   <a href="https://github.com/nbs-system/snuffleupagus/blob/master/LICENSE">License</a>
+	<a href="#thanks">Thanks</a> •
 </p>
 
 Snuffleupagus is a [PHP 7+](https://secure.php.net/) module designed to
@@ -80,3 +81,9 @@ repo, or check the releases on [github](https://github.com/nbs-system/snuffleupa
 We've got a [comprehensive website](https://snuffleupagus.readthedocs.io/) with
 all the documentation that you could possibly wish for. You can of course
 [build it yourself](https://github.com/nbs-system/snuffleupagus/tree/master/doc).
+
+## Thanks
+
+Many thanks to the [Suhosin project](https://suhosin.org) for being a __huge__
+source of inspiration, and to all [our
+contributors](https://github.com/nbs-system/snuffleupagus/graphs/contributors).
