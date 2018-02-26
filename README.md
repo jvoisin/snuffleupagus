@@ -1,11 +1,9 @@
-# Snuffleupagus
-
 <h1 align="center">
   <br>
   <a href="https://snuffleupagus.readthedocs.io/">
 		<img src="https://github.com/nbs-system/snuffleupagus/raw/improve_readme/doc/source/_static/sp.png" alt="Snuffleupagus' logo" width="200"></a>
   <br>
-  Markdownify
+  Snuffleupagus
   <br>
 </h1>
 
@@ -42,7 +40,7 @@
   <a href="#key-features">Key Features</a> •
   <a href="#download">Download</a> •
 	<a href="https://snuffleupagus.readthedocs.io/">Documentation</a> •
-  <a href="https://github.com/nbs-system/snuffleupagus/blob/master/LICENSE">License</a> •
+  <a href="https://github.com/nbs-system/snuffleupagus/blob/master/LICENSE">License</a>
 </p>
 
 Snuffleupagus is a [PHP 7+](https://secure.php.net/) module designed to
@@ -70,16 +68,14 @@ without having to touch the PHP code.
 	* Whitelist/blacklist for `eval`
 	* Request dumping capability
 
-# Download
+## Download
 
 We've got a [download
 page](https://snuffleupagus.readthedocs.io/download.html), where you can find
 packages for your distribution, but you can of course just `git clone` this
 repo, or check the releases on [github](https://github.com/nbs-system/snuffleupagus/releases).
 
-You can read its documentation [here](https://snuffleupagus.readthedocs.io/).
-
-# Documentation
+## Documentation
 
 We've got a [comprehensive website](https://snuffleupagus.readthedocs.io/) with
 all the documentation that you could possibly wish for. You can of course
