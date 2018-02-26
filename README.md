@@ -40,8 +40,8 @@
   <a href="#key-features">Key Features</a> •
   <a href="#download">Download</a> •
 	<a href="https://snuffleupagus.readthedocs.io/">Documentation</a> •
-  <a href="https://github.com/nbs-system/snuffleupagus/blob/master/LICENSE">License</a>
-	<a href="#thanks">Thanks</a> •
+  <a href="https://github.com/nbs-system/snuffleupagus/blob/master/LICENSE">License</a> •
+	<a href="#thanks">Thanks</a>
 </p>
 
 Snuffleupagus is a [PHP 7+](https://secure.php.net/) module designed to
