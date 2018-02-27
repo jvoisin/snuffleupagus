@@ -177,7 +177,8 @@ static zval *get_unknown_type(const char *restrict value, zval *zvalue,
   return zvalue;
 }
 
-zval *sp_get_var_value(zend_execute_data *ed, const sp_tree *tree, bool is_param) {
+zval *sp_get_var_value(zend_execute_data *ed, const sp_tree *tree,
+                       bool is_param) {
   zval *zvalue = NULL;
   zend_class_entry *ce = NULL;
 
