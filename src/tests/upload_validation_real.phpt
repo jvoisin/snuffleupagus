@@ -1,9 +1,10 @@
 --TEST--
 Upload a file, validation ok, with our real script, using vld
 --SKIPIF--
-<?php 
+<?php
 if (!extension_loaded("snuffleupagus")) print "skip";
-if (strpos(shell_exec("php -d error_log=/dev/null -d extension=vld.so -m 2>/dev/null"), "vld") === FALSE) print "skip";
+$res = exec("php -d error_log=/dev/null -d extension=vld.so -m 2>/dev/null", $output);
+if (in_array("vld", $output) === FALSE) print "skip";
 ?>
 --INI--
 file_uploads=1
