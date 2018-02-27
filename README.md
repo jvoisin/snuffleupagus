@@ -1,7 +1,7 @@
 <h1 align="center">
   <br>
   <a href="https://snuffleupagus.readthedocs.io/">
-		<img src="https://github.com/nbs-system/snuffleupagus/raw/improve_readme/doc/source/_static/sp.png" alt="Snuffleupagus' logo" width="200"></a>
+		<img src="https://github.com/nbs-system/snuffleupagus/raw/master/doc/source/_static/sp.png" alt="Snuffleupagus' logo" width="200"></a>
   <br>
   Snuffleupagus
   <br>
