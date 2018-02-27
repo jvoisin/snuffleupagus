@@ -31,7 +31,7 @@
 				 alt="coveralls">
   </a>
   <a href="https://twitter.com/sp_php">
-    <img src="https://img.shields.io/twitter/url/https/twitter.com/sp_php.svg?style=social&label=Follow%20%40sp_php"
+    <img src="https://img.shields.io/badge/twitter-follow-blue.svg"
 				 alt="twitter">
   </a>
 </p>
