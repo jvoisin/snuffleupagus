@@ -83,7 +83,6 @@ int parse_global_strict(char *line) {
 int parse_unserialize(char *line) {
   bool enable = false, disable = false;
   sp_config_unserialize *unserialize = SNUFFLEUPAGUS_G(config).config_unserialize; 
-  bool *retval = &(SNUFFLEUPAGUS_G(config).config_unserialize->enable);
 
   sp_config_functions sp_config_funcs[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
@@ -95,7 +94,6 @@ int parse_unserialize(char *line) {
   unserialize->textual_representation = estrdup(line);
 
   int ret = parse_keywords(sp_config_funcs, line);
-
   if (0 != ret) {
     return ret;
   }
@@ -106,7 +104,7 @@ int parse_unserialize(char *line) {
     return -1;
   }
 
-  *retval = enable;
+  SNUFFLEUPAGUS_G(config).config_unserialize->enable = enable;
 
   return ret;
 }
