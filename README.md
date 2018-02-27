@@ -56,16 +56,16 @@ without having to touch the PHP code.
 * Close to zero performance impact
 * Powerful yet simple to write virtual-patching rules
 * Killing several classes for vulnerabilities
-	* Unserialize-based code execution
-	* `mail`-based code execution
-	* Cookie-stealing XSS
+	* [Unserialize-based](https://www.owasp.org/images/9/9e/Utilizing-Code-Reuse-Or-Return-Oriented-Programming-In-PHP-Application-Exploits.pdf) code execution
+	* [`mail`-based]( https://blog.ripstech.com/2016/roundcube-command-execution-via-email/ ) code execution
+	* Cookie-stealing [XSS]( https://en.wikipedia.org/wiki/Cross-site_scripting )
 	* File-upload based code execution
 	* Weak PRNG
-	* XXE
+	* [XXE]( https://en.wikipedia.org/wiki/XML_external_entity_attack )
 * Hardening features
 	* Automatic `secure` and `samesite` flag for cookies
 	* Bundled set of rule to detect post-compromissions behaviours
-	* Global *strict mode*
+	* Global [strict mode]( https://secure.php.net/manual/en/migration70.new-features.php#migration70.new-features.scalar-type-declarations)
 	* Preventing writeable files execution
 	* Whitelist/blacklist for `eval`
 	* Request dumping capability
