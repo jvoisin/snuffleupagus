@@ -39,6 +39,7 @@
 <p align="center">
   <a href="#key-features">Key Features</a> •
   <a href="#download">Download</a> •
+  <a href="#examples">Examples</a> •
 	<a href="https://snuffleupagus.readthedocs.io/">Documentation</a> •
   <a href="https://github.com/nbs-system/snuffleupagus/blob/master/LICENSE">License</a> •
 	<a href="#thanks">Thanks</a>
@@ -75,6 +76,25 @@ We've got a [download
 page](https://snuffleupagus.readthedocs.io/download.html), where you can find
 packages for your distribution, but you can of course just `git clone` this
 repo, or check the releases on [github](https://github.com/nbs-system/snuffleupagus/releases).
+
+## Examples
+
+We're providing [various example rules](https://github.com/nbs-system/snuffleupagus/tree/master/config),
+that are looking like this:
+
+```python
+# Harden the `chmod` function
+sp.disable_function.function("chmod").param("mode").value_r("^[0-9]{2}[67]$").drop();
+
+# Mitigate command injection in `system`
+sp.disable_function.function("system").param("command").value_r("[$|;&`\\n]").drop();
+```
+
+Upon violation of a rule, you should see lines like this in your logs:
+
+```python
+[snuffleupagus][0.0.0.0][disabled_function][drop] The execution has been aborted in /var/www/index.php:2, because the return value (0) of the function 'strpos' matched a rule.
+```
 
 ## Documentation
 
