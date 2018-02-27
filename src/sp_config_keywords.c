@@ -81,9 +81,32 @@ int parse_global_strict(char *line) {
 }
 
 int parse_unserialize(char *line) {
-  return parse_enable(
-      line, &(SNUFFLEUPAGUS_G(config).config_unserialize->enable),
-      &(SNUFFLEUPAGUS_G(config).config_unserialize->simulation));
+  bool enable = false, disable = false;
+  sp_config_unserialize *unserialize = SNUFFLEUPAGUS_G(config).config_unserialize; 
+
+  sp_config_functions sp_config_funcs[] = {
+      {parse_empty, SP_TOKEN_ENABLE, &(enable)},
+      {parse_empty, SP_TOKEN_DISABLE, &(disable)},
+      {parse_empty, SP_TOKEN_SIMULATION, &(unserialize->simulation)},
+      {parse_str, SP_TOKEN_DUMP, &(unserialize->dump)},
+      {0}};
+
+  unserialize->textual_representation = estrdup(line);
+
+  int ret = parse_keywords(sp_config_funcs, line);
+  if (0 != ret) {
+    return ret;
+  }
+
+  if (!(enable ^ disable)) {
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu.",
+               sp_line_no);
+    return -1;
+  }
+
+  SNUFFLEUPAGUS_G(config).config_unserialize->enable = enable;
+
+  return ret;
 }
 
 int parse_readonly_exec(char *line) {

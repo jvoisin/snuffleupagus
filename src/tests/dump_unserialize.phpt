@@ -1,5 +1,5 @@
 --TEST--
-Dump request
+Dump unserialize
 --SKIPIF--
 <?php
 if (!extension_loaded("snuffleupagus")) {
@@ -18,12 +18,12 @@ get_a=data_get_a&get_b=data_get_b
 --COOKIE--
 cookie_a=data_cookie_a&cookie_b=data_cookie_b
 --INI--
-sp.configuration_file={PWD}/config/dump_request.ini
+sp.configuration_file={PWD}/config/dump_unserialize.ini
 --FILE--
 <?php
 @mkdir("/tmp/dump_result/");
 echo "1\n";
-system("echo 1337;");
+var_dump(unserialize('s:1:"a";alyualskdufyhalkdjsfhalkjdhflaksjdfhlkasdhflkahdawkuerylksjdfhlkssjgdflaksjdhflkasjdf'));
 $filename = glob('/tmp/dump_result/sp_dump.*')[0];
 $res = file($filename);
 if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
@@ -36,5 +36,5 @@ if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
 ?>
 --EXPECTF--
 1
-[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'system' in %a/dump_request.php:%d has been disabled.
-1337
+[snuffleupagus][0.0.0.0][unserialize][drop] Invalid HMAC for s:1:"a";alyualskdufyhalkdjsfh
+NULL
