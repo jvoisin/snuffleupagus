@@ -79,7 +79,7 @@ static int construct_filename(char* filename, const char* folder,
   return 0;
 }
 
-int sp_log_request(const char* folder, const char* text_repr) {
+int sp_log_request(const char* folder, const char* text_repr, char* from) {
   FILE* file;
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);
@@ -100,7 +100,7 @@ int sp_log_request(const char* folder, const char* text_repr) {
     return -1;
   }
 
-  fprintf(file, "RULE: sp.disable_function%s\n", text_repr);
+  fprintf(file, "RULE: sp.%s%s\n", from, text_repr);
 
   fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
   for (size_t i = 0; i < (sizeof(zones) / sizeof(zones[0])) - 1; i++) {
@@ -225,7 +225,7 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
     }
   }
   if (dump) {
-    sp_log_request(config_node->dump, config_node->textual_representation);
+    sp_log_request(config_node->dump, config_node->textual_representation, "disable_function");
   }
 }
 
@@ -252,7 +252,7 @@ void sp_log_disable_ret(const char* restrict path,
         zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?", path);
   }
   if (dump) {
-    sp_log_request(dump, config_node->textual_representation);
+    sp_log_request(dump, config_node->textual_representation, "disable_function");
   }
 }
 

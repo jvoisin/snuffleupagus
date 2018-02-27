@@ -96,7 +96,7 @@ PHP_FUNCTION(sp_unserialize) {
     }
   }
   if (SNUFFLEUPAGUS_G(config).config_unserialize->dump) {
-    sp_log_request(SNUFFLEUPAGUS_G(config).config_unserialize->dump, SNUFFLEUPAGUS_G(config).config_unserialize->textual_representation);
+    sp_log_request(SNUFFLEUPAGUS_G(config).config_unserialize->dump, SNUFFLEUPAGUS_G(config).config_unserialize->textual_representation, "unserialize_hmac");
   }
   efree(serialized_str);
   return;
