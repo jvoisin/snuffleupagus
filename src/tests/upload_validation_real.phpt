@@ -1,8 +1,10 @@
 --TEST--
 Upload a file, validation ok, with our real script, using vld
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (strpos(system("php -d error_log=/dev/null -d extension=vld.so -m 2>/dev/null"), "vld") === FALSE) print "skip"; ?>
+<?php 
+if (!extension_loaded("snuffleupagus")) print "skip";
+if (strpos(shell_exec("php -d error_log=/dev/null -d extension=vld.so -m 2>/dev/null"), "vld") === FALSE) print "skip";
+?>
 --INI--
 file_uploads=1
 sp.configuration_file={PWD}/config/upload_validation_real.ini
