@@ -46,6 +46,8 @@ static void is_builtin_matching(const char *restrict const filename,
 
 static void ZEND_HOT
 is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
+  sp_config_eval *eval = SNUFFLEUPAGUS_G(config).config_eval;
+
   if (EXPECTED(0 == SNUFFLEUPAGUS_G(in_eval))) {
     return;
   }
@@ -66,11 +68,25 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
 
   if (EXPECTED(NULL != current_function)) {
     if (UNEXPECTED(false == check_is_in_eval_whitelist(current_function))) {
-      sp_log_msg(
-          "Eval_whitelist", SP_LOG_DROP,
-          "The function '%s' isn't in the eval whitelist, dropping its call.",
-          current_function);
-      sp_terminate();
+      if (eval->dump)
+      {
+        sp_log_request(SNUFFLEUPAGUS_G(config).config_eval->dump, SNUFFLEUPAGUS_G(config).config_eval->textual_representation, SP_TOKEN_EVAL_WHITELIST);
+      }
+      if (eval->simulation){
+        sp_log_msg(
+        "Eval_whitelist", SP_LOG_SIMULATION,
+        "The function '%s' isn't in the eval whitelist, logging its call.",
+        current_function);
+        return;
+      }
+      else
+      {
+        sp_log_msg(
+            "Eval_whitelist", SP_LOG_DROP,
+            "The function '%s' isn't in the eval whitelist, dropping its call.",
+            current_function);
+        sp_terminate();
+      }
     }
   }
 }

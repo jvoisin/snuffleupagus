@@ -1,15 +1,8 @@
 --TEST--
-Dump request
+Dump eval blacklist
 --SKIPIF--
-<?php
-if (!extension_loaded("snuffleupagus")) {
-    print "skip";
-} 
-
-foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
-    @unlink($dump);
-}
-@rmdir("/tmp/dump_result/");
+<?php 
+if (!extension_loaded("snuffleupagus")) die "skip";
 ?>
 --POST--
 post_a=data_post_a&post_b=data_post_b
@@ -18,15 +11,18 @@ get_a=data_get_a&get_b=data_get_b
 --COOKIE--
 cookie_a=data_cookie_a&cookie_b=data_cookie_b
 --INI--
-sp.configuration_file={PWD}/config/dump_request.ini
+sp.configuration_file={PWD}/config/dump_eval_blacklist.ini
 --FILE--
 <?php
 @mkdir("/tmp/dump_result/");
 foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
     @unlink($dump);
 }
-echo "1\n";
-system("echo 1337;");
+
+$a = strlen("1337 1337 1337");
+echo "Outside of eval: $a\n";
+eval('$a = strlen("1234");');
+echo "After eval: $a\n";
 $filename = glob('/tmp/dump_result/sp_dump.*')[0];
 $res = file($filename);
 if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
@@ -38,6 +34,6 @@ if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
 }
 ?>
 --EXPECTF--
-1
-[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'system' in %a/dump_request.php:%d has been disabled.
-1337
+Outside of eval: 14
+[snuffleupagus][0.0.0.0][eval][simulation] A call to strlen was tried in eval, in /home/kvk/Dev/snuffleupagus/src/tests/dump_eval_blacklist.php:1, logging it.
+After eval: 4

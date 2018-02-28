@@ -117,6 +117,8 @@ typedef struct {
   sp_list_node *blacklist;
   sp_list_node *whitelist;
   bool simulation;
+  char *dump;
+  char *textual_representation;
 } sp_config_eval;
 
 typedef struct {

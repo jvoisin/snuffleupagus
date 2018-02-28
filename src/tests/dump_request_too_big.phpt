@@ -4,12 +4,7 @@ Dump request -- to big, so it's truncated.
 <?php
 if (!extension_loaded("snuffleupagus")) {
     print "skip";
-} 
-
-foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
-    @unlink($dump);
 }
-@rmdir("/tmp/dump_result/");
 ?>
 --POST--
 post_a=data_post_a&post_b=data_post_b&post_c=c
@@ -25,6 +20,11 @@ END;
 sp.configuration_file={PWD}/config/dump_request.ini
 --FILE--
 <?php
+@mkdir("/tmp/dump_result/");
+foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
+    @unlink($dump);
+}
+
 echo "1\n";
 system("echo 1337;");
 $filename = glob('/tmp/dump_result/*')[0];
