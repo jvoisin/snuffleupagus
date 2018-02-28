@@ -25,6 +25,7 @@ eval('$a = strlen("1234");');
 echo "After eval: $a\n";
 $filename = glob('/tmp/dump_result/sp_dump.*')[0];
 $res = file($filename);
+var_dump($res);
 if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
     echo "1\n";
 } elseif ($res[3] != "POST:post_a='data_post_a' post_b='data_post_b' \n") {
@@ -37,3 +38,4 @@ if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
 Outside of eval: 14
 [snuffleupagus][0.0.0.0][eval][simulation] A call to strlen was tried in eval, in /home/kvk/Dev/snuffleupagus/src/tests/dump_eval_blacklist.php:1, logging it.
 After eval: 4
+
