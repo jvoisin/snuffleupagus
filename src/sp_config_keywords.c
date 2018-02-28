@@ -305,7 +305,8 @@ int parse_disabled_functions(char *line) {
                "`key` and `value` are mutually exclusive on line %zu.",
                line, sp_line_no);
     return -1;
-  } else if ((df->r_ret || df->ret) && (df->r_param || param)) {
+  } else if ((df->r_ret || df->ret) &&
+             (df->r_param || param || df->param_type)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                "`ret` and `param` are mutually exclusive on line %zu.",
@@ -327,6 +328,15 @@ int parse_disabled_functions(char *line) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s': The "
                "rule must either be a `drop` or `allow` one on line %zu.",
+               line, sp_line_no);
+    return -1;
+  } else if (!(df->value || df->value_r || df->key || df->r_key ||
+               df->param_type) &&
+             (df->r_param || param)) {
+    sp_log_err("config",
+               "Invalid configuration line: 'sp.disabled_functions%s':"
+               "you can't filter on a param without giving a value or a key, "
+               "on line %zu.",
                line, sp_line_no);
     return -1;
   }
