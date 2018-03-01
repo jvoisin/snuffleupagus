@@ -68,19 +68,19 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
 
   if (EXPECTED(NULL != current_function)) {
     if (UNEXPECTED(false == check_is_in_eval_whitelist(current_function))) {
-      if (eval->dump)
-      {
-        sp_log_request(SNUFFLEUPAGUS_G(config).config_eval->dump, SNUFFLEUPAGUS_G(config).config_eval->textual_representation, SP_TOKEN_EVAL_WHITELIST);
+      if (eval->dump) {
+        sp_log_request(
+            SNUFFLEUPAGUS_G(config).config_eval->dump,
+            SNUFFLEUPAGUS_G(config).config_eval->textual_representation,
+            SP_TOKEN_EVAL_WHITELIST);
       }
-      if (eval->simulation){
+      if (eval->simulation) {
         sp_log_msg(
-        "Eval_whitelist", SP_LOG_SIMULATION,
-        "The function '%s' isn't in the eval whitelist, logging its call.",
-        current_function);
+            "Eval_whitelist", SP_LOG_SIMULATION,
+            "The function '%s' isn't in the eval whitelist, logging its call.",
+            current_function);
         return;
-      }
-      else
-      {
+      } else {
         sp_log_msg(
             "Eval_whitelist", SP_LOG_DROP,
             "The function '%s' isn't in the eval whitelist, dropping its call.",

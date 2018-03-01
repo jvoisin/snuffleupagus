@@ -470,8 +470,11 @@ ZEND_FUNCTION(eval_blacklist_callback) {
   if (SNUFFLEUPAGUS_G(in_eval) > 0) {
     char* filename = get_eval_filename(zend_get_executed_filename());
     const int line_number = zend_get_executed_lineno(TSRMLS_C);
-    if (SNUFFLEUPAGUS_G(config).config_eval->dump){
-      sp_log_request(SNUFFLEUPAGUS_G(config).config_eval->dump, SNUFFLEUPAGUS_G(config).config_eval->textual_representation, SP_TOKEN_EVAL_BLACKLIST);
+    if (SNUFFLEUPAGUS_G(config).config_eval->dump) {
+      sp_log_request(
+          SNUFFLEUPAGUS_G(config).config_eval->dump,
+          SNUFFLEUPAGUS_G(config).config_eval->textual_representation,
+          SP_TOKEN_EVAL_BLACKLIST);
     }
     if (1 == SNUFFLEUPAGUS_G(config).config_eval->simulation) {
       sp_log_msg("eval", SP_LOG_SIMULATION,

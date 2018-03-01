@@ -225,7 +225,8 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
     }
   }
   if (dump) {
-    sp_log_request(config_node->dump, config_node->textual_representation, SP_TOKEN_DISABLE_FUNC);
+    sp_log_request(config_node->dump, config_node->textual_representation,
+                   SP_TOKEN_DISABLE_FUNC);
   }
 }
 
@@ -252,7 +253,8 @@ void sp_log_disable_ret(const char* restrict path,
         zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?", path);
   }
   if (dump) {
-    sp_log_request(dump, config_node->textual_representation, SP_TOKEN_DISABLE_FUNC);
+    sp_log_request(dump, config_node->textual_representation,
+                   SP_TOKEN_DISABLE_FUNC);
   }
 }
 
