@@ -45,6 +45,8 @@ typedef struct {
 typedef struct {
   bool enable;
   bool simulation;
+  char *dump;
+  char *textual_representation;
 } sp_config_readonly_exec;
 
 typedef struct { bool enable; } sp_config_global_strict;
