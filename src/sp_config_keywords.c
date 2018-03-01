@@ -82,7 +82,8 @@ int parse_global_strict(char *line) {
 
 int parse_unserialize(char *line) {
   bool enable = false, disable = false;
-  sp_config_unserialize *unserialize = SNUFFLEUPAGUS_G(config).config_unserialize; 
+  sp_config_unserialize *unserialize =
+      SNUFFLEUPAGUS_G(config).config_unserialize;
 
   sp_config_functions sp_config_funcs[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
@@ -111,7 +112,8 @@ int parse_unserialize(char *line) {
 
 int parse_readonly_exec(char *line) {
   bool enable = false, disable = false;
-  sp_config_readonly_exec *readonly_exec = SNUFFLEUPAGUS_G(config).config_readonly_exec;
+  sp_config_readonly_exec *readonly_exec =
+      SNUFFLEUPAGUS_G(config).config_readonly_exec;
 
   sp_config_functions sp_config_funcs[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},

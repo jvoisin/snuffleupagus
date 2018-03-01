@@ -13,9 +13,11 @@ static int (*orig_zend_stream_open)(const char *filename,
 // FIXME handle symlink
 ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   if (0 == access(filename, W_OK)) {
-    if (SNUFFLEUPAGUS_G(config).config_readonly_exec->dump)
-    {
-      sp_log_request(SNUFFLEUPAGUS_G(config).config_readonly_exec->dump, SNUFFLEUPAGUS_G(config).config_readonly_exec->textual_representation, SP_TOKEN_READONLY_EXEC);
+    if (SNUFFLEUPAGUS_G(config).config_readonly_exec->dump) {
+      sp_log_request(
+          SNUFFLEUPAGUS_G(config).config_readonly_exec->dump,
+          SNUFFLEUPAGUS_G(config).config_readonly_exec->textual_representation,
+          SP_TOKEN_READONLY_EXEC);
     }
     if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->simulation) {
       sp_log_msg("readonly_exec", SP_LOG_SIMULATION,
