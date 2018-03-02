@@ -82,7 +82,8 @@ int parse_global_strict(char *line) {
 
 int parse_unserialize(char *line) {
   bool enable = false, disable = false;
-  sp_config_unserialize *unserialize = SNUFFLEUPAGUS_G(config).config_unserialize; 
+  sp_config_unserialize *unserialize =
+      SNUFFLEUPAGUS_G(config).config_unserialize;
 
   sp_config_functions sp_config_funcs[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
@@ -110,9 +111,33 @@ int parse_unserialize(char *line) {
 }
 
 int parse_readonly_exec(char *line) {
-  return parse_enable(
-      line, &(SNUFFLEUPAGUS_G(config).config_readonly_exec->enable),
-      &(SNUFFLEUPAGUS_G(config).config_readonly_exec->simulation));
+  bool enable = false, disable = false;
+  sp_config_readonly_exec *readonly_exec =
+      SNUFFLEUPAGUS_G(config).config_readonly_exec;
+
+  sp_config_functions sp_config_funcs[] = {
+      {parse_empty, SP_TOKEN_ENABLE, &(enable)},
+      {parse_empty, SP_TOKEN_DISABLE, &(disable)},
+      {parse_empty, SP_TOKEN_SIMULATION, &(readonly_exec->simulation)},
+      {parse_str, SP_TOKEN_DUMP, &(readonly_exec->dump)},
+      {0}};
+
+  readonly_exec->textual_representation = estrdup(line);
+  int ret = parse_keywords(sp_config_funcs, line);
+
+  if (0 != ret) {
+    return ret;
+  }
+
+  if (!(enable ^ disable)) {
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu.",
+               sp_line_no);
+    return -1;
+  }
+
+  SNUFFLEUPAGUS_G(config).config_readonly_exec->enable = enable;
+
+  return ret;
 }
 
 int parse_global(char *line) {
