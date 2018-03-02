@@ -57,5 +57,6 @@ int hook_function(const char *, HashTable *,
 int hook_regexp(const sp_pcre *, HashTable *,
                 void (*)(INTERNAL_FUNCTION_PARAMETERS));
 bool check_is_in_eval_whitelist(const char * const function_name);
+int sp_log_request(const char* folder, const char* text_repr, char* from);
 
 #endif /* SP_UTILS_H */
