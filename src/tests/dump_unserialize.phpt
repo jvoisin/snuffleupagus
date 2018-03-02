@@ -5,11 +5,6 @@ Dump unserialize
 if (!extension_loaded("snuffleupagus")) {
     print "skip";
 } 
-
-foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
-    @unlink($dump);
-}
-@rmdir("/tmp/dump_result/");
 ?>
 --POST--
 post_a=data_post_a&post_b=data_post_b
@@ -22,6 +17,10 @@ sp.configuration_file={PWD}/config/dump_unserialize.ini
 --FILE--
 <?php
 @mkdir("/tmp/dump_result/");
+foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
+    @unlink($dump);
+}
+
 echo "1\n";
 var_dump(unserialize('s:1:"a";alyualskdufyhalkdjsfhalkjdhflaksjdfhlkasdhflkahdawkuerylksjdfhlkssjgdflaksjdhflkasjdf'));
 $filename = glob('/tmp/dump_result/sp_dump.*')[0];

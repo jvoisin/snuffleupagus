@@ -153,11 +153,17 @@ int parse_global(char *line) {
 static int parse_eval_filter_conf(char *line, sp_list_node **list) {
   char *token;
   char *rest;
+  sp_config_eval *eval = SNUFFLEUPAGUS_G(config).config_eval;
+
   sp_config_functions sp_config_funcs[] = {
       {parse_str, SP_TOKEN_EVAL_LIST, &rest},
       {parse_empty, SP_TOKEN_SIMULATION,
        &(SNUFFLEUPAGUS_G(config).config_eval->simulation)},
+      {parse_str, SP_TOKEN_DUMP, &(SNUFFLEUPAGUS_G(config).config_eval->dump)},
       {0}};
+
+  eval->textual_representation = estrdup(line);
+
   int ret = parse_keywords(sp_config_funcs, line);
   if (0 != ret) {
     return ret;
