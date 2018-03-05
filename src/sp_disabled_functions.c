@@ -93,8 +93,8 @@ static bool is_local_var_matching(
   return false;
 }
 
-static const sp_list_node* get_config_node(const char* builtin_name) {
-  if (!builtin_name) {
+static inline const sp_list_node* get_config_node(const char* builtin_name) {
+  if (EXPECTED(!builtin_name)) {
     return SNUFFLEUPAGUS_G(config)
         .config_disabled_functions->disabled_functions;
   } else if (!strcmp(builtin_name, "eval")) {
@@ -217,20 +217,20 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
                     const char* builtin_param, const char* builtin_param_name) {
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
   const sp_list_node* config = get_config_node(builtin_name);
-  char* complete_path_function = get_complete_function_path(execute_data);
-  char const* client_ip = getenv("REMOTE_ADDR");
-  const char* current_filename;
+  char* complete_path_function = NULL;
+  const char* current_filename = NULL;
 
   if (!config || !config->data) {
     return false;
   }
 
-  if (builtin_name && !strcmp(builtin_name, "eval")) {
+  if (UNEXPECTED(builtin_name && !strcmp(builtin_name, "eval"))) {
     current_filename = get_eval_filename(zend_get_executed_filename());
   } else {
     current_filename = zend_get_executed_filename();
   }
 
+  complete_path_function = get_complete_function_path(execute_data);
   if (!complete_path_function) {
     if (builtin_name) {
       complete_path_function = estrdup(builtin_name);
@@ -280,9 +280,11 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
       }
     }
 
-    if (client_ip && config_node->cidr &&
-        (false == cidr_match(client_ip, config_node->cidr))) {
-      goto next;
+    if (config_node->cidr) {
+      char* client_ip = getenv("REMOTE_ADDR");
+      if (client_ip && false == cidr_match(client_ip, config_node->cidr)) {
+        goto next;
+      }
     }
 
     if (config_node->var) {
