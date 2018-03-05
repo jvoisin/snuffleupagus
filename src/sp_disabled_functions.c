@@ -221,6 +221,9 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
   const char* current_filename = NULL;
 
   if (!config || !config->data) {
+    if (complete_path_function) {
+	    efree(complete_path_function);
+    }
     return false;
   }
 
