@@ -119,9 +119,27 @@ char *get_eval_filename(const char *const filename) {
 static void sp_execute_ex(zend_execute_data *execute_data) {
   is_in_eval_and_whitelisted(execute_data);
 
-  if (UNEXPECTED(true == should_disable(execute_data, NULL, NULL, NULL))) {
-    sp_terminate();
-  }
+	//if (ZEND_CALL_INFO(execute_data) & ZEND_CALL_CODE) {  // global scope
+	if (
+			!execute_data ||
+			!execute_data->prev_execute_data ||
+			!execute_data->prev_execute_data->func ||
+			!ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
+			!execute_data->prev_execute_data->opline ||
+			!execute_data->prev_execute_data->func->common.scope
+			) {
+		if (UNEXPECTED(true == should_disable(execute_data, NULL, NULL, NULL))) {
+			sp_terminate();
+		}
+	} else if (execute_data->prev_execute_data != NULL) {
+		if  ((execute_data->prev_execute_data->opline->opcode == ZEND_DO_FCALL ||
+					execute_data->prev_execute_data->opline->opcode == ZEND_DO_UCALL ||
+					execute_data->prev_execute_data->opline->opcode == ZEND_DO_FCALL_BY_NAME)) {
+			if (UNEXPECTED(true == should_disable(execute_data, NULL, NULL, NULL))) {
+				sp_terminate();
+			}
+		}
+	}
 
   if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
     SNUFFLEUPAGUS_G(in_eval)++;
