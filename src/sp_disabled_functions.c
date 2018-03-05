@@ -217,14 +217,11 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
                     const char* builtin_param, const char* builtin_param_name) {
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
   const sp_list_node* config = get_config_node(builtin_name);
-  char* complete_path_function = get_complete_function_path(execute_data);
+  char* complete_path_function;
   char const* client_ip = getenv("REMOTE_ADDR");
   const char* current_filename;
 
   if (!config || !config->data) {
-    if (complete_path_function) {
-	    efree(complete_path_function);
-    }
     return false;
   }
 
@@ -234,6 +231,7 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
     current_filename = zend_get_executed_filename();
   }
 
+  complete_path_function = get_complete_function_path(execute_data);
   if (!complete_path_function) {
     if (builtin_name) {
       complete_path_function = estrdup(builtin_name);
