@@ -5,7 +5,8 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-char* get_complete_function_path(zend_execute_data const* const execute_data) {
+static char* get_complete_function_path(
+    zend_execute_data const* const execute_data, bool* should_free) {
   if (zend_is_executing() && !EG(current_execute_data)->func) {
     return NULL;
   }
@@ -23,8 +24,10 @@ char* get_complete_function_path(zend_execute_data const* const execute_data) {
     const size_t len = strlen(class_name) + 2 + strlen(function_name) + 1;
     complete_path_function = emalloc(len);
     snprintf(complete_path_function, len, "%s::%s", class_name, function_name);
+    *should_free = true;
   } else {
-    complete_path_function = estrdup(function_name);
+    complete_path_function = function_name;
+    *should_free = false;
   }
   return complete_path_function;
 }
@@ -43,12 +46,16 @@ static bool is_functions_list_matching(zend_execute_data* execute_data,
 
     EG(current_execute_data) = current;
 
-    char* complete_path_function = get_complete_function_path(current);
+    bool should_free;
+    char* complete_path_function =
+        get_complete_function_path(current, &should_free);
     if (!complete_path_function) {
       break;
     }
     int match = strcmp(((char*)it->data), complete_path_function);
-    efree(complete_path_function);
+    if (true == should_free) {
+      efree(complete_path_function);
+    }
 
     if (0 == match) {
       it = it->next;
@@ -121,7 +128,9 @@ static bool is_param_matching(zend_execute_data* execute_data,
 
   if (config_node->pos != -1) {
     if (config_node->pos > nb_param - 1) {
-      char* complete_function_path = get_complete_function_path(execute_data);
+      bool should_free;
+      char* complete_function_path =
+          get_complete_function_path(execute_data, &should_free);
       sp_log_err("config",
                  "It seems that you wrote a rule filtering on the "
                  "%d%s argument of the function '%s', but it takes only %d "
@@ -129,7 +138,9 @@ static bool is_param_matching(zend_execute_data* execute_data,
                  "Matching on _all_ arguments instead.",
                  config_node->pos, GET_SUFFIX(config_node->pos),
                  complete_function_path, nb_param);
-      efree(complete_function_path);
+      if (should_free) {
+        efree(complete_function_path);
+      }
     } else {
       i = config_node->pos;
       nb_param = (config_node->pos) + 1;
@@ -230,10 +241,12 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
     current_filename = zend_get_executed_filename();
   }
 
-  complete_path_function = get_complete_function_path(execute_data);
+  bool should_free;
+  complete_path_function =
+      get_complete_function_path(execute_data, &should_free);
   if (!complete_path_function) {
     if (builtin_name) {
-      complete_path_function = estrdup(builtin_name);
+      complete_path_function = builtin_name;
     } else {
       return false;
     }
@@ -335,14 +348,18 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
     if (true == config_node->simulation) {
       goto next;
     } else {  // We've got a match, the function won't be executed
-      efree(complete_path_function);
+      if (true == should_free) {
+        efree(complete_path_function);
+      }
       return true;
     }
   next:
     config = config->next;
   }
 allow:
-  efree(complete_path_function);
+  if (true == should_free) {
+    efree(complete_path_function);
+  }
   return false;
 }
 
@@ -350,7 +367,9 @@ bool should_drop_on_ret(zval* return_value,
                         const zend_execute_data* const execute_data) {
   const sp_list_node* config =
       SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions;
-  char* complete_path_function = get_complete_function_path(execute_data);
+  bool should_free;
+  char* complete_path_function =
+      get_complete_function_path(execute_data, &should_free);
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
   bool match_type = false, match_value = false;
@@ -411,13 +430,17 @@ bool should_drop_on_ret(zval* return_value,
 
     if (true == match_type || true == match_value) {
       if (true == config_node->allow) {
-        efree(complete_path_function);
+        if (true == should_free) {
+          efree(complete_path_function);
+        }
         efree(ret_value_str);
         return false;
       }
       sp_log_disable_ret(complete_path_function, ret_value_str, config_node);
       if (false == config_node->simulation) {
-        efree(complete_path_function);
+        if (true == should_free) {
+          efree(complete_path_function);
+        }
         efree(ret_value_str);
         return true;
       }
@@ -426,7 +449,9 @@ bool should_drop_on_ret(zval* return_value,
     efree(ret_value_str);
     config = config->next;
   }
-  efree(complete_path_function);
+  if (true == should_free) {
+    efree(complete_path_function);
+  }
   return false;
 }
 
