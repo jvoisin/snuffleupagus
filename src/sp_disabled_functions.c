@@ -305,9 +305,16 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
     /* Check if we filter on parameter value*/
     if (config_node->param || config_node->r_param ||
         (config_node->pos != -1)) {
-      if (false == is_param_matching(execute_data, config_node, builtin_name,
-                                     builtin_param, &arg_name,
-                                     builtin_param_name, &arg_value_str)) {
+      if (!builtin_name && execute_data->func->op_array.arg_info->is_variadic) {
+        sp_log_err(
+            "disable_function",
+            "Snuffleupagus doesn't support variadic functions yet, sorry. "
+            "Check https://github.com/nbs-system/snuffleupagus/issues/164 for "
+            "details.");
+      } else if (false == is_param_matching(execute_data, config_node,
+                                            builtin_name, builtin_param,
+                                            &arg_name, builtin_param_name,
+                                            &arg_value_str)) {
         goto next;
       }
     }
