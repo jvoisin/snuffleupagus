@@ -35,10 +35,10 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   }
 }
 
-static void is_builtin_matching(const char *restrict const filename,
-                                const char *restrict const function_name,
-                                const char *restrict const param_name,
-                                const sp_list_node *config) {
+static void inline is_builtin_matching(const char *restrict const filename,
+                                       const char *restrict const function_name,
+                                       const char *restrict const param_name,
+                                       const sp_list_node *config) {
   if (!config || !config->data) {
     return;
   }
@@ -121,31 +121,37 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
 
   if (!execute_data) {
     return;
-  } else if (!execute_data->prev_execute_data ||
-             !execute_data->prev_execute_data->func ||
-             !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
-             !execute_data->prev_execute_data->opline) {
-    if (UNEXPECTED(true == should_disable(execute_data, NULL, NULL, NULL))) {
-      sp_terminate();
-    }
-  } else if (execute_data->prev_execute_data != NULL) {
-    if ((execute_data->prev_execute_data->opline->opcode == ZEND_DO_FCALL ||
-         execute_data->prev_execute_data->opline->opcode == ZEND_DO_UCALL ||
-         execute_data->prev_execute_data->opline->opcode ==
-             ZEND_DO_FCALL_BY_NAME)) {
-      if (UNEXPECTED(true == should_disable(execute_data, NULL, NULL, NULL))) {
-        sp_terminate();
-      }
-    }
   }
 
   if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
-    SNUFFLEUPAGUS_G(in_eval)++;
     const sp_list_node *config =
         SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
     char *filename = get_eval_filename((char *)zend_get_executed_filename());
     is_builtin_matching(filename, "eval", NULL, config);
     efree(filename);
+
+    SNUFFLEUPAGUS_G(in_eval)++;
+    orig_execute_ex(execute_data);
+    SNUFFLEUPAGUS_G(in_eval)--;
+    return;
+  }
+
+  if (!execute_data->prev_execute_data ||
+      !execute_data->prev_execute_data->func ||
+      !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
+      !execute_data->prev_execute_data->opline) {
+    if (UNEXPECTED(true == should_disable(execute_data, NULL, NULL, NULL))) {
+      sp_terminate();
+    }
+  } else if ((execute_data->prev_execute_data->opline->opcode ==
+                  ZEND_DO_FCALL ||
+              execute_data->prev_execute_data->opline->opcode ==
+                  ZEND_DO_UCALL ||
+              execute_data->prev_execute_data->opline->opcode ==
+                  ZEND_DO_FCALL_BY_NAME)) {
+    if (UNEXPECTED(true == should_disable(execute_data, NULL, NULL, NULL))) {
+      sp_terminate();
+    }
   }
 
   if (NULL != EX(func)->op_array.filename) {
@@ -158,10 +164,6 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
 
   if (UNEXPECTED(true == should_drop_on_ret(EX(return_value), execute_data))) {
     sp_terminate();
-  }
-
-  if (UNEXPECTED(ZEND_EVAL_CODE == EX(func)->op_array.type)) {
-    SNUFFLEUPAGUS_G(in_eval)--;
   }
 }
 
