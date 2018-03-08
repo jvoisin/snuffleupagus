@@ -320,6 +320,8 @@ int hook_function(const char* original_name, HashTable* hook_table,
         return FAILURE;
       }
       func->handler = new_function;
+    } else {
+      return SUCCESS;
     }
   }
 
