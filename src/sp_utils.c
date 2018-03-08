@@ -312,15 +312,13 @@ int hook_function(const char* original_name, HashTable* hook_table,
 
   if ((func = zend_hash_str_find_ptr(CG(function_table),
                                      VAR_AND_LEN(original_name)))) {
-    if (func->handler == new_function) {
-      /* Success !*/
-    } else if (zend_hash_str_add_new_ptr((hook_table),
-                                         VAR_AND_LEN(original_name),
-                                         func->handler) == NULL) {
-      sp_log_err("function_pointer_saving",
-                 "Could not save function pointer for %s", original_name);
-      return FAILURE;
-    } else {
+    if (func->handler != new_function) {
+      if (zend_hash_str_add_new_ptr((hook_table), VAR_AND_LEN(original_name),
+                                    func->handler) == NULL) {
+        sp_log_err("function_pointer_saving",
+                   "Could not save function pointer for %s", original_name);
+        return FAILURE;
+      }
       func->handler = new_function;
     }
   }
