@@ -36,13 +36,22 @@ sp.disable_function.function("function_exists").param("function_name").value_r("
 sp.disable_function.function("is_callable").param("var").value_r("(?:eval|exec|system)").drop();
 
 # Ghetto sqli hardening
-sp.disable_function.function_r("mysqli?_query").param("query").value_r("/\\*").drop();
-sp.disable_function.function_r("mysqli?_query").param("query").value_r("--").drop();
-sp.disable_function.function_r("mysqli?_query").param("query").value_r("#").drop();
-sp.disable_function.function_r("mysqli?_query").param("query").value_r(";.*;").drop();
-sp.disable_function.function_r("mysqli?_query").param("query").value_r("benchmark").drop();
-sp.disable_function.function_r("mysqli?_query").param("query").value_r("sleep").drop();
-sp.disable_function.function_r("mysqli?_query").param("query").value_r("information_schema").drop();
+sp.disable_function.function("mysql_query").param("query").value_r("/\\*").drop();
+sp.disable_function.function("mysql_query").param("query").value_r("--").drop();
+sp.disable_function.function("mysql_query").param("query").value_r("#").drop();
+sp.disable_function.function("mysql_query").param("query").value_r(";.*;").drop();
+sp.disable_function.function("mysql_query").param("query").value_r("benchmark").drop();
+sp.disable_function.function("mysql_query").param("query").value_r("sleep").drop();
+sp.disable_function.function("mysql_query").param("query").value_r("information_schema").drop();
+
+sp.disable_function.function("mysqli_query").param("query").value_r("/\\*").drop();
+sp.disable_function.function("mysqli_query").param("query").value_r("--").drop();
+sp.disable_function.function("mysqli_query").param("query").value_r("#").drop();
+sp.disable_function.function("mysqli_query").param("query").value_r(";.*;").drop();
+sp.disable_function.function("mysqli_query").param("query").value_r("benchmark").drop();
+sp.disable_function.function("mysqli_query").param("query").value_r("sleep").drop();
+sp.disable_function.function("mysqli_query").param("query").value_r("information_schema").drop();
+
 sp.disable_function.function("PDO::query").param("query").value_r("/\\*").drop();
 sp.disable_function.function("PDO::query").param("query").value_r("--").drop();
 sp.disable_function.function("PDO::query").param("query").value_r("#").drop();
@@ -52,8 +61,9 @@ sp.disable_function.function("PDO::query").param("query").value_r("sleep\\s*\\("
 sp.disable_function.function("PDO::query").param("query").value_r("information_schema").drop();
 
 # Ghetto sqli detection
-sp.disable_function.function_r("mysqli?_query").ret("FALSE").drop();
-sp.disable_function.function_r("PDO::query").ret("FALSE").drop();
+sp.disable_function.function("mysql_query").ret("FALSE").drop();
+sp.disable_function.function("mysqli_query").ret("FALSE").drop();
+sp.disable_function.function("PDO::query").ret("FALSE").drop();
 
 #File upload
 sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ph").drop();
