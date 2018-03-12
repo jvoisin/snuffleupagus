@@ -35,7 +35,7 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   }
 }
 
-static void inline is_builtin_matching(const char *restrict const filename,
+inline static void is_builtin_matching(const char *restrict const filename,
                                        const char *restrict const function_name,
                                        const char *restrict const param_name,
                                        const sp_list_node *config) {

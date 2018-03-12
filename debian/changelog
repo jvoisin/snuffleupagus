@@ -1,3 +1,17 @@
+snuffleupagus (0.2.2) UNRELEASED; urgency=medium
+  * Add some assertions in the code
+  * The `.dump()` filter is now supported for `unserialize`, `readonly_exec`, and `eval` black/whitelist
+  * Add more rules examples
+  * Provide a script to check for malicious file uploads
+  * Significant performances improvement (at least +20%)
+  * Significantly improve the performances of our default rules set
+  * Our readme file is now shinier
+  * Minor code simplification
+  * Fix a crash related to variadic functions
+
+ -- jvoisin <snuffleupagus@nbs-system.com>  Tue, 12 Mar 2018 10:00:00 +0200
+
+
 snuffleupagus (0.2.1) UNRELEASED; urgency=medium
   * The testsuite can now be successfully run as root
   * Fix a double execution when snuffleupagus is used with some other extensions

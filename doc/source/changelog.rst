@@ -1,6 +1,29 @@
 Changelog
 =========
 
+0.2.2 - `Elephant Moraine <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.2.2>`__ 2018/04/12
+-------------------------------------------------------------------------------------------------------
+
+New features
+^^^^^^^^^^^^
+- The `.dump()` filter is now supported for `unserialize`, `readonly_exec`, and `eval` black/whitelist
+
+Improvements
+^^^^^^^^^^^^
+
+- Add some assertions
+- Add more rules examples
+- Provide a script to check for malicious file uploads
+- Significant performances improvement (at least +20%)
+- Significantly improve the performances of our default rules set
+- Our readme file is now shinier
+- Minor code simplification
+
+Bug fixes
+^^^^^^^^^
+- Fix a crash related to variadic functions
+
+
 0.2.1 - `Elephant Point <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.2.1>`__ 2018/02/07
 -------------------------------------------------------------------------------------------------------
 
