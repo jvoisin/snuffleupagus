@@ -219,6 +219,8 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
   const sp_list_node* config = get_config_node(builtin_name);
   char* complete_path_function = NULL;
   const char* current_filename = NULL;
+  unsigned int line = 0;
+  char* filename = NULL;
 
   if (!config || !config->data) {
     return false;
@@ -271,12 +273,35 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
 
     if (config_node->filename) { /* Check the current file name. */
       if (0 != strcmp(current_filename, config_node->filename)) {
-        goto next;
+        zend_execute_data const* ex = execute_data->prev_execute_data;
+        while (ex && (!ex->func || !ZEND_USER_CODE(ex->func->type))) {
+          ex = ex->prev_execute_data;
+        }
+        if (ex) {
+          if (0 != strcmp(ZSTR_VAL(ex->func->op_array.filename),
+                          config_node->filename)) {
+            goto next;
+          }
+          line = ex->opline->lineno;
+          filename = ZSTR_VAL(ex->func->op_array.filename);
+        }
       }
     } else if (config_node->r_filename) {
       if (false ==
           sp_is_regexp_matching(config_node->r_filename, current_filename)) {
-        goto next;
+        zend_execute_data const* ex = execute_data->prev_execute_data;
+        while (ex && (!ex->func || !ZEND_USER_CODE(ex->func->type))) {
+          ex = ex->prev_execute_data;
+        }
+        if (ex) {
+          if (false ==
+              sp_is_regexp_matching(config_node->r_filename,
+                                    ZSTR_VAL(ex->func->op_array.filename))) {
+            goto next;
+          }
+          line = ex->opline->lineno;
+          filename = ZSTR_VAL(ex->func->op_array.filename);
+        }
       }
     }
 
@@ -327,10 +352,10 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
 
     if (config_node->functions_list) {
       sp_log_disable(config_node->function, arg_name, arg_value_str,
-                     config_node);
+                     config_node, line, filename);
     } else {
       sp_log_disable(complete_path_function, arg_name, arg_value_str,
-                     config_node);
+                     config_node, line, filename);
     }
     if (true == config_node->simulation) {
       goto next;
