@@ -406,5 +406,5 @@ The following rules will:
 Miscellaneous examples
 """"""""""""""""""""""
 
-.. literalinclude:: ../../config/examples.rules
+.. literalinclude:: ../../config/default.rules
    :language: python
