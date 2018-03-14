@@ -49,7 +49,8 @@ bool sp_match_value(const char *, const char *, const sp_pcre *);
 bool sp_match_array_key(const zval *, const char *, const sp_pcre *);
 bool sp_match_array_value(const zval *, const char *, const sp_pcre *);
 void sp_log_disable(const char *restrict, const char *restrict,
-                    const char *restrict, const sp_disabled_function *);
+                    const char *restrict, const sp_disabled_function *,
+                    unsigned int, const char*);
 void sp_log_disable_ret(const char *restrict, const char *restrict,
                         const sp_disabled_function *);
 int hook_function(const char *, HashTable *,
