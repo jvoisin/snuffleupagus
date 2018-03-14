@@ -214,9 +214,9 @@ static bool is_param_matching(zend_execute_data* execute_data,
 }
 
 static zend_execute_data* is_file_matching(
-    zend_execute_data* execute_data,
+    zend_execute_data* const execute_data,
     sp_disabled_function const* const config_node,
-    const char* current_filename) {
+    char const* const current_filename) {
 #define ITERATE(ex)                                            \
   ex = ex->prev_execute_data;                                  \
   while (ex && (!ex->func || !ZEND_USER_CODE(ex->func->type))) \

@@ -190,7 +190,7 @@ bool sp_match_value(const char* value, const char* to_match,
 void sp_log_disable(const char* restrict path, const char* restrict arg_name,
                     const char* restrict arg_value,
                     const sp_disabled_function* config_node, unsigned int line,
-                    const char* filename) {
+                    const char* restrict filename) {
   const char* dump = config_node->dump;
   const char* alias = config_node->alias;
   const int sim = config_node->simulation;
