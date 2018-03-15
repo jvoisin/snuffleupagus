@@ -10,7 +10,7 @@ memory_limit=-1
 class Bob {
 	function a() {
         echo("We're in function `a`.\n");
-		return 1;
+		return 2;
 	}
 }
 $b = new Bob();
@@ -19,5 +19,6 @@ echo("We're at the end of the execution.\n");
 ?>
 --EXPECTF--
 We're in function `a`.
-`a` returned: 1.
-We're at the end of the execution.
+[snuffleupagus][0.0.0.0][disabled_function][drop] The execution has been aborted in %a/disabled_functions_ret3.php:9, because the return value (2) of the function 'Bob::a' matched a rule.
+--XFAIL--
+Match on ret is broken for non-native functions :/
