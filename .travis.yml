@@ -6,7 +6,7 @@ env:
 matrix:
   include:
   - env: TARGET="coverity"
-    php: nightly
+    php: '7.2'
     script: echo "Coverity, nothing to do."
     after_success: cat /home/travis/build/nbs-system/snuffleupagus/cov-int/scm_log.txt
     before_install: echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
