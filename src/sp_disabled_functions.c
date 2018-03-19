@@ -218,6 +218,7 @@ static zend_execute_data* is_file_matching(
     sp_disabled_function const* const config_node,
     char const* const current_filename) {
 #define ITERATE(ex)                                            \
+  if (!ex) return NULL;										   \
   ex = ex->prev_execute_data;                                  \
   while (ex && (!ex->func || !ZEND_USER_CODE(ex->func->type))) \
     ex = ex->prev_execute_data;                                \
