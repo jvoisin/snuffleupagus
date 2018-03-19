@@ -189,39 +189,38 @@ bool sp_match_value(const char* value, const char* to_match,
 
 void sp_log_disable(const char* restrict path, const char* restrict arg_name,
                     const char* restrict arg_value,
-                    const sp_disabled_function* config_node) {
+                    const sp_disabled_function* config_node, unsigned int line,
+                    const char* restrict filename) {
   const char* dump = config_node->dump;
   const char* alias = config_node->alias;
   const int sim = config_node->simulation;
+
+  filename = filename ? filename : zend_get_executed_filename(TSRMLS_C);
+  line = line ? line : zend_get_executed_lineno(TSRMLS_C);
+
   if (arg_name) {
     if (alias) {
       sp_log_msg(
           "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
           "The call to the function '%s' in %s:%d has been disabled, "
           "because its argument '%s' content (%s) matched the rule '%s'.",
-          path, zend_get_executed_filename(TSRMLS_C),
-          zend_get_executed_lineno(TSRMLS_C), arg_name,
-          arg_value ? arg_value : "?", alias);
+          path, filename, line, arg_name, arg_value ? arg_value : "?", alias);
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                  "The call to the function '%s' in %s:%d has been disabled, "
                  "because its argument '%s' content (%s) matched a rule.",
-                 path, zend_get_executed_filename(TSRMLS_C),
-                 zend_get_executed_lineno(TSRMLS_C), arg_name,
-                 arg_value ? arg_value : "?");
+                 path, filename, line, arg_name, arg_value ? arg_value : "?");
     }
   } else {
     if (alias) {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                  "The call to the function '%s' in %s:%d has been disabled, "
                  "because of the the rule '%s'.",
-                 path, zend_get_executed_filename(TSRMLS_C),
-                 zend_get_executed_lineno(TSRMLS_C), alias);
+                 path, filename, line, alias);
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                  "The call to the function '%s' in %s:%d has been disabled.",
-                 path, zend_get_executed_filename(TSRMLS_C),
-                 zend_get_executed_lineno(TSRMLS_C));
+                 path, filename, line);
     }
   }
   if (dump) {
