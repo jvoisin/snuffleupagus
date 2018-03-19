@@ -218,7 +218,6 @@ static zend_execute_data* is_file_matching(
     sp_disabled_function const* const config_node,
     char const* const current_filename) {
 #define ITERATE(ex)                                            \
-  if (!ex) return NULL;										   \
   ex = ex->prev_execute_data;                                  \
   while (ex && (!ex->func || !ZEND_USER_CODE(ex->func->type))) \
     ex = ex->prev_execute_data;                                \
@@ -257,6 +256,10 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
   const char* current_filename = NULL;
   unsigned int line = 0;
   char* filename = NULL;
+
+  if (!execute_data) {
+    return false;
+  }
 
   if (!config || !config->data) {
     return false;
