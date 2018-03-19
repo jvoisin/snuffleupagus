@@ -7,11 +7,11 @@ sp.configuration_file={PWD}/config/harden_rand.ini
 --FILE--
 <?php 
 srand(0);
-$a = rand(0,100)."\n";
-$b = rand(0,100)."\n";
+$a = rand(0,1000)."\n";
+$b = rand(0,1000)."\n";
 srand(0);
-$c = rand(0,100)."\n";
-$d = rand(0,100)."\n";
+$c = rand(0,1000)."\n";
+$d = rand(0,1000)."\n";
 
 rand(100,0)."\n";
 
