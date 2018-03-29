@@ -1,19 +1,6 @@
 Configuration
 =============
 
-Since PHP *ini-like* configuration model isn't flexible enough,
-Snuffleupagus is using its own format in the file specified by
-the directive ``sp.configuration_file`` (in your ``php.ini`` file),
-like ``sp.configuration_file=/etc/php/conf.d/snuffleupagus.rules``.
-
-You can use the ``,`` separator to include multiple configuration files:
-``sp.configuration_file=/etc/php/conf.d/snuffleupagus.rules,/etc/php/conf.d/sp_wordpress.rules``.
-
-We're also also supporting `glob <https://en.wikipedia.org/wiki/Glob_%28programming%29>`__,
-so you can write something like:
-``sp.configuration_file=/etc/php/conf.d/*.rules,/etc/php/conf.d/extra/test.rules``.
-
-
 Options are chainable by using dots (``.``) and string parameters
 **must** be quoted, while booleans and integers aren't.
 
@@ -39,6 +26,29 @@ but will write a warning in the log.
 The rules are evaluated in the order that they are written, the **first** one
 to match will terminate the evaluation (except for rules in simulation mode).
 
+Configuration file format
+-------------------------
+
+Since PHP *ini-like* configuration model isn't flexible enough,
+Snuffleupagus is using its own format in the file specified by
+the directive ``sp.configuration_file`` **in** your ``php.ini`` file,
+like ``sp.configuration_file=/etc/php/conf.d/snuffleupagus.rules``.
+
+You can use the ``,`` separator to include multiple configuration files:
+``sp.configuration_file=/etc/php/conf.d/snuffleupagus.rules,/etc/php/conf.d/sp_wordpress.rules``.
+
+We're also also supporting `glob <https://en.wikipedia.org/wiki/Glob_%28programming%29>`__,
+so you can write something like:
+``sp.configuration_file=/etc/php/conf.d/*.rules,/etc/php/conf.d/extra/test.rules``.
+
+To sum up, you should put this in your ``php.ini``:
+
+::
+
+  module=snuffleupagus.so
+  sp.configuration_file=/path/to/your/snufflepagus/rules/file.rules
+
+And the **snuffleupagus rules** into the ``.rules`` files.
 
 Miscellaneous
 -------------
