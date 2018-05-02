@@ -9,4 +9,4 @@ sp.configuration_file={PWD}/config/disabled_functions_ret_type_str.ini
 echo substr("pouet", 3) . "\n";
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The execution has been aborted in %a/disabled_functions_ret_type_str.php:%d, because the function 'substr' returned 'et', which matched the rule 'Return value is a string'.
+[snuffleupagus][0.0.0.0][disabled_function][drop] The return to the function 'substr' in %a/disabled_functions_ret_type_str.php:%d has been disabled, because the function returned 'et', which matched the rule 'Return value is a string'.

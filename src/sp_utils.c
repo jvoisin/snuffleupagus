@@ -238,18 +238,18 @@ void sp_log_disable_ret(const char* restrict path,
   if (alias) {
     sp_log_msg(
         "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-        "The execution has been aborted in %s:%d, "
-        "because the function '%s' returned '%s', which matched the rule '%s'.",
-        zend_get_executed_filename(TSRMLS_C),
-        zend_get_executed_lineno(TSRMLS_C), path, ret_value ? ret_value : "?",
+        "The return to the function '%s' in %s:%d has been disabled, "
+        "because the function returned '%s', which matched the rule '%s'.",
+        path, zend_get_executed_filename(TSRMLS_C),
+        zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?",
         alias);
   } else {
     sp_log_msg(
         "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-        "The execution has been aborted in %s:%d, "
-        "because the return value (%s) of the function '%s' matched a rule.",
-        zend_get_executed_filename(TSRMLS_C),
-        zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?", path);
+        "The return to the function '%s' in %s:%d has been disabled, "
+        "because the function returned '%s', which matched a rule.",
+        path, zend_get_executed_filename(TSRMLS_C),
+        zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?");
   }
   if (dump) {
     sp_log_request(dump, config_node->textual_representation,

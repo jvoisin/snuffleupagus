@@ -19,4 +19,4 @@ echo str_repeat("fufufu",1);
 ?>
 --EXPECTF--
 fufu
-[snuffleupagus][0.0.0.0][disabled_function][drop] The execution has been aborted in %a/disabled_functions_ret_val_dump.php:%d, because the return value (fufufu) of the function 'str_repeat' matched a rule.
+[snuffleupagus][0.0.0.0][disabled_function][drop] The return to the function 'str_repeat' in %a/disabled_functions_ret_val_dump.php:%d has been disabled, because the function returned 'fufufu', which matched a rule.
