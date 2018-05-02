@@ -13,4 +13,4 @@ echo strpos("pouet", "123");
 --EXPECTF--
 int(0)
 1337
-[snuffleupagus][0.0.0.0][disabled_function][drop] The return to the function 'strpos' in %a/disabled_functions_ret_type.php:%d has been disabled, because the function returned 'FALSE', which matched the rule 'Return value is FALSE'.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strpos' in %a/disabled_functions_ret_type.php:%d, because the function returned 'FALSE', which matched the rule 'Return value is FALSE'.

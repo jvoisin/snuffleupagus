@@ -238,7 +238,7 @@ void sp_log_disable_ret(const char* restrict path,
   if (alias) {
     sp_log_msg(
         "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-        "The return to the function '%s' in %s:%d has been disabled, "
+        "Aborted execution on call of the function '%s' in %s:%d, "
         "because the function returned '%s', which matched the rule '%s'.",
         path, zend_get_executed_filename(TSRMLS_C),
         zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?",
@@ -246,7 +246,7 @@ void sp_log_disable_ret(const char* restrict path,
   } else {
     sp_log_msg(
         "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-        "The return to the function '%s' in %s:%d has been disabled, "
+        "Aborted execution on call of the function '%s' in %s:%d, "
         "because the function returned '%s', which matched a rule.",
         path, zend_get_executed_filename(TSRMLS_C),
         zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?");
