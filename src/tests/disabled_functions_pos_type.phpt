@@ -11,4 +11,4 @@ system([123, 456]);
 --EXPECTF--
 [snuffleupagus][0.0.0.0][config][error] It seems that you wrote a rule filtering on the 1337th argument of the function 'system', but it takes only 1 arguments. Matching on _all_ arguments instead.
 [snuffleupagus][0.0.0.0][config][error] It seems that you wrote a rule filtering on the 1st argument of the function 'system', but it takes only 1 arguments. Matching on _all_ arguments instead.
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'system' in %a/tests/disabled_functions_pos_type.php:2 has been disabled, because its argument 'command' content (?) matched the rule '1'.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'system' in %a/tests/disabled_functions_pos_type.php:2, because its argument 'command' content (?) matched the rule '1'.

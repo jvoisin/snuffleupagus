@@ -15,7 +15,7 @@ echo "1337\n";
 ?>
 --EXPECTF--
 BLA
-[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'require' in %a/disabled_functions_require_simulation.php:%d has been disabled, because its argument 'inclusion path' content (%a/test.sim) matched a rule.
+[snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'require' in %a/disabled_functions_require_simulation.php:%d, because its argument 'inclusion path' content (%a/test.sim) matched a rule.
 MEH
 1337
 --CLEAN--

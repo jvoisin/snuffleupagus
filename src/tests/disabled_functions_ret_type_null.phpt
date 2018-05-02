@@ -13,4 +13,4 @@ function my_function() {
 var_dump(my_function());
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'my_function' in %atests/disabled_functions_ret_type_null.php:6, because the function returned 'NULL', which matched the rule 'Return value is null'.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'my_function' in %atests/disabled_functions_ret_type_null.php:6, because the function returned 'NULL', which matched the rule 'Return value is null'.

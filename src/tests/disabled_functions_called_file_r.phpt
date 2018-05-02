@@ -26,7 +26,7 @@ test();
 
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'test' in %a/disabled_functions_called_file_r.php:18 has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'test' in %a/disabled_functions_called_file_r.php:18.
 --CLEAN--
 <?php
 $dir = __DIR__;

@@ -9,5 +9,5 @@ sp.configuration_file={PWD}/config/disabled_functions_die.ini
 die('OMG');
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'die' in %a/tests/disabled_functions_die.php:%d has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'die' in %a/tests/disabled_functions_die.php:%d.
 --XFAIL--

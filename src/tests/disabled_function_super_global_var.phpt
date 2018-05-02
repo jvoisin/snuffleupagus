@@ -17,4 +17,4 @@ test();
 ?>
 --EXPECTF--
 4
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'strlen' in %s/tests/disabled_function_super_global_var.php:%d has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strlen' in %s/tests/disabled_function_super_global_var.php:%d.

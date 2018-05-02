@@ -13,4 +13,4 @@ $var = a();
 echo "fail";
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'a' in %a/tests/disabled_functions_ret_type_object.php:5, because the function returned 'OBJECT', which matched a rule.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'a' in %a/tests/disabled_functions_ret_type_object.php:5, because the function returned 'OBJECT', which matched a rule.

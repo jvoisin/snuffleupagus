@@ -28,4 +28,4 @@ class test_object {
 ?>
 --EXPECTF--
 Valeur: no good
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'strlen' in %a/tests/disabled_function_local_var_6.php:%d has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strlen' in %a/tests/disabled_function_local_var_6.php:%d.

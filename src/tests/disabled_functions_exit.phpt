@@ -9,5 +9,5 @@ sp.configuration_file={PWD}/config/disabled_functions_exit.ini
 exit('OMG');
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'exit' in %a/tests/disabled_functions_exit.php:%d has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'exit' in %a/tests/disabled_functions_exit.php:%d.
 --XFAIL--

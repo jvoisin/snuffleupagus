@@ -19,6 +19,6 @@ echo("We're at the end of the execution.\n");
 ?>
 --EXPECTF--
 We're in function `a`.
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'Bob::a' in %a/disabled_functions_ret3.php:9, because the function returned '2', which matched a rule.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'Bob::a' in %a/disabled_functions_ret3.php:9, because the function returned '2', which matched a rule.
 --XFAIL--
 Match on ret is broken for non-native functions :/

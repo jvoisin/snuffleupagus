@@ -10,4 +10,4 @@ system("echo $((1 + 1336))");
 ?>
 --EXPECTF--
 1337
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'system' in %a/tests/disabled_functions_ret_right_hash.php:2, because the function returned '1337', which matched a rule.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'system' in %a/tests/disabled_functions_ret_right_hash.php:2, because the function returned '1337', which matched a rule.

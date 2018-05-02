@@ -12,4 +12,4 @@ system("echo 1337");
 --EXPECTF--
 42
 1337
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'system' in %a/disabled_functions_name_r.php:3, because the function returned '1337', which matched a rule.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'system' in %a/disabled_functions_name_r.php:3, because the function returned '1337', which matched a rule.

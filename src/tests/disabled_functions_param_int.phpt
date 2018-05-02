@@ -18,4 +18,4 @@ foobar("10");
 ?>
 --EXPECTF--
 1
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'foobar' in %a/tests/disabled_functions_param_int.php:3 has been disabled, because its argument '$id' content (42) matched a rule.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'foobar' in %a/tests/disabled_functions_param_int.php:3, because its argument '$id' content (42) matched a rule.

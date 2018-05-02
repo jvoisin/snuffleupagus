@@ -11,4 +11,4 @@ system("id");
 
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'system' in %a/tests/disabled_functions_nul_byte.php:2 has been disabled, because its argument '$command' content (0id) matched a rule.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'system' in %a/tests/disabled_functions_nul_byte.php:2, because its argument '$command' content (0id) matched a rule.

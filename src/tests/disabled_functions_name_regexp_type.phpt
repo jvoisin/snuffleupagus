@@ -13,4 +13,4 @@ echo strcmp([1], "pouet") . "\n";
 --EXPECTF--
 0
 -1
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'strcmp' in %a/disabled_functions_name_regexp_type.php:4 has been disabled, because its argument 'str1' content (?) matched a rule.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strcmp' in %a/disabled_functions_name_regexp_type.php:4, because its argument 'str1' content (?) matched a rule.

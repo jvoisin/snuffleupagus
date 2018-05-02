@@ -11,4 +11,4 @@ shell_exec("echo 43");
 ?>
 --EXPECTF--
 42
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'shell_exec' in %a/tests/disabled_functions_filename_r.php:%d has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'shell_exec' in %a/tests/disabled_functions_filename_r.php:%d.

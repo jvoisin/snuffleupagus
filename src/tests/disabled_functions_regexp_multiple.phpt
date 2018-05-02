@@ -11,8 +11,8 @@ echo strcmp("1", "2") . "\n";
 print("After") . "\n";
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'strlen' in %a/disabled_functions_regexp_multiple.php:2 has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'strlen' in %a/disabled_functions_regexp_multiple.php:2.
 2
-[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'strcmp' in %a/disabled_functions_regexp_multiple.php:3 has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'strcmp' in %a/disabled_functions_regexp_multiple.php:3.
 -1
 After

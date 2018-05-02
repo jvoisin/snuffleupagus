@@ -11,4 +11,4 @@ define("MY_CONST", $a);
 strlen("test");
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'strlen' in %a/tests/disabled_function_local_var_const.php:4 has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strlen' in %a/tests/disabled_function_local_var_const.php:4.

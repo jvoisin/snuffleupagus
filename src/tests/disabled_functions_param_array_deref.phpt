@@ -22,4 +22,4 @@ foo($a);
 --EXPECTF--
 eee
 abcdef
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'foo' in %a/tests/disabled_functions_param_array_deref.php:3 has been disabled, because its argument '$arr' content (abcdef) matched the rule '2'.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'foo' in %a/tests/disabled_functions_param_array_deref.php:3, because its argument '$arr' content (abcdef) matched the rule '2'.
