@@ -15,4 +15,4 @@ eval('$a = my_func();');
 echo '$a = ' . $a . "\n";
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'my_func' in %a/tests/disabled_functions_eval_user.php:3 has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'my_func' in %a/tests/disabled_functions_eval_user.php:3.

@@ -202,24 +202,24 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
     if (alias) {
       sp_log_msg(
           "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-          "The call to the function '%s' in %s:%d has been disabled, "
+          "Aborted execution on call of the function '%s' in %s:%d, "
           "because its argument '%s' content (%s) matched the rule '%s'.",
           path, filename, line, arg_name, arg_value ? arg_value : "?", alias);
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                 "The call to the function '%s' in %s:%d has been disabled, "
+                 "Aborted execution on call of the function '%s' in %s:%d, "
                  "because its argument '%s' content (%s) matched a rule.",
                  path, filename, line, arg_name, arg_value ? arg_value : "?");
     }
   } else {
     if (alias) {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                 "The call to the function '%s' in %s:%d has been disabled, "
+                 "Aborted execution on call of the function '%s' in %s:%d, "
                  "because of the the rule '%s'.",
                  path, filename, line, alias);
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                 "The call to the function '%s' in %s:%d has been disabled.",
+                 "Aborted execution on call of the function '%s' in %s:%d.",
                  path, filename, line);
     }
   }
@@ -238,18 +238,18 @@ void sp_log_disable_ret(const char* restrict path,
   if (alias) {
     sp_log_msg(
         "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-        "The execution has been aborted in %s:%d, "
-        "because the function '%s' returned '%s', which matched the rule '%s'.",
-        zend_get_executed_filename(TSRMLS_C),
-        zend_get_executed_lineno(TSRMLS_C), path, ret_value ? ret_value : "?",
+        "Aborted execution on return of the function '%s' in %s:%d, "
+        "because the function returned '%s', which matched the rule '%s'.",
+        path, zend_get_executed_filename(TSRMLS_C),
+        zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?",
         alias);
   } else {
     sp_log_msg(
         "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-        "The execution has been aborted in %s:%d, "
-        "because the return value (%s) of the function '%s' matched a rule.",
-        zend_get_executed_filename(TSRMLS_C),
-        zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?", path);
+        "Aborted execution on return of the function '%s' in %s:%d, "
+        "because the function returned '%s', which matched a rule.",
+        path, zend_get_executed_filename(TSRMLS_C),
+        zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?");
   }
   if (dump) {
     sp_log_request(dump, config_node->textual_representation,

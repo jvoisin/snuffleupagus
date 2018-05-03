@@ -9,4 +9,4 @@ sp.configuration_file={PWD}/config/disabled_functions_ret_type_array.ini
 echo get_loaded_extensions();
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The execution has been aborted in %a/tests/disabled_functions_ret_type_array.php:2, because the function 'get_loaded_extensions' returned 'ARRAY', which matched the rule 'Return value is an array'.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'get_loaded_extensions' in %a/tests/disabled_functions_ret_type_array.php:2, because the function returned 'ARRAY', which matched the rule 'Return value is an array'.

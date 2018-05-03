@@ -13,5 +13,5 @@ var_dump("this is a super test");
 echo strpos("pouet", "o");
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'system' in %a/tests/disabled_functions.php:2 has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'system' in %a/tests/disabled_functions.php:2.
 

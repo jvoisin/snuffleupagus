@@ -16,8 +16,8 @@ foo();
 bla();
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'foo' in %s/tests/multi_config.php:%d has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'foo' in %s/tests/multi_config.php:%d.
 1
-[snuffleupagus][0.0.0.0][disabled_function][simulation] The call to the function 'bla' in %s/tests/multi_config.php:%d has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'bla' in %s/tests/multi_config.php:%d.
 2
 

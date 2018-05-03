@@ -9,4 +9,4 @@ sp.configuration_file={PWD}/config/disabled_functions.ini
 array_map('system', [1,2,3,4]);
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'system' in%a/tests/disabled_native_functions_indirect.php:2 has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'system' in%a/tests/disabled_native_functions_indirect.php:2.

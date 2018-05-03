@@ -17,4 +17,4 @@ foo($a);
 ?>
 --EXPECTF--
 cccc
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'foo' in %a/tests/disabled_functions_param_array_r.php:3 has been disabled, because its argument 'arr' content (ARRAY) matched the rule '1'.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'foo' in %a/tests/disabled_functions_param_array_r.php:3, because its argument 'arr' content (ARRAY) matched the rule '1'.

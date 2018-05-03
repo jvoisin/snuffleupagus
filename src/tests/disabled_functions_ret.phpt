@@ -10,4 +10,4 @@ echo strpos("pouet", "p");
 echo stripos("pouet", "p");
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The execution has been aborted in %a/disabled_functions_ret.php:2, because the return value (0) of the function 'strpos' matched a rule.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'strpos' in %a/disabled_functions_ret.php:2, because the function returned '0', which matched a rule.

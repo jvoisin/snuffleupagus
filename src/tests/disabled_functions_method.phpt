@@ -24,4 +24,4 @@ $c->method2("paf");
 $c->method3("pouet");
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] The call to the function 'AwesomeClass::method1' in %a/tests/disabled_functions_method.php:4 has been disabled.
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'AwesomeClass::method1' in %a/tests/disabled_functions_method.php:4.
