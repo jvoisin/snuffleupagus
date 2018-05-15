@@ -97,41 +97,40 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
                ZSTR_LEN(debase64) - crypto_secretbox_NONCEBYTES - 1 -
                    crypto_secretbox_ZEROBYTES);
 
-   return ZEND_HASH_APPLY_KEEP;
- }
+  return ZEND_HASH_APPLY_KEEP;
+}
 
+zend_string *encrypt_zval(char *data, unsigned long long data_len) {
+  const size_t encrypted_msg_len = crypto_secretbox_ZEROBYTES + data_len + 1;
+  const size_t emsg_and_nonce_len =
+      encrypted_msg_len + crypto_secretbox_NONCEBYTES;
 
- zend_string *encrypt_zval(char *data, unsigned long long data_len) {
-	const size_t encrypted_msg_len = crypto_secretbox_ZEROBYTES + data_len + 1;
-	const size_t emsg_and_nonce_len =
-	  encrypted_msg_len + crypto_secretbox_NONCEBYTES;
+  unsigned char key[crypto_secretbox_KEYBYTES] = {0};
+  unsigned char nonce[crypto_secretbox_NONCEBYTES] = {0};
+  unsigned char *data_to_encrypt = ecalloc(encrypted_msg_len, 1);
+  unsigned char *encrypted_data = ecalloc(emsg_and_nonce_len, 1);
 
-	unsigned char key[crypto_secretbox_KEYBYTES] = {0};
-	unsigned char nonce[crypto_secretbox_NONCEBYTES] = {0};
-	unsigned char *data_to_encrypt = ecalloc(encrypted_msg_len, 1);
-	unsigned char *encrypted_data = ecalloc(emsg_and_nonce_len, 1);
+  generate_key(key);
 
-	generate_key(key);
+  /* tweetnacl's API requires the message to be padded with
+  crypto_secretbox_ZEROBYTES zeroes. */
+  memcpy(data_to_encrypt + crypto_secretbox_ZEROBYTES, data, data_len);
 
-	/* tweetnacl's API requires the message to be padded with
-	crypto_secretbox_ZEROBYTES zeroes. */
-	memcpy(data_to_encrypt + crypto_secretbox_ZEROBYTES, data, data_len);
+  assert(sizeof(zend_long) <= crypto_secretbox_NONCEBYTES);
 
-	assert(sizeof(zend_long) <= crypto_secretbox_NONCEBYTES);
+  if (0 == nonce_d) {
+    /* A zend_long should be enough to avoid collisions */
+    if (php_random_int_throw(0, ZEND_LONG_MAX, &nonce_d) == FAILURE) {
+      return NULL;  // LCOV_EXCL_LINE
+    }
+  }
+  nonce_d++;
+  sscanf((char *)nonce, "%ld", &nonce_d);
 
-	if (0 == nonce_d) {
-	/* A zend_long should be enough to avoid collisions */
-	if (php_random_int_throw(0, ZEND_LONG_MAX, &nonce_d) == FAILURE) {
-	  return NULL;  // LCOV_EXCL_LINE
-	}
-	}
-	nonce_d++;
-	sscanf((char *)nonce, "%ld", &nonce_d);
+  memcpy(encrypted_data, nonce, crypto_secretbox_NONCEBYTES);
+  crypto_secretbox(encrypted_data + crypto_secretbox_NONCEBYTES,
+                   data_to_encrypt, encrypted_msg_len, nonce, key);
 
-	memcpy(encrypted_data, nonce, crypto_secretbox_NONCEBYTES);
-	crypto_secretbox(encrypted_data + crypto_secretbox_NONCEBYTES,
-	               data_to_encrypt, encrypted_msg_len, nonce, key);
-
-	zend_string *z = php_base64_encode(encrypted_data, emsg_and_nonce_len);
-	return z;
+  zend_string *z = php_base64_encode(encrypted_data, emsg_and_nonce_len);
+  return z;
 }
