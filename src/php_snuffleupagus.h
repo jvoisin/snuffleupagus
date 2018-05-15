@@ -40,6 +40,7 @@
 #include "sp_unserialize.h"
 #include "sp_upload_validation.h"
 #include "sp_utils.h"
+#include "sp_crypt.h"
 
 
 extern zend_module_entry snuffleupagus_module_entry;

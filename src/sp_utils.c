@@ -241,15 +241,13 @@ void sp_log_disable_ret(const char* restrict path,
         "Aborted execution on return of the function '%s' in %s:%d, "
         "because the function returned '%s', which matched the rule '%s'.",
         path, zend_get_executed_filename(TSRMLS_C),
-        zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?",
-        alias);
+        zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?", alias);
   } else {
-    sp_log_msg(
-        "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-        "Aborted execution on return of the function '%s' in %s:%d, "
-        "because the function returned '%s', which matched a rule.",
-        path, zend_get_executed_filename(TSRMLS_C),
-        zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?");
+    sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
+               "Aborted execution on return of the function '%s' in %s:%d, "
+               "because the function returned '%s', which matched a rule.",
+               path, zend_get_executed_filename(TSRMLS_C),
+               zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?");
   }
   if (dump) {
     sp_log_request(dump, config_node->textual_representation,
