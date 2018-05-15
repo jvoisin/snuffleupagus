@@ -66,6 +66,11 @@ typedef struct {
 } sp_cookie;
 
 typedef struct {
+  bool encrypt;
+  bool simulation;
+} sp_config_cookie_session;
+
+typedef struct {
   bool enable;
   bool simulation;
   char *dump;
@@ -158,6 +163,7 @@ typedef struct {
   sp_config_disable_xxe *config_disable_xxe;
   sp_config_disabled_constructs *config_disabled_constructs;
   sp_config_eval *config_eval;
+  sp_config_cookie_session *config_cookie_session;
 } sp_config;
 
 typedef struct {
@@ -175,6 +181,7 @@ typedef struct {
 
 #define SP_TOKEN_AUTO_COOKIE_SECURE ".auto_cookie_secure"
 #define SP_TOKEN_COOKIE_ENCRYPTION ".cookie"
+#define SP_TOKEN_SESSION_COOKIE_ENCRYPTION ".session_cookie"
 #define SP_TOKEN_DISABLE_FUNC ".disable_function"
 #define SP_TOKEN_GLOBAL ".global"
 #define SP_TOKEN_GLOBAL_STRICT ".global_strict"

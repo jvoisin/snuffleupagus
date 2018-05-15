@@ -14,5 +14,6 @@ int parse_disabled_functions(char *line);
 int parse_upload_validation(char *line);
 int parse_eval_blacklist(char *line);
 int parse_eval_whitelist(char *line);
+int parse_cookie_session(char *line);
 
 #endif  // __SP_CONFIG_KEYWORDS_H

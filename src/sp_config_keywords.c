@@ -60,6 +60,46 @@ static int parse_enable(char *line, bool *restrict retval,
   return ret;
 }
 
+int parse_cookie_session(char *line) {
+  sp_config_cookie_session *session_cookie =
+      pecalloc(sizeof(sp_config_cookie_session), 1, 1);
+
+  sp_config_functions sp_config_funcs_cookie_session_encryption[] = {
+      {parse_empty, SP_TOKEN_ENCRYPT, &(session_cookie->encrypt)},
+      {parse_empty, SP_TOKEN_SIMULATION, &(session_cookie->simulation)},
+      {0}};
+  int ret = parse_keywords(sp_config_funcs_cookie_session_encryption, line);
+  if (0 != ret) {
+    return ret;
+  }
+  if (session_cookie->encrypt) {
+    if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)) {
+      sp_log_err(
+          "config",
+          "You're trying to use the session cookie encryption feature"
+          "on line %zu without having set the `.cookie_env_var` option in"
+          "`sp.global`: please set it first.",
+          sp_line_no);
+      return -1;
+    } else if (0 ==
+               (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
+      sp_log_err(
+          "config",
+          "You're trying to use the session cookie encryption feature"
+          "on line %zu without having set the `.encryption_key` option in"
+          "`sp.global`: please set it first.",
+          sp_line_no);
+      return -1;
+    }
+  }
+
+  SNUFFLEUPAGUS_G(config).config_cookie_session->encrypt =
+      session_cookie->encrypt;
+  SNUFFLEUPAGUS_G(config).config_cookie_session->simulation =
+      session_cookie->simulation;
+  return ret;
+}
+
 int parse_random(char *line) {
   return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_random->enable),
                       NULL);
