@@ -13,6 +13,10 @@ if (strpos(system("php -d error_log=/dev/null -d extension=vld.so -m 2>/dev/null
 if (strpos(system("php -d extension=vld.so -m 2>&1 | grep 'Unable to load'"), "Unable to load dynamic library 'vld.so'") !== FALSE) {
 	print "skip";
 }
+
+if (strpos(phpversion(), '-dev') !== FALSE) {
+	print 'skip';
+}
 ?>
 --INI--
 file_uploads=1
