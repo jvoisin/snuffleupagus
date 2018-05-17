@@ -32,23 +32,14 @@ static int sp_hook_s_read(PS_READ_ARGS)
 
     if (0 != ret) {
       if (SNUFFLEUPAGUS_G(config).config_cookie_session->simulation) {
-        sp_log_msg(
-          "cookie_encryption", SP_LOG_SIMULATION,
-          "Buffer underflow tentative detected in cookie encryption handling "
-          "for %s. Using the cookie 'as it' instead of decrypting it.",
-          "PHPSESSID");
        return ret;
       }
       else {
-      sp_log_msg(
-        "cookie_encryption", SP_LOG_DROP,
-        "Buffer underflow tentative detected in cookie encryption handling.");
         sp_terminate();
       }
-    }
+    } 
 
     *val = zend_string_dup(val_zval.value.str, 0);
-
     if (*val == NULL) {
       *val = ZSTR_EMPTY_ALLOC();
     }
@@ -62,11 +53,9 @@ static int sp_hook_s_read(PS_READ_ARGS)
 static int sp_hook_s_write(PS_WRITE_ARGS)
 {
   if (ZSTR_LEN(val) > 0 && SNUFFLEUPAGUS_G(config).config_cookie_session->encrypt) {
-
     zend_string *new_val = encrypt_zval(ZSTR_VAL(val), ZSTR_LEN(val));
     return SNUFFLEUPAGUS_G(old_s_write)(mod_data, key, new_val, maxlifetime);
   }
-
   return SNUFFLEUPAGUS_G(old_s_write)(mod_data, key, val, maxlifetime);
 }
 
