@@ -46,36 +46,33 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
   int ret = 0;
 
   debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)),
-                              Z_STRLEN_P(pDest));
+                               Z_STRLEN_P(pDest));
 
-  if (ZSTR_LEN(debase64) <
-      crypto_secretbox_NONCEBYTES) {
+  if (ZSTR_LEN(debase64) < crypto_secretbox_NONCEBYTES) {
     if (true == simulation) {
       sp_log_msg(
           "cookie_encryption", SP_LOG_SIMULATION,
           "Buffer underflow tentative detected in cookie encryption handling "
           "for %s. Using the cookie 'as it' instead of decrypting it.",
-          hash_key? ZSTR_VAL(hash_key->key) : "the session");
+          hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       return ZEND_HASH_APPLY_KEEP;
     } else {
       sp_log_msg(
           "cookie_encryption", SP_LOG_DROP,
           "Buffer underflow tentative detected in cookie encryption handling.");
       return ZEND_HASH_APPLY_REMOVE;
-
     }
   }
 
   generate_key(key);
-  
+
   decrypted = ecalloc(ZSTR_LEN(debase64) + crypto_secretbox_ZEROBYTES, 1);
 
   ret = crypto_secretbox_open(
       decrypted,
       (unsigned char *)(ZSTR_VAL(debase64) + crypto_secretbox_NONCEBYTES),
       ZSTR_LEN(debase64) - crypto_secretbox_NONCEBYTES,
-      (unsigned char *)ZSTR_VAL(debase64),
-      key);
+      (unsigned char *)ZSTR_VAL(debase64), key);
 
   if (-1 == ret) {
     if (true == simulation) {
@@ -99,7 +96,6 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
 
   return ZEND_HASH_APPLY_KEEP;
 }
-
 
 /*
 ** This function will return the `data` of length `data_len` encrypted in the

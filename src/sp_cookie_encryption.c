@@ -35,7 +35,6 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
   return decrypt_zval(pDest, cookie->simulation, hash_key);
 }
 
-
 static zend_string *encrypt_data(char *data, unsigned long long data_len) {
   zend_string *z = encrypt_zval(data, data_len);
   sp_log_debug("cookie_encryption", "Cookie value:%s:", z->val);
