@@ -10,7 +10,7 @@
 #include "ext/hash/php_hash_sha.h"
 #include "ext/standard/base64.h"
 
-static void generate_key(unsigned char *key);
+void generate_key(unsigned char *key);
 int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hask_key);
 zend_string *encrypt_zval(char *data, unsigned long long data_len);
 

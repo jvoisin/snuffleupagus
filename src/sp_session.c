@@ -21,42 +21,39 @@ static ZEND_INI_MH((*old_OnUpdateSaveHandler)) = NULL;
 // PS_READ_ARGS => void **mod_data, zend_string *key, zend_string **val, zend_long maxlifetime
 static int sp_hook_s_read(PS_READ_ARGS)
 {
-  //zend_string *new_key = key;
-  /* protect session vars */
-/*  if (SESSION_G(http_session_vars) && SESSION_G(http_session_vars)->type == IS_ARRAY) {
-    SESSION_G(http_session_vars)->refcount++;
-  }*/
-
-  /* protect dumb session handlers */
-  /*if (COND_DUMB_SH) {
-regenerate:
-    SDEBUG("regenerating key. old key was %s", key ? ZSTR_VAL(key) : "<NULL>");
-    zend_string_release(SESSION_G(id));
-    new_key = SESSION_G(id) = SESSION_G(mod)->s_create_sid(&SESSION_G(mod_data));
-    suhosin_send_cookie();
-  } else if (ZSTR_LEN(key) > SNUFFLEUPAGUS_G(session_max_id_length)) {
-    suhosin_log(S_SESSION, "session id ('%s') exceeds maximum length - regenerating", ZSTR_VAL(key));
-    if (!SNUFFLEUPAGUS_G(simulation)) {
-      goto regenerate;
-    }
-  }*/
   int r = SNUFFLEUPAGUS_G(old_s_read)(mod_data, key, val, maxlifetime);
-  sp_log_err("debug","Decode success : %d for : %s \n", r, ZSTR_VAL(*val));
 
-  /*if (r == SUCCESS && SNUFFLEUPAGUS_G(config).config_cookie_session->encrypt && val != NULL && *val != NULL && ZSTR_LEN(*val)) {
-    char cryptkey[33];
-
-    // SNUFFLEUPAGUS_G(do_not_scan) = 1;
-    S7_GENERATE_KEY(session, cryptkey);
-
+  if (r == SUCCESS && SNUFFLEUPAGUS_G(config).config_cookie_session->encrypt && val != NULL && *val != NULL && ZSTR_LEN(*val)) {
     zend_string *orig_val = *val;
-    *val = suhosin_decrypt_string(ZSTR_VAL(*val), ZSTR_LEN(*val), "", 0, (char *)cryptkey, SNUFFLEUPAGUS_G(session_checkraddr));
-    // SNUFFLEUPAGUS_G(do_not_scan) = 0;
+    zval val_zval;
+    ZVAL_PSTRINGL(&val_zval, ZSTR_VAL(*val), ZSTR_LEN(*val));
+
+    int ret = decrypt_zval(&val_zval, SNUFFLEUPAGUS_G(config).config_cookie_session->simulation, NULL); // NULL for the moment
+
+    if (0 != ret) {
+      if (SNUFFLEUPAGUS_G(config).config_cookie_session->simulation) {
+        sp_log_msg(
+          "cookie_encryption", SP_LOG_SIMULATION,
+          "Buffer underflow tentative detected in cookie encryption handling "
+          "for %s. Using the cookie 'as it' instead of decrypting it.",
+          "PHPSESSID");
+       return ret;
+      }
+      else {
+      sp_log_msg(
+        "cookie_encryption", SP_LOG_DROP,
+        "Buffer underflow tentative detected in cookie encryption handling.");
+        sp_terminate();
+      }
+    }
+
+    *val = zend_string_dup(val_zval.value.str, 0);
+
     if (*val == NULL) {
       *val = ZSTR_EMPTY_ALLOC();
     }
     zend_string_release(orig_val);
-  }*/
+  }
 
   return r;
 }
@@ -64,22 +61,11 @@ regenerate:
 // PS_WRITE_ARGS => void **mod_data, zend_string *key, zend_string *val, zend_long maxlifetime
 static int sp_hook_s_write(PS_WRITE_ARGS)
 {
-  //sp_log_err("debug","Write Val : %s\n", ZSTR_VAL(val));
-  /* protect dumb session handlers */
-  /*if (COND_DUMB_SH) {
-    return FAILURE;
-  }*/
+  if (ZSTR_LEN(val) > 0 && SNUFFLEUPAGUS_G(config).config_cookie_session->encrypt) {
 
-  /*if (ZSTR_LEN(val) > 0 && SNUFFLEUPAGUS_G(session_encrypt)) {
-    char cryptkey[33];
-    // SNUFFLEUPAGUS_G(do_not_scan) = 1;
-    S7_GENERATE_KEY(session, cryptkey);
-
-    zend_string *v = suhosin_encrypt_string(ZSTR_VAL(val), ZSTR_LEN(val), "", 0, cryptkey);
-
-    // SNUFFLEUPAGUS_G(do_not_scan) = 0;
-    return SNUFFLEUPAGUS_G(old_s_write)(mod_data, key, v, maxlifetime);
-  }*/
+    zend_string *new_val = encrypt_zval(ZSTR_VAL(val), ZSTR_LEN(val));
+    return SNUFFLEUPAGUS_G(old_s_write)(mod_data, key, new_val, maxlifetime);
+  }
 
   return SNUFFLEUPAGUS_G(old_s_write)(mod_data, key, val, maxlifetime);
 }
@@ -108,14 +94,11 @@ static void sp_hook_session_module()
   memcpy(mod, old_mod, sizeof(ps_module));
 
   SNUFFLEUPAGUS_G(old_s_read) = mod->s_read;
-  //sp_log_err("debuug", "Old s_read : %p \n", mod->s_read);
   mod->s_read = sp_hook_s_read;
-  //sp_log_err("debuug", "New s_read : %p \n", mod->s_read);
-  //sp_log_err("debuug", "Old s_write : %p \n", mod->s_write);
+  
   SNUFFLEUPAGUS_G(old_s_write) = mod->s_write;
   mod->s_write = sp_hook_s_write;
-  //sp_log_err("debuug", "New s_write : %p \n", mod->s_write);
-
+  
   SESSION_G(mod) = mod;
 }
 
@@ -134,13 +117,12 @@ static PHP_INI_MH(sp_OnUpdateSaveHandler)
 
   int r = old_OnUpdateSaveHandler(entry, new_value, mh_arg1, mh_arg2, mh_arg3, stage);
 
-  //sp_hook_session_module();
+  sp_hook_session_module();
 
   return r;
 }
 
 static int sp_hook_session_RINIT(INIT_FUNC_ARGS) {
-  sp_log_err("debug","RINIT \n");
   if (SESSION_G(mod) == NULL) {
     zend_ini_entry *ini_entry;
     if ((ini_entry = zend_hash_str_find_ptr(EG(ini_directives), ZEND_STRL("session.save_handler")))) {
@@ -149,13 +131,12 @@ static int sp_hook_session_RINIT(INIT_FUNC_ARGS) {
       }
     }
   }
-  sp_log_err("debug","Return old session RINIT\n");
   return previous_sessionRINIT(INIT_FUNC_ARGS_PASSTHRU);
 }
 
 void hook_session() {
   zend_module_entry *module;
-  sp_log_err("debug","First hook\n");
+
   if ((module = zend_hash_str_find_ptr(&module_registry,
                                        ZEND_STRL("session"))) == NULL) {
     return;
@@ -170,9 +151,9 @@ void hook_session() {
     session_globals = module->globals_ptr;
   }
 #endif
-  /*if (old_OnUpdateSaveHandler != NULL) {
+  if (old_OnUpdateSaveHandler != NULL) {
     return;
-  }*/
+  }
 
   previous_sessionRINIT = module->request_startup_func;
   module->request_startup_func = sp_hook_session_RINIT;
