@@ -1,5 +1,5 @@
 --TEST--
-SESSION crypt and bad decrypt
+SESSION crypt/decrypt valid
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
 --INI--
@@ -15,7 +15,7 @@ session_start();			// Start new_session , it will read an empty session
 $_SESSION["toto"] = "tata"; // Encrypt and write the session
 $id = session_id(); 		// Get the session_id to use it later
 session_write_close(); 		// Close the session
-putenv("REMOTE_ADDR=127.0.0.2");
+
 session_id($id); 			// Recover the session with the previous session_id
 session_start(); 			// Re start the session, It will read and decrypt the non empty session
 var_dump($_SESSION); 		// Dump the session

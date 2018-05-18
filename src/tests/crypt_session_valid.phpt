@@ -14,6 +14,7 @@ EOF;
 session_start();			// Start new_session , it will read an empty session
 $_SESSION["toto"] = "tata"; // Encrypt and write the session
 $id = session_id(); 		// Get the session_id to use it later
+
 session_write_close(); 		// Close the session
 session_id($id); 			// Recover the session with the previous session_id
 session_start(); 			// Re start the session, It will read and decrypt the non empty session
