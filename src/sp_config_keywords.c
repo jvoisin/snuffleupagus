@@ -60,19 +60,19 @@ static int parse_enable(char *line, bool *restrict retval,
   return ret;
 }
 
-int parse_cookie_session(char *line) {
-  sp_config_cookie_session *session_cookie =
-      pecalloc(sizeof(sp_config_cookie_session), 1, 1);
+int parse_session(char *line) {
+  sp_config_session *session =
+      pecalloc(sizeof(sp_config_session), 1, 1);
 
-  sp_config_functions sp_config_funcs_cookie_session_encryption[] = {
-      {parse_empty, SP_TOKEN_ENCRYPT, &(session_cookie->encrypt)},
-      {parse_empty, SP_TOKEN_SIMULATION, &(session_cookie->simulation)},
+  sp_config_functions sp_config_funcs_session_encryption[] = {
+      {parse_empty, SP_TOKEN_ENCRYPT, &(session->encrypt)},
+      {parse_empty, SP_TOKEN_SIMULATION, &(session->simulation)},
       {0}};
-  int ret = parse_keywords(sp_config_funcs_cookie_session_encryption, line);
+  int ret = parse_keywords(sp_config_funcs_session_encryption, line);
   if (0 != ret) {
     return ret;
   }
-  if (session_cookie->encrypt) {
+  if (session->encrypt) {
     if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)) {
       sp_log_err(
           "config",
@@ -93,10 +93,10 @@ int parse_cookie_session(char *line) {
     }
   }
 
-  SNUFFLEUPAGUS_G(config).config_cookie_session->encrypt =
-      session_cookie->encrypt;
-  SNUFFLEUPAGUS_G(config).config_cookie_session->simulation =
-      session_cookie->simulation;
+  SNUFFLEUPAGUS_G(config).config_session->encrypt =
+      session->encrypt;
+  SNUFFLEUPAGUS_G(config).config_session->simulation =
+      session->simulation;
   return ret;
 }
 

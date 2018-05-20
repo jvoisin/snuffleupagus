@@ -21,17 +21,17 @@ static ZEND_INI_MH((*old_OnUpdateSaveHandler)) = NULL;
 // zend_long maxlifetime
 static int sp_hook_s_read(PS_READ_ARGS) {
   int r = SNUFFLEUPAGUS_G(old_s_read)(mod_data, key, val, maxlifetime);
-  if (r == SUCCESS && SNUFFLEUPAGUS_G(config).config_cookie_session->encrypt &&
+  if (r == SUCCESS && SNUFFLEUPAGUS_G(config).config_session->encrypt &&
       val != NULL && *val != NULL && ZSTR_LEN(*val)) {
     zend_string *orig_val = *val;
     zval val_zval;
     ZVAL_PSTRINGL(&val_zval, ZSTR_VAL(*val), ZSTR_LEN(*val));
 
     int ret = decrypt_zval(
-        &val_zval, SNUFFLEUPAGUS_G(config).config_cookie_session->simulation,
+        &val_zval, SNUFFLEUPAGUS_G(config).config_session->simulation,
         NULL);  // NULL for the moment
     if (0 != ret) {
-      if (SNUFFLEUPAGUS_G(config).config_cookie_session->simulation) {
+      if (SNUFFLEUPAGUS_G(config).config_session->simulation) {
         return ret;
       } else {
         sp_terminate();
@@ -52,7 +52,7 @@ static int sp_hook_s_read(PS_READ_ARGS) {
 // zend_long maxlifetime
 static int sp_hook_s_write(PS_WRITE_ARGS) {
   if (ZSTR_LEN(val) > 0 &&
-      SNUFFLEUPAGUS_G(config).config_cookie_session->encrypt) {
+      SNUFFLEUPAGUS_G(config).config_session->encrypt) {
     zend_string *new_val = encrypt_zval(ZSTR_VAL(val), ZSTR_LEN(val));
     return SNUFFLEUPAGUS_G(old_s_write)(mod_data, key, new_val, maxlifetime);
   }
