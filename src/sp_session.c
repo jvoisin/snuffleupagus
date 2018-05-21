@@ -14,8 +14,8 @@ ZEND_TSRMLS_CACHE_EXTERN();
 #endif
 
 static php_ps_globals *session_globals = NULL;
-static void *s_module;
-static void *s_original_mod;
+static ps_module *s_module;
+static ps_module *s_original_mod;
 static int (*old_s_read)(PS_READ_ARGS);
 static int (*old_s_write)(PS_WRITE_ARGS);
 static int (*previous_sessionRINIT)(INIT_FUNC_ARGS) = NULL;
