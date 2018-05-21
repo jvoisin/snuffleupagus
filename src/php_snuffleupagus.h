@@ -67,10 +67,6 @@ bool is_config_valid;
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;
 HashTable *sp_eval_blacklist_functions_hook;
-void *s_module;
-void *s_original_mod;
-int (*old_s_read)(PS_READ_ARGS);
-int (*old_s_write)(PS_WRITE_ARGS);
 ZEND_END_MODULE_GLOBALS(snuffleupagus)
 
 #define SNUFFLEUPAGUS_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(snuffleupagus, v)

@@ -109,7 +109,7 @@ zend_string *encrypt_zval(char *data, unsigned long long data_len) {
       encrypted_msg_len + crypto_secretbox_NONCEBYTES;
 
   unsigned char key[crypto_secretbox_KEYBYTES] = {0};
-  unsigned char nonce[crypto_secretbox_NONCEBYTES] = {1};
+  unsigned char nonce[crypto_secretbox_NONCEBYTES] = {0};
   unsigned char *data_to_encrypt = ecalloc(encrypted_msg_len, 1);
   unsigned char *encrypted_data = ecalloc(emsg_and_nonce_len, 1);
 
