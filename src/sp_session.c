@@ -10,14 +10,14 @@ static ts_rsrc_id session_globals_id = 0;
 ZEND_TSRMLS_CACHE_EXTERN();
 #endif
 #else
+#define SESSION_G(v) (ps_globals.v)
+#endif
+
 static php_ps_globals *session_globals = NULL;
 static void *s_module;
 static void *s_original_mod;
 static int (*old_s_read)(PS_READ_ARGS);
 static int (*old_s_write)(PS_WRITE_ARGS);
-#define SESSION_G(v) (ps_globals.v)
-#endif
-
 static int (*previous_sessionRINIT)(INIT_FUNC_ARGS) = NULL;
 static ZEND_INI_MH((*old_OnUpdateSaveHandler)) = NULL;
 
