@@ -64,6 +64,23 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
     }
   }
 
+
+  if (ZSTR_LEN(debase64) + (size_t)crypto_secretbox_ZEROBYTES < ZSTR_LEN(debase64)) {
+        if (true == simulation) {
+      sp_log_msg(
+          "cookie_encryption", SP_LOG_SIMULATION,
+          "Integer overflow tentative detected in cookie encryption handling "
+          "for %s. Using the cookie 'as it' instead of decrypting it.",
+          hash_key ? ZSTR_VAL(hash_key->key) : "the session");
+      return ZEND_HASH_APPLY_KEEP;
+    } else {
+      sp_log_msg(
+          "cookie_encryption", SP_LOG_DROP,
+          "Integer overflow tentative detected in cookie encryption handling.");
+      return ZEND_HASH_APPLY_REMOVE;
+    }
+  }
+
   generate_key(key);
 
   decrypted = ecalloc(ZSTR_LEN(debase64) + crypto_secretbox_ZEROBYTES, 1);
