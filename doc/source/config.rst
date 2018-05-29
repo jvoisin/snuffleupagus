@@ -68,7 +68,7 @@ This configuration variable contains parameters that are used by multiple featur
   sp.global.secret_key("44239bd400aa82e125337c9d4eb8315767411ccd");
 
 - ``cookie_env_var``: A environment variable used as part of cookies encryption.
-  See the `relevant documentation <encryption.html>`__
+  See the :ref:`relevant documentation <cookie-encryption-config>`
 
 Bugclass-killer features
 ------------------------
@@ -123,7 +123,7 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 Cookies-related mitigations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
  
-Since this section contains mutiple features and deals with cryptography, you will find the documentation `here <encryption.html>`__ .
+Since this section contains mutiple features and deals with cryptography, you will find the documentation :ref:`here <cookie-encryption-config>` .
 
 
 readonly_exec

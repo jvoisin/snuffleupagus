@@ -1,3 +1,5 @@
+.. _cookie-encryption-config:
+
 Cookies
 =============
 
