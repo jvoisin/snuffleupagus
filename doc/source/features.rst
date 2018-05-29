@@ -64,7 +64,7 @@ Examples of related vulnerabilities
 .. _cookie-encryption-feature:
 
 Cookie stealing via XSS
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 The goto payload for XSS is often to steal cookies.
 Like *Suhosin*, we are encrypting the cookies with a secret key,

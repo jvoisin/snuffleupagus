@@ -123,7 +123,8 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 Cookies-related mitigations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
  
-Since this section contains mutiple features and deals with cryptography, you will find the documentation :ref:`here <cookie-encryption-config>` .
+Since snuffleupagus is providing several hardening features for cookies,
+there is a :dedicated web page:`here <cookie-encryption-config>` about them.
 
 
 readonly_exec

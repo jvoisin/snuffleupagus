@@ -1,7 +1,7 @@
 .. _cookie-encryption-config:
 
 Cookies
-=============
+=======
 
 auto_cookie_secure
 """"""""""""""""""
@@ -45,13 +45,13 @@ Cookie encryption
 """""""""""""""""
    
 The encryption is done via the `tweetnacl library <https://tweetnacl.cr.yp.to/>`_,
-thus using curve25519, xsalsa20 and poly1305 for the encryption. We chose this
+thus using `curve25519<https://en.wikipedia.org/wiki/Curve25519>`__, `xsalsa20 <https://en.wikipedia.org/wiki/Salsa20#ChaCha_variant>`__ and `poly1305 <https://en.wikipedia.org/wiki/Poly1305>`__ for the encryption. We chose this
 library because of its portability, simplicity and reduced size (a single `.h` and
 `.c` file.).
 
 The key is derived from multiple sources, such as :
  * The ``secret_key`` provided in the configuration.
- * An environment variable, such as the ``REMOTE_ADDR`` (remote ip address) or the *extended master secret* from TLS connections (`RFC7627 <https://tools.ietf.org/html/rfc7627>`_)
+ * An environment variable, such as the ``REMOTE_ADDR`` (remote IP address) or the *extended master secret* from TLS connections (`RFC7627 <https://tools.ietf.org/html/rfc7627>`_)
  * The user-agent.
 
 
@@ -64,7 +64,9 @@ The key is derived from multiple sources, such as :
   or re-using session cookies.
   If the simulation mode isn’t specified in the configuration, snuffleupagus will drop any request that it was unable to decrypt.
 
-Since PHP doesn't handle session cookie and non-session cookie in the same way, thus we are providing two differents options:
+Since PHP doesn't handle session cookie and non-session cookie in the same way,
+thus we are providing two different options:
+
  * For the session cookie, the encryption happens server-side: The cookie's value isn't encrypted, only the session content is.
  * For the non-session cookie, the value is encrypted.
 
