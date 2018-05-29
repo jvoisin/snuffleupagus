@@ -68,7 +68,7 @@ This configuration variable contains parameters that are used by multiple featur
   sp.global.secret_key("44239bd400aa82e125337c9d4eb8315767411ccd");
 
 - ``cookie_env_var``: A environment variable used as part of cookies encryption.
-  See the :ref:`relevant documentation <env-var-config>`.
+  See the `relevant documentation <encryption.html>`__
 
 Bugclass-killer features
 ------------------------
@@ -123,103 +123,8 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 Cookies-related mitigations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
  
-.. warning::
-  Those features are **not** available for session cookies `yet <https://github.com/nbs-system/snuffleupagus/issues/122>`_.
+Since this section contains mutiple features and deals with cryptography, you will find the documentation `here <encryption.html>`__ .
 
-auto_cookie_secure
-""""""""""""""""""
- 
-:ref:`auto_cookie_secure <auto-cookie-secure-feature>`, disabled by default,
-will automatically mark cookies as `secure
-<https://en.wikipedia.org/wiki/HTTP_cookie#Secure_cookie>`_ when the web page
-is requested over HTTPS.
-
-It can either be ``enabled`` or ``disabled``.
-
-::
-
-  sp.auto_cookie_secure.enable();
-  sp.auto_cookie_secure.disable();
-
-cookie_samesite
-"""""""""""""""
- 
-:ref:`samesite <samesite-feature>`, disabled by default, will add the `samesite
-<https://tools.ietf.org/html/draft-west-first-party-cookies-07>`_ attribute to
-cookies. It `prevents CSRF <https://www.owasp.org/index.php/SameSite>`_ but is
-not implemented by `all web browsers <https://caniuse.com/#search=samesite>`_
-yet.
-
-It can either be set to ``strict`` or ``lax``:
-
-- The ``lax`` attribute prevents cookies from being sent cross-domain for
-  "dangerous" methods, like ``POST``, ``PUT`` or ``DELETE``.
-
-- The ``strict`` one prevents any cookies from beind sent cross-domain.
-
-::
-
-  sp.cookie.name("cookie1").samesite("lax");
-  sp.cookie.name("cookie2").samesite("strict");;
-
-.. _cookie-encryption_config:
-
-cookie_encryption
-"""""""""""""""""
-   
-.. warning::
-
-  To use this feature, you **must** set the :ref:`global.secret_key <config_global>`
-  and the :ref:`global.cookie_env_var <config_global>` variables.
-  This design decision prevents an attacker from
-  `trivially bruteforcing <https://www.idontplaydarts.com/2011/11/decrypting-suhosin-sessions-and-cookies/>`_
-  or re-using session cookies.
-
-:ref:`cookie_secure <cookie-encryption-feature>`, disabled by default, will activate transparent encryption of specific cookies.
-
-It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` mode.
-
-::
-
-  sp.cookie.name("my_cookie_name").encrypt();
-  sp.cookie.name("another_cookie_name").encrypt();
-
-
-Removing the user-agent part
-............................
-
-Some web browser extensions, such as `uMatrix <https://github.com/gorhill/uMatrix/wiki>`__
-might be configured to change the user-agent on a regular basis. If you think that
-some of your users might be using configurations like this, you might want to disable
-the mixing of the user-agent in the cookie's encryption key. The simplest way to do
-so is to set the environment variable ``HTTP_USER_AGENT`` to a fixed value before passing
-it to your php process.
-
-We think that this use case is too exotic to be worth implementing as a
-proper configuration directive.
-
-.. _env-var-config:
-
-Choosing the proper environment variable
-........................................
-
-It's up to you to choose a meaningful environment variable to derive the key from.
-Suhosin `is using <https://www.suhosin.org/stories/configuration.html#suhosin-session-cryptraddr>`_
-the ``REMOTE_ADDR`` one, tying the validity of the cookie to the IP address of the user;
-unfortunately, nowadays, people are `roaming <https://en.wikipedia.org/wiki/Roaming>`_ a lot on their smartphone,
-hopping from WiFi to 4G.
-
-This is why we recommend, if possible, to use the *extended master secret*
-from TLS connections (`RFC7627 <https://tools.ietf.org/html/rfc7627>`_)
-instead. The will make the validity of the cookie TLS-dependent, by using the ``SSL_SESSION_ID`` variable.
-
-- In `Apache <https://httpd.apache.org/docs/current/mod/mod_ssl.html>`_,
-  it is possible to enable by adding ``SSLOptions StdEnvVars`` in your Apache2 configuration.
-- In `nginx <https://nginx.org/en/docs/http/ngx_http_ssl_module.html#variables>`_,
-  you have to use ``fastcgi_param SSL_SESSION_ID $ssl_session_id if_not_empty;``.
-
-If you aren't using TLS (you should be), you can always use the ``REMOTE_ADDR`` one,
-or ``X-Real-IP`` if you're behind a reverse proxy.
 
 readonly_exec
 ^^^^^^^^^^^^^

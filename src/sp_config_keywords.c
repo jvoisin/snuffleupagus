@@ -62,7 +62,7 @@ static int parse_enable(char *line, bool *restrict retval,
 
 int parse_session(char *line) {
   sp_config_session *session =
-      pecalloc(sizeof(sp_config_session), 1, 1);
+      pecalloc(sizeof(sp_config_session), 1, 0);
 
   sp_config_functions sp_config_funcs_session_encryption[] = {
       {parse_empty, SP_TOKEN_ENCRYPT, &(session->encrypt)},
@@ -80,6 +80,7 @@ int parse_session(char *line) {
           "on line %zu without having set the `.cookie_env_var` option in"
           "`sp.global`: please set it first.",
           sp_line_no);
+      pefree(session, 0);
       return -1;
     } else if (0 ==
                (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
@@ -89,6 +90,7 @@ int parse_session(char *line) {
           "on line %zu without having set the `.encryption_key` option in"
           "`sp.global`: please set it first.",
           sp_line_no);
+      pefree(session, 0);
       return -1;
     }
   }
@@ -97,6 +99,7 @@ int parse_session(char *line) {
       session->encrypt;
   SNUFFLEUPAGUS_G(config).config_session->simulation =
       session->simulation;
+  pefree(session, 0);
   return ret;
 }
 

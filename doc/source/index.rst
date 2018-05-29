@@ -19,6 +19,7 @@ Documentation
    changelog
    faq
    papers
+   encryption
 
 Greetings
 ---------
