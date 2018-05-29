@@ -63,8 +63,8 @@ Examples of related vulnerabilities
 
 .. _cookie-encryption-feature:
 
-Session-cookie stealing via XSS
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cookie stealing via XSS
+^^^^^^^^^^^^^^^^^^^^^^^
 
 The goto payload for XSS is often to steal cookies.
 Like *Suhosin*, we are encrypting the cookies with a secret key,
@@ -79,10 +79,7 @@ This feature is roughly the same than the `Suhosin one <https://suhosin.org/stor
 Having a secret server-side key will prevent anyone (even the user himself)
 from reading the content of the cookie, reducing the impact of an application storing sensitive data client-side.
 
-The encryption is done via the `tweetnacl library <https://tweetnacl.cr.yp.to/>`_,
-thus using curve25519, xsalsa20 and poly1305 for the encryption. We chose this
-library because of its portability, simplicity and reduced size (a single `.h` and
-`.c` file.).
+
 
 
 .. _fileupload-feature:

@@ -4,9 +4,7 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-static zend_long nonce_d = 0;
-
-static void generate_key(unsigned char *key) {
+void generate_key(unsigned char *key) {
   PHP_SHA256_CTX ctx;
   const char *user_agent = getenv("HTTP_USER_AGENT");
   const char *env_var =
@@ -50,14 +48,13 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
   debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)),
                                Z_STRLEN_P(pDest));
 
-  if (ZSTR_LEN(debase64) <
-      crypto_secretbox_NONCEBYTES + crypto_secretbox_ZEROBYTES) {
+  if (ZSTR_LEN(debase64) < crypto_secretbox_NONCEBYTES) {
     if (true == simulation) {
       sp_log_msg(
           "cookie_encryption", SP_LOG_SIMULATION,
           "Buffer underflow tentative detected in cookie encryption handling "
           "for %s. Using the cookie 'as it' instead of decrypting it.",
-          ZSTR_VAL(hash_key->key));
+          hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       return ZEND_HASH_APPLY_KEEP;
     } else {
       sp_log_msg(
@@ -67,9 +64,26 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
     }
   }
 
+
+  if (ZSTR_LEN(debase64) + (size_t)crypto_secretbox_ZEROBYTES < ZSTR_LEN(debase64)) {
+        if (true == simulation) {
+      sp_log_msg(
+          "cookie_encryption", SP_LOG_SIMULATION,
+          "Integer overflow tentative detected in cookie encryption handling "
+          "for %s. Using the cookie 'as it' instead of decrypting it.",
+          hash_key ? ZSTR_VAL(hash_key->key) : "the session");
+      return ZEND_HASH_APPLY_KEEP;
+    } else {
+      sp_log_msg(
+          "cookie_encryption", SP_LOG_DROP,
+          "Integer overflow tentative detected in cookie encryption handling.");
+      return ZEND_HASH_APPLY_REMOVE;
+    }
+  }
+
   generate_key(key);
 
-  decrypted = ecalloc(ZSTR_LEN(debase64), 1);
+  decrypted = ecalloc(ZSTR_LEN(debase64) + crypto_secretbox_ZEROBYTES, 1);
 
   ret = crypto_secretbox_open(
       decrypted,
@@ -83,12 +97,12 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
           "cookie_encryption", SP_LOG_SIMULATION,
           "Something went wrong with the decryption of %s. Using the cookie "
           "'as it' instead of decrypting it",
-          ZSTR_VAL(hash_key->key));
+          hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       return ZEND_HASH_APPLY_KEEP;
     } else {
       sp_log_msg("cookie_encryption", SP_LOG_DROP,
                  "Something went wrong with the decryption of %s.",
-                 ZSTR_VAL(hash_key->key));
+                 hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       return ZEND_HASH_APPLY_REMOVE;
     }
   }
@@ -100,8 +114,14 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
   return ZEND_HASH_APPLY_KEEP;
 }
 
+/*
+** This function will return the `data` of length `data_len` encrypted in the
+** form `base64(nonce | encrypted_data)` (with `|` being the concatenation
+** operation).
+*/
 zend_string *encrypt_zval(char *data, unsigned long long data_len) {
   const size_t encrypted_msg_len = crypto_secretbox_ZEROBYTES + data_len + 1;
+  // FIXME : We know that this len is too long
   const size_t emsg_and_nonce_len =
       encrypted_msg_len + crypto_secretbox_NONCEBYTES;
 
@@ -112,25 +132,21 @@ zend_string *encrypt_zval(char *data, unsigned long long data_len) {
 
   generate_key(key);
 
+  // Put random bytes in the nonce
+  php_random_bytes(nonce, sizeof(nonce), 0);
+
   /* tweetnacl's API requires the message to be padded with
   crypto_secretbox_ZEROBYTES zeroes. */
   memcpy(data_to_encrypt + crypto_secretbox_ZEROBYTES, data, data_len);
 
   assert(sizeof(zend_long) <= crypto_secretbox_NONCEBYTES);
 
-  if (0 == nonce_d) {
-    /* A zend_long should be enough to avoid collisions */
-    if (php_random_int_throw(0, ZEND_LONG_MAX, &nonce_d) == FAILURE) {
-      return NULL;  // LCOV_EXCL_LINE
-    }
-  }
-  nonce_d++;
-  sscanf((char *)nonce, "%ld", &nonce_d);
-
   memcpy(encrypted_data, nonce, crypto_secretbox_NONCEBYTES);
+
   crypto_secretbox(encrypted_data + crypto_secretbox_NONCEBYTES,
                    data_to_encrypt, encrypted_msg_len, nonce, key);
 
   zend_string *z = php_base64_encode(encrypted_data, emsg_and_nonce_len);
+
   return z;
 }

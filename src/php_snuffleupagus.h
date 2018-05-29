@@ -18,6 +18,7 @@
 #include "ext/standard/info.h"
 #include "ext/standard/php_var.h"
 #include "ext/pcre/php_pcre.h"
+#include "ext/session/php_session.h"
 #include "php.h"
 #include "php_ini.h"
 #include "zend_hash.h"
@@ -41,6 +42,7 @@
 #include "sp_upload_validation.h"
 #include "sp_utils.h"
 #include "sp_crypt.h"
+#include "sp_session.h"
 
 
 extern zend_module_entry snuffleupagus_module_entry;

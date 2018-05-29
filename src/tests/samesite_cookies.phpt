@@ -27,12 +27,13 @@ if (!setcookie("nice_cookie", "nice_value", 1, "1", "1", true, true)) {
   echo "setcookie failed.\n";
 }
 
+// If the cookie value start with "!", it means that we don't want the value in the headers, but the encrypted cookie
 $expected = array(
-    'Set-Cookie: super_cookie=super_value; path=; samesite=Lax',
-    'Set-Cookie: awful_cookie=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFyZcYjfEskB0AU0V3%2BvwazcRuU%2Ft6KpcUahvxw%3D; path=; samesite=Strict; HttpOnly',
-    'Set-Cookie: not_encrypted=test_value; expires=Thu, 01-Jan-1970 00:00:01 GMT; Max-Age=0; path=1; domain=1; HttpOnly',
-    'Set-Cookie: nice_cookie=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJ8ko%2ByA4y%2Bmw5MGBx8fgc3TWOAvhIu%2BfF%2Bx2g%3D%3D; expires=Thu, 01-Jan-1970 00:00:01 GMT; Max-Age=0; path=1; samesite=Strict; domain=1; secure; HttpOnly',
-    );
+  "awful_cookie" => "!awful_value",
+  "not_encrypted" => "test_value",
+  "nice_cookie" => "!nice_value",
+  "super_cookie" => "super_value",
+);
 
 $headers = headers_list();
 if (($i = count($expected)) > count($headers))
@@ -41,31 +42,37 @@ if (($i = count($expected)) > count($headers))
   return;
 }
 
-do
-{
+$i = 0;
+
+do {
   if (strncmp(current($headers), 'Set-Cookie:', 11) !== 0)
   {
     continue;
   }
-
-  if (current($headers) === current($expected))
-  {
-    $i--;
+  foreach ($expected as $key => $value) {
+    if (strpos(current($headers), $key) !== false) {                         // If the header contains the cookie
+      if (substr($value, 0, 1) === "!") {                                   // ! is because we don't want to see the cookie value in plaintext, it must be encrypted
+        if (strpos(current($headers), substr($value,1,-1)) === false) {      // If the header doesn't contain de cookie value, it's good
+          $i++;
+          break;
+        }
+        echo "Received : " . current($headers) . " and the cookie isn't encrypted . \n";
+      } else {
+        if (strpos(current($headers), $value) !== false) {
+          $i++;
+          break;
+        }
+        echo "Received : " . current($headers) . " and the cookie value of " . $key . " doesn't match it's value. \n";
+      }
+      break;
+    }
   }
-  else
-  {
-    echo "Header mismatch:\n\tExpected: "
-      .current($expected)
-      ."\n\tReceived: ".current($headers)."\n";
-  }
-
-  next($expected);
 }
-while (next($headers) !== FALSE);
+while (next($headers));
 
-echo ($i === 0)
+echo ($i === 4)
   ? 'OK'
-  : 'A total of '.$i.' errors found.';
+  : 'A total of '. (count($expected) - $i) .' errors found.';
 ?>
 --EXPECT--
 OK

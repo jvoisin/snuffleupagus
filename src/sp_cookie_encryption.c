@@ -21,7 +21,6 @@ static inline const sp_cookie *sp_lookup_cookie_config(const char *key) {
 int decrypt_cookie(zval *pDest, int num_args, va_list args,
                    zend_hash_key *hash_key) {
   const sp_cookie *cookie = sp_lookup_cookie_config(ZSTR_VAL(hash_key->key));
-  int ret = 0;
 
   /* If the cookie isn't in the conf, it shouldn't be encrypted. */
   if (!cookie || !cookie->encrypt) {
@@ -36,11 +35,6 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
   return decrypt_zval(pDest, cookie->simulation, hash_key);
 }
 
-/*
-** This function will return the `data` of length `data_len` encrypted in the
-** form `base64(nonce | encrypted_data)` (with `|` being the concatenation
-** operation).
-*/
 static zend_string *encrypt_data(char *data, unsigned long long data_len) {
   zend_string *z = encrypt_zval(data, data_len);
   sp_log_debug("cookie_encryption", "Cookie value:%s:", z->val);

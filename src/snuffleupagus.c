@@ -81,6 +81,7 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT(snuffleupagus_globals->config.config_disabled_functions);
   SP_INIT(snuffleupagus_globals->config.config_disabled_functions_ret);
   SP_INIT(snuffleupagus_globals->config.config_cookie);
+  SP_INIT(snuffleupagus_globals->config.config_session);
   SP_INIT(snuffleupagus_globals->config.config_disabled_constructs);
   SP_INIT(snuffleupagus_globals->config.config_eval);
 
@@ -124,6 +125,7 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   pefree(SNUFFLEUPAGUS_G(config.config_snuffleupagus), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_disable_xxe), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_upload_validation), 1);
+  pefree(SNUFFLEUPAGUS_G(config.config_session), 1);
 
 #define FREE_LST_DISABLE(L)                \
   do {                                     \
@@ -228,6 +230,10 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     }
   }
   hook_cookies();
+
+  if (SNUFFLEUPAGUS_G(config).config_session->encrypt) {
+    hook_session();
+  }
 
   if (true == SNUFFLEUPAGUS_G(config).config_global_strict->enable) {
     if (!zend_get_extension(PHP_SNUFFLEUPAGUS_EXTNAME)) {
