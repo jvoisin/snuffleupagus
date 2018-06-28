@@ -248,22 +248,19 @@ static zend_execute_data* is_file_matching(
 #undef ITERATE
 }
 
-bool check_is_builtin_name(sp_disabled_function const* const config_node) {
+static bool check_is_builtin_name(
+    sp_disabled_function const* const config_node) {
   if (config_node->function) {
-    if (!strcmp(config_node->function, "include") ||
-        !strcmp(config_node->function, "include_once") ||
-        !strcmp(config_node->function, "require") ||
-        !strcmp(config_node->function, "require_once")) {
-      return true;
-    }
+    return (!strcmp(config_node->function, "include") ||
+            !strcmp(config_node->function, "include_once") ||
+            !strcmp(config_node->function, "require") ||
+            !strcmp(config_node->function, "require_once"));
   }
   if (config_node->r_function) {
-    if (sp_is_regexp_matching(config_node->r_function, "include") ||
-        sp_is_regexp_matching(config_node->r_function, "include_once") ||
-        sp_is_regexp_matching(config_node->r_function, "require") ||
-        sp_is_regexp_matching(config_node->r_function, "require_once")) {
-      return true;
-    }
+    return (sp_is_regexp_matching(config_node->r_function, "include") ||
+            sp_is_regexp_matching(config_node->r_function, "include_once") ||
+            sp_is_regexp_matching(config_node->r_function, "require") ||
+            sp_is_regexp_matching(config_node->r_function, "require_once"));
   }
   return false;
 }
