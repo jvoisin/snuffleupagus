@@ -249,7 +249,7 @@ static zend_execute_data* is_file_matching(
 }
 
 
-bool check_is_builtin_without_param(sp_disabled_function const* const config_node) {
+bool check_is_builtin_name(sp_disabled_function const* const config_node) {
     if (config_node->function) {
       if  (!strcmp(config_node->function, "include") ||
          !strcmp(config_node->function, "include_once") ||
@@ -381,7 +381,7 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
 
     if (config_node->value_r || config_node->value)
     {
-      bool is_builtin = check_is_builtin_without_param(config_node);
+      bool is_builtin = check_is_builtin_name(config_node);
       if (is_builtin) {
               if (false == is_param_matching(execute_data, config_node, builtin_name,
                                      builtin_param, &arg_name,
