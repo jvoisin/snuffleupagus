@@ -61,8 +61,7 @@ static int parse_enable(char *line, bool *restrict retval,
 }
 
 int parse_session(char *line) {
-  sp_config_session *session =
-      pecalloc(sizeof(sp_config_session), 1, 0);
+  sp_config_session *session = pecalloc(sizeof(sp_config_session), 1, 0);
 
   sp_config_functions sp_config_funcs_session_encryption[] = {
       {parse_empty, SP_TOKEN_ENCRYPT, &(session->encrypt)},
@@ -95,10 +94,8 @@ int parse_session(char *line) {
     }
   }
 
-  SNUFFLEUPAGUS_G(config).config_session->encrypt =
-      session->encrypt;
-  SNUFFLEUPAGUS_G(config).config_session->simulation =
-      session->simulation;
+  SNUFFLEUPAGUS_G(config).config_session->encrypt = session->encrypt;
+  SNUFFLEUPAGUS_G(config).config_session->simulation = session->simulation;
   pefree(session, 0);
   return ret;
 }

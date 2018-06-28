@@ -248,6 +248,28 @@ static zend_execute_data* is_file_matching(
 #undef ITERATE
 }
 
+
+bool check_is_builtin_without_param(sp_disabled_function const* const config_node) {
+    if (config_node->function) {
+      if  (!strcmp(config_node->function, "include") ||
+         !strcmp(config_node->function, "include_once") ||
+         !strcmp(config_node->function, "require") ||
+         !strcmp(config_node->function, "require_once")) {
+         return true;
+      }
+    }
+    if (config_node->r_function) {
+      if (sp_is_regexp_matching(config_node->r_function, "include") ||
+         sp_is_regexp_matching(config_node->r_function, "include_once") ||
+         sp_is_regexp_matching(config_node->r_function, "require") ||
+         sp_is_regexp_matching(config_node->r_function, "require_once")) {
+        return true;
+      }
+    }
+    return false;
+}
+
+
 bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
                     const char* builtin_param, const char* builtin_param_name) {
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
@@ -303,13 +325,11 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
         goto next;
       }
     }
-
     if (config_node->line) {
       if (config_node->line != zend_get_executed_lineno()) {
         goto next;
       }
     }
-
     if (config_node->filename || config_node->r_filename) {
       zend_execute_data* ex =
           is_file_matching(execute_data, config_node, current_filename);
@@ -327,7 +347,6 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
         goto next;
       }
     }
-
     if (config_node->var) {
       if (false == is_local_var_matching(execute_data, config_node)) {
         goto next;
@@ -360,8 +379,19 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
       }
     }
 
-    /* Everything matched.*/
+    if (config_node->value_r || config_node->value)
+    {
+      bool is_builtin = check_is_builtin_without_param(config_node);
+      if (is_builtin) {
+              if (false == is_param_matching(execute_data, config_node, builtin_name,
+                                     builtin_param, &arg_name,
+                                     builtin_param_name, &arg_value_str)) {
+          goto next;
+        }
+      }
+    }
 
+    /* Everything matched.*/
     if (true == config_node->allow) {
       goto allow;
     }

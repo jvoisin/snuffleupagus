@@ -21,7 +21,6 @@ static int (*old_s_write)(PS_WRITE_ARGS);
 static int (*previous_sessionRINIT)(INIT_FUNC_ARGS) = NULL;
 static ZEND_INI_MH((*old_OnUpdateSaveHandler)) = NULL;
 
-
 static int sp_hook_s_read(PS_READ_ARGS) {
   int r = old_s_read(mod_data, key, val, maxlifetime);
   if (r == SUCCESS && SNUFFLEUPAGUS_G(config).config_session->encrypt &&
@@ -31,8 +30,7 @@ static int sp_hook_s_read(PS_READ_ARGS) {
     ZVAL_PSTRINGL(&val_zval, ZSTR_VAL(*val), ZSTR_LEN(*val));
 
     int ret = decrypt_zval(
-        &val_zval, SNUFFLEUPAGUS_G(config).config_session->simulation,
-        NULL);
+        &val_zval, SNUFFLEUPAGUS_G(config).config_session->simulation, NULL);
     if (0 != ret) {
       if (SNUFFLEUPAGUS_G(config).config_session->simulation) {
         return ret;
@@ -51,10 +49,8 @@ static int sp_hook_s_read(PS_READ_ARGS) {
   return r;
 }
 
-
 static int sp_hook_s_write(PS_WRITE_ARGS) {
-  if (ZSTR_LEN(val) > 0 &&
-      SNUFFLEUPAGUS_G(config).config_session->encrypt) {
+  if (ZSTR_LEN(val) > 0 && SNUFFLEUPAGUS_G(config).config_session->encrypt) {
     zend_string *new_val = encrypt_zval(ZSTR_VAL(val), ZSTR_LEN(val));
     return old_s_write(mod_data, key, new_val, maxlifetime);
   }
@@ -92,11 +88,9 @@ static void sp_hook_session_module() {
 
 static PHP_INI_MH(sp_OnUpdateSaveHandler) {
   if (stage == PHP_INI_STAGE_RUNTIME &&
-      SESSION_G(session_status) == php_session_none &&
-      s_original_mod &&
+      SESSION_G(session_status) == php_session_none && s_original_mod &&
       zend_string_equals_literal(new_value, "user") == 0 &&
-      strcmp(((ps_module *)s_original_mod)->s_name, "user") ==
-          0) {
+      strcmp(((ps_module *)s_original_mod)->s_name, "user") == 0) {
     return SUCCESS;
   }
 
