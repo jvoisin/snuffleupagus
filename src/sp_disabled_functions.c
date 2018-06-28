@@ -375,8 +375,7 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
     }
 
     if (config_node->value_r || config_node->value) {
-      bool is_builtin = check_is_builtin_name(config_node);
-      if (is_builtin) {
+      if (check_is_builtin_name(config_node)) {
         if (false == is_param_matching(execute_data, config_node, builtin_name,
                                        builtin_param, &arg_name,
                                        builtin_param_name, &arg_value_str)) {
