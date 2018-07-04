@@ -192,6 +192,7 @@ typedef struct {
 #define SP_TOKEN_DISABLE_XXE ".disable_xxe"
 #define SP_TOKEN_EVAL_BLACKLIST ".eval_blacklist"
 #define SP_TOKEN_EVAL_WHITELIST ".eval_whitelist"
+#define SP_TOKEN_SLOPPY_COMPARISON ".sloppy_comparison"
 
 // common tokens
 #define SP_TOKEN_ENABLE ".enable("
