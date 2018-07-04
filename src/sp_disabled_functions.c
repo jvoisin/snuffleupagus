@@ -105,6 +105,8 @@ static inline const sp_list_node* get_config_node(const char* builtin_name) {
              !strcmp(builtin_name, "require_once")) {
     return SNUFFLEUPAGUS_G(config)
         .config_disabled_constructs->construct_include;
+  } else if (!strcmp(builtin_name, "echo")) {
+    return SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_echo;
   }
   ZEND_ASSUME(0);
 }
@@ -254,13 +256,15 @@ static bool check_is_builtin_name(
     return (!strcmp(config_node->function, "include") ||
             !strcmp(config_node->function, "include_once") ||
             !strcmp(config_node->function, "require") ||
-            !strcmp(config_node->function, "require_once"));
+            !strcmp(config_node->function, "require_once") ||
+            !strcmp(config_node->function, "echo"));
   }
   if (config_node->r_function) {
     return (sp_is_regexp_matching(config_node->r_function, "include") ||
             sp_is_regexp_matching(config_node->r_function, "include_once") ||
             sp_is_regexp_matching(config_node->r_function, "require") ||
-            sp_is_regexp_matching(config_node->r_function, "require_once"));
+            sp_is_regexp_matching(config_node->r_function, "require_once") ||
+            sp_is_regexp_matching(config_node->r_function, "echo"));
   }
   return false;
 }
@@ -288,11 +292,11 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
     current_filename = zend_get_executed_filename();
   }
 
-  complete_path_function = get_complete_function_path(execute_data);
-  if (!complete_path_function) {
-    if (builtin_name) {
-      complete_path_function = estrdup(builtin_name);
-    } else {
+  if (builtin_name) {
+    complete_path_function = estrdup(builtin_name);
+  } else {
+    complete_path_function = get_complete_function_path(execute_data);
+    if (!complete_path_function) {
       return false;
     }
   }
@@ -375,7 +379,13 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
     }
 
     if (config_node->value_r || config_node->value) {
-      if (check_is_builtin_name(config_node)) {
+      // meh
+      if (check_is_builtin_name(config_node) &&
+          !config_node->var &&
+          !config_node->param &&
+          !config_node->r_param &&
+          !config_node->key &&
+          !config_node->r_key) {
         if (false == is_param_matching(execute_data, config_node, builtin_name,
                                        builtin_param, &arg_name,
                                        builtin_param_name, &arg_value_str)) {
@@ -591,4 +601,14 @@ int hook_disabled_functions(void) {
   }
 
   return ret;
+}
+
+zend_write_func_t zend_write_default = NULL;
+
+int hook_echo(const char* str, size_t str_length) {
+  // \0 = problem :(
+  if (should_disable(EG(current_execute_data), "echo", str, NULL)) {
+    sp_terminate();
+  }
+  return zend_write_default(str, str_length);
 }

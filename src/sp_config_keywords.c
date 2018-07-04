@@ -8,7 +8,7 @@ static const struct {
 } CONSTRUCTS_TYPES[] = {
     {.type = ZEND_INCLUDE_OR_EVAL,
      .keys = {"include", "include_once", "require", "require_once", NULL}},
-    {.type = ZEND_ECHO, .keys = {"echo", NULL}},
+    {.type = ZEND_ECHO, .keys = {"echo", "print", NULL}},
     {.type = ZEND_NEW, .keys = {"new", NULL}},
     {.type = ZEND_EXIT, .keys = {"exit", NULL}},
     {.type = ZEND_STRLEN, .keys = {"strlen", NULL}},
@@ -478,6 +478,19 @@ int parse_disabled_functions(char *line) {
           df);
       return ret;
     case ZEND_ECHO:
+      // meh
+      pefree(df->function, 1);
+      pefree(df->r_function, 1);
+      df->function = pestrdup("echo", 1);
+      if (NULL == zend_write_default) {
+        zend_write_default = zend_write;
+        zend_write = hook_echo;
+      }
+      SNUFFLEUPAGUS_G(config)
+          .config_disabled_constructs->construct_echo = sp_list_insert(
+          SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_echo,
+          df);
+      return ret;
     default:
       break;
   }

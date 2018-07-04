@@ -89,6 +89,8 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
       NULL;
   snuffleupagus_globals->config.config_disabled_constructs->construct_eval =
       NULL;
+  snuffleupagus_globals->config.config_disabled_constructs->construct_echo =
+      NULL;
   snuffleupagus_globals->config.config_disabled_functions->disabled_functions =
       NULL;
   snuffleupagus_globals->config.config_disabled_functions_ret
@@ -138,6 +140,7 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_LST_DISABLE(config.config_disabled_functions_ret->disabled_functions);
   FREE_LST_DISABLE(config.config_disabled_constructs->construct_include);
   FREE_LST_DISABLE(config.config_disabled_constructs->construct_eval);
+  FREE_LST_DISABLE(config.config_disabled_constructs->construct_echo);
   sp_list_free(SNUFFLEUPAGUS_G(config).config_cookie->cookies);
   sp_list_free(SNUFFLEUPAGUS_G(config).config_eval->blacklist);
   sp_list_free(SNUFFLEUPAGUS_G(config).config_eval->whitelist);
