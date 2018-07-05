@@ -127,13 +127,15 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   if ((SNUFFLEUPAGUS_G(config).config_sloppy->enable)) {
     zend_op* orig_opline = (void*)execute_data->opline;
 
-    for (; NULL != orig_opline->handler; orig_opline++) {
-      if (orig_opline->opcode == ZEND_IS_EQUAL) {
-        orig_opline->opcode = ZEND_IS_IDENTICAL;
-        zend_vm_set_opcode_handler(orig_opline);
-      } else if (orig_opline->opcode == ZEND_IS_NOT_EQUAL) {
-        orig_opline->opcode = ZEND_IS_NOT_IDENTICAL;
-        zend_vm_set_opcode_handler(orig_opline);
+    if (NULL != orig_opline) {
+      for (; NULL != orig_opline->handler; orig_opline++) {
+        if (orig_opline->opcode == ZEND_IS_EQUAL) {
+          orig_opline->opcode = ZEND_IS_IDENTICAL;
+          zend_vm_set_opcode_handler(orig_opline);
+        } else if (orig_opline->opcode == ZEND_IS_NOT_EQUAL) {
+          orig_opline->opcode = ZEND_IS_NOT_IDENTICAL;
+          zend_vm_set_opcode_handler(orig_opline);
+        }
       }
     }
   }
