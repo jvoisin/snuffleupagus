@@ -478,7 +478,6 @@ int parse_disabled_functions(char *line) {
           df);
       return ret;
     case ZEND_ECHO:
-      // meh
       pefree(df->function, 1);
       pefree(df->r_function, 1);
       df->function = pestrdup("echo", 1);

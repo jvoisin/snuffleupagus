@@ -379,7 +379,6 @@ bool should_disable(zend_execute_data* execute_data, const char* builtin_name,
     }
 
     if (config_node->value_r || config_node->value) {
-      // meh
       if (check_is_builtin_name(config_node) &&
           !config_node->var &&
           !config_node->param &&
@@ -606,9 +605,28 @@ int hook_disabled_functions(void) {
 zend_write_func_t zend_write_default = NULL;
 
 int hook_echo(const char* str, size_t str_length) {
-  // \0 = problem :(
-  if (should_disable(EG(current_execute_data), "echo", str, NULL)) {
+  const char* str_copy = str;
+
+  // Check if there is a null byte in str
+  if (strlen(str) != str_length) {
+    char* str_tmp = pemalloc(str_length + 1, 1);
+    memcpy(str_tmp, str, str_length);
+    str_tmp[str_length] = 0;
+    for (size_t i = 0; i < str_length; i++) {
+      if (str_tmp[i] == '\0') {
+        str_tmp[i] = '0';
+      }
+    }
+    str_copy = str_tmp;
+  }
+
+  bool ret = should_disable(EG(current_execute_data), "echo", str_copy, NULL);
+  if (str_copy != str) {
+    pefree((void*)str_copy, 1);
+  }
+  if (ret) {
     sp_terminate();
   }
+
   return zend_write_default(str, str_length);
 }
