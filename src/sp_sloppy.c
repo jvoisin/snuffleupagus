@@ -2,7 +2,7 @@
 
 ZEND_API void (*default_zend_execute_ex)(zend_execute_data*) = NULL;
 
-ZEND_API void legit_hook(zend_execute_data* ex) {
+ZEND_API void zend_execute_hook(zend_execute_data* ex) {
   zend_op* orig_opline = (NULL != ex) ? (void*)ex->opline : NULL;
 
   if (NULL != orig_opline) {

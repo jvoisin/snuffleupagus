@@ -112,7 +112,7 @@ int parse_sloppy_comparison(char *line) {
 
   if (!ret && is_enable && NULL == default_zend_execute_ex) {
     default_zend_execute_ex = zend_execute_ex;
-    zend_execute_ex = legit_hook;
+    zend_execute_ex = zend_execute_hook;
   }
   return ret;
 }
