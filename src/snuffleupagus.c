@@ -72,6 +72,7 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
 
   SP_INIT(snuffleupagus_globals->config.config_unserialize);
   SP_INIT(snuffleupagus_globals->config.config_random);
+  SP_INIT(snuffleupagus_globals->config.config_sloppy);
   SP_INIT(snuffleupagus_globals->config.config_readonly_exec);
   SP_INIT(snuffleupagus_globals->config.config_global_strict);
   SP_INIT(snuffleupagus_globals->config.config_auto_cookie_secure);

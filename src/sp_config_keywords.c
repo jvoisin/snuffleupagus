@@ -1,5 +1,4 @@
 #include "php_snuffleupagus.h"
-#include "sp_sloppy.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
@@ -107,14 +106,8 @@ int parse_random(char *line) {
 }
 
 int parse_sloppy_comparison(char *line) {
-  bool is_enable = false;
-  int ret = parse_enable(line, &is_enable, NULL);
-
-  if (!ret && is_enable && NULL == default_zend_execute_ex) {
-    default_zend_execute_ex = zend_execute_ex;
-    zend_execute_ex = zend_execute_hook;
-  }
-  return ret;
+  return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_sloppy->enable),
+                      NULL);
 }
 
 int parse_disable_xxe(char *line) {

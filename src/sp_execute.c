@@ -1,4 +1,5 @@
 #include "php_snuffleupagus.h"
+#include "zend_vm.h"
 #include <errno.h>
 #include <string.h>
 
@@ -121,6 +122,20 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
 
   if (!execute_data) {
     return;
+  }
+
+  if ((SNUFFLEUPAGUS_G(config).config_sloppy->enable)) {
+    zend_op* orig_opline = (void*)execute_data->opline;
+
+    for (; NULL != orig_opline->handler; orig_opline++) {
+      if (orig_opline->opcode == ZEND_IS_EQUAL) {
+        orig_opline->opcode = ZEND_IS_IDENTICAL;
+        zend_vm_set_opcode_handler(orig_opline);
+      } else if (orig_opline->opcode == ZEND_IS_NOT_EQUAL) {
+        orig_opline->opcode = ZEND_IS_NOT_IDENTICAL;
+        zend_vm_set_opcode_handler(orig_opline);
+      }
+    }
   }
 
   if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
