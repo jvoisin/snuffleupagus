@@ -213,6 +213,10 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
   SNUFFLEUPAGUS_G(is_config_valid) = true;
 
+  if ((SNUFFLEUPAGUS_G(config).config_sloppy->enable)) {
+    hook_sloppy();
+  }
+
   if (SNUFFLEUPAGUS_G(config).config_random->enable) {
     hook_rand();
   }
