@@ -43,8 +43,9 @@ inline static void is_builtin_matching(const char *restrict const filename,
     return;
   }
 
-  if (true == should_disable(EG(current_execute_data), function_name, filename,
-                             param_name)) {
+  if (true == should_disable_ht(EG(current_execute_data), function_name, filename,
+                             param_name, get_config_node(function_name),
+                             SNUFFLEUPAGUS_G(config).experimental_disabled_functions)) {
     sp_terminate();
   }
 }
@@ -140,7 +141,8 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
       !execute_data->prev_execute_data->func ||
       !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
       !execute_data->prev_execute_data->opline) {
-    if (UNEXPECTED(true == should_disable(execute_data, NULL, NULL, NULL))) {
+    if (UNEXPECTED(true == should_disable_ht(execute_data, NULL, NULL, NULL, get_config_node(NULL),
+            SNUFFLEUPAGUS_G(config).experimental_disabled_functions))) {
       sp_terminate();
     }
   } else if ((execute_data->prev_execute_data->opline->opcode ==
@@ -149,7 +151,8 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
                   ZEND_DO_UCALL ||
               execute_data->prev_execute_data->opline->opcode ==
                   ZEND_DO_FCALL_BY_NAME)) {
-    if (UNEXPECTED(true == should_disable(execute_data, NULL, NULL, NULL))) {
+    if (UNEXPECTED(true == should_disable_ht(execute_data, NULL, NULL, NULL, get_config_node(NULL),
+            SNUFFLEUPAGUS_G(config).experimental_disabled_functions))) {
       sp_terminate();
     }
   }
@@ -162,7 +165,10 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
 
   orig_execute_ex(execute_data);
 
-  if (UNEXPECTED(true == should_drop_on_ret(EX(return_value), execute_data))) {
+  if (UNEXPECTED(true == should_drop_on_ret_ht(EX(return_value), execute_data,
+          SNUFFLEUPAGUS_G(config).experimental_could_not_determine_ret
+          ->disabled_functions,
+          SNUFFLEUPAGUS_G(config).experimental_disabled_functions_ret))) {
     sp_terminate();
   }
 }

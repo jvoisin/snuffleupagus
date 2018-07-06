@@ -1,4 +1,5 @@
 #include "php_snuffleupagus.h"
+#include "zend_types.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
@@ -303,6 +304,19 @@ int parse_cookie(char *line) {
   return SUCCESS;
 }
 
+int add_to_hashtable(HashTable* ht, sp_disabled_function* df) {
+  zend_string* key = zend_string_init(df->function, strlen(df->function), 1);
+  zval *list = zend_symtable_find(ht, key);
+  if (NULL == list) {
+    list = pemalloc(sizeof(zval), 0);
+    memset(list, 0, sizeof(*list));
+    ZVAL_PTR(list, NULL);
+    list = zend_symtable_add_new(ht, key, list);
+  }
+  Z_PTR_P(list) = sp_list_insert(Z_PTR_P(list), df);
+  return SUCCESS;
+}
+
 int parse_disabled_functions(char *line) {
   int ret = 0;
   bool enable = true, disable = false, allow = false, drop = false;
@@ -376,10 +390,22 @@ int parse_disabled_functions(char *line) {
                "`key` and `value` are mutually exclusive on line %zu.",
                line, sp_line_no);
     return -1;
-  } else if ((df->r_ret || df->ret) && (df->r_param || param)) {
+  } else if ((df->r_ret || df->ret || df->ret_type) && (df->r_param || param)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                "`ret` and `param` are mutually exclusive on line %zu.",
+               line, sp_line_no);
+    return -1;
+  } else if ((df->r_ret || df->ret || df->ret_type) && (df->var)) {
+    sp_log_err("config",
+               "Invalid configuration line: 'sp.disabled_functions%s':"
+               "`ret` and `var` are mutually exclusive on line %zu.",
+               line, sp_line_no);
+    return -1;
+  } else if ((df->r_ret || df->ret || df->ret_type) && (df->value || df->value_r)) {
+    sp_log_err("config",
+               "Invalid configuration line: 'sp.disabled_functions%s':"
+               "`ret` and `value` are mutually exclusive on line %zu.",
                line, sp_line_no);
     return -1;
   } else if (!(df->r_function || df->function)) {
@@ -486,16 +512,26 @@ int parse_disabled_functions(char *line) {
     return ret;
   }
 
-  if (df->ret || df->r_ret || df->ret_type) {
-    SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions =
-        sp_list_insert(SNUFFLEUPAGUS_G(config)
-                           .config_disabled_functions_ret->disabled_functions,
-                       df);
+  if (df->function && !df->functions_list) {
+    if (df->ret || df->r_ret || df->ret_type) {
+      add_to_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions_ret,
+          df);
+    } else {
+      add_to_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions,
+          df);
+    }
   } else {
-    SNUFFLEUPAGUS_G(config)
-        .config_disabled_functions->disabled_functions = sp_list_insert(
-        SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions,
-        df);
+    if (df->ret || df->r_ret || df->ret_type) {
+      SNUFFLEUPAGUS_G(config).experimental_could_not_determine_ret->disabled_functions =
+        sp_list_insert(SNUFFLEUPAGUS_G(config)
+            .experimental_could_not_determine_ret->disabled_functions,
+            df);
+    } else {
+      SNUFFLEUPAGUS_G(config).experimental_could_not_determine->disabled_functions =
+        sp_list_insert(SNUFFLEUPAGUS_G(config)
+            .experimental_could_not_determine->disabled_functions,
+            df);
+    }
   }
   return ret;
 }

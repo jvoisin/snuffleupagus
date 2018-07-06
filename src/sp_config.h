@@ -152,8 +152,6 @@ typedef struct {
 typedef struct {
   sp_config_random *config_random;
   sp_config_unserialize *config_unserialize;
-  sp_config_disabled_functions *config_disabled_functions;
-  sp_config_disabled_functions *config_disabled_functions_ret;
   sp_config_readonly_exec *config_readonly_exec;
   sp_config_upload_validation *config_upload_validation;
   sp_config_cookie *config_cookie;
@@ -164,6 +162,13 @@ typedef struct {
   sp_config_disabled_constructs *config_disabled_constructs;
   sp_config_eval *config_eval;
   sp_config_session *config_session;
+
+  HashTable *experimental_disabled_functions;
+  HashTable *experimental_disabled_functions_hooked;
+  HashTable *experimental_disabled_functions_ret;
+  HashTable *experimental_disabled_functions_ret_hooked;
+  sp_config_disabled_functions *experimental_could_not_determine;
+  sp_config_disabled_functions *experimental_could_not_determine_ret;
 } sp_config;
 
 typedef struct {
