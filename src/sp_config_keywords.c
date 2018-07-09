@@ -457,24 +457,6 @@ int parse_disabled_functions(char *line) {
     }
   }
 
-  /*switch (get_construct_type(df)) {*/
-    /*case ZEND_INCLUDE_OR_EVAL:*/
-      /*SNUFFLEUPAGUS_G(config)*/
-          /*.config_disabled_constructs->construct_include = sp_list_insert(*/
-          /*SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include,*/
-          /*df);*/
-      /*return ret;*/
-    /*case ZEND_EVAL_CODE:*/
-      /*SNUFFLEUPAGUS_G(config)*/
-          /*.config_disabled_constructs->construct_eval = sp_list_insert(*/
-          /*SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval,*/
-          /*df);*/
-      /*return ret;*/
-    /*case ZEND_ECHO:*/
-    /*default:*/
-      /*break;*/
-  /*}*/
-
   if (true == disable) {
     return ret;
   }
