@@ -93,22 +93,6 @@ static bool is_local_var_matching(
   return false;
 }
 
-const sp_list_node* get_config_node(const char* builtin_name) {
-  if (EXPECTED(!builtin_name)) {
-    return SNUFFLEUPAGUS_G(config)
-        .experimental_could_not_determine->disabled_functions;
-  } else if (!strcmp(builtin_name, "eval")) {
-    return SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
-  } else if (!strcmp(builtin_name, "include") ||
-             !strcmp(builtin_name, "include_once") ||
-             !strcmp(builtin_name, "require") ||
-             !strcmp(builtin_name, "require_once")) {
-    return SNUFFLEUPAGUS_G(config)
-        .config_disabled_constructs->construct_include;
-  }
-  ZEND_ASSUME(0);
-}
-
 static bool is_param_matching(zend_execute_data* execute_data,
                               sp_disabled_function const* const config_node,
                               const char* builtin_param, const char** arg_name,
@@ -271,6 +255,10 @@ bool should_disable_ht(zend_execute_data* execute_data, const char* builtin_name
   const sp_list_node* ht_entry = NULL;
   bool ret = false;
 
+  if (!execute_data) {
+    return false;
+  }
+
   if (builtin_name) {
     complete_function_path = estrdup(builtin_name);
   } else {
@@ -280,15 +268,14 @@ bool should_disable_ht(zend_execute_data* execute_data, const char* builtin_name
     }
   }
 
-  // zend_symtable_str_find does not take a const HashTable :(
   ht_entry = zend_hash_str_find_ptr(ht, complete_function_path,
       strlen(complete_function_path));
 
-  if (ht_entry
+  if (ht_entry && ht_entry->data
       && should_disable(execute_data, complete_function_path,
         builtin_param, builtin_param_name, ht_entry)) {
     ret = true;
-  } else if (config) {
+  } else if (config && config->data) {
     ret = should_disable(execute_data, complete_function_path, builtin_param,
         builtin_param_name, config);
   }
@@ -304,14 +291,6 @@ bool should_disable(zend_execute_data* execute_data, const char* complete_functi
   const char* current_filename = NULL;
   unsigned int line = 0;
   char* filename = NULL;
-
-  if (!execute_data) {
-    return false;
-  }
-
-  if (!config || !config->data) {
-    return false;
-  }
 
   if (UNEXPECTED(builtin_param && !strcmp(complete_function_path, "eval"))) {
     current_filename = get_eval_filename(zend_get_executed_filename());
@@ -441,15 +420,14 @@ bool should_drop_on_ret_ht(zval* return_value,
     return ret;
   }
 
-  // zend_symtable_str_find does not take a const HashTable :(
   ht_entry = zend_hash_str_find_ptr(ht, complete_function_path,
       strlen(complete_function_path));
 
-  if (ht_entry
-      && should_drop_on_ret(return_value, execute_data, ht_entry)) {
+  if (ht_entry && ht_entry->data
+      && should_drop_on_ret(return_value, ht_entry, complete_function_path)) {
     ret = true;
-  } else if (config) {
-    ret = should_drop_on_ret(return_value, execute_data, config);
+  } else if (config && config->data) {
+    ret = should_drop_on_ret(return_value, config, complete_function_path);
   }
 
   efree(complete_function_path);
@@ -457,20 +435,10 @@ bool should_drop_on_ret_ht(zval* return_value,
 }
 
 bool should_drop_on_ret(zval* return_value,
-                        const zend_execute_data* const execute_data,
-                        const sp_list_node* config) {
-  char* complete_path_function = get_complete_function_path(execute_data);
+                        const sp_list_node* config, const char* complete_function_path) {
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
   bool match_type = false, match_value = false;
-
-  if (!complete_path_function) {
-    return false;
-  }
-
-  if (!config || !config->data) {
-    return false;
-  }
 
   while (config) {
     char* ret_value_str = NULL;
@@ -480,12 +448,12 @@ bool should_drop_on_ret(zval* return_value,
     assert(config_node->function || config_node->r_function);
 
     if (config_node->function) {
-      if (0 != strcmp(config_node->function, complete_path_function)) {
+      if (0 != strcmp(config_node->function, complete_function_path)) {
         goto next;
       }
     } else if (config_node->r_function) {
       if (false == sp_is_regexp_matching(config_node->r_function,
-                                         complete_path_function)) {
+                                         complete_function_path)) {
         goto next;
       }
     }
@@ -520,13 +488,11 @@ bool should_drop_on_ret(zval* return_value,
 
     if (true == match_type || true == match_value) {
       if (true == config_node->allow) {
-        efree(complete_path_function);
         efree(ret_value_str);
         return false;
       }
-      sp_log_disable_ret(complete_path_function, ret_value_str, config_node);
+      sp_log_disable_ret(complete_function_path, ret_value_str, config_node);
       if (false == config_node->simulation) {
-        efree(complete_path_function);
         efree(ret_value_str);
         return true;
       }
@@ -535,7 +501,6 @@ bool should_drop_on_ret(zval* return_value,
     efree(ret_value_str);
     config = config->next;
   }
-  efree(complete_path_function);
   return false;
 }
 
@@ -544,8 +509,8 @@ ZEND_FUNCTION(check_disabled_function) {
   const char* current_function_name = get_active_function_name(TSRMLS_C);
 
   if (true == should_disable_ht(execute_data, NULL, NULL, NULL,
-        SNUFFLEUPAGUS_G(config).experimental_could_not_determine->disabled_functions,
-        SNUFFLEUPAGUS_G(config).experimental_disabled_functions_hooked)) {
+        SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
+        SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked)) {
     sp_terminate();
   }
 
@@ -554,9 +519,8 @@ ZEND_FUNCTION(check_disabled_function) {
       strlen(current_function_name));
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   if (true == should_drop_on_ret_ht(return_value, execute_data,
-        SNUFFLEUPAGUS_G(config).experimental_could_not_determine_ret
-        ->disabled_functions,
-        SNUFFLEUPAGUS_G(config).experimental_disabled_functions_ret_hooked)) {
+        SNUFFLEUPAGUS_G(config).config_disabled_functions_reg_ret->disabled_functions,
+        SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked)) {
     sp_terminate();
   }
 }
@@ -641,20 +605,20 @@ int hook_disabled_functions(void) {
   int ret = SUCCESS;
 
   ret |= hook_functions(SNUFFLEUPAGUS_G(config)
-                            .experimental_disabled_functions,
+                            .config_disabled_functions,
                             SNUFFLEUPAGUS_G(config)
-                            .experimental_disabled_functions_hooked);
+                            .config_disabled_functions_hooked);
 
   ret |= hook_functions(SNUFFLEUPAGUS_G(config)
-                            .experimental_disabled_functions_ret,
+                            .config_disabled_functions_ret,
                             SNUFFLEUPAGUS_G(config)
-                            .experimental_disabled_functions_ret_hooked);
+                            .config_disabled_functions_ret_hooked);
 
   ret |= hook_functions_regexp(SNUFFLEUPAGUS_G(config)
-      .experimental_could_not_determine->disabled_functions);
+      .config_disabled_functions_reg->disabled_functions);
 
   ret |= hook_functions_regexp(SNUFFLEUPAGUS_G(config)
-      .experimental_could_not_determine_ret->disabled_functions);
+      .config_disabled_functions_reg_ret->disabled_functions);
 
   if (NULL != SNUFFLEUPAGUS_G(config).config_eval->blacklist) {
     sp_list_node* it = SNUFFLEUPAGUS_G(config).config_eval->blacklist;

@@ -77,10 +77,10 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT_HT(snuffleupagus_globals->disabled_functions_hook);
   SP_INIT_HT(snuffleupagus_globals->sp_internal_functions_hook);
   SP_INIT_HT(snuffleupagus_globals->sp_eval_blacklist_functions_hook);
-  SP_INIT_HT(snuffleupagus_globals->config.experimental_disabled_functions);
-  SP_INIT_HT(snuffleupagus_globals->config.experimental_disabled_functions_hooked);
-  SP_INIT_HT(snuffleupagus_globals->config.experimental_disabled_functions_ret);
-  SP_INIT_HT(snuffleupagus_globals->config.experimental_disabled_functions_ret_hooked);
+  SP_INIT_HT(snuffleupagus_globals->config.config_disabled_functions);
+  SP_INIT_HT(snuffleupagus_globals->config.config_disabled_functions_hooked);
+  SP_INIT_HT(snuffleupagus_globals->config.config_disabled_functions_ret);
+  SP_INIT_HT(snuffleupagus_globals->config.config_disabled_functions_ret_hooked);
 
   SP_INIT(snuffleupagus_globals->config.config_unserialize);
   SP_INIT(snuffleupagus_globals->config.config_random);
@@ -90,20 +90,15 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT(snuffleupagus_globals->config.config_snuffleupagus);
   SP_INIT(snuffleupagus_globals->config.config_disable_xxe);
   SP_INIT(snuffleupagus_globals->config.config_upload_validation);
-  SP_INIT(snuffleupagus_globals->config.experimental_could_not_determine);
-  SP_INIT(snuffleupagus_globals->config.experimental_could_not_determine_ret);
+  SP_INIT(snuffleupagus_globals->config.config_disabled_functions_reg);
+  SP_INIT(snuffleupagus_globals->config.config_disabled_functions_reg_ret);
   SP_INIT(snuffleupagus_globals->config.config_cookie);
   SP_INIT(snuffleupagus_globals->config.config_session);
-  SP_INIT(snuffleupagus_globals->config.config_disabled_constructs);
   SP_INIT(snuffleupagus_globals->config.config_eval);
 
-  snuffleupagus_globals->config.config_disabled_constructs->construct_include =
-      NULL;
-  snuffleupagus_globals->config.config_disabled_constructs->construct_eval =
-      NULL;
-  snuffleupagus_globals->config.experimental_could_not_determine
+  snuffleupagus_globals->config.config_disabled_functions_reg
       ->disabled_functions = NULL;
-  snuffleupagus_globals->config.experimental_could_not_determine_ret
+  snuffleupagus_globals->config.config_disabled_functions_reg_ret
       ->disabled_functions = NULL;
   snuffleupagus_globals->config.config_cookie->cookies = NULL;
   snuffleupagus_globals->config.config_eval->blacklist = NULL;
@@ -126,10 +121,10 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
 
   FREE_HT(disabled_functions_hook);
   FREE_HT(sp_eval_blacklist_functions_hook);
-  FREE_HT(config.experimental_disabled_functions);
-  FREE_HT(config.experimental_disabled_functions_hooked);
-  FREE_HT(config.experimental_disabled_functions_ret);
-  FREE_HT(config.experimental_disabled_functions_ret_hooked);
+  FREE_HT(config.config_disabled_functions);
+  FREE_HT(config.config_disabled_functions_hooked);
+  FREE_HT(config.config_disabled_functions_ret);
+  FREE_HT(config.config_disabled_functions_ret_hooked);
 
 #undef FREE_HT
 
@@ -150,24 +145,21 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
     sp_list_free(_n);                      \
   } while (0)
 
-  FREE_LST_DISABLE(config.experimental_could_not_determine->disabled_functions);
-  FREE_LST_DISABLE(config.experimental_could_not_determine_ret->disabled_functions);
-  FREE_LST_DISABLE(config.config_disabled_constructs->construct_include);
-  FREE_LST_DISABLE(config.config_disabled_constructs->construct_eval);
+  FREE_LST_DISABLE(config.config_disabled_functions_reg->disabled_functions);
+  FREE_LST_DISABLE(config.config_disabled_functions_reg_ret->disabled_functions);
   sp_list_free(SNUFFLEUPAGUS_G(config).config_cookie->cookies);
   sp_list_free(SNUFFLEUPAGUS_G(config).config_eval->blacklist);
   sp_list_free(SNUFFLEUPAGUS_G(config).config_eval->whitelist);
 
 #undef FREE_LST_DISABLE
 
-  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions);
-  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions_hooked);
-  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions_ret);
-  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions_ret_hooked);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked);
 
-  pefree(SNUFFLEUPAGUS_G(config.experimental_could_not_determine), 1);
-  pefree(SNUFFLEUPAGUS_G(config.experimental_could_not_determine_ret), 1);
-  pefree(SNUFFLEUPAGUS_G(config.config_disabled_constructs), 1);
+  pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions_reg), 1);
+  pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions_reg_ret), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_cookie), 1);
 
   UNREGISTER_INI_ENTRIES();

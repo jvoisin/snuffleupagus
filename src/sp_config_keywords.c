@@ -3,38 +3,6 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-static const struct {
-  unsigned int type;
-  char *keys[5];  // Update this value if necessary
-} CONSTRUCTS_TYPES[] = {
-    {.type = ZEND_INCLUDE_OR_EVAL,
-     .keys = {"include", "include_once", "require", "require_once", NULL}},
-    {.type = ZEND_ECHO, .keys = {"echo", NULL}},
-    {.type = ZEND_NEW, .keys = {"new", NULL}},
-    {.type = ZEND_EXIT, .keys = {"exit", NULL}},
-    {.type = ZEND_STRLEN, .keys = {"strlen", NULL}},
-    {.type = ZEND_EVAL_CODE, .keys = {"eval", NULL}},
-    {.type = 0, .keys = {NULL}}};
-
-static int get_construct_type(sp_disabled_function const *const df) {
-  for (size_t i = 0; 0 != CONSTRUCTS_TYPES[i].type; i++) {
-    for (size_t j = 0; NULL != CONSTRUCTS_TYPES[i].keys[j]; j++) {
-      assert(df->function || df->r_function);
-      if (df->function) {
-        if (0 == strcmp(df->function, CONSTRUCTS_TYPES[i].keys[j])) {
-          return CONSTRUCTS_TYPES[i].type;
-        }
-      } else {
-        if (true == sp_is_regexp_matching(df->r_function,
-                                          CONSTRUCTS_TYPES[i].keys[j])) {
-          return CONSTRUCTS_TYPES[i].type;
-        }
-      }
-    }
-  }
-  return -1;
-}
-
 static int parse_enable(char *line, bool *restrict retval,
                         bool *restrict simulation) {
   bool enable = false, disable = false;
@@ -489,23 +457,23 @@ int parse_disabled_functions(char *line) {
     }
   }
 
-  switch (get_construct_type(df)) {
-    case ZEND_INCLUDE_OR_EVAL:
-      SNUFFLEUPAGUS_G(config)
-          .config_disabled_constructs->construct_include = sp_list_insert(
-          SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include,
-          df);
-      return ret;
-    case ZEND_EVAL_CODE:
-      SNUFFLEUPAGUS_G(config)
-          .config_disabled_constructs->construct_eval = sp_list_insert(
-          SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval,
-          df);
-      return ret;
-    case ZEND_ECHO:
-    default:
-      break;
-  }
+  /*switch (get_construct_type(df)) {*/
+    /*case ZEND_INCLUDE_OR_EVAL:*/
+      /*SNUFFLEUPAGUS_G(config)*/
+          /*.config_disabled_constructs->construct_include = sp_list_insert(*/
+          /*SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include,*/
+          /*df);*/
+      /*return ret;*/
+    /*case ZEND_EVAL_CODE:*/
+      /*SNUFFLEUPAGUS_G(config)*/
+          /*.config_disabled_constructs->construct_eval = sp_list_insert(*/
+          /*SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval,*/
+          /*df);*/
+      /*return ret;*/
+    /*case ZEND_ECHO:*/
+    /*default:*/
+      /*break;*/
+  /*}*/
 
   if (true == disable) {
     return ret;
@@ -513,21 +481,21 @@ int parse_disabled_functions(char *line) {
 
   if (df->function && !df->functions_list) {
     if (df->ret || df->r_ret || df->ret_type) {
-      add_to_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions_ret,
+      add_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
           df);
     } else {
-      add_to_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions, df);
+      add_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions, df);
     }
   } else {
     if (df->ret || df->r_ret || df->ret_type) {
-      SNUFFLEUPAGUS_G(config).experimental_could_not_determine_ret->disabled_functions =
+      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg_ret->disabled_functions =
         sp_list_insert(SNUFFLEUPAGUS_G(config)
-            .experimental_could_not_determine_ret->disabled_functions,
+            .config_disabled_functions_reg_ret->disabled_functions,
             df);
     } else {
-      SNUFFLEUPAGUS_G(config).experimental_could_not_determine->disabled_functions =
+      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions =
         sp_list_insert(SNUFFLEUPAGUS_G(config)
-            .experimental_could_not_determine->disabled_functions,
+            .config_disabled_functions_reg->disabled_functions,
             df);
     }
   }

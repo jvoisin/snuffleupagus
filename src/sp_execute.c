@@ -44,8 +44,9 @@ inline static void is_builtin_matching(const char *restrict const filename,
   }
 
   if (true == should_disable_ht(EG(current_execute_data), function_name, filename,
-                             param_name, get_config_node(function_name),
-                             SNUFFLEUPAGUS_G(config).experimental_disabled_functions)) {
+                             param_name, SNUFFLEUPAGUS_G(config)
+                             .config_disabled_functions_reg->disabled_functions,
+                             SNUFFLEUPAGUS_G(config).config_disabled_functions)) {
     sp_terminate();
   }
 }
@@ -125,8 +126,8 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   }
 
   if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
-    const sp_list_node *config =
-        SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval;
+    const sp_list_node *config = zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
+        .config_disabled_functions, "eval", 4);
     char *filename = get_eval_filename((char *)zend_get_executed_filename());
     is_builtin_matching(filename, "eval", NULL, config);
     efree(filename);
@@ -141,8 +142,9 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
       !execute_data->prev_execute_data->func ||
       !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
       !execute_data->prev_execute_data->opline) {
-    if (UNEXPECTED(true == should_disable_ht(execute_data, NULL, NULL, NULL, get_config_node(NULL),
-            SNUFFLEUPAGUS_G(config).experimental_disabled_functions))) {
+    if (UNEXPECTED(true == should_disable_ht(execute_data, NULL, NULL, NULL,
+            SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
+            SNUFFLEUPAGUS_G(config).config_disabled_functions))) {
       sp_terminate();
     }
   } else if ((execute_data->prev_execute_data->opline->opcode ==
@@ -151,8 +153,9 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
                   ZEND_DO_UCALL ||
               execute_data->prev_execute_data->opline->opcode ==
                   ZEND_DO_FCALL_BY_NAME)) {
-    if (UNEXPECTED(true == should_disable_ht(execute_data, NULL, NULL, NULL, get_config_node(NULL),
-            SNUFFLEUPAGUS_G(config).experimental_disabled_functions))) {
+    if (UNEXPECTED(true == should_disable_ht(execute_data, NULL, NULL, NULL,
+            SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
+            SNUFFLEUPAGUS_G(config).config_disabled_functions))) {
       sp_terminate();
     }
   }
@@ -166,9 +169,9 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   orig_execute_ex(execute_data);
 
   if (UNEXPECTED(true == should_drop_on_ret_ht(EX(return_value), execute_data,
-          SNUFFLEUPAGUS_G(config).experimental_could_not_determine_ret
+          SNUFFLEUPAGUS_G(config).config_disabled_functions_reg_ret
           ->disabled_functions,
-          SNUFFLEUPAGUS_G(config).experimental_disabled_functions_ret))) {
+          SNUFFLEUPAGUS_G(config).config_disabled_functions_ret))) {
     sp_terminate();
   }
 }
@@ -196,22 +199,26 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
       if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
         terminate_if_writable(filename);
       }
-      const sp_list_node *config =
-          SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include;
       switch (data->opline->extended_value) {
         case ZEND_INCLUDE:
-          is_builtin_matching(filename, "include", "inclusion path", config);
+          is_builtin_matching(filename, "include", "inclusion path",
+              zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
+                .config_disabled_functions, "include", 7));
           break;
         case ZEND_REQUIRE:
-          is_builtin_matching(filename, "require", "inclusion path", config);
+          is_builtin_matching(filename, "require", "inclusion path",
+              zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
+                .config_disabled_functions, "require", 7));
           break;
         case ZEND_REQUIRE_ONCE:
           is_builtin_matching(filename, "require_once", "inclusion path",
-                              config);
+              zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
+                .config_disabled_functions, "require_once", 12));
           break;
         case ZEND_INCLUDE_ONCE:
           is_builtin_matching(filename, "include_once", "inclusion path",
-                              config);
+              zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
+                .config_disabled_functions, "include_once", 12));
           break;
           EMPTY_SWITCH_DEFAULT_CASE();
       }

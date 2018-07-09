@@ -137,13 +137,6 @@ typedef struct {
 } sp_config_cookie;
 
 typedef struct {
-  sp_list_node
-      *construct_include;  // list of rules for `(include|require)_(once)?`
-  sp_list_node *construct_eval;
-  sp_list_node *construct_echo;
-} sp_config_disabled_constructs;
-
-typedef struct {
   char *script;
   bool simulation;
   bool enable;
@@ -159,16 +152,15 @@ typedef struct {
   sp_config_auto_cookie_secure *config_auto_cookie_secure;
   sp_config_global_strict *config_global_strict;
   sp_config_disable_xxe *config_disable_xxe;
-  sp_config_disabled_constructs *config_disabled_constructs;
   sp_config_eval *config_eval;
   sp_config_session *config_session;
 
-  HashTable *experimental_disabled_functions;
-  HashTable *experimental_disabled_functions_hooked;
-  HashTable *experimental_disabled_functions_ret;
-  HashTable *experimental_disabled_functions_ret_hooked;
-  sp_config_disabled_functions *experimental_could_not_determine;
-  sp_config_disabled_functions *experimental_could_not_determine_ret;
+  HashTable *config_disabled_functions;
+  HashTable *config_disabled_functions_hooked;
+  HashTable *config_disabled_functions_ret;
+  HashTable *config_disabled_functions_ret_hooked;
+  sp_config_disabled_functions *config_disabled_functions_reg;
+  sp_config_disabled_functions *config_disabled_functions_reg_ret;
 } sp_config;
 
 typedef struct {
