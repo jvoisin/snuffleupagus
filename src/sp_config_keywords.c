@@ -368,7 +368,7 @@ int parse_disabled_functions(char *line) {
                "`ret` and `param` are mutually exclusive on line %zu.",
                line, sp_line_no);
     return -1;
-  } else if ((df->r_ret || df->ret || df->ret_type) && (df->var)) {
+  } else if ((df->r_ret || df->ret || df->ret_type) && (var)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                "`ret` and `var` are mutually exclusive on line %zu.",
