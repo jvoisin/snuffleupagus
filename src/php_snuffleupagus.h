@@ -43,6 +43,7 @@
 #include "sp_utils.h"
 #include "sp_crypt.h"
 #include "sp_session.h"
+#include "sp_sloppy.h"
 
 
 extern zend_module_entry snuffleupagus_module_entry;
