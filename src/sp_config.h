@@ -53,6 +53,8 @@ typedef struct { bool enable; } sp_config_global_strict;
 
 typedef struct { bool enable; } sp_config_random;
 
+typedef struct { bool enable; } sp_config_sloppy;
+
 typedef struct { bool enable; } sp_config_auto_cookie_secure;
 
 typedef struct { bool enable; } sp_config_disable_xxe;
@@ -151,6 +153,7 @@ typedef struct {
 
 typedef struct {
   sp_config_random *config_random;
+  sp_config_sloppy *config_sloppy;
   sp_config_unserialize *config_unserialize;
   sp_config_disabled_functions *config_disabled_functions;
   sp_config_disabled_functions *config_disabled_functions_ret;
@@ -192,6 +195,7 @@ typedef struct {
 #define SP_TOKEN_DISABLE_XXE ".disable_xxe"
 #define SP_TOKEN_EVAL_BLACKLIST ".eval_blacklist"
 #define SP_TOKEN_EVAL_WHITELIST ".eval_whitelist"
+#define SP_TOKEN_SLOPPY_COMPARISON ".sloppy_comparison"
 
 // common tokens
 #define SP_TOKEN_ENABLE ".enable("
