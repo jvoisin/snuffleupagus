@@ -266,9 +266,9 @@ static bool check_is_builtin_name(
 
 bool should_disable_ht(zend_execute_data* execute_data, const char* builtin_name,
                     const char* builtin_param, const char* builtin_param_name,
-                    const sp_list_node* config, HashTable* ht) {
+                    const sp_list_node* config, const HashTable* ht) {
   char* complete_function_path = NULL;
-  const zval *ht_entry = NULL;
+  const sp_list_node* ht_entry = NULL;
   bool ret = false;
 
   if (builtin_name) {
@@ -281,12 +281,12 @@ bool should_disable_ht(zend_execute_data* execute_data, const char* builtin_name
   }
 
   // zend_symtable_str_find does not take a const HashTable :(
-  ht_entry = zend_symtable_str_find(ht, complete_function_path,
+  ht_entry = zend_hash_str_find_ptr(ht, complete_function_path,
       strlen(complete_function_path));
 
-  if (ht_entry && Z_PTR_P(ht_entry)
+  if (ht_entry
       && should_disable(execute_data, complete_function_path,
-        builtin_param, builtin_param_name, Z_PTR_P(ht_entry))) {
+        builtin_param, builtin_param_name, ht_entry)) {
     ret = true;
   } else if (config) {
     ret = should_disable(execute_data, complete_function_path, builtin_param,
@@ -432,9 +432,9 @@ allow:
 
 bool should_drop_on_ret_ht(zval* return_value,
                         const zend_execute_data* const execute_data,
-                        const sp_list_node* config, HashTable* ht) {
+                        const sp_list_node* config, const HashTable* ht) {
   char* complete_function_path = get_complete_function_path(execute_data);
-  const zval *ht_entry = NULL;
+  const sp_list_node* ht_entry = NULL;
   bool ret = false;
 
   if (!complete_function_path) {
@@ -442,16 +442,14 @@ bool should_drop_on_ret_ht(zval* return_value,
   }
 
   // zend_symtable_str_find does not take a const HashTable :(
-  ht_entry = zend_symtable_str_find(ht, complete_function_path,
+  ht_entry = zend_hash_str_find_ptr(ht, complete_function_path,
       strlen(complete_function_path));
 
-  if (ht_entry && Z_PTR_P(ht_entry)
-      && should_drop_on_ret(return_value, execute_data,
-        Z_PTR_P(ht_entry))) {
+  if (ht_entry
+      && should_drop_on_ret(return_value, execute_data, ht_entry)) {
     ret = true;
   } else if (config) {
-    ret = should_drop_on_ret(return_value, execute_data,
-        config);
+    ret = should_drop_on_ret(return_value, execute_data, config);
   }
 
   efree(complete_function_path);

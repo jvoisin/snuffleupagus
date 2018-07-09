@@ -39,12 +39,12 @@ PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM,
               OnUpdateConfiguration)
 PHP_INI_END()
 
-void disabled_functions_dtor(zval *val) {
-  if (val && Z_PTR_P(val)) {
-    // Double free ?
-    /*sp_list_free(Z_PTR_P(val));*/
+void free_disabled_functions_hashtable(HashTable *ht) {
+  void* ptr = NULL;
+  ZEND_HASH_FOREACH_PTR(ht, ptr) {
+    sp_list_free(ptr);
   }
-  Z_PTR_P(val) = NULL;
+  ZEND_HASH_FOREACH_END();
 }
 
 ZEND_DLEXPORT zend_extension zend_extension_entry = {
@@ -72,7 +72,7 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
 #define SP_INIT(F) F = pecalloc(sizeof(*F), 1, 1);
 #define SP_INIT_HT(F)          \
   F = pemalloc(sizeof(*F), 1); \
-  zend_hash_init(F, 10, NULL, disabled_functions_dtor, 1);
+  zend_hash_init(F, 10, NULL, NULL, 1);
 
   SP_INIT_HT(snuffleupagus_globals->disabled_functions_hook);
   SP_INIT_HT(snuffleupagus_globals->sp_internal_functions_hook);
@@ -159,6 +159,11 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   sp_list_free(SNUFFLEUPAGUS_G(config).config_eval->whitelist);
 
 #undef FREE_LST_DISABLE
+
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions_hooked);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions_ret);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions_ret_hooked);
 
   pefree(SNUFFLEUPAGUS_G(config.experimental_could_not_determine), 1);
   pefree(SNUFFLEUPAGUS_G(config.experimental_could_not_determine_ret), 1);

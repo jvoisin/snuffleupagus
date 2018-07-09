@@ -320,7 +320,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
       func->handler = new_function;
       ret = SUCCESS;
     } else {
-      ret = SUCCESS;
+      return SUCCESS;
     }
   }
 

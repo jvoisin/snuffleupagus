@@ -305,15 +305,14 @@ int parse_cookie(char *line) {
 }
 
 int add_to_hashtable(HashTable* ht, sp_disabled_function* df) {
-  zend_string* key = zend_string_init(df->function, strlen(df->function), 1);
-  zval *list = zend_symtable_find(ht, key);
+  zval* list = zend_hash_str_find(ht, df->function, strlen(df->function));
+
   if (NULL == list) {
-    list = pemalloc(sizeof(zval), 0);
-    memset(list, 0, sizeof(*list));
-    ZVAL_PTR(list, NULL);
-    list = zend_symtable_add_new(ht, key, list);
+    zend_hash_str_add_ptr(ht, df->function, strlen(df->function),
+        sp_list_insert(NULL, df));
+  } else {
+    Z_PTR_P(list) = sp_list_insert(Z_PTR_P(list), df);
   }
-  Z_PTR_P(list) = sp_list_insert(Z_PTR_P(list), df);
   return SUCCESS;
 }
 
@@ -517,8 +516,7 @@ int parse_disabled_functions(char *line) {
       add_to_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions_ret,
           df);
     } else {
-      add_to_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions,
-          df);
+      add_to_hashtable(SNUFFLEUPAGUS_G(config).experimental_disabled_functions, df);
     }
   } else {
     if (df->ret || df->r_ret || df->ret_type) {
