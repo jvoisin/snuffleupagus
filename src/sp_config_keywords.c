@@ -105,6 +105,11 @@ int parse_random(char *line) {
                       NULL);
 }
 
+int parse_sloppy_comparison(char *line) {
+  return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_sloppy->enable),
+                      NULL);
+}
+
 int parse_disable_xxe(char *line) {
   return parse_enable(
       line, &(SNUFFLEUPAGUS_G(config).config_disable_xxe->enable), NULL);
