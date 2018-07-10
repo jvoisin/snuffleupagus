@@ -108,8 +108,9 @@ PHP_FUNCTION(sp_setcookie) {
     ZVAL_LONG(&params[6], httponly);
   }
 
-  /* param[3](path) is concatenated to path= and is not filtered, we can inject
-  the samesite parameter here */
+  /* param[3](path) is concatenated to path= and is not filtered in PHP < 7.3
+     we can inject the samesite parameter here
+     TODO find another solution with 7.3 */
   if (cookie_node && cookie_node->samesite) {
     if (!path) {
       path = zend_string_init("", 0, 0);
