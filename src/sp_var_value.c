@@ -107,9 +107,8 @@ static zval *get_array_value(zend_execute_data *ed, zval *zvalue,
   }
 
   if (Z_TYPE_P(zvalue) == IS_ARRAY) {
-    char *idx = sp_convert_to_string(idx_value);
-    zval *ret = get_entry_hashtable(Z_ARRVAL_P(zvalue), idx, strlen(idx));
-    efree(idx);
+    const zend_string* idx = sp_convert_to_string(idx_value);
+    zval *ret = get_entry_hashtable(Z_ARRVAL_P(zvalue), ZSTR_VAL(idx), ZSTR_LEN(idx));
     return ret;
   }
 

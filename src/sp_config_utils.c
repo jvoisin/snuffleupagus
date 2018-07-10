@@ -32,18 +32,19 @@ int parse_keywords(sp_config_functions *funcs, char *line) {
   return 0;
 }
 
-char *get_param(size_t *consumed, char *restrict line, sp_type type,
+zend_string *get_param(size_t *consumed, char *restrict line, sp_type type,
                 const char *restrict keyword) {
+  // TODO unused parameter type, keyword
   enum { IN_ESCAPE, NONE } state = NONE;
   char *original_line = line;
   size_t j = 0;
 
-  char *ret = NULL;
+  zend_string *ret = NULL;
   if (NULL == line || '\0' == *line) {
     goto err;
   }
 
-  ret = pecalloc(sizeof(char), strlen(original_line) + 1, 1);
+  ret = zend_string_alloc(strlen(line) + 1, 1);
 
   /* The first char of a string is always '"', since they MUST be quoted. */
   if ('"' == *line) {
@@ -65,7 +66,13 @@ char *get_param(size_t *consumed, char *restrict line, sp_type type,
            2. the SP_TOKEN_END_PARAM
            */
           *consumed = i + 2;
-          return ret;
+          zend_string* tmp = zend_string_truncate(ret, j, 1);
+          if (tmp != ret) {
+            pefree(ret, 1);
+          }
+          // truncate does not add a \0
+          ZSTR_VAL(tmp)[ZSTR_LEN(tmp)] = 0;
+          return tmp;
         } else if (state == IN_ESCAPE) {
           break;  // we're on an escped double quote
         } else {
@@ -82,7 +89,7 @@ char *get_param(size_t *consumed, char *restrict line, sp_type type,
     if (state == IN_ESCAPE) {
       state = NONE;
     }
-    ret[j++] = line[i];
+    ZSTR_VAL(ret)[j++] = line[i];
   }
 err:
   if (0 == j) {

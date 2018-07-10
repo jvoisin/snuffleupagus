@@ -36,7 +36,7 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   }
 }
 
-inline static void is_builtin_matching(const char *restrict const filename,
+inline static void is_builtin_matching(const zend_string *restrict const param_value,
                                        const char *restrict const function_name,
                                        const char *restrict const param_name,
                                        const sp_list_node *config) {
@@ -44,7 +44,7 @@ inline static void is_builtin_matching(const char *restrict const filename,
     return;
   }
 
-  if (true == should_disable_ht(EG(current_execute_data), function_name, filename,
+  if (true == should_disable_ht(EG(current_execute_data), function_name, param_value,
                              param_name, SNUFFLEUPAGUS_G(config)
                              .config_disabled_functions_reg->disabled_functions,
                              SNUFFLEUPAGUS_G(config).config_disabled_functions)) {
@@ -72,7 +72,7 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
     return;
   }
 
-  char const *const current_function = ZSTR_VAL(EX(func)->common.function_name);
+  zend_string const *const current_function = EX(func)->common.function_name;
 
   if (EXPECTED(NULL != current_function)) {
     if (UNEXPECTED(false == check_is_in_eval_whitelist(current_function))) {
@@ -86,13 +86,13 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
         sp_log_msg(
             "Eval_whitelist", SP_LOG_SIMULATION,
             "The function '%s' isn't in the eval whitelist, logging its call.",
-            current_function);
+            ZSTR_VAL(current_function));
         return;
       } else {
         sp_log_msg(
             "Eval_whitelist", SP_LOG_DROP,
             "The function '%s' isn't in the eval whitelist, dropping its call.",
-            current_function);
+            ZSTR_VAL(current_function));
         sp_terminate();
       }
     }
@@ -102,15 +102,16 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
 /* This function gets the filename in which `eval()` is called from,
  * since it looks like "foo.php(1) : eval()'d code", so we're starting
  * from the end of the string until the second closing parenthesis. */
-char *get_eval_filename(const char *const filename) {
-  size_t i = strlen(filename);
+zend_string *get_eval_filename(const char *const filename) {
   int count = 0;
-  char *clean_filename = estrdup(filename);
+  zend_string *clean_filename = zend_string_init(filename, strlen(filename), 0);
 
-  while (i--) {
-    if (clean_filename[i] == '(') {
+  // TODO maight cause some problem, might need to adjust length
+  for (int i = ZSTR_LEN(clean_filename); i >= 0; i--) {
+    if (ZSTR_VAL(clean_filename)[i] == '(') {
       if (count == 1) {
-        clean_filename[i] = '\0';
+        ZSTR_VAL(clean_filename)[i] = '\0';
+        clean_filename = zend_string_truncate(clean_filename, i, 0);
         break;
       }
       count++;
@@ -129,9 +130,9 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
     const sp_list_node *config = zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
         .config_disabled_functions, "eval", 4);
-    char *filename = get_eval_filename((char *)zend_get_executed_filename());
+    zend_string *filename = get_eval_filename(zend_get_executed_filename());
     is_builtin_matching(filename, "eval", NULL, config);
-    efree(filename);
+    zend_string_release(filename);
 
     SNUFFLEUPAGUS_G(in_eval)++;
     orig_execute_ex(execute_data);
@@ -195,6 +196,7 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
     goto end;
   }
 
+  zend_string* zend_filename = zend_string_init(filename, strlen(filename), 0);
   switch (data->opline->opcode) {
     case ZEND_INCLUDE_OR_EVAL:
       if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
@@ -202,28 +204,29 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
       }
       switch (data->opline->extended_value) {
         case ZEND_INCLUDE:
-          is_builtin_matching(filename, "include", "inclusion path",
+          is_builtin_matching(zend_filename, "include", "inclusion path",
               zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
                 .config_disabled_functions, "include", 7));
           break;
         case ZEND_REQUIRE:
-          is_builtin_matching(filename, "require", "inclusion path",
+          is_builtin_matching(zend_filename, "require", "inclusion path",
               zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
                 .config_disabled_functions, "require", 7));
           break;
         case ZEND_REQUIRE_ONCE:
-          is_builtin_matching(filename, "require_once", "inclusion path",
+          is_builtin_matching(zend_filename, "require_once", "inclusion path",
               zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
                 .config_disabled_functions, "require_once", 12));
           break;
         case ZEND_INCLUDE_ONCE:
-          is_builtin_matching(filename, "include_once", "inclusion path",
+          is_builtin_matching(zend_filename, "include_once", "inclusion path",
               zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
                 .config_disabled_functions, "include_once", 12));
           break;
           EMPTY_SWITCH_DEFAULT_CASE();
       }
   }
+  efree(zend_filename);
 
 end:
   return orig_zend_stream_open(filename, handle);

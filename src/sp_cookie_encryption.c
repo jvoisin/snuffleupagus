@@ -4,8 +4,8 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-static inline const sp_cookie *sp_lookup_cookie_config(const char *key) {
-  sp_list_node *it = SNUFFLEUPAGUS_G(config).config_cookie->cookies;
+static inline const sp_cookie *sp_lookup_cookie_config(const zend_string *key) {
+  const sp_list_node *it = SNUFFLEUPAGUS_G(config).config_cookie->cookies;
 
   while (it) {
     const sp_cookie *config = it->data;
@@ -20,7 +20,8 @@ static inline const sp_cookie *sp_lookup_cookie_config(const char *key) {
 /* called at RINIT time with each cookie, eventually decrypt said cookie */
 int decrypt_cookie(zval *pDest, int num_args, va_list args,
                    zend_hash_key *hash_key) {
-  const sp_cookie *cookie = sp_lookup_cookie_config(ZSTR_VAL(hash_key->key));
+  const sp_cookie *cookie = sp_lookup_cookie_config(hash_key->key);
+  // TODO: num_args unused ?
 
   /* If the cookie isn't in the conf, it shouldn't be encrypted. */
   if (!cookie || !cookie->encrypt) {
@@ -35,9 +36,9 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
   return decrypt_zval(pDest, cookie->simulation, hash_key);
 }
 
-static zend_string *encrypt_data(char *data, unsigned long long data_len) {
-  zend_string *z = encrypt_zval(data, data_len);
-  sp_log_debug("cookie_encryption", "Cookie value:%s:", z->val);
+static zend_string *encrypt_data(zend_string* data) {
+  zend_string *z = encrypt_zval(data);
+  sp_log_debug("cookie_encryption", "Cookie value:%s:", ZSTR_VAL(z));
   return z;
 }
 
@@ -77,7 +78,7 @@ PHP_FUNCTION(sp_setcookie) {
   }
 
   /* lookup existing configuration for said cookie */
-  cookie_node = sp_lookup_cookie_config(ZSTR_VAL(name));
+  cookie_node = sp_lookup_cookie_config(name);
 
   /* If the cookie's value is encrypted, it won't be usable by
    * javascript anyway.
@@ -88,7 +89,7 @@ PHP_FUNCTION(sp_setcookie) {
 
   /* Shall we encrypt the cookie's value? */
   if (cookie_node && cookie_node->encrypt && value) {
-    zend_string *encrypted_data = encrypt_data(value->val, value->len);
+    zend_string *encrypted_data = encrypt_data(value);
     ZVAL_STR_COPY(&params[1], encrypted_data);
     zend_string_release(encrypted_data);
   } else if (value) {

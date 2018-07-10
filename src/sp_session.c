@@ -51,7 +51,7 @@ static int sp_hook_s_read(PS_READ_ARGS) {
 
 static int sp_hook_s_write(PS_WRITE_ARGS) {
   if (ZSTR_LEN(val) > 0 && SNUFFLEUPAGUS_G(config).config_session->encrypt) {
-    zend_string *new_val = encrypt_zval(ZSTR_VAL(val), ZSTR_LEN(val));
+    zend_string *new_val = encrypt_zval(val);
     return old_s_write(mod_data, key, new_val, maxlifetime);
   }
   return old_s_write(mod_data, key, val, maxlifetime);

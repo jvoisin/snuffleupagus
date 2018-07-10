@@ -38,15 +38,15 @@ typedef struct {
 } sp_cidr;
 
 typedef struct {
-  char *encryption_key;
-  char *cookies_env_var;
+  zend_string *encryption_key;
+  zend_string *cookies_env_var;
 } sp_config_global;
 
 typedef struct {
   bool enable;
   bool simulation;
-  char *dump;
-  char *textual_representation;
+  zend_string *dump;
+  zend_string *textual_representation;
 } sp_config_readonly_exec;
 
 typedef struct { bool enable; } sp_config_global_strict;
@@ -62,7 +62,7 @@ typedef struct { bool enable; } sp_config_disable_xxe;
 typedef struct {
   enum samesite_type { strict = 1, lax = 2 } samesite;
   bool encrypt;
-  char *name;
+  zend_string *name;
   sp_pcre *name_r;
   bool simulation;
 } sp_cookie;
@@ -75,21 +75,21 @@ typedef struct {
 typedef struct {
   bool enable;
   bool simulation;
-  char *dump;
-  char *textual_representation;
+  zend_string *dump;
+  zend_string *textual_representation;
 } sp_config_unserialize;
 
 typedef struct {
-  char *textual_representation;
+  zend_string *textual_representation;
 
-  char *filename;
+  zend_string *filename;
   sp_pcre *r_filename;
 
-  char *function;
+  zend_string *function;
   sp_pcre *r_function;
   sp_list_node *functions_list;
 
-  char *hash;
+  zend_string *hash;
   int simulation;
 
   sp_tree *param;
@@ -98,18 +98,18 @@ typedef struct {
   int pos;
   unsigned int line;
 
-  char *ret;
   sp_pcre *r_ret;
+  zend_string *ret;
   sp_php_type ret_type;
 
-  sp_pcre *value_r;
-  char *value;
+  sp_pcre *r_value;
+  zend_string *value;
 
   sp_pcre *r_key;
-  char *key;
+  zend_string *key;
 
-  char *dump;
-  char *alias;
+  zend_string *dump;
+  zend_string *alias;
   bool param_is_array;
   bool var_is_array;
   sp_list_node *param_array_keys;
@@ -126,8 +126,8 @@ typedef struct {
   sp_list_node *blacklist;
   sp_list_node *whitelist;
   bool simulation;
-  char *dump;
-  char *textual_representation;
+  zend_string *dump;
+  zend_string *textual_representation;
 } sp_config_eval;
 
 typedef struct {
@@ -139,7 +139,7 @@ typedef struct {
 } sp_config_cookie;
 
 typedef struct {
-  char *script;
+  zend_string *script;
   bool simulation;
   bool enable;
 } sp_config_upload_validation;
