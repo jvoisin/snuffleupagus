@@ -278,7 +278,7 @@ int parse_cookie(char *line) {
   return SUCCESS;
 }
 
-int add_to_hashtable(HashTable* ht, sp_disabled_function* df) {
+int add_df_to_hashtable(HashTable* ht, sp_disabled_function* df) {
   zval* list = zend_hash_find(ht, df->function);
 
   if (NULL == list) {
@@ -404,7 +404,7 @@ int parse_disabled_functions(char *line) {
     errno = 0;
     char *endptr;
     df->pos = (int)strtol(ZSTR_VAL(pos), &endptr, 10);
-    if (errno != 0 || endptr == (void*)ZSTR_VAL(pos)) {
+    if (errno != 0 || endptr == ZSTR_VAL(pos)) {
       sp_log_err("config", "Failed to parse arg '%s' of `pos` on line %zu.",
                  ZSTR_VAL(pos), sp_line_no);
       return -1;
@@ -415,7 +415,7 @@ int parse_disabled_functions(char *line) {
     errno = 0;
     char *endptr;
     df->line = (unsigned int)strtoul(ZSTR_VAL(line_number), &endptr, 10);
-    if (errno != 0 || endptr == (void*)ZSTR_VAL(line_number)) {
+    if (errno != 0 || endptr == ZSTR_VAL(line_number)) {
       sp_log_err("config", "Failed to parse arg '%s' of `line` on line %zu.",
                  ZSTR_VAL(line_number), sp_line_no);
       return -1;
@@ -468,10 +468,10 @@ int parse_disabled_functions(char *line) {
 
   if (df->function && !df->functions_list) {
     if (df->ret || df->r_ret || df->ret_type) {
-      add_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
+      add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
           df);
     } else {
-      add_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions, df);
+      add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions, df);
     }
   } else {
     if (df->ret || df->r_ret || df->ret_type) {

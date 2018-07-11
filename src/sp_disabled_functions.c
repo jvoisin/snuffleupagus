@@ -544,15 +544,15 @@ static int hook_functions_regexp(const sp_list_node* config) {
   return SUCCESS;
 }
 
-static int hook_functions(HashTable* src_ht, HashTable* dst_ht) {
+static int hook_functions(HashTable* to_hook_ht, HashTable* hooked_ht) {
   zend_string* key;
   zval* value;
 
-  ZEND_HASH_FOREACH_STR_KEY_VAL(src_ht, key, value) {
+  ZEND_HASH_FOREACH_STR_KEY_VAL(to_hook_ht, key, value) {
     if (!HOOK_FUNCTION(ZSTR_VAL(key), disabled_functions_hook,
           PHP_FN(check_disabled_function))) {
-      zend_symtable_add_new(dst_ht, key, value);
-      zend_hash_del(src_ht, key);
+      zend_symtable_add_new(hooked_ht, key, value);
+      zend_hash_del(to_hook_ht, key);
     }
   }
   ZEND_HASH_FOREACH_END();

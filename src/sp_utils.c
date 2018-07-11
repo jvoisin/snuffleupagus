@@ -19,6 +19,13 @@ static inline void _sp_log_err(const char* fmt, ...) {
   php_log_err(msg);
 }
 
+static bool sp_zend_string_equals(const zend_string* s1, const zend_string* s2) {
+  // is almost the same as zend_string_equals except that it doesn't
+  // compare s1 == s2 and have const parameters
+  return ZSTR_LEN(s1) == ZSTR_LEN(s2) &&
+    !memcmp(ZSTR_VAL(s1), ZSTR_VAL(s2), ZSTR_LEN(s1));
+}
+
 void sp_log_msg(char const* feature, char const* level, const char* fmt, ...) {
   char* msg;
   va_list args;
@@ -182,8 +189,7 @@ const zend_string* sp_convert_to_string(zval* zv) {
 bool sp_match_value(const zend_string* value, const zend_string* to_match,
                     const sp_pcre* rx) {
   if (to_match) {
-    // zend_string_equals(zend_string*, zend_string*); no const :(
-    if (zend_string_equals((void*)to_match, (void*)value)) {
+    if (sp_zend_string_equals(to_match, value)) {
       return true;
     }
   } else if (rx) {
@@ -389,8 +395,7 @@ bool check_is_in_eval_whitelist(const zend_string* const function_name) {
   /* yes, we could use a HashTable instead, but since the list is pretty
    * small, it doesn't maka a difference in practise. */
   while (it && it->data) {
-    // no const in zend_string_equals :(
-    if (zend_string_equals((void *)function_name, (zend_string*)(it->data))) {
+    if (sp_zend_string_equals(function_name, (const zend_string*)(it->data))) {
       /* We've got a match, the function is whiteslited. */
       return true;
     }
