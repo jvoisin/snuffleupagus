@@ -157,6 +157,7 @@ typedef struct {
   sp_config_disable_xxe *config_disable_xxe;
   sp_config_eval *config_eval;
   sp_config_session *config_session;
+  bool hook_execute;
 
   HashTable *config_disabled_functions;
   HashTable *config_disabled_functions_hooked;

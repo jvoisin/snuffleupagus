@@ -139,41 +139,45 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
     return;
   }
 
-  if (!execute_data->prev_execute_data ||
-      !execute_data->prev_execute_data->func ||
-      !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
-      !execute_data->prev_execute_data->opline) {
-    if (UNEXPECTED(true == should_disable_ht(execute_data, NULL, NULL, NULL,
-            SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
-            SNUFFLEUPAGUS_G(config).config_disabled_functions))) {
-      sp_terminate();
-    }
-  } else if ((execute_data->prev_execute_data->opline->opcode ==
-                  ZEND_DO_FCALL ||
-              execute_data->prev_execute_data->opline->opcode ==
-                  ZEND_DO_UCALL ||
-              execute_data->prev_execute_data->opline->opcode ==
-                  ZEND_DO_FCALL_BY_NAME)) {
-    if (UNEXPECTED(true == should_disable_ht(execute_data, NULL, NULL, NULL,
-            SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
-            SNUFFLEUPAGUS_G(config).config_disabled_functions))) {
-      sp_terminate();
-    }
-  }
-
   if (NULL != EX(func)->op_array.filename) {
     if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
       terminate_if_writable(ZSTR_VAL(EX(func)->op_array.filename));
     }
   }
 
-  orig_execute_ex(execute_data);
+  if (SNUFFLEUPAGUS_G(config).hook_execute) {
+    if (!execute_data->prev_execute_data ||
+        !execute_data->prev_execute_data->func ||
+        !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
+        !execute_data->prev_execute_data->opline) {
+      if (UNEXPECTED(true == should_disable_ht(execute_data, NULL, NULL, NULL,
+              SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
+              SNUFFLEUPAGUS_G(config).config_disabled_functions))) {
+        sp_terminate();
+      }
+    } else if ((execute_data->prev_execute_data->opline->opcode ==
+          ZEND_DO_FCALL ||
+          execute_data->prev_execute_data->opline->opcode ==
+          ZEND_DO_UCALL ||
+          execute_data->prev_execute_data->opline->opcode ==
+          ZEND_DO_FCALL_BY_NAME)) {
+      if (UNEXPECTED(true == should_disable_ht(execute_data, NULL, NULL, NULL,
+              SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
+              SNUFFLEUPAGUS_G(config).config_disabled_functions))) {
+        sp_terminate();
+      }
+    }
 
-  if (UNEXPECTED(true == should_drop_on_ret_ht(EX(return_value), execute_data,
-          SNUFFLEUPAGUS_G(config).config_disabled_functions_reg_ret
-          ->disabled_functions,
-          SNUFFLEUPAGUS_G(config).config_disabled_functions_ret))) {
-    sp_terminate();
+    orig_execute_ex(execute_data);
+
+    if (UNEXPECTED(true == should_drop_on_ret_ht(EX(return_value), execute_data,
+            SNUFFLEUPAGUS_G(config).config_disabled_functions_reg_ret
+            ->disabled_functions,
+            SNUFFLEUPAGUS_G(config).config_disabled_functions_ret))) {
+      sp_terminate();
+    }
+  } else {
+    orig_execute_ex(execute_data);
   }
 }
 

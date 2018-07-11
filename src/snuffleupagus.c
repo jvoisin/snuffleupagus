@@ -262,6 +262,12 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     CG(compiler_options) |= ZEND_COMPILE_HANDLE_OP_ARRAY;
   }
 
+  SNUFFLEUPAGUS_G(config).hook_execute =
+    SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions ||
+    SNUFFLEUPAGUS_G(config).config_disabled_functions_reg_ret->disabled_functions ||
+    zend_hash_num_elements(SNUFFLEUPAGUS_G(config).config_disabled_functions) ||
+    zend_hash_num_elements(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret);
+
   return SUCCESS;
 }
 
