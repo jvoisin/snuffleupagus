@@ -293,7 +293,6 @@ bool sp_match_array_key(const zval* zv, const zend_string* to_match,
         return true;
       }
     } else {
-      // TODO find something else
       char* idx_str = NULL;
       spprintf(&idx_str, 0, "%lu", idx);
       zend_string* tmp = zend_string_init(idx_str, strlen(idx_str), 0);

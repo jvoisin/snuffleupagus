@@ -34,7 +34,6 @@ int parse_keywords(sp_config_functions *funcs, char *line) {
 
 zend_string *get_param(size_t *consumed, char *restrict line, sp_type type,
                 const char *restrict keyword) {
-  // TODO unused parameter type, keyword
   enum { IN_ESCAPE, NONE } state = NONE;
   char *original_line = line;
   size_t j = 0;

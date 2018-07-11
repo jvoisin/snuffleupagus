@@ -21,7 +21,6 @@ static inline const sp_cookie *sp_lookup_cookie_config(const zend_string *key) {
 int decrypt_cookie(zval *pDest, int num_args, va_list args,
                    zend_hash_key *hash_key) {
   const sp_cookie *cookie = sp_lookup_cookie_config(hash_key->key);
-  // TODO: num_args unused ?
 
   /* If the cookie isn't in the conf, it shouldn't be encrypted. */
   if (!cookie || !cookie->encrypt) {
