@@ -277,7 +277,7 @@ bool should_disable_ht(zend_execute_data* execute_data, const char* builtin_name
   ht_entry = zend_hash_str_find_ptr(ht, complete_function_path,
       strlen(complete_function_path));
 
-  if (ht_entry && ht_entry->data
+  if (ht_entry
       && should_disable(execute_data, complete_function_path,
         builtin_param, builtin_param_name, ht_entry, current_filename)) {
     ret = true;
@@ -423,7 +423,7 @@ bool should_drop_on_ret_ht(zval* return_value,
   ht_entry = zend_hash_str_find_ptr(ht, complete_function_path,
       strlen(complete_function_path));
 
-  if (ht_entry && ht_entry->data
+  if (ht_entry
       && should_drop_on_ret(return_value, ht_entry, complete_function_path)) {
     ret = true;
   } else if (config && config->data) {
