@@ -106,7 +106,6 @@ zend_string *get_eval_filename(const char *const filename) {
   int count = 0;
   zend_string *clean_filename = zend_string_init(filename, strlen(filename), 0);
 
-  // TODO maight cause some problem, might need to adjust length
   for (int i = ZSTR_LEN(clean_filename); i >= 0; i--) {
     if (ZSTR_VAL(clean_filename)[i] == '(') {
       if (count == 1) {

@@ -66,6 +66,8 @@ zend_string *get_param(size_t *consumed, char *restrict line, sp_type type,
            2. the SP_TOKEN_END_PARAM
            */
           *consumed = i + 2;
+          // Make sure that the string we return is the right size,
+          // as it can be smaller than strlen(line)
           zend_string* tmp = zend_string_truncate(ret, j, 1);
           if (tmp != ret) {
             pefree(ret, 1);
