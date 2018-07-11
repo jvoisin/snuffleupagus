@@ -46,13 +46,13 @@ Warning: rand() expects exactly 2 parameters, 3 given in %s/tests/harden_rand_no
 
 Warning: mt_rand() expects exactly 2 parameters, 3 given in %s/tests/harden_rand_noargs.php on line %d
 
-Warning: rand() expects parameter 1 to be integer, string given in %s/tests/harden_rand_noargs.php on line %d
+Warning: rand() expects parameter 1 to be in%s, string given in %s/tests/harden_rand_noargs.php on line %d
 
-Warning: mt_rand() expects parameter 1 to be integer, string given in %s/tests/harden_rand_noargs.php on line %d
+Warning: mt_rand() expects parameter 1 to be in%s, string given in %s/tests/harden_rand_noargs.php on line %d
 
-Warning: rand() expects parameter 2 to be integer, string given in %s/tests/harden_rand_noargs.php on line %d
+Warning: rand() expects parameter 2 to be in%s, string given in %s/tests/harden_rand_noargs.php on line %d
 
-Warning: mt_rand() expects parameter 2 to be integer, string given in %s/tests/harden_rand_noargs.php on line %d
+Warning: mt_rand() expects parameter 2 to be in%s, string given in %s/tests/harden_rand_noargs.php on line %d
 
 Warning: rand() expects exactly 2 parameters, 3 given in %s/tests/harden_rand_noargs.php on line %d
 
