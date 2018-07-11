@@ -137,7 +137,8 @@ int sp_log_request(const zend_string* folder, const zend_string* text_repr, char
   return 0;
 }
 
-static char* zv_str_to_char(const zend_string* zs) {
+static char* zend_string_to_char(const zend_string* zs) {
+  // Remove \0 from the middle of a string
   char* copy = emalloc(ZSTR_LEN(zs) + 1);
 
   copy[ZSTR_LEN(zs)] = 0;
@@ -193,7 +194,7 @@ bool sp_match_value(const zend_string* value, const zend_string* to_match,
       return true;
     }
   } else if (rx) {
-    char* tmp = zv_str_to_char(value);
+    char* tmp = zend_string_to_char(value);
     bool ret = sp_is_regexp_matching(rx, tmp);
     efree(tmp);
     return ret;
@@ -217,7 +218,7 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
   if (arg_name) {
     char *tmp = NULL;
     if (arg_value) {
-      tmp = zv_str_to_char(arg_value);
+      tmp = zend_string_to_char(arg_value);
     }
     if (alias) {
       sp_log_msg(
@@ -259,7 +260,7 @@ void sp_log_disable_ret(const char* restrict path,
   char *tmp = NULL;
 
   if (ret_value) {
-    tmp = zv_str_to_char(ret_value);
+    tmp = zend_string_to_char(ret_value);
   }
   if (alias) {
     sp_log_msg(

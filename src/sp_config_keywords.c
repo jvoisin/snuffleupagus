@@ -166,7 +166,7 @@ int parse_global(char *line) {
 
 static int parse_eval_filter_conf(char *line, sp_list_node **list) {
   char *token, *tmp;
-  zend_string *rest;
+  zend_string *rest = NULL;
   sp_config_eval *eval = SNUFFLEUPAGUS_G(config).config_eval;
 
   sp_config_functions sp_config_funcs[] = {
@@ -186,6 +186,9 @@ static int parse_eval_filter_conf(char *line, sp_list_node **list) {
   tmp = ZSTR_VAL(rest);
   while ((token = strtok_r(tmp, ",", &tmp))) {
     *list = sp_list_insert(*list, zend_string_init(token, strlen(token), 1));
+  }
+  if (rest != NULL) {
+    pefree(rest, 1);
   }
   return SUCCESS;
 }
