@@ -131,14 +131,17 @@ int sp_log_request(const zend_string* folder, const zend_string* text_repr, char
 }
 
 static char* zv_str_to_char(const zend_string* zs) {
-  zend_string* copy = zend_string_init(ZSTR_VAL(zs), ZSTR_LEN(zs), 0);
+  char* copy = emalloc(ZSTR_LEN(zs) + 1);
 
-  for (size_t i = 0; i < ZSTR_LEN(copy); i++) {
-    if (ZSTR_VAL(copy)[i] == '\0') {
-      ZSTR_VAL(copy)[i] = '0';
+  copy[ZSTR_LEN(zs)] = 0;
+  for (size_t i = 0; i < ZSTR_LEN(zs); i++) {
+    if (ZSTR_VAL(zs)[i] == '\0') {
+      copy[i] = '0';
+    } else {
+      copy[i] = ZSTR_VAL(zs)[i];
     }
   }
-  return estrdup(ZSTR_VAL(copy));
+  return copy;
 }
 
 const zend_string* sp_convert_to_string(zval* zv) {
@@ -287,7 +290,7 @@ bool sp_match_array_key(const zval* zv, const zend_string* to_match,
       // TODO find something else
       char* idx_str = NULL;
       spprintf(&idx_str, 0, "%lu", idx);
-      zend_string* tmp = zend_string_init(idx_str, strlen(idx_str), 1);
+      zend_string* tmp = zend_string_init(idx_str, strlen(idx_str), 0);
       if (sp_match_value(tmp, to_match, rx)) {
         efree(idx_str);
         return true;
