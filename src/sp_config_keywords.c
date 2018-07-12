@@ -136,7 +136,8 @@ int parse_readonly_exec(char *line) {
       {parse_str, SP_TOKEN_DUMP, &(readonly_exec->dump)},
       {0}};
 
-  readonly_exec->textual_representation = zend_string_init(line, strlen(line), 1);
+  readonly_exec->textual_representation =
+      zend_string_init(line, strlen(line), 1);
   int ret = parse_keywords(sp_config_funcs, line);
 
   if (0 != ret) {
@@ -264,7 +265,8 @@ int parse_cookie(char *line) {
   if (samesite) {
     if (zend_string_equals_literal_ci(samesite, SP_TOKEN_SAMESITE_LAX)) {
       cookie->samesite = lax;
-    } else if (zend_string_equals_literal_ci(samesite, SP_TOKEN_SAMESITE_STRICT)) {
+    } else if (zend_string_equals_literal_ci(samesite,
+                                             SP_TOKEN_SAMESITE_STRICT)) {
       cookie->samesite = strict;
     } else {
       sp_log_err(
@@ -281,8 +283,8 @@ int parse_cookie(char *line) {
   return SUCCESS;
 }
 
-int add_df_to_hashtable(HashTable* ht, sp_disabled_function* df) {
-  zval* list = zend_hash_find(ht, df->function);
+int add_df_to_hashtable(HashTable *ht, sp_disabled_function *df) {
+  zval *list = zend_hash_find(ht, df->function);
 
   if (NULL == list) {
     zend_hash_add_ptr(ht, df->function, sp_list_insert(NULL, df));
@@ -377,7 +379,8 @@ int parse_disabled_functions(char *line) {
                "`ret` and `var` are mutually exclusive on line %zu.",
                line, sp_line_no);
     return -1;
-  } else if ((df->r_ret || df->ret || df->ret_type) && (df->value || df->r_value)) {
+  } else if ((df->r_ret || df->ret || df->ret_type) &&
+             (df->value || df->r_value)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                "`ret` and `value` are mutually exclusive on line %zu.",
@@ -446,7 +449,7 @@ int parse_disabled_functions(char *line) {
     }
     if (!df->param) {
       sp_log_err("config", "Invalid value '%s' for `param` on line %zu.",
-          ZSTR_VAL(param), sp_line_no);
+                 ZSTR_VAL(param), sp_line_no);
       return -1;
     }
   }
@@ -472,21 +475,25 @@ int parse_disabled_functions(char *line) {
   if (df->function && !df->functions_list) {
     if (df->ret || df->r_ret || df->ret_type) {
       add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
-          df);
+                          df);
     } else {
-      add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions, df);
+      add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions,
+                          df);
     }
   } else {
     if (df->ret || df->r_ret || df->ret_type) {
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg_ret->disabled_functions =
-        sp_list_insert(SNUFFLEUPAGUS_G(config)
-            .config_disabled_functions_reg_ret->disabled_functions,
-            df);
+      SNUFFLEUPAGUS_G(config)
+          .config_disabled_functions_reg_ret->disabled_functions =
+          sp_list_insert(
+              SNUFFLEUPAGUS_G(config)
+                  .config_disabled_functions_reg_ret->disabled_functions,
+              df);
     } else {
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions =
-        sp_list_insert(SNUFFLEUPAGUS_G(config)
-            .config_disabled_functions_reg->disabled_functions,
-            df);
+      SNUFFLEUPAGUS_G(config)
+          .config_disabled_functions_reg->disabled_functions =
+          sp_list_insert(SNUFFLEUPAGUS_G(config)
+                             .config_disabled_functions_reg->disabled_functions,
+                         df);
     }
   }
   return ret;
@@ -516,7 +523,8 @@ int parse_upload_validation(char *line) {
   }
   SNUFFLEUPAGUS_G(config).config_upload_validation->enable = enable;
 
-  zend_string const *script = SNUFFLEUPAGUS_G(config).config_upload_validation->script;
+  zend_string const *script =
+      SNUFFLEUPAGUS_G(config).config_upload_validation->script;
 
   if (!script) {
     sp_log_err("config",
@@ -524,8 +532,8 @@ int parse_upload_validation(char *line) {
                sp_line_no);
     return -1;
   } else if (-1 == access(ZSTR_VAL(script), F_OK)) {
-    sp_log_err("config", "The `script` (%s) doesn't exist on line %zu.", ZSTR_VAL(script),
-               sp_line_no);
+    sp_log_err("config", "The `script` (%s) doesn't exist on line %zu.",
+               ZSTR_VAL(script), sp_line_no);
     return -1;
   } else if (-1 == access(ZSTR_VAL(script), X_OK)) {
     sp_log_err("config", "The `script` (%s) isn't executable on line %zu.",

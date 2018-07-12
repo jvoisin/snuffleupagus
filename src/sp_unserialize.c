@@ -18,8 +18,9 @@ PHP_FUNCTION(sp_serialize) {
   ZVAL_STRING(&func_name, "hash_hmac");
   ZVAL_STRING(&params[0], "sha256");
   params[1] = *return_value;
-  ZVAL_STRING(&params[2],
-              ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key));
+  ZVAL_STRING(
+      &params[2],
+      ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key));
   call_user_function(CG(function_table), NULL, &func_name, &hmac, 3, params);
 
   size_t len = Z_STRLEN_P(return_value) + Z_STRLEN(hmac);
@@ -66,8 +67,9 @@ PHP_FUNCTION(sp_unserialize) {
   zval params[3];
   ZVAL_STRING(&params[0], "sha256");
   ZVAL_STRING(&params[1], serialized_str);
-  ZVAL_STRING(&params[2],
-              ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key));
+  ZVAL_STRING(
+      &params[2],
+      ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key));
   call_user_function(CG(function_table), NULL, &func_name, &expected_hmac, 3,
                      params);
 

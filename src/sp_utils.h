@@ -44,7 +44,7 @@
 
 void sp_log_msg(char const *feature, char const *level, const char *fmt, ...);
 int compute_hash(const char *const filename, char *file_hash);
-const zend_string* sp_convert_to_string(zval *);
+const zend_string* sp_zval_to_zend_string(zval *);
 bool sp_match_value(const zend_string *, const zend_string *, const sp_pcre *);
 bool sp_match_array_key(const zval *, const zend_string *, const sp_pcre *);
 bool sp_match_array_value(const zval *, const zend_string *, const sp_pcre *);

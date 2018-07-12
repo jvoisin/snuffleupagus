@@ -19,11 +19,12 @@ static inline void _sp_log_err(const char* fmt, ...) {
   php_log_err(msg);
 }
 
-static bool sp_zend_string_equals(const zend_string* s1, const zend_string* s2) {
-  // is almost the same as zend_string_equals except that it doesn't
-  // compare s1 == s2 and have const parameters
+static bool sp_zend_string_equals(const zend_string* s1,
+                                  const zend_string* s2) {
+  // We can't use `zend_string_equals` here because it doesn't work on
+  // `const` zend_string.
   return ZSTR_LEN(s1) == ZSTR_LEN(s2) &&
-    !memcmp(ZSTR_VAL(s1), ZSTR_VAL(s2), ZSTR_LEN(s1));
+         !memcmp(ZSTR_VAL(s1), ZSTR_VAL(s2), ZSTR_LEN(s1));
 }
 
 void sp_log_msg(char const* feature, char const* level, const char* fmt, ...) {
@@ -63,14 +64,15 @@ int compute_hash(const char* const filename, char* file_hash) {
   return SUCCESS;
 }
 
-static int construct_filename(char * filename, const zend_string* folder,
+static int construct_filename(char* filename, const zend_string* folder,
                               const zend_string* textual) {
   PHP_SHA256_CTX context;
   unsigned char digest[SHA256_SIZE] = {0};
   char strhash[65] = {0};
 
   if (-1 == mkdir(ZSTR_VAL(folder), 0700) && errno != EEXIST) {
-    sp_log_err("request_logging", "Unable to create the folder '%s'.", ZSTR_VAL(folder));
+    sp_log_err("request_logging", "Unable to create the folder '%s'.",
+               ZSTR_VAL(folder));
     return -1;
   }
 
@@ -78,7 +80,8 @@ static int construct_filename(char * filename, const zend_string* folder,
    * as filename, in order to only have one dump per rule, to migitate
    * DoS attacks. */
   PHP_SHA256Init(&context);
-  PHP_SHA256Update(&context, (const unsigned char*)ZSTR_VAL(textual), ZSTR_LEN(textual));
+  PHP_SHA256Update(&context, (const unsigned char*)ZSTR_VAL(textual),
+                   ZSTR_LEN(textual));
   PHP_SHA256Final(digest, &context);
   make_digest_ex(strhash, digest, SHA256_SIZE);
   snprintf(filename, PATH_MAX - 1, "%s/sp_dump.%s", ZSTR_VAL(folder), strhash);
@@ -86,7 +89,8 @@ static int construct_filename(char * filename, const zend_string* folder,
   return 0;
 }
 
-int sp_log_request(const zend_string* folder, const zend_string* text_repr, char* from) {
+int sp_log_request(const zend_string* folder, const zend_string* text_repr,
+                   char* from) {
   FILE* file;
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);
@@ -152,7 +156,7 @@ static char* zend_string_to_char(const zend_string* zs) {
   return copy;
 }
 
-const zend_string* sp_convert_to_string(zval* zv) {
+const zend_string* sp_zval_to_zend_string(zval* zv) {
   switch (Z_TYPE_P(zv)) {
     case IS_LONG: {
       char* msg;
@@ -190,9 +194,7 @@ const zend_string* sp_convert_to_string(zval* zv) {
 bool sp_match_value(const zend_string* value, const zend_string* to_match,
                     const sp_pcre* rx) {
   if (to_match) {
-    if (sp_zend_string_equals(to_match, value)) {
-      return true;
-    }
+    return (sp_zend_string_equals(to_match, value));
   } else if (rx) {
     char* tmp = zend_string_to_char(value);
     bool ret = sp_is_regexp_matching(rx, tmp);
@@ -205,7 +207,7 @@ bool sp_match_value(const zend_string* value, const zend_string* to_match,
 }
 
 void sp_log_disable(const char* restrict path, const char* restrict arg_name,
-                    const zend_string * restrict arg_value,
+                    const zend_string* restrict arg_value,
                     const sp_disabled_function* config_node, unsigned int line,
                     const char* restrict filename) {
   const zend_string* dump = config_node->dump;
@@ -216,23 +218,24 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
   line = line ? line : zend_get_executed_lineno(TSRMLS_C);
 
   if (arg_name) {
-    char *tmp = NULL;
+    char* char_repr = NULL;
     if (arg_value) {
-      tmp = zend_string_to_char(arg_value);
+      char_repr = zend_string_to_char(arg_value);
     }
     if (alias) {
       sp_log_msg(
           "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
           "Aborted execution on call of the function '%s' in %s:%d, "
           "because its argument '%s' content (%s) matched the rule '%s'.",
-          path, filename, line, arg_name, tmp ? tmp : "?", ZSTR_VAL(alias));
+          path, filename, line, arg_name, char_repr ? char_repr : "?",
+          ZSTR_VAL(alias));
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                  "Aborted execution on call of the function '%s' in %s:%d, "
                  "because its argument '%s' content (%s) matched a rule.",
-                 path, filename, line, arg_name, tmp ? tmp : "?");
+                 path, filename, line, arg_name, char_repr ? char_repr : "?");
     }
-    efree(tmp);
+    efree(char_repr);
   } else {
     if (alias) {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
@@ -257,10 +260,10 @@ void sp_log_disable_ret(const char* restrict path,
   const zend_string* dump = config_node->dump;
   const zend_string* alias = config_node->alias;
   const int sim = config_node->simulation;
-  char *tmp = NULL;
+  char* char_repr = NULL;
 
   if (ret_value) {
-    tmp = zend_string_to_char(ret_value);
+    char_repr = zend_string_to_char(ret_value);
   }
   if (alias) {
     sp_log_msg(
@@ -268,15 +271,16 @@ void sp_log_disable_ret(const char* restrict path,
         "Aborted execution on return of the function '%s' in %s:%d, "
         "because the function returned '%s', which matched the rule '%s'.",
         path, zend_get_executed_filename(TSRMLS_C),
-        zend_get_executed_lineno(TSRMLS_C), tmp ? tmp : "?", ZSTR_VAL(alias));
+        zend_get_executed_lineno(TSRMLS_C), char_repr ? char_repr : "?",
+        ZSTR_VAL(alias));
   } else {
     sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                "Aborted execution on return of the function '%s' in %s:%d, "
                "because the function returned '%s', which matched a rule.",
                path, zend_get_executed_filename(TSRMLS_C),
-               zend_get_executed_lineno(TSRMLS_C), tmp ? tmp : "?");
+               zend_get_executed_lineno(TSRMLS_C), char_repr ? char_repr : "?");
   }
-  efree(tmp);
+  efree(char_repr);
   if (dump) {
     sp_log_request(dump, config_node->textual_representation,
                    SP_TOKEN_DISABLE_FUNC);
@@ -314,7 +318,7 @@ bool sp_match_array_value(const zval* arr, const zend_string* to_match,
 
   ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(arr), value) {
     if (Z_TYPE_P(value) != IS_ARRAY) {
-      const zend_string* value_str = sp_convert_to_string(value);
+      const zend_string* value_str = sp_zval_to_zend_string(value);
       if (sp_match_value(value_str, to_match, rx)) {
         return true;
       } else {

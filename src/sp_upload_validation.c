@@ -41,12 +41,14 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
       char *cmd[3] = {0};
       char *env[5] = {0};
 
-      sp_log_debug("Filename: %s\nTmpname: %s\nSize: %d\nError: %d\nScript: %s",
-                   filename, tmp_name, filesize,
-                   Z_LVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "error", 5)),
-                   ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_upload_validation->script));
+      sp_log_debug(
+          "Filename: %s\nTmpname: %s\nSize: %d\nError: %d\nScript: %s",
+          filename, tmp_name, filesize,
+          Z_LVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "error", 5)),
+          ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_upload_validation->script));
 
-      cmd[0] = ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_upload_validation->script);
+      cmd[0] =
+          ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_upload_validation->script);
       cmd[1] = tmp_name;
       cmd[2] = NULL;
 
@@ -58,11 +60,15 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
       env[4] = NULL;
 
       if ((pid = fork()) == 0) {
-        if (execve(ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_upload_validation->script),
-                   cmd, env) == -1) {
-          sp_log_err("upload_validation", "Could not call '%s' : %s",
-                     ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_upload_validation->script),
-                     strerror(errno));
+        if (execve(
+                ZSTR_VAL(
+                    SNUFFLEUPAGUS_G(config).config_upload_validation->script),
+                cmd, env) == -1) {
+          sp_log_err(
+              "upload_validation", "Could not call '%s' : %s",
+              ZSTR_VAL(
+                  SNUFFLEUPAGUS_G(config).config_upload_validation->script),
+              strerror(errno));
           EFREE_3(env);
           exit(1);
         }
