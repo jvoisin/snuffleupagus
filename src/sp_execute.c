@@ -39,7 +39,8 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
 inline static void is_builtin_matching(const zend_string *restrict const param_value,
                                        const char *restrict const function_name,
                                        const char *restrict const param_name,
-                                       const sp_list_node *config) {
+                                       const sp_list_node *config,
+                                       const HashTable *ht) {
   if (!config || !config->data) {
     return;
   }
@@ -47,7 +48,7 @@ inline static void is_builtin_matching(const zend_string *restrict const param_v
   if (true == should_disable_ht(EG(current_execute_data), function_name, param_value,
                              param_name, SNUFFLEUPAGUS_G(config)
                              .config_disabled_functions_reg->disabled_functions,
-                             SNUFFLEUPAGUS_G(config).config_disabled_functions)) {
+                             ht)) {
     sp_terminate();
   }
 }
@@ -130,7 +131,8 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
     const sp_list_node *config = zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
         .config_disabled_functions, "eval", 4);
     zend_string *filename = get_eval_filename(zend_get_executed_filename());
-    is_builtin_matching(filename, "eval", NULL, config);
+    is_builtin_matching(filename, "eval", NULL, config,
+        SNUFFLEUPAGUS_G(config).config_disabled_functions);
     zend_string_release(filename);
 
     SNUFFLEUPAGUS_G(in_eval)++;
@@ -209,22 +211,26 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
         case ZEND_INCLUDE:
           is_builtin_matching(zend_filename, "include", "inclusion path",
               zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
-                .config_disabled_functions, "include", 7));
+                .config_disabled_functions_hooked, "include", 7),
+              SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
           break;
         case ZEND_REQUIRE:
           is_builtin_matching(zend_filename, "require", "inclusion path",
               zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
-                .config_disabled_functions, "require", 7));
+                .config_disabled_functions_hooked, "require", 7),
+              SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
           break;
         case ZEND_REQUIRE_ONCE:
           is_builtin_matching(zend_filename, "require_once", "inclusion path",
               zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
-                .config_disabled_functions, "require_once", 12));
+                .config_disabled_functions_hooked, "require_once", 12),
+              SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
           break;
         case ZEND_INCLUDE_ONCE:
           is_builtin_matching(zend_filename, "include_once", "inclusion path",
               zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(config)
-                .config_disabled_functions, "include_once", 12));
+                .config_disabled_functions_hooked, "include_once", 12),
+              SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
           break;
           EMPTY_SWITCH_DEFAULT_CASE();
       }

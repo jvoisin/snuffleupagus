@@ -67,13 +67,10 @@ zend_string *get_param(size_t *consumed, char *restrict line, sp_type type,
           *consumed = i + 2;
           // Make sure that the string we return is the right size,
           // as it can be smaller than strlen(line)
-          zend_string* tmp = zend_string_truncate(ret, j, 1);
-          if (tmp != ret) {
-            pefree(ret, 1);
-          }
+          ret = zend_string_truncate(ret, j, 1);
           // truncate does not add a \0
-          ZSTR_VAL(tmp)[ZSTR_LEN(tmp)] = 0;
-          return tmp;
+          ZSTR_VAL(ret)[ZSTR_LEN(ret)] = 0;
+          return ret;
         } else if (state == IN_ESCAPE) {
           break;  // we're on an escped double quote
         } else {

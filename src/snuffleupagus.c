@@ -116,6 +116,11 @@ PHP_MINIT_FUNCTION(snuffleupagus) {
 }
 
 PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked);
+
 #define FREE_HT(F)                       \
   zend_hash_destroy(SNUFFLEUPAGUS_G(F)); \
   pefree(SNUFFLEUPAGUS_G(F), 1);
@@ -153,11 +158,6 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   sp_list_free(SNUFFLEUPAGUS_G(config).config_eval->whitelist);
 
 #undef FREE_LST_DISABLE
-
-  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions);
-  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
-  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret);
-  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked);
 
   pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions_reg), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions_reg_ret), 1);
