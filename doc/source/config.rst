@@ -310,6 +310,9 @@ It's currently not possible to:
 - Hook on the return value of user-defined functions
 - Use extra-convoluted rules for matching, like ``${$A}$$B->${'}[1]``, because if you're writing
   things like this, odds are that you're doing something wrong anyway.
+- Hooks on ``print`` will be logged
+  (`for now<https://github.com/nbs-system/snuffleupagus/issues/190>`__) as hooks 
+  on ``echo`` because of how PHP implements its internals.
 
 
 Examples
