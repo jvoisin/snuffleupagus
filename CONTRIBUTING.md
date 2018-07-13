@@ -120,7 +120,8 @@ Any maintainer is allowed to merge a PR if all of these conditions are met.
 Maintainers need to do the following to push out a release:
 
 1. Make sure that all pending and mergeable pull requests are in
-2. Run `valgrind` and check that everything is ok
+2. Run `valgrind` (by adding a `-m` after the `-q` in the Makefile) and check that everything is ok.
+   Don't mind the python-related issues.
 3. Update the `src/php_snuffleupagus.h` file: drop the `-dev` suffix and check new version comply with [semantic versioning](https://semver.org/)
 4. Update the changelog page in the documentation
 5. Update the Debian changelog in `./debian/changelog` with `dch`
