@@ -472,6 +472,11 @@ int parse_disabled_functions(char *line) {
     return ret;
   }
 
+  if (df->function && zend_string_equals_literal(df->function, "print")) {
+    zend_string_release(df->function);
+    df->function = zend_string_init("echo", strlen("echo"), 1);
+  }
+
   if (df->function && !df->functions_list) {
     if (df->ret || df->r_ret || df->ret_type) {
       add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
