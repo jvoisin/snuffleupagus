@@ -7,8 +7,8 @@ ZEND_API zend_op_array* (*zend_compile_string_default)(zval* source_string,
 
 static void modify_opcode(zend_op_array* opline) {
   if (NULL != opline) {
-    zend_op* orig_opline = opline->opcodes;
-    for (; NULL != orig_opline->handler; orig_opline++) {
+    for (size_t i = 0; i < opline->last; i++) {
+      zend_op* orig_opline = &(opline->opcodes[i]);
       if (orig_opline->opcode == ZEND_IS_EQUAL) {
         orig_opline->opcode = ZEND_IS_IDENTICAL;
         zend_vm_set_opcode_handler(orig_opline);
