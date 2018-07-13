@@ -24,6 +24,10 @@ PHP_FUNCTION(sp_serialize) {
   call_user_function(CG(function_table), NULL, &func_name, &hmac, 3, params);
 
   size_t len = Z_STRLEN_P(return_value) + Z_STRLEN(hmac);
+  if (len < Z_STRLEN_P(return_value)) {
+    sp_log_err("overflow_error", "Overflow tentative detected in sp_serialize.");
+    sp_terminate();
+  }
   zend_string *res = zend_string_alloc(len, 0);
 
   memcpy(ZSTR_VAL(res), Z_STRVAL_P(return_value), Z_STRLEN_P(return_value));
