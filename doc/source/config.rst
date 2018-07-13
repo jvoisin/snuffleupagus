@@ -106,6 +106,19 @@ It can either be ``enabled`` or ``disabled``.
 
 .. _config_global:
 
+Prevent sloppy comparison
+^^^^^^^^^^^^^^^^
+
+sloppy_comparison, disabled by default, will prevent php `type
+juggling <https://secure.php.net/manual/en/language.types.type-juggling.php>`_ (``==``) , preventing any bypass of a comparison.
+
+It can either be ``enabled`` or ``disabled``.
+
+::
+
+  sp.sloppy_comparison.enable();
+  sp.sloppy_comparison.disable();
+
 unserialize_hmac
 ^^^^^^^^^^^^^^^^
  

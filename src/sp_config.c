@@ -22,6 +22,7 @@ sp_config_tokens const sp_func[] = {
     {.func = parse_eval_blacklist, .token = SP_TOKEN_EVAL_BLACKLIST},
     {.func = parse_eval_whitelist, .token = SP_TOKEN_EVAL_WHITELIST},
     {.func = parse_session, .token = SP_TOKEN_SESSION_ENCRYPTION},
+    {.func = parse_sloppy_comparison, .token = SP_TOKEN_SLOPPY_COMPARISON},
     {NULL, NULL}};
 
 /* Top level keyword parsing */
@@ -62,29 +63,29 @@ int parse_empty(char *restrict line, char *restrict keyword, void *retval) {
 
 int parse_php_type(char *restrict line, char *restrict keyword, void *retval) {
   size_t consumed = 0;
-  char *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
+  zend_string *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
   if (value) {
-    if (0 == strcasecmp("undef", value)) {
+    if (zend_string_equals_literal_ci(value, "undef")) {
       *(sp_php_type *)retval = SP_PHP_TYPE_UNDEF;
-    } else if (0 == strcasecmp("null", value)) {
+    } else if (zend_string_equals_literal_ci(value, "null")) {
       *(sp_php_type *)retval = SP_PHP_TYPE_NULL;
-    } else if (0 == strcasecmp("true", value)) {
+    } else if (zend_string_equals_literal_ci(value, "true")) {
       *(sp_php_type *)retval = SP_PHP_TYPE_TRUE;
-    } else if (0 == strcasecmp("false", value)) {
+    } else if (zend_string_equals_literal_ci(value, "false")) {
       *(sp_php_type *)retval = SP_PHP_TYPE_FALSE;
-    } else if (0 == strcasecmp("long", value)) {
+    } else if (zend_string_equals_literal_ci(value, "long")) {
       *(sp_php_type *)retval = SP_PHP_TYPE_LONG;
-    } else if (0 == strcasecmp("double", value)) {
+    } else if (zend_string_equals_literal_ci(value, "double")) {
       *(sp_php_type *)retval = SP_PHP_TYPE_DOUBLE;
-    } else if (0 == strcasecmp("string", value)) {
+    } else if (zend_string_equals_literal_ci(value, "string")) {
       *(sp_php_type *)retval = SP_PHP_TYPE_STRING;
-    } else if (0 == strcasecmp("array", value)) {
+    } else if (zend_string_equals_literal_ci(value, "array")) {
       *(sp_php_type *)retval = SP_PHP_TYPE_ARRAY;
-    } else if (0 == strcasecmp("object", value)) {
+    } else if (zend_string_equals_literal_ci(value, "object")) {
       *(sp_php_type *)retval = SP_PHP_TYPE_OBJECT;
-    } else if (0 == strcasecmp("resource", value)) {
+    } else if (zend_string_equals_literal_ci(value, "resource")) {
       *(sp_php_type *)retval = SP_PHP_TYPE_RESOURCE;
-    } else if (0 == strcasecmp("reference", value)) {
+    } else if (zend_string_equals_literal_ci(value, "reference")) {
       *(sp_php_type *)retval = SP_PHP_TYPE_REFERENCE;
     } else {
       pefree(value, 1);
@@ -104,12 +105,12 @@ int parse_php_type(char *restrict line, char *restrict keyword, void *retval) {
 }
 
 int parse_str(char *restrict line, char *restrict keyword, void *retval) {
-  char *value = NULL;
+  zend_string *value = NULL;
 
   size_t consumed = 0;
   value = get_param(&consumed, line, SP_TYPE_STR, keyword);
   if (value) {
-    *(char **)retval = value;
+    *(zend_string **)retval = value;
     return consumed;
   }
   return -1;
@@ -117,11 +118,11 @@ int parse_str(char *restrict line, char *restrict keyword, void *retval) {
 
 int parse_cidr(char *restrict line, char *restrict keyword, void *retval) {
   size_t consumed = 0;
-  char *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
+  zend_string *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
   sp_cidr *cidr = pecalloc(sizeof(sp_cidr), 1, 1);
 
   if (value) {
-    if (-1 == get_ip_and_cidr(value, cidr)) {
+    if (-1 == get_ip_and_cidr(ZSTR_VAL(value), cidr)) {
       return -1;
     }
     *(sp_cidr **)retval = cidr;
@@ -138,10 +139,10 @@ int parse_regexp(char *restrict line, char *restrict keyword, void *retval) {
    * (http://www.pcre.org/original/doc/html/pcre_study.html)
    * maybe not: http://sljit.sourceforge.net/pcre.html*/
   size_t consumed = 0;
-  char *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
+  zend_string *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
 
   if (value) {
-    sp_pcre *compiled_re = sp_pcre_compile(value);
+    sp_pcre *compiled_re = sp_pcre_compile(ZSTR_VAL(value));
     if (NULL != compiled_re) {
       *(sp_pcre **)retval = compiled_re;
       return consumed;
