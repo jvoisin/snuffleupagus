@@ -665,7 +665,7 @@ int hook_disabled_functions(void) {
 zend_write_func_t zend_write_default = NULL;
 
 int hook_echo(const char* str, size_t str_length) {
-  zend_string* zs = zend_string_init(str, str_length, 1);
+  zend_string* zs = zend_string_init(str, str_length, 0);
 
   bool ret = should_disable_ht(
       EG(current_execute_data), "echo", zs, NULL,
