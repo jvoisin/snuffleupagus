@@ -131,17 +131,19 @@ static zval *get_object_property(zend_execute_data *ed, zval *object,
     }
   }
   zvalue = get_entry_hashtable(array, property, strlen(property));
+  // TODO do we want to log overflow?
   if (!zvalue) {
-    char *protected_property = emalloc(strlen(property) + 4);
-    len = sprintf(protected_property, PROTECTED_PROP_FMT, 0, 0, property);
-    zvalue = get_entry_hashtable(array, protected_property, len);
+    len = strlen(property) + 4;
+    char *protected_property = emalloc(len);
+    snprintf(protected_property, len, PROTECTED_PROP_FMT, 0, 0, property);
+    zvalue = get_entry_hashtable(array, protected_property, len - 1);
     efree(protected_property);
   }
   if (!zvalue) {
-    char *private_property = emalloc(strlen(class_name) + 3 + strlen(property));
-    len =
-        sprintf(private_property, PRIVATE_PROP_FMT, 0, class_name, 0, property);
-    zvalue = get_entry_hashtable(array, private_property, len);
+    len = strlen(class_name) + 3 + strlen(property);
+    char *private_property = emalloc(len);
+    snprintf(private_property, len, PRIVATE_PROP_FMT, 0, class_name, 0, property);
+    zvalue = get_entry_hashtable(array, private_property, len - 1);
     efree(private_property);
   }
   return zvalue;
