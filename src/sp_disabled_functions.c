@@ -250,11 +250,10 @@ static bool check_is_builtin_name(
 }
 
 bool should_disable_ht(zend_execute_data* execute_data,
-                       const char* builtin_name,
+                       const char* function_name,
                        const zend_string* builtin_param,
                        const char* builtin_param_name,
                        const sp_list_node* config, const HashTable* ht) {
-  char* complete_function_path = NULL;
   const sp_list_node* ht_entry = NULL;
   bool ret = false;
   zend_string* current_filename;
@@ -263,35 +262,24 @@ bool should_disable_ht(zend_execute_data* execute_data,
     return false;
   }
 
-  if (builtin_name) {
-    complete_function_path = estrdup(builtin_name);
-  } else {
-    complete_function_path = get_complete_function_path(execute_data);
-    if (!complete_function_path) {
-      return false;
-    }
-  }
-
-  if (UNEXPECTED(builtin_param && !strcmp(complete_function_path, "eval"))) {
+  if (UNEXPECTED(builtin_param && !strcmp(function_name, "eval"))) {
     current_filename = get_eval_filename(zend_get_executed_filename());
   } else {
     const char* tmp = zend_get_executed_filename();
     current_filename = zend_string_init(tmp, strlen(tmp), 0);
   }
 
-  ht_entry = zend_hash_str_find_ptr(ht, complete_function_path,
-                                    strlen(complete_function_path));
+  ht_entry = zend_hash_str_find_ptr(ht, function_name, strlen(function_name));
 
   if (ht_entry &&
-      should_disable(execute_data, complete_function_path, builtin_param,
+      should_disable(execute_data, function_name, builtin_param,
                      builtin_param_name, ht_entry, current_filename)) {
     ret = true;
   } else if (config && config->data) {
-    ret = should_disable(execute_data, complete_function_path, builtin_param,
+    ret = should_disable(execute_data, function_name, builtin_param,
                          builtin_param_name, config, current_filename);
   }
 
-  efree(complete_function_path);
   efree(current_filename);
   return ret;
 }
@@ -423,28 +411,24 @@ allow:
   return false;
 }
 
-bool should_drop_on_ret_ht(zval* return_value,
-                           const zend_execute_data* const execute_data,
+bool should_drop_on_ret_ht(zval* return_value, const char* function_name,
                            const sp_list_node* config, const HashTable* ht) {
-  char* complete_function_path = get_complete_function_path(execute_data);
   const sp_list_node* ht_entry = NULL;
   bool ret = false;
 
-  if (!complete_function_path) {
+  if (!function_name) {
     return ret;
   }
 
-  ht_entry = zend_hash_str_find_ptr(ht, complete_function_path,
-                                    strlen(complete_function_path));
+  ht_entry = zend_hash_str_find_ptr(ht, function_name, strlen(function_name));
 
   if (ht_entry &&
-      should_drop_on_ret(return_value, ht_entry, complete_function_path)) {
+      should_drop_on_ret(return_value, ht_entry, function_name)) {
     ret = true;
   } else if (config && config->data) {
-    ret = should_drop_on_ret(return_value, config, complete_function_path);
+    ret = should_drop_on_ret(return_value, config, function_name);
   }
 
-  efree(complete_function_path);
   return ret;
 }
 
@@ -522,7 +506,7 @@ ZEND_FUNCTION(check_disabled_function) {
   const char* current_function_name = get_active_function_name(TSRMLS_C);
 
   if (true == should_disable_ht(
-                  execute_data, NULL, NULL, NULL,
+                  execute_data, current_function_name, NULL, NULL,
                   SNUFFLEUPAGUS_G(config)
                       .config_disabled_functions_reg->disabled_functions,
                   SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked)) {
@@ -535,7 +519,7 @@ ZEND_FUNCTION(check_disabled_function) {
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   if (true ==
       should_drop_on_ret_ht(
-          return_value, execute_data,
+          return_value, current_function_name,
           SNUFFLEUPAGUS_G(config)
               .config_disabled_functions_reg_ret->disabled_functions,
           SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked)) {

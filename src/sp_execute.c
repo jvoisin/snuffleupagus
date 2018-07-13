@@ -150,13 +150,20 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   }
 
   if (SNUFFLEUPAGUS_G(config).hook_execute) {
+    char* function_name = get_complete_function_path(execute_data);
+
+    if (!function_name) {
+      orig_execute_ex(execute_data);
+      return;
+    }
+
     if (!execute_data->prev_execute_data ||
         !execute_data->prev_execute_data->func ||
         !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
         !execute_data->prev_execute_data->opline) {
       if (UNEXPECTED(true ==
                      should_disable_ht(
-                         execute_data, NULL, NULL, NULL,
+                         execute_data, function_name, NULL, NULL,
                          SNUFFLEUPAGUS_G(config)
                              .config_disabled_functions_reg->disabled_functions,
                          SNUFFLEUPAGUS_G(config).config_disabled_functions))) {
@@ -170,7 +177,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
                     ZEND_DO_FCALL_BY_NAME)) {
       if (UNEXPECTED(true ==
                      should_disable_ht(
-                         execute_data, NULL, NULL, NULL,
+                         execute_data, function_name, NULL, NULL,
                          SNUFFLEUPAGUS_G(config)
                              .config_disabled_functions_reg->disabled_functions,
                          SNUFFLEUPAGUS_G(config).config_disabled_functions))) {
@@ -183,12 +190,13 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
     if (UNEXPECTED(
             true ==
             should_drop_on_ret_ht(
-                EX(return_value), execute_data,
+                EX(return_value), function_name,
                 SNUFFLEUPAGUS_G(config)
                     .config_disabled_functions_reg_ret->disabled_functions,
                 SNUFFLEUPAGUS_G(config).config_disabled_functions_ret))) {
       sp_terminate();
     }
+    efree(function_name);
   } else {
     orig_execute_ex(execute_data);
   }
