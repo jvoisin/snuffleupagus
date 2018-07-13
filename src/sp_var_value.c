@@ -132,15 +132,16 @@ static zval *get_object_property(zend_execute_data *ed, zval *object,
   }
   zvalue = get_entry_hashtable(array, property, strlen(property));
   if (!zvalue) {
-    char *protected_property = emalloc(strlen(property) + 4);
-    len = sprintf(protected_property, PROTECTED_PROP_FMT, 0, 0, property);
+    len = strlen(property) + 4;
+    char *protected_property = emalloc(len);
+    snprintf(protected_property, len, PROTECTED_PROP_FMT, 0, 0, property);
     zvalue = get_entry_hashtable(array, protected_property, len);
     efree(protected_property);
   }
   if (!zvalue) {
-    char *private_property = emalloc(strlen(class_name) + 3 + strlen(property));
-    len =
-        sprintf(private_property, PRIVATE_PROP_FMT, 0, class_name, 0, property);
+    len = strlen(class_name) + 3 + strlen(property);
+    char *private_property = emalloc(len);
+    snprintf(private_property, len, PRIVATE_PROP_FMT, 0, class_name, 0, property);
     zvalue = get_entry_hashtable(array, private_property, len);
     efree(private_property);
   }
