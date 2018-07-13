@@ -17,6 +17,10 @@ if (strpos(system("php -d extension=vld.so -m 2>&1 | grep 'Unable to load'"), "U
 if (strpos(phpversion(), '-dev') !== FALSE) {
 	print 'skip';
 }
+
+if (PHP_VERSION_ID >= 70300) {
+  die("skip BROKEN with 7.3");
+}
 ?>
 --INI--
 file_uploads=1
