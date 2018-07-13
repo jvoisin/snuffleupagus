@@ -43,7 +43,9 @@ matrix:
     php: nightly
 
 script:
-  - pecl install vld-beta
+  - 'if [[ ! "${TARGET}" = *"nightly"* ]]; then
+      pecl install vld-beta ;
+    fi'
   - cd src
   - phpize
   - ./configure --enable-snuffleupagus --enable-coverage
