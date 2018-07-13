@@ -44,7 +44,7 @@ matrix:
 
 script:
   - 'if [[ ! "${TARGET}" = *"nightly"* ]]; then
-      pecl install vld-beta
+      pecl install vld-beta ;
     fi'
   - cd src
   - phpize
