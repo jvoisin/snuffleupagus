@@ -1,7 +1,9 @@
 #include "sp_sloppy.h"
 
-ZEND_API zend_op_array* (*zend_compile_file_default)(zend_file_handle* file_handle, int type) = NULL;
-ZEND_API zend_op_array* (*zend_compile_string_default)(zval* source_string, char* filename) = NULL;
+ZEND_API zend_op_array* (*zend_compile_file_default)(
+    zend_file_handle* file_handle, int type) = NULL;
+ZEND_API zend_op_array* (*zend_compile_string_default)(zval* source_string,
+                                                       char* filename) = NULL;
 
 static void modify_opcode(zend_op_array* opline) {
   if (NULL != opline) {
@@ -24,7 +26,8 @@ ZEND_API zend_op_array* sp_compile_string(zval* source_string, char* filename) {
   return opline;
 }
 
-ZEND_API zend_op_array* sp_compile_file(zend_file_handle* file_handle, int type) {
+ZEND_API zend_op_array* sp_compile_file(zend_file_handle* file_handle,
+                                        int type) {
   zend_op_array* opline = zend_compile_file_default(file_handle, type);
   modify_opcode(opline);
   return opline;

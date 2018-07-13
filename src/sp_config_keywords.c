@@ -1,38 +1,7 @@
 #include "php_snuffleupagus.h"
+#include "zend_types.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
-
-static const struct {
-  unsigned int type;
-  char *keys[5];  // Update this value if necessary
-} CONSTRUCTS_TYPES[] = {
-    {.type = ZEND_INCLUDE_OR_EVAL,
-     .keys = {"include", "include_once", "require", "require_once", NULL}},
-    {.type = ZEND_ECHO, .keys = {"echo", NULL}},
-    {.type = ZEND_NEW, .keys = {"new", NULL}},
-    {.type = ZEND_EXIT, .keys = {"exit", NULL}},
-    {.type = ZEND_STRLEN, .keys = {"strlen", NULL}},
-    {.type = ZEND_EVAL_CODE, .keys = {"eval", NULL}},
-    {.type = 0, .keys = {NULL}}};
-
-static int get_construct_type(sp_disabled_function const *const df) {
-  for (size_t i = 0; 0 != CONSTRUCTS_TYPES[i].type; i++) {
-    for (size_t j = 0; NULL != CONSTRUCTS_TYPES[i].keys[j]; j++) {
-      assert(df->function || df->r_function);
-      if (df->function) {
-        if (0 == strcmp(df->function, CONSTRUCTS_TYPES[i].keys[j])) {
-          return CONSTRUCTS_TYPES[i].type;
-        }
-      } else {
-        if (true == sp_is_regexp_matching(df->r_function,
-                                          CONSTRUCTS_TYPES[i].keys[j])) {
-          return CONSTRUCTS_TYPES[i].type;
-        }
-      }
-    }
-  }
-  return -1;
-}
 
 static int parse_enable(char *line, bool *restrict retval,
                         bool *restrict simulation) {
@@ -137,7 +106,7 @@ int parse_unserialize(char *line) {
       {parse_str, SP_TOKEN_DUMP, &(unserialize->dump)},
       {0}};
 
-  unserialize->textual_representation = estrdup(line);
+  unserialize->textual_representation = zend_string_init(line, strlen(line), 1);
 
   int ret = parse_keywords(sp_config_funcs, line);
   if (0 != ret) {
@@ -167,7 +136,8 @@ int parse_readonly_exec(char *line) {
       {parse_str, SP_TOKEN_DUMP, &(readonly_exec->dump)},
       {0}};
 
-  readonly_exec->textual_representation = estrdup(line);
+  readonly_exec->textual_representation =
+      zend_string_init(line, strlen(line), 1);
   int ret = parse_keywords(sp_config_funcs, line);
 
   if (0 != ret) {
@@ -196,8 +166,8 @@ int parse_global(char *line) {
 }
 
 static int parse_eval_filter_conf(char *line, sp_list_node **list) {
-  char *token;
-  char *rest;
+  char *token, *tmp;
+  zend_string *rest = NULL;
   sp_config_eval *eval = SNUFFLEUPAGUS_G(config).config_eval;
 
   sp_config_functions sp_config_funcs[] = {
@@ -207,15 +177,19 @@ static int parse_eval_filter_conf(char *line, sp_list_node **list) {
       {parse_str, SP_TOKEN_DUMP, &(SNUFFLEUPAGUS_G(config).config_eval->dump)},
       {0}};
 
-  eval->textual_representation = estrdup(line);
+  eval->textual_representation = zend_string_init(line, strlen(line), 1);
 
   int ret = parse_keywords(sp_config_funcs, line);
   if (0 != ret) {
     return ret;
   }
 
-  while ((token = strtok_r(rest, ",", &rest))) {
-    *list = sp_list_insert(*list, token);
+  tmp = ZSTR_VAL(rest);
+  while ((token = strtok_r(tmp, ",", &tmp))) {
+    *list = sp_list_insert(*list, zend_string_init(token, strlen(token), 1));
+  }
+  if (rest != NULL) {
+    pefree(rest, 1);
   }
   return SUCCESS;
 }
@@ -232,7 +206,7 @@ int parse_eval_whitelist(char *line) {
 
 int parse_cookie(char *line) {
   int ret = 0;
-  char *samesite = NULL;
+  zend_string *samesite = NULL;
   sp_cookie *cookie = pecalloc(sizeof(sp_cookie), 1, 1);
 
   sp_config_functions sp_config_funcs_cookie_encryption[] = {
@@ -274,7 +248,7 @@ int parse_cookie(char *line) {
                sp_line_no);
     return -1;
   }
-  if ((!cookie->name || '\0' == cookie->name[0]) && !cookie->name_r) {
+  if ((!cookie->name || 0 == ZSTR_LEN(cookie->name)) && !cookie->name_r) {
     sp_log_err("config",
                "You must specify a cookie name/regexp on line "
                "%zu.",
@@ -289,16 +263,17 @@ int parse_cookie(char *line) {
     return -1;
   }
   if (samesite) {
-    if (0 == strcasecmp(samesite, SP_TOKEN_SAMESITE_LAX)) {
+    if (zend_string_equals_literal_ci(samesite, SP_TOKEN_SAMESITE_LAX)) {
       cookie->samesite = lax;
-    } else if (0 == strcasecmp(samesite, SP_TOKEN_SAMESITE_STRICT)) {
+    } else if (zend_string_equals_literal_ci(samesite,
+                                             SP_TOKEN_SAMESITE_STRICT)) {
       cookie->samesite = strict;
     } else {
       sp_log_err(
           "config",
           "%s is an invalid value to samesite (expected %s or %s) on line "
           "%zu.",
-          samesite, SP_TOKEN_SAMESITE_LAX, SP_TOKEN_SAMESITE_STRICT,
+          ZSTR_VAL(samesite), SP_TOKEN_SAMESITE_LAX, SP_TOKEN_SAMESITE_STRICT,
           sp_line_no);
       return -1;
     }
@@ -308,11 +283,22 @@ int parse_cookie(char *line) {
   return SUCCESS;
 }
 
+int add_df_to_hashtable(HashTable *ht, sp_disabled_function *df) {
+  zval *list = zend_hash_find(ht, df->function);
+
+  if (NULL == list) {
+    zend_hash_add_ptr(ht, df->function, sp_list_insert(NULL, df));
+  } else {
+    Z_PTR_P(list) = sp_list_insert(Z_PTR_P(list), df);
+  }
+  return SUCCESS;
+}
+
 int parse_disabled_functions(char *line) {
   int ret = 0;
   bool enable = true, disable = false, allow = false, drop = false;
-  char *pos = NULL, *var = NULL, *param = NULL;
-  char *line_number = NULL;
+  zend_string *pos = NULL, *var = NULL, *param = NULL;
+  zend_string *line_number = NULL;
   sp_disabled_function *df = pecalloc(sizeof(*df), 1, 1);
   df->pos = -1;
 
@@ -330,7 +316,7 @@ int parse_disabled_functions(char *line) {
       {parse_empty, SP_TOKEN_DROP, &(drop)},
       {parse_str, SP_TOKEN_HASH, &(df->hash)},
       {parse_str, SP_TOKEN_PARAM, &(param)},
-      {parse_regexp, SP_TOKEN_VALUE_REGEXP, &(df->value_r)},
+      {parse_regexp, SP_TOKEN_VALUE_REGEXP, &(df->r_value)},
       {parse_str, SP_TOKEN_VALUE, &(df->value)},
       {parse_str, SP_TOKEN_KEY, &(df->key)},
       {parse_regexp, SP_TOKEN_KEY_REGEXP, &(df->r_key)},
@@ -360,7 +346,7 @@ int parse_disabled_functions(char *line) {
     return 1;                                                            \
   }
 
-  MUTUALLY_EXCLUSIVE(df->value, df->value_r, "value", "regexp");
+  MUTUALLY_EXCLUSIVE(df->value, df->r_value, "value", "regexp");
   MUTUALLY_EXCLUSIVE(df->r_function, df->function, "r_function", "function");
   MUTUALLY_EXCLUSIVE(df->filename, df->r_filename, "r_filename", "filename");
   MUTUALLY_EXCLUSIVE(df->ret, df->r_ret, "r_ret", "ret");
@@ -375,16 +361,29 @@ int parse_disabled_functions(char *line) {
         "'.r_param', '.param' and '.pos' are mutually exclusive on line %zu.",
         line, sp_line_no);
     return -1;
-  } else if ((df->r_key || df->key) && (df->value_r || df->value)) {
+  } else if ((df->r_key || df->key) && (df->r_value || df->value)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                "`key` and `value` are mutually exclusive on line %zu.",
                line, sp_line_no);
     return -1;
-  } else if ((df->r_ret || df->ret) && (df->r_param || param)) {
+  } else if ((df->r_ret || df->ret || df->ret_type) && (df->r_param || param)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                "`ret` and `param` are mutually exclusive on line %zu.",
+               line, sp_line_no);
+    return -1;
+  } else if ((df->r_ret || df->ret || df->ret_type) && (var)) {
+    sp_log_err("config",
+               "Invalid configuration line: 'sp.disabled_functions%s':"
+               "`ret` and `var` are mutually exclusive on line %zu.",
+               line, sp_line_no);
+    return -1;
+  } else if ((df->r_ret || df->ret || df->ret_type) &&
+             (df->value || df->r_value)) {
+    sp_log_err("config",
+               "Invalid configuration line: 'sp.disabled_functions%s':"
+               "`ret` and `value` are mutually exclusive on line %zu.",
                line, sp_line_no);
     return -1;
   } else if (!(df->r_function || df->function)) {
@@ -393,7 +392,7 @@ int parse_disabled_functions(char *line) {
                " must take a function name on line %zu.",
                line, sp_line_no);
     return -1;
-  } else if (df->filename && *df->filename != '/') {
+  } else if (df->filename && *ZSTR_VAL(df->filename) != '/') {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                "'.filename' must be an absolute path on line %zu.",
@@ -410,10 +409,10 @@ int parse_disabled_functions(char *line) {
   if (pos) {
     errno = 0;
     char *endptr;
-    df->pos = (int)strtol(pos, &endptr, 10);
-    if (errno != 0 || endptr == pos) {
+    df->pos = (int)strtol(ZSTR_VAL(pos), &endptr, 10);
+    if (errno != 0 || endptr == ZSTR_VAL(pos)) {
       sp_log_err("config", "Failed to parse arg '%s' of `pos` on line %zu.",
-                 pos, sp_line_no);
+                 ZSTR_VAL(pos), sp_line_no);
       return -1;
     }
   }
@@ -421,46 +420,46 @@ int parse_disabled_functions(char *line) {
   if (line_number) {
     errno = 0;
     char *endptr;
-    df->line = (unsigned int)strtoul(line_number, &endptr, 10);
-    if (errno != 0 || endptr == line_number) {
+    df->line = (unsigned int)strtoul(ZSTR_VAL(line_number), &endptr, 10);
+    if (errno != 0 || endptr == ZSTR_VAL(line_number)) {
       sp_log_err("config", "Failed to parse arg '%s' of `line` on line %zu.",
-                 line_number, sp_line_no);
+                 ZSTR_VAL(line_number), sp_line_no);
       return -1;
     }
   }
   df->allow = allow;
-  df->textual_representation = estrdup(line);
+  df->textual_representation = zend_string_init(line, strlen(line), 1);
 
   if (df->function) {
-    df->functions_list = parse_functions_list(df->function);
+    df->functions_list = parse_functions_list(ZSTR_VAL(df->function));
   }
 
   if (param) {
-    if (strlen(param) > 0 && param[0] != '$') {
+    if (ZSTR_LEN(param) > 0 && ZSTR_VAL(param)[0] != '$') {
       /* This is an ugly hack. We're prefixing with a `$` because otherwise
        * the parser treats this as a constant.
        * FIXME: Remove this, and improve our (weird) parser. */
-      char *new = pecalloc(strlen(param) + 2, 1, 1);
+      char *new = pecalloc(ZSTR_LEN(param) + 2, 1, 1);
       new[0] = '$';
-      memcpy(new + 1, param, strlen(param));
+      memcpy(new + 1, ZSTR_VAL(param), ZSTR_LEN(param));
       df->param = sp_parse_var(new);
       free(new);
     } else {
-      df->param = sp_parse_var(param);
+      df->param = sp_parse_var(ZSTR_VAL(param));
     }
     if (!df->param) {
-      sp_log_err("config", "Invalid value '%s' for `param` on line %zu.", param,
-                 sp_line_no);
+      sp_log_err("config", "Invalid value '%s' for `param` on line %zu.",
+                 ZSTR_VAL(param), sp_line_no);
       return -1;
     }
   }
 
   if (var) {
-    if (*var) {
-      df->var = sp_parse_var(var);
+    if (ZSTR_LEN(var)) {
+      df->var = sp_parse_var(ZSTR_VAL(var));
       if (!df->var) {
-        sp_log_err("config", "Invalid value '%s' for `var` on line %zu.", var,
-                   sp_line_no);
+        sp_log_err("config", "Invalid value '%s' for `var` on line %zu.",
+                   ZSTR_VAL(var), sp_line_no);
         return -1;
       }
     } else {
@@ -469,38 +468,33 @@ int parse_disabled_functions(char *line) {
     }
   }
 
-  switch (get_construct_type(df)) {
-    case ZEND_INCLUDE_OR_EVAL:
-      SNUFFLEUPAGUS_G(config)
-          .config_disabled_constructs->construct_include = sp_list_insert(
-          SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_include,
-          df);
-      return ret;
-    case ZEND_EVAL_CODE:
-      SNUFFLEUPAGUS_G(config)
-          .config_disabled_constructs->construct_eval = sp_list_insert(
-          SNUFFLEUPAGUS_G(config).config_disabled_constructs->construct_eval,
-          df);
-      return ret;
-    case ZEND_ECHO:
-    default:
-      break;
-  }
-
   if (true == disable) {
     return ret;
   }
 
-  if (df->ret || df->r_ret || df->ret_type) {
-    SNUFFLEUPAGUS_G(config).config_disabled_functions_ret->disabled_functions =
-        sp_list_insert(SNUFFLEUPAGUS_G(config)
-                           .config_disabled_functions_ret->disabled_functions,
-                       df);
+  if (df->function && !df->functions_list) {
+    if (df->ret || df->r_ret || df->ret_type) {
+      add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
+                          df);
+    } else {
+      add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions,
+                          df);
+    }
   } else {
-    SNUFFLEUPAGUS_G(config)
-        .config_disabled_functions->disabled_functions = sp_list_insert(
-        SNUFFLEUPAGUS_G(config).config_disabled_functions->disabled_functions,
-        df);
+    if (df->ret || df->r_ret || df->ret_type) {
+      SNUFFLEUPAGUS_G(config)
+          .config_disabled_functions_reg_ret->disabled_functions =
+          sp_list_insert(
+              SNUFFLEUPAGUS_G(config)
+                  .config_disabled_functions_reg_ret->disabled_functions,
+              df);
+    } else {
+      SNUFFLEUPAGUS_G(config)
+          .config_disabled_functions_reg->disabled_functions =
+          sp_list_insert(SNUFFLEUPAGUS_G(config)
+                             .config_disabled_functions_reg->disabled_functions,
+                         df);
+    }
   }
   return ret;
 }
@@ -529,20 +523,21 @@ int parse_upload_validation(char *line) {
   }
   SNUFFLEUPAGUS_G(config).config_upload_validation->enable = enable;
 
-  char const *script = SNUFFLEUPAGUS_G(config).config_upload_validation->script;
+  zend_string const *script =
+      SNUFFLEUPAGUS_G(config).config_upload_validation->script;
 
   if (!script) {
     sp_log_err("config",
                "The `script` directive is mandatory in '%s' on line %zu.", line,
                sp_line_no);
     return -1;
-  } else if (-1 == access(script, F_OK)) {
-    sp_log_err("config", "The `script` (%s) doesn't exist on line %zu.", script,
-               sp_line_no);
+  } else if (-1 == access(ZSTR_VAL(script), F_OK)) {
+    sp_log_err("config", "The `script` (%s) doesn't exist on line %zu.",
+               ZSTR_VAL(script), sp_line_no);
     return -1;
-  } else if (-1 == access(script, X_OK)) {
+  } else if (-1 == access(ZSTR_VAL(script), X_OK)) {
     sp_log_err("config", "The `script` (%s) isn't executable on line %zu.",
-               script, sp_line_no);
+               ZSTR_VAL(script), sp_line_no);
     return -1;
   }
 

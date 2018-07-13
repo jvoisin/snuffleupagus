@@ -19,6 +19,14 @@ static inline void _sp_log_err(const char* fmt, ...) {
   php_log_err(msg);
 }
 
+static bool sp_zend_string_equals(const zend_string* s1,
+                                  const zend_string* s2) {
+  // We can't use `zend_string_equals` here because it doesn't work on
+  // `const` zend_string.
+  return ZSTR_LEN(s1) == ZSTR_LEN(s2) &&
+         !memcmp(ZSTR_VAL(s1), ZSTR_VAL(s2), ZSTR_LEN(s1));
+}
+
 void sp_log_msg(char const* feature, char const* level, const char* fmt, ...) {
   char* msg;
   va_list args;
@@ -56,14 +64,15 @@ int compute_hash(const char* const filename, char* file_hash) {
   return SUCCESS;
 }
 
-static int construct_filename(char* filename, const char* folder,
-                              const char* textual) {
+static int construct_filename(char* filename, const zend_string* folder,
+                              const zend_string* textual) {
   PHP_SHA256_CTX context;
   unsigned char digest[SHA256_SIZE] = {0};
   char strhash[65] = {0};
 
-  if (-1 == mkdir(folder, 0700) && errno != EEXIST) {
-    sp_log_err("request_logging", "Unable to create the folder '%s'.", folder);
+  if (-1 == mkdir(ZSTR_VAL(folder), 0700) && errno != EEXIST) {
+    sp_log_err("request_logging", "Unable to create the folder '%s'.",
+               ZSTR_VAL(folder));
     return -1;
   }
 
@@ -71,15 +80,17 @@ static int construct_filename(char* filename, const char* folder,
    * as filename, in order to only have one dump per rule, to migitate
    * DoS attacks. */
   PHP_SHA256Init(&context);
-  PHP_SHA256Update(&context, (const unsigned char*)textual, strlen(textual));
+  PHP_SHA256Update(&context, (const unsigned char*)ZSTR_VAL(textual),
+                   ZSTR_LEN(textual));
   PHP_SHA256Final(digest, &context);
   make_digest_ex(strhash, digest, SHA256_SIZE);
-  snprintf(filename, PATH_MAX - 1, "%s/sp_dump.%s", folder, strhash);
+  snprintf(filename, PATH_MAX - 1, "%s/sp_dump.%s", ZSTR_VAL(folder), strhash);
 
   return 0;
 }
 
-int sp_log_request(const char* folder, const char* text_repr, char* from) {
+int sp_log_request(const zend_string* folder, const zend_string* text_repr,
+                   char* from) {
   FILE* file;
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);
@@ -100,7 +111,7 @@ int sp_log_request(const char* folder, const char* text_repr, char* from) {
     return -1;
   }
 
-  fprintf(file, "RULE: sp%s%s\n", from, text_repr);
+  fprintf(file, "RULE: sp%s%s\n", from, ZSTR_VAL(text_repr));
 
   fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
   for (size_t i = 0; i < (sizeof(zones) / sizeof(zones[0])) - 1; i++) {
@@ -130,57 +141,65 @@ int sp_log_request(const char* folder, const char* text_repr, char* from) {
   return 0;
 }
 
-static char* zv_str_to_char(zval* zv) {
-  zval copy;
+static char* zend_string_to_char(const zend_string* zs) {
+  // Remove \0 from the middle of a string
+  char* copy = emalloc(ZSTR_LEN(zs) + 1);
 
-  ZVAL_ZVAL(&copy, zv, 1, 0);
-  for (size_t i = 0; i < Z_STRLEN(copy); i++) {
-    if (Z_STRVAL(copy)[i] == '\0') {
-      Z_STRVAL(copy)[i] = '0';
+  copy[ZSTR_LEN(zs)] = 0;
+  for (size_t i = 0; i < ZSTR_LEN(zs); i++) {
+    if (ZSTR_VAL(zs)[i] == '\0') {
+      copy[i] = '0';
+    } else {
+      copy[i] = ZSTR_VAL(zs)[i];
     }
   }
-  return estrdup(Z_STRVAL(copy));
+  return copy;
 }
 
-char* sp_convert_to_string(zval* zv) {
+const zend_string* sp_zval_to_zend_string(zval* zv) {
   switch (Z_TYPE_P(zv)) {
-    case IS_FALSE:
-      return estrdup("FALSE");
-    case IS_TRUE:
-      return estrdup("TRUE");
-    case IS_NULL:
-      return estrdup("NULL");
     case IS_LONG: {
       char* msg;
       spprintf(&msg, 0, ZEND_LONG_FMT, Z_LVAL_P(zv));
-      return msg;
+      zend_string* zs = zend_string_init(msg, strlen(msg), 0);
+      efree(msg);
+      return zs;
     }
     case IS_DOUBLE: {
       char* msg;
       spprintf(&msg, 0, "%f", Z_DVAL_P(zv));
-      return msg;
+      zend_string* zs = zend_string_init(msg, strlen(msg), 0);
+      efree(msg);
+      return zs;
     }
     case IS_STRING: {
-      return zv_str_to_char(zv);
+      return Z_STR_P(zv);
     }
+    case IS_FALSE:
+      return zend_string_init("FALSE", 5, 0);
+    case IS_TRUE:
+      return zend_string_init("TRUE", 4, 0);
+    case IS_NULL:
+      return zend_string_init("NULL", 4, 0);
     case IS_OBJECT:
-      return estrdup("OBJECT");
+      return zend_string_init("OBJECT", 6, 0);
     case IS_ARRAY:
-      return estrdup("ARRAY");
+      return zend_string_init("ARRAY", 5, 0);
     case IS_RESOURCE:
-      return estrdup("RESOURCE");
+      return zend_string_init("RESOURCE", 8, 0);
   }
-  return estrdup("");
+  return zend_string_init("", 0, 0);
 }
 
-bool sp_match_value(const char* value, const char* to_match,
+bool sp_match_value(const zend_string* value, const zend_string* to_match,
                     const sp_pcre* rx) {
   if (to_match) {
-    if (0 == strcmp(to_match, value)) {
-      return true;
-    }
+    return (sp_zend_string_equals(to_match, value));
   } else if (rx) {
-    return sp_is_regexp_matching(rx, value);
+    char* tmp = zend_string_to_char(value);
+    bool ret = sp_is_regexp_matching(rx, tmp);
+    efree(tmp);
+    return ret;
   } else {
     return true;
   }
@@ -188,35 +207,41 @@ bool sp_match_value(const char* value, const char* to_match,
 }
 
 void sp_log_disable(const char* restrict path, const char* restrict arg_name,
-                    const char* restrict arg_value,
+                    const zend_string* restrict arg_value,
                     const sp_disabled_function* config_node, unsigned int line,
                     const char* restrict filename) {
-  const char* dump = config_node->dump;
-  const char* alias = config_node->alias;
+  const zend_string* dump = config_node->dump;
+  const zend_string* alias = config_node->alias;
   const int sim = config_node->simulation;
 
   filename = filename ? filename : zend_get_executed_filename(TSRMLS_C);
   line = line ? line : zend_get_executed_lineno(TSRMLS_C);
 
   if (arg_name) {
+    char* char_repr = NULL;
+    if (arg_value) {
+      char_repr = zend_string_to_char(arg_value);
+    }
     if (alias) {
       sp_log_msg(
           "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
           "Aborted execution on call of the function '%s' in %s:%d, "
           "because its argument '%s' content (%s) matched the rule '%s'.",
-          path, filename, line, arg_name, arg_value ? arg_value : "?", alias);
+          path, filename, line, arg_name, char_repr ? char_repr : "?",
+          ZSTR_VAL(alias));
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                  "Aborted execution on call of the function '%s' in %s:%d, "
                  "because its argument '%s' content (%s) matched a rule.",
-                 path, filename, line, arg_name, arg_value ? arg_value : "?");
+                 path, filename, line, arg_name, char_repr ? char_repr : "?");
     }
+    efree(char_repr);
   } else {
     if (alias) {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                  "Aborted execution on call of the function '%s' in %s:%d, "
                  "because of the the rule '%s'.",
-                 path, filename, line, alias);
+                 path, filename, line, ZSTR_VAL(alias));
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                  "Aborted execution on call of the function '%s' in %s:%d.",
@@ -230,45 +255,53 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
 }
 
 void sp_log_disable_ret(const char* restrict path,
-                        const char* restrict ret_value,
+                        const zend_string* restrict ret_value,
                         const sp_disabled_function* config_node) {
-  const char* dump = config_node->dump;
-  const char* alias = config_node->alias;
+  const zend_string* dump = config_node->dump;
+  const zend_string* alias = config_node->alias;
   const int sim = config_node->simulation;
+  char* char_repr = NULL;
+
+  if (ret_value) {
+    char_repr = zend_string_to_char(ret_value);
+  }
   if (alias) {
     sp_log_msg(
         "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
         "Aborted execution on return of the function '%s' in %s:%d, "
         "because the function returned '%s', which matched the rule '%s'.",
         path, zend_get_executed_filename(TSRMLS_C),
-        zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?", alias);
+        zend_get_executed_lineno(TSRMLS_C), char_repr ? char_repr : "?",
+        ZSTR_VAL(alias));
   } else {
     sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                "Aborted execution on return of the function '%s' in %s:%d, "
                "because the function returned '%s', which matched a rule.",
                path, zend_get_executed_filename(TSRMLS_C),
-               zend_get_executed_lineno(TSRMLS_C), ret_value ? ret_value : "?");
+               zend_get_executed_lineno(TSRMLS_C), char_repr ? char_repr : "?");
   }
+  efree(char_repr);
   if (dump) {
     sp_log_request(dump, config_node->textual_representation,
                    SP_TOKEN_DISABLE_FUNC);
   }
 }
 
-bool sp_match_array_key(const zval* zv, const char* to_match,
+bool sp_match_array_key(const zval* zv, const zend_string* to_match,
                         const sp_pcre* rx) {
   zend_string* key;
   zend_ulong idx;
 
   ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(zv), idx, key) {
     if (key) {
-      if (sp_match_value(ZSTR_VAL(key), to_match, rx)) {
+      if (sp_match_value(key, to_match, rx)) {
         return true;
       }
     } else {
       char* idx_str = NULL;
       spprintf(&idx_str, 0, "%lu", idx);
-      if (sp_match_value(idx_str, to_match, rx)) {
+      zend_string* tmp = zend_string_init(idx_str, strlen(idx_str), 0);
+      if (sp_match_value(tmp, to_match, rx)) {
         efree(idx_str);
         return true;
       }
@@ -279,18 +312,16 @@ bool sp_match_array_key(const zval* zv, const char* to_match,
   return false;
 }
 
-bool sp_match_array_value(const zval* arr, const char* to_match,
+bool sp_match_array_value(const zval* arr, const zend_string* to_match,
                           const sp_pcre* rx) {
   zval* value;
 
   ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(arr), value) {
     if (Z_TYPE_P(value) != IS_ARRAY) {
-      char* value_str = sp_convert_to_string(value);
+      const zend_string* value_str = sp_zval_to_zend_string(value);
       if (sp_match_value(value_str, to_match, rx)) {
-        efree(value_str);
         return true;
       } else {
-        efree(value_str);
       }
     } else if (sp_match_array_value(value, to_match, rx)) {
       return true;
@@ -303,6 +334,7 @@ bool sp_match_array_value(const zval* arr, const char* to_match,
 int hook_function(const char* original_name, HashTable* hook_table,
                   void (*new_function)(INTERNAL_FUNCTION_PARAMETERS)) {
   zend_internal_function* func;
+  bool ret = FAILURE;
 
   /* The `mb` module likes to hook functions, like strlen->mb_strlen,
    * so we have to hook both of them. */
@@ -317,6 +349,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
         return FAILURE;
       }
       func->handler = new_function;
+      ret = SUCCESS;
     } else {
       return SUCCESS;
     }
@@ -326,7 +359,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
     CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
     if (zend_hash_str_find(CG(function_table),
                            VAR_AND_LEN(original_name + 3))) {
-      hook_function(original_name + 3, hook_table, new_function);
+      return hook_function(original_name + 3, hook_table, new_function);
     }
   } else {  // TODO this can be moved somewhere else to gain some marginal perfs
     CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
@@ -334,11 +367,11 @@ int hook_function(const char* original_name, HashTable* hook_table,
     memcpy(mb_name, "mb_", 3);
     memcpy(mb_name + 3, VAR_AND_LEN(original_name));
     if (zend_hash_str_find(CG(function_table), VAR_AND_LEN(mb_name))) {
-      hook_function(mb_name, hook_table, new_function);
+      return hook_function(mb_name, hook_table, new_function);
     }
   }
 
-  return SUCCESS;
+  return ret;
 }
 
 int hook_regexp(const sp_pcre* regexp, HashTable* hook_table,
@@ -356,7 +389,7 @@ int hook_regexp(const sp_pcre* regexp, HashTable* hook_table,
   return SUCCESS;
 }
 
-bool check_is_in_eval_whitelist(const char* const function_name) {
+bool check_is_in_eval_whitelist(const zend_string* const function_name) {
   const sp_list_node* it = SNUFFLEUPAGUS_G(config).config_eval->whitelist;
 
   if (!it) {
@@ -366,7 +399,7 @@ bool check_is_in_eval_whitelist(const char* const function_name) {
   /* yes, we could use a HashTable instead, but since the list is pretty
    * small, it doesn't maka a difference in practise. */
   while (it && it->data) {
-    if (0 == strcmp(function_name, (char*)(it->data))) {
+    if (sp_zend_string_equals(function_name, (const zend_string*)(it->data))) {
       /* We've got a match, the function is whiteslited. */
       return true;
     }

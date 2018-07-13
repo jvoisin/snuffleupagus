@@ -39,6 +39,14 @@ PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM,
               OnUpdateConfiguration)
 PHP_INI_END()
 
+void free_disabled_functions_hashtable(HashTable *ht) {
+  void* ptr = NULL;
+  ZEND_HASH_FOREACH_PTR(ht, ptr) {
+    sp_list_free(ptr);
+  }
+  ZEND_HASH_FOREACH_END();
+}
+
 ZEND_DLEXPORT zend_extension zend_extension_entry = {
     PHP_SNUFFLEUPAGUS_EXTNAME,
     PHP_SNUFFLEUPAGUS_VERSION,
@@ -69,6 +77,10 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT_HT(snuffleupagus_globals->disabled_functions_hook);
   SP_INIT_HT(snuffleupagus_globals->sp_internal_functions_hook);
   SP_INIT_HT(snuffleupagus_globals->sp_eval_blacklist_functions_hook);
+  SP_INIT_HT(snuffleupagus_globals->config.config_disabled_functions);
+  SP_INIT_HT(snuffleupagus_globals->config.config_disabled_functions_hooked);
+  SP_INIT_HT(snuffleupagus_globals->config.config_disabled_functions_ret);
+  SP_INIT_HT(snuffleupagus_globals->config.config_disabled_functions_ret_hooked);
 
   SP_INIT(snuffleupagus_globals->config.config_unserialize);
   SP_INIT(snuffleupagus_globals->config.config_random);
@@ -79,20 +91,15 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT(snuffleupagus_globals->config.config_snuffleupagus);
   SP_INIT(snuffleupagus_globals->config.config_disable_xxe);
   SP_INIT(snuffleupagus_globals->config.config_upload_validation);
-  SP_INIT(snuffleupagus_globals->config.config_disabled_functions);
-  SP_INIT(snuffleupagus_globals->config.config_disabled_functions_ret);
+  SP_INIT(snuffleupagus_globals->config.config_disabled_functions_reg);
+  SP_INIT(snuffleupagus_globals->config.config_disabled_functions_reg_ret);
   SP_INIT(snuffleupagus_globals->config.config_cookie);
   SP_INIT(snuffleupagus_globals->config.config_session);
-  SP_INIT(snuffleupagus_globals->config.config_disabled_constructs);
   SP_INIT(snuffleupagus_globals->config.config_eval);
 
-  snuffleupagus_globals->config.config_disabled_constructs->construct_include =
-      NULL;
-  snuffleupagus_globals->config.config_disabled_constructs->construct_eval =
-      NULL;
-  snuffleupagus_globals->config.config_disabled_functions->disabled_functions =
-      NULL;
-  snuffleupagus_globals->config.config_disabled_functions_ret
+  snuffleupagus_globals->config.config_disabled_functions_reg
+      ->disabled_functions = NULL;
+  snuffleupagus_globals->config.config_disabled_functions_reg_ret
       ->disabled_functions = NULL;
   snuffleupagus_globals->config.config_cookie->cookies = NULL;
   snuffleupagus_globals->config.config_eval->blacklist = NULL;
@@ -109,12 +116,21 @@ PHP_MINIT_FUNCTION(snuffleupagus) {
 }
 
 PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret);
+  free_disabled_functions_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked);
+
 #define FREE_HT(F)                       \
   zend_hash_destroy(SNUFFLEUPAGUS_G(F)); \
   pefree(SNUFFLEUPAGUS_G(F), 1);
 
   FREE_HT(disabled_functions_hook);
   FREE_HT(sp_eval_blacklist_functions_hook);
+  FREE_HT(config.config_disabled_functions);
+  FREE_HT(config.config_disabled_functions_hooked);
+  FREE_HT(config.config_disabled_functions_ret);
+  FREE_HT(config.config_disabled_functions_ret_hooked);
 
 #undef FREE_HT
 
@@ -135,19 +151,16 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
     sp_list_free(_n);                      \
   } while (0)
 
-  FREE_LST_DISABLE(config.config_disabled_functions->disabled_functions);
-  FREE_LST_DISABLE(config.config_disabled_functions_ret->disabled_functions);
-  FREE_LST_DISABLE(config.config_disabled_constructs->construct_include);
-  FREE_LST_DISABLE(config.config_disabled_constructs->construct_eval);
+  FREE_LST_DISABLE(config.config_disabled_functions_reg->disabled_functions);
+  FREE_LST_DISABLE(config.config_disabled_functions_reg_ret->disabled_functions);
   sp_list_free(SNUFFLEUPAGUS_G(config).config_cookie->cookies);
   sp_list_free(SNUFFLEUPAGUS_G(config).config_eval->blacklist);
   sp_list_free(SNUFFLEUPAGUS_G(config).config_eval->whitelist);
 
 #undef FREE_LST_DISABLE
 
-  pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions), 1);
-  pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions_ret), 1);
-  pefree(SNUFFLEUPAGUS_G(config.config_disabled_constructs), 1);
+  pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions_reg), 1);
+  pefree(SNUFFLEUPAGUS_G(config.config_disabled_functions_reg_ret), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_cookie), 1);
 
   UNREGISTER_INI_ENTRIES();
@@ -248,6 +261,12 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     // This is needed to implement the global strict mode
     CG(compiler_options) |= ZEND_COMPILE_HANDLE_OP_ARRAY;
   }
+
+  SNUFFLEUPAGUS_G(config).hook_execute =
+    SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions ||
+    SNUFFLEUPAGUS_G(config).config_disabled_functions_reg_ret->disabled_functions ||
+    zend_hash_num_elements(SNUFFLEUPAGUS_G(config).config_disabled_functions) ||
+    zend_hash_num_elements(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret);
 
   return SUCCESS;
 }

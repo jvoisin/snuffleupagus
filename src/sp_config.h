@@ -38,15 +38,15 @@ typedef struct {
 } sp_cidr;
 
 typedef struct {
-  char *encryption_key;
-  char *cookies_env_var;
+  zend_string *encryption_key;
+  zend_string *cookies_env_var;
 } sp_config_global;
 
 typedef struct {
   bool enable;
   bool simulation;
-  char *dump;
-  char *textual_representation;
+  zend_string *dump;
+  zend_string *textual_representation;
 } sp_config_readonly_exec;
 
 typedef struct { bool enable; } sp_config_global_strict;
@@ -62,7 +62,7 @@ typedef struct { bool enable; } sp_config_disable_xxe;
 typedef struct {
   enum samesite_type { strict = 1, lax = 2 } samesite;
   bool encrypt;
-  char *name;
+  zend_string *name;
   sp_pcre *name_r;
   bool simulation;
 } sp_cookie;
@@ -75,21 +75,21 @@ typedef struct {
 typedef struct {
   bool enable;
   bool simulation;
-  char *dump;
-  char *textual_representation;
+  zend_string *dump;
+  zend_string *textual_representation;
 } sp_config_unserialize;
 
 typedef struct {
-  char *textual_representation;
+  zend_string *textual_representation;
 
-  char *filename;
+  zend_string *filename;
   sp_pcre *r_filename;
 
-  char *function;
+  zend_string *function;
   sp_pcre *r_function;
   sp_list_node *functions_list;
 
-  char *hash;
+  zend_string *hash;
   int simulation;
 
   sp_tree *param;
@@ -98,18 +98,18 @@ typedef struct {
   int pos;
   unsigned int line;
 
-  char *ret;
   sp_pcre *r_ret;
+  zend_string *ret;
   sp_php_type ret_type;
 
-  sp_pcre *value_r;
-  char *value;
+  sp_pcre *r_value;
+  zend_string *value;
 
   sp_pcre *r_key;
-  char *key;
+  zend_string *key;
 
-  char *dump;
-  char *alias;
+  zend_string *dump;
+  zend_string *alias;
   bool param_is_array;
   bool var_is_array;
   sp_list_node *param_array_keys;
@@ -126,8 +126,8 @@ typedef struct {
   sp_list_node *blacklist;
   sp_list_node *whitelist;
   bool simulation;
-  char *dump;
-  char *textual_representation;
+  zend_string *dump;
+  zend_string *textual_representation;
 } sp_config_eval;
 
 typedef struct {
@@ -139,14 +139,7 @@ typedef struct {
 } sp_config_cookie;
 
 typedef struct {
-  sp_list_node
-      *construct_include;  // list of rules for `(include|require)_(once)?`
-  sp_list_node *construct_eval;
-  sp_list_node *construct_echo;
-} sp_config_disabled_constructs;
-
-typedef struct {
-  char *script;
+  zend_string *script;
   bool simulation;
   bool enable;
 } sp_config_upload_validation;
@@ -155,8 +148,6 @@ typedef struct {
   sp_config_random *config_random;
   sp_config_sloppy *config_sloppy;
   sp_config_unserialize *config_unserialize;
-  sp_config_disabled_functions *config_disabled_functions;
-  sp_config_disabled_functions *config_disabled_functions_ret;
   sp_config_readonly_exec *config_readonly_exec;
   sp_config_upload_validation *config_upload_validation;
   sp_config_cookie *config_cookie;
@@ -164,9 +155,16 @@ typedef struct {
   sp_config_auto_cookie_secure *config_auto_cookie_secure;
   sp_config_global_strict *config_global_strict;
   sp_config_disable_xxe *config_disable_xxe;
-  sp_config_disabled_constructs *config_disabled_constructs;
   sp_config_eval *config_eval;
   sp_config_session *config_session;
+  bool hook_execute;
+
+  HashTable *config_disabled_functions;
+  HashTable *config_disabled_functions_hooked;
+  HashTable *config_disabled_functions_ret;
+  HashTable *config_disabled_functions_ret_hooked;
+  sp_config_disabled_functions *config_disabled_functions_reg;
+  sp_config_disabled_functions *config_disabled_functions_reg_ret;
 } sp_config;
 
 typedef struct {

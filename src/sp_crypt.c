@@ -7,10 +7,13 @@ ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 void generate_key(unsigned char *key) {
   PHP_SHA256_CTX ctx;
   const char *user_agent = getenv("HTTP_USER_AGENT");
-  const char *env_var =
-      getenv(SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var);
-  const char *encryption_key =
+  const zend_string *env_var_zend =
+      SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var;
+  const zend_string *encryption_key_zend =
       SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key;
+  const char *env_var = (env_var_zend ? getenv(ZSTR_VAL(env_var_zend)) : NULL);
+  const char *encryption_key =
+      (encryption_key_zend ? ZSTR_VAL(encryption_key_zend) : NULL);
 
   assert(32 == crypto_secretbox_KEYBYTES);  // 32 is the size of a SHA256.
   assert(encryption_key);                   // Encryption key can't be NULL
@@ -24,10 +27,12 @@ void generate_key(unsigned char *key) {
   if (env_var) {
     PHP_SHA256Update(&ctx, (unsigned char *)env_var, strlen(env_var));
   } else {
-    sp_log_err("cookie_encryption",
-               "The environment variable '%s'"
-               "is empty, cookies are weakly encrypted.",
-               SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var);
+    sp_log_err(
+        "cookie_encryption",
+        "The environment variable '%s'"
+        "is empty, cookies are weakly encrypted.",
+        ZSTR_VAL(
+            SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var));
   }
 
   if (encryption_key) {
@@ -119,8 +124,9 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
 ** form `base64(nonce | encrypted_data)` (with `|` being the concatenation
 ** operation).
 */
-zend_string *encrypt_zval(char *data, unsigned long long data_len) {
-  const size_t encrypted_msg_len = crypto_secretbox_ZEROBYTES + data_len + 1;
+zend_string *encrypt_zval(zend_string *data) {
+  const size_t encrypted_msg_len =
+      crypto_secretbox_ZEROBYTES + ZSTR_LEN(data) + 1;
   // FIXME : We know that this len is too long
   const size_t emsg_and_nonce_len =
       encrypted_msg_len + crypto_secretbox_NONCEBYTES;
@@ -137,7 +143,8 @@ zend_string *encrypt_zval(char *data, unsigned long long data_len) {
 
   /* tweetnacl's API requires the message to be padded with
   crypto_secretbox_ZEROBYTES zeroes. */
-  memcpy(data_to_encrypt + crypto_secretbox_ZEROBYTES, data, data_len);
+  memcpy(data_to_encrypt + crypto_secretbox_ZEROBYTES, ZSTR_VAL(data),
+         ZSTR_LEN(data));
 
   assert(sizeof(zend_long) <= crypto_secretbox_NONCEBYTES);
 
