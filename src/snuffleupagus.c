@@ -261,6 +261,13 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     // This is needed to implement the global strict mode
     CG(compiler_options) |= ZEND_COMPILE_HANDLE_OP_ARRAY;
   }
+  if (zend_hash_str_find(SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked,
+                         "echo", strlen("echo")) ||
+      zend_hash_str_find(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked,
+                         "echo", strlen("echo"))) {
+    zend_write_default = zend_write;
+    zend_write = hook_echo;
+  }
 
   SNUFFLEUPAGUS_G(config).hook_execute =
     SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions ||

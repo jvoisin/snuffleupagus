@@ -236,13 +236,15 @@ static bool check_is_builtin_name(
     return (zend_string_equals_literal(config_node->function, "include") ||
             zend_string_equals_literal(config_node->function, "include_once") ||
             zend_string_equals_literal(config_node->function, "require") ||
-            zend_string_equals_literal(config_node->function, "require_once"));
+            zend_string_equals_literal(config_node->function, "require_once") ||
+            zend_string_equals_literal(config_node->function, "echo"));
   }
   if (config_node->r_function) {
     return (sp_is_regexp_matching(config_node->r_function, "include") ||
             sp_is_regexp_matching(config_node->r_function, "include_once") ||
             sp_is_regexp_matching(config_node->r_function, "require") ||
-            sp_is_regexp_matching(config_node->r_function, "require_once"));
+            sp_is_regexp_matching(config_node->r_function, "require_once") ||
+            sp_is_regexp_matching(config_node->r_function, "echo"));
   }
   return false;
 }
@@ -383,7 +385,12 @@ bool should_disable(zend_execute_data* execute_data,
     }
 
     if (config_node->r_value || config_node->value) {
-      if (check_is_builtin_name(config_node)) {
+      if (check_is_builtin_name(config_node) &&
+          !config_node->var &&
+          !config_node->param &&
+          !config_node->r_param &&
+          !config_node->key &&
+          !config_node->r_key) {
         if (false == is_param_matching(execute_data, config_node, builtin_param,
                                        &arg_name, builtin_param_name,
                                        &arg_value_str)) {
@@ -566,8 +573,14 @@ static int hook_functions(HashTable* to_hook_ht, HashTable* hooked_ht) {
     if (!HOOK_FUNCTION(ZSTR_VAL(key), disabled_functions_hook,
                        PHP_FN(check_disabled_function)) ||
         check_is_builtin_name(((sp_list_node*)Z_PTR_P(value))->data)) {
-      zend_symtable_add_new(hooked_ht, key, value);
-      zend_hash_del(to_hook_ht, key);
+      if (zend_string_equals_literal(key, "echo") ||
+          zend_string_equals_literal(key, "print")) {
+        zend_hash_str_add_new(hooked_ht, "echo", strlen("echo"), value);
+        zend_hash_del(to_hook_ht, key);
+      } else {
+        zend_symtable_add_new(hooked_ht, key, value);
+        zend_hash_del(to_hook_ht, key);
+      }
     }
   }
   ZEND_HASH_FOREACH_END();
@@ -647,4 +660,23 @@ int hook_disabled_functions(void) {
     }
   }
   return ret;
+}
+
+zend_write_func_t zend_write_default = NULL;
+
+int hook_echo(const char* str, size_t str_length) {
+  zend_string* zs = zend_string_init(str, str_length, 0);
+
+  bool ret = should_disable_ht(
+      EG(current_execute_data), "echo", zs, NULL,
+      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
+      SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
+
+  zend_string_release(zs);
+
+  if (ret) {
+    sp_terminate();
+  }
+
+  return zend_write_default(str, str_length);
 }
