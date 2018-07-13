@@ -7,5 +7,4 @@
 #include "ext/hash/php_hash_sha.h"
 #include "ext/standard/base64.h"
 
-
 void hook_session();

@@ -142,7 +142,8 @@ static zval *get_object_property(zend_execute_data *ed, zval *object,
   if (!zvalue) {
     len = strlen(class_name) + 3 + strlen(property);
     char *private_property = emalloc(len);
-    snprintf(private_property, len, PRIVATE_PROP_FMT, 0, class_name, 0, property);
+    snprintf(private_property, len, PRIVATE_PROP_FMT, 0, class_name, 0,
+             property);
     zvalue = get_entry_hashtable(array, private_property, len - 1);
     efree(private_property);
   }

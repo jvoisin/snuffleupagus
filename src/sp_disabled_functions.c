@@ -373,11 +373,8 @@ bool should_disable(zend_execute_data* execute_data,
     }
 
     if (config_node->r_value || config_node->value) {
-      if (check_is_builtin_name(config_node) &&
-          !config_node->var &&
-          !config_node->param &&
-          !config_node->r_param &&
-          !config_node->key &&
+      if (check_is_builtin_name(config_node) && !config_node->var &&
+          !config_node->param && !config_node->r_param && !config_node->key &&
           !config_node->r_key) {
         if (false == is_param_matching(execute_data, config_node, builtin_param,
                                        &arg_name, builtin_param_name,
@@ -422,8 +419,7 @@ bool should_drop_on_ret_ht(zval* return_value, const char* function_name,
 
   ht_entry = zend_hash_str_find_ptr(ht, function_name, strlen(function_name));
 
-  if (ht_entry &&
-      should_drop_on_ret(return_value, ht_entry, function_name)) {
+  if (ht_entry && should_drop_on_ret(return_value, ht_entry, function_name)) {
     ret = true;
   } else if (config && config->data) {
     ret = should_drop_on_ret(return_value, config, function_name);

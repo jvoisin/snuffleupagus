@@ -150,7 +150,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
   }
 
   if (SNUFFLEUPAGUS_G(config).hook_execute) {
-    char* function_name = get_complete_function_path(execute_data);
+    char *function_name = get_complete_function_path(execute_data);
 
     if (!function_name) {
       orig_execute_ex(execute_data);

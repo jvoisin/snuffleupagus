@@ -145,7 +145,8 @@ static char* zend_string_to_char(const zend_string* zs) {
   // Remove \0 from the middle of a string
 
   if (ZSTR_LEN(zs) + 1 < ZSTR_LEN(zs)) {
-    sp_log_err("overflow_error", "Overflow tentative detected in zend_string_to_char.");
+    sp_log_err("overflow_error",
+               "Overflow tentative detected in zend_string_to_char.");
     sp_terminate();
   }
   char* copy = emalloc(ZSTR_LEN(zs) + 1);
