@@ -37,8 +37,6 @@ matrix:
   - env: TARGET="clang php nightly" CC="clang"
     php: nightly
   allow_failures:
-  - env: TARGET="gcc php nightly" CC="gcc"
-    php: nightly
   - env: TARGET="clang php nightly" CC="clang"  # https://bugs.llvm.org/show_bug.cgi?id=9295
     php: nightly
 
