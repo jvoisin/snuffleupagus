@@ -314,7 +314,7 @@ It's currently not possible to:
   things like this, odds are that you're doing something wrong anyway.
 - Hooks on ``echo`` and on ``print`` are equivalent: there is no way to hook one
   without hooking the other, at least
-  `for now<https://github.com/nbs-system/snuffleupagus/issues/190>`__).
+  `for now <https://github.com/nbs-system/snuffleupagus/issues/190>`__).
   This is why hooked ``print`` will be displayed as ``echo`` in the logs.
 
 
