@@ -1,6 +1,32 @@
 Changelog
 =========
 
+0.3.0 - `Dentalium elephantinum <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.3.0>`__ 2018/07/17
+---------------------------------------------------------------------------------------------------------------
+
+New features
+^^^^^^^^^^^^
+
+- Session cookies can now be [encrypted](https://github.com/nbs-system/snuffleupagus/pull/178)
+- Some occurrences of [type juggling](https://github.com/nbs-system/snuffleupagus/pull/186) can now be eradicated
+- It's  [now possible](https://github.com/nbs-system/snuffleupagus/pull/187) to hook `echo` and `print`
+
+Improvements
+^^^^^^^^^^^^
+
+- The `.filename()` filter is [now matching](https://github.com/nbs-system/snuffleupagus/pull/167) on the file where the function is called instead on the one where it's defined.
+- Vastly [optimize](https://github.com/nbs-system/snuffleupagus/issues/166) the way we hook native functions
+- The format of the logs has been streamlined to ease their processing
+
+
+Bug fixes
+^^^^^^^^^
+
+- Better handling of filters for built-in functions
+- Fix various possible integer overflows
+- Fix an [annoying memory leak]( https://github.com/nbs-system/snuffleupagus/issues/192#issuecomment-404538124 ) impacting mostly `mod_php`  
+
+
 0.2.2 - `Elephant Moraine <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.2.2>`__ 2018/04/12
 ---------------------------------------------------------------------------------------------------------
 

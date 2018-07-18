@@ -1,3 +1,17 @@
+snuffleupagus (0.3.0) UNRELEASED; urgency=medium
+
+  * Session cookies can now be encrypted
+  * Some occurrences of type juggling can now be eradicated
+  * It's now possible to hook echo and print
+  * The .filename() filter is now matching on the file where the function is called instead on the one where it's defined.
+  * Vastly optimize the way native functions are hooked
+  * The format of the logs has been streamlined to ease their processing
+  * Better handling of filters for built-in functions
+  * Fix various possible integer overflows
+  * Fix an annoying memory leak
+
+ -- kkadosh <snuffleupagus@nbs-system.com>  Tue, 17 Jul 2018 15:00:00 +0200
+
 snuffleupagus (0.2.2) UNRELEASED; urgency=medium
   * Add some assertions in the code
   * The `.dump()` filter is now supported for `unserialize`, `readonly_exec`, and `eval` black/whitelist
@@ -10,7 +24,6 @@ snuffleupagus (0.2.2) UNRELEASED; urgency=medium
   * Fix a crash related to variadic functions
 
  -- jvoisin <snuffleupagus@nbs-system.com>  Tue, 12 Mar 2018 10:00:00 +0200
-
 
 snuffleupagus (0.2.1) UNRELEASED; urgency=medium
   * The testsuite can now be successfully run as root
