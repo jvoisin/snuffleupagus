@@ -71,7 +71,7 @@ Like *Suhosin*, we are encrypting the cookies with a secret key,
 an environment variable (usually the IP of the user)
 and the user's user-agent. This means that an attacker with an XSS won't be able to use
 the stolen cookie, since he can't spoof the content of the value of the environment
-variable for the user. Please do read the :ref:`documentation about this feature <cookie-encryption_config>`
+variable for the user. Please do read the :ref:`documentation about this feature <config_cookie-encryption>`
 if you're planning to use it.
 
 This feature is roughly the same than the `Suhosin one <https://suhosin.org/stories/configuration.html#transparent-encryption-options>`_.

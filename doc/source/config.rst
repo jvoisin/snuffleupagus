@@ -68,7 +68,7 @@ This configuration variable contains parameters that are used by multiple featur
   sp.global.secret_key("44239bd400aa82e125337c9d4eb8315767411ccd");
 
 - ``cookie_env_var``: A environment variable used as part of cookies encryption.
-  See the :ref:`relevant documentation <cookie-encryption-config>`
+  See the :ref:`relevant documentation <config_cookie-encryption>`
 
 Bugclass-killer features
 ------------------------
@@ -107,7 +107,7 @@ It can either be ``enabled`` or ``disabled``.
 .. _config_global:
 
 Prevent sloppy comparison
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 sloppy_comparison, disabled by default, will prevent php `type
 juggling <https://secure.php.net/manual/en/language.types.type-juggling.php>`_ (``==``) , preventing any bypass of a comparison.
@@ -133,11 +133,13 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
   sp.unserialize_hmac.enable();
   sp.unserialize_hmac.disable();
 
+.. _config_cookie-encryption:
+
 Cookies-related mitigations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
  
 Since snuffleupagus is providing several hardening features for cookies,
-there is a :dedicated web page:`here <cookie-encryption-config>` about them.
+there is a dedicated web page :ref:`here <cookie-encryption-page>` about them.
 
 
 readonly_exec

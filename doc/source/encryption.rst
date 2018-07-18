@@ -1,4 +1,4 @@
-.. _cookie-encryption-config:
+.. _cookie-encryption-page:
 
 Cookies
 =======
@@ -39,7 +39,6 @@ It can either be set to ``strict`` or ``lax``:
   sp.cookie.name("cookie1").samesite("lax");
   sp.cookie.name("cookie2").samesite("strict");;
 
-.. _cookie-encryption_config:
 
 Cookie encryption
 """""""""""""""""
