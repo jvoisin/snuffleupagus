@@ -44,7 +44,7 @@ Cookie encryption
 """""""""""""""""
    
 The encryption is done via the `tweetnacl library <https://tweetnacl.cr.yp.to/>`_,
-thus using `curve25519<https://en.wikipedia.org/wiki/Curve25519>`__, `xsalsa20 <https://en.wikipedia.org/wiki/Salsa20#ChaCha_variant>`__ and `poly1305 <https://en.wikipedia.org/wiki/Poly1305>`__ for the encryption. We chose this
+thus using `curve25519 <https://en.wikipedia.org/wiki/Curve25519>`__, `xsalsa20 <https://en.wikipedia.org/wiki/Salsa20#ChaCha_variant>`__ and `poly1305 <https://en.wikipedia.org/wiki/Poly1305>`__ for the encryption. We chose this
 library because of its portability, simplicity and reduced size (a single `.h` and
 `.c` file.).
 
