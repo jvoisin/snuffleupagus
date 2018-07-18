@@ -120,19 +120,18 @@ Any maintainer is allowed to merge a PR if all of these conditions are met.
 Maintainers need to do the following to push out a release:
 
 1. Make sure that all pending and mergeable pull requests are in
+2. Close the corresponding
+	 [milestone](https://github.com/nbs-system/snuffleupagus/milestones)
 2. Run `valgrind` (by adding a `-m` after the `-q` in the Makefile) and check that everything is ok.
    Don't mind the python-related issues.
-3. Update the `src/php_snuffleupagus.h` file: drop the `-dev` suffix and check new version comply with [semantic versioning](https://semver.org/)
+3. Update the `src/php_snuffleupagus.h` according to [semantic versioning](https://semver.org/)
 4. Update the changelog page in the documentation
-5. Update the Debian changelog in `./debian/changelog` with `dch`
+5. Update the Debian changelog in `./debian/changelog` with `cd debian; dch`
 6. Commit the result
 7. Clean up the folder `make clean; git clean -xdf`
 8. Create a tag for the release:
 
   ```sh
-  git checkout master
-  git pull origin master
-  make coverage
   git config user.signingkey 498C46FF087EDC36E7EAF9D445414A82A9B22D78
   git config user.email security@nbs-system.com
   git tag -s v$MAJOR.$MINOR.$PATCH -m "v$MAJOR.$MINOR.$PATCH"
@@ -141,5 +140,6 @@ Maintainers need to do the following to push out a release:
 
 9. Build the debian package with `make debian`
 10. Create the [release on github](https://github.com/nbs-system/snuffleupagus/releases)
-11. Update the `src/php_snuffleupagus.h` file: bump the version 3rd digit and add the `-dev` suffix
-12. Do the *secret release dance*
+11. Add the freshly built Debian package to the release
+12. Publish a [tweet](https://twitter.com/sp_php)
+13. Do the *secret release dance*
