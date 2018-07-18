@@ -40,9 +40,6 @@ static int sp_hook_s_read(PS_READ_ARGS) {
     }
 
     *val = zend_string_dup(val_zval.value.str, 0);
-    if (*val == NULL) {
-      *val = ZSTR_EMPTY_ALLOC();
-    }
     zend_string_release(orig_val);
   }
 
