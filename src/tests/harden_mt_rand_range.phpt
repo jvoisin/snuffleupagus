@@ -6,29 +6,10 @@ Harden mt_rand range
 sp.configuration_file={PWD}/config/harden_rand.ini
 --FILE--
 <?php 
-if (mt_rand(0,1) > 1) {
-  echo "Failed\n";
-}
-if (mt_rand(0,1) > 1) {
-  echo "Failed\n";
-}
-if (mt_rand(0,1) > 1) {
-  echo "Failed\n";
-}
-if (mt_rand(0,1) > 1) {
-  echo "Failed\n";
-}
-if (mt_rand(0,1) > 1) {
-  echo "Failed\n";
-}
-if (mt_rand(0,1) > 1) {
-  echo "Failed\n";
-}
-if (mt_rand(0,1) > 1) {
-  echo "Failed\n";
-}
-if (mt_rand(0,1) > 1) {
-  echo "Failed\n";
+for ($i=0; $i <=100; $i++) {
+  if (mt_rand(0,1) > 1) {
+    echo "Failed\n";
+  }
 }
 
 ?>
