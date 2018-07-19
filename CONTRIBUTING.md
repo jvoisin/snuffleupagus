@@ -136,6 +136,7 @@ Maintainers need to do the following to push out a release:
   git config user.email security@nbs-system.com
   git tag -s v$MAJOR.$MINOR.$PATCH -m "v$MAJOR.$MINOR.$PATCH"
   git push --tags
+	git push origin master
   ```
 
 9. Build the debian package with `make debian`
