@@ -32,7 +32,7 @@ static void random_int_wrapper(INTERNAL_FUNCTION_PARAMETERS) {
       break;
     case 2:
     default:
-      ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_QUIET, 0, 2);
+      ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_QUIET, 2, 2);
       Z_PARAM_LONG(min);
       Z_PARAM_LONG(max);
       ZEND_PARSE_PARAMETERS_END_EX((void)0);
