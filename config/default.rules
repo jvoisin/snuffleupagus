@@ -1,3 +1,9 @@
+# Harden the PRNG
+sp.harden_random.enable();
+
+# Disabled XXE
+sp.disable_xxe.enable();
+
 # Harden the `chmod` function
 sp.disable_function.function("chmod").param("mode").value_r("^[0-9]{2}[67]$").drop();
 
