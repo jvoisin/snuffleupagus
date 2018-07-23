@@ -40,9 +40,21 @@ sp.disable_function.function("ini_set").param("var_name").value("include_path").
 sp.disable_function.function("ini_set").param("var_name").value("open_basedir").drop();
 
 # Detect some backdoors via environnement recon
-sp.disable_function.function("ini_get").param("var_name").value_r("(?:allow_url_fopen|open_basedir|suhosin)").drop();
-sp.disable_function.function("function_exists").param("function_name").value_r("(?:eval|exec|system)").drop();
-sp.disable_function.function("is_callable").param("var").value_r("(?:eval|exec|system)").drop();
+sp.disable_function.function("ini_get").param("var_name").value("allow_url_fopen").drop();
+sp.disable_function.function("ini_get").param("var_name").value("open_basedir").drop();
+sp.disable_function.function("ini_get").param("var_name").value_r("suhosin").drop();
+sp.disable_function.function("function_exists").param("function_name").value("eval").drop();
+sp.disable_function.function("function_exists").param("function_name").value("exec").drop();
+sp.disable_function.function("function_exists").param("function_name").value("system").drop();
+sp.disable_function.function("function_exists").param("function_name").value("shell_exec").drop();
+sp.disable_function.function("function_exists").param("function_name").value("proc_open").drop();
+sp.disable_function.function("function_exists").param("function_name").value("passthru").drop();
+sp.disable_function.function("is_callable").param("var").value("eval").drop();
+sp.disable_function.function("is_callable").param("var").value("exec").drop();
+sp.disable_function.function("is_callable").param("var").value("system").drop();
+sp.disable_function.function("is_callable").param("var").value("shell_exec").drop();
+sp.disable_function.function("is_callable").param("var").value("proc_open").drop();
+sp.disable_function.function("is_callable").param("var").value("passthru").drop();
 
 # Commenting sqli related stuff to improve performance.
 # TODO figure out why these functions can't be hooked at startup
