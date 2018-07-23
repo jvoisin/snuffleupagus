@@ -17,10 +17,10 @@ sp.disable_function.function("mail").param("additional_parameters").value_r("\\-
 sp.disable_function.function("putenv").param("setting").value_r("LD_").drop()
 
 ##Prevent various `include`-related vulnerabilities
-sp.disable_function.function("require_once").value_r("\.php$").allow();
-sp.disable_function.function("include_once").value_r("\.php$").allow();
-sp.disable_function.function("require").value_r("\.php$").allow();
-sp.disable_function.function("include").value_r("\.php$").allow();
+sp.disable_function.function("require_once").value_r("\.(php|inc)$").allow();
+sp.disable_function.function("include_once").value_r("\.(php|inc)$").allow();
+sp.disable_function.function("require").value_r("\.(php|inc)$").allow();
+sp.disable_function.function("include").value_r("\.(php|inc)$").allow();
 sp.disable_function.function("require_once").drop()
 sp.disable_function.function("include_once").drop()
 sp.disable_function.function("require").drop()
