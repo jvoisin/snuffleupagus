@@ -29,6 +29,6 @@ check() {
 
 package() {
   make -C "${srcdir}/${pkgname}/src" INSTALL_ROOT="${pkgdir}" install
-  install -D -m644 "${srcdir}/${pkgname}/config/default.ini" "${pkgdir}/etc/php/conf.d/${pkgname}.rules"
+  install -D -m644 "${srcdir}/${pkgname}/config/default.rules" "${pkgdir}/etc/php/conf.d/${pkgname}.rules"
   install -D -m644 "${srcdir}/${pkgname}/config/${pkgname}.ini" "${pkgdir}/etc/php/conf.d/${pkgname}.ini"
 }
