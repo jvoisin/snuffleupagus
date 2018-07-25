@@ -56,3 +56,8 @@ install-%-stamp:
 # snuffleupagus source files are copied and compiled in build-7.X folders
 build-%:
 	mkdir -p build-$(*)
+
+# disable 'php-' prefix
+# this target is needed or else dh_php weren't generate proper Depends field in the binary package
+override_dh_php:
+	dh_php -p $(PECL_NAME)
