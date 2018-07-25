@@ -33,7 +33,6 @@ $(foreach ver,$(DH_PHP_VERSIONS),$(mkdir build-$(ver)))
 
 configure-%-stamp: SOURCE_DIR = build-$(*)
 configure-%-stamp:
-	$(warning PECL_SOURCE_$(*): $(PECL_SOURCE_$(*)))
 	cp -a $(PECL_SOURCE) $(CONFIG) $(SOURCE_DIR)
 	cd $(PECL_SOURCE) && phpize$(*)
 	dh_auto_configure --sourcedirectory=$(SOURCE_DIR)/$(PECL_SOURCE) -- --enable-$(PECL_NAME) --with-php-config=/usr/bin/php-config$* $(PECL_CONFIGURE_MAINT_APPEND)
@@ -44,7 +43,6 @@ override_dh_testdir: $(DIR_TARGETS)
 
 build-%-stamp: SOURCE_DIR = build-$(*)
 build-%-stamp:
-	$(warning $(SOURCE_DIR)/$(PECL_SOURCE): $(SOURCE_DIR)/$(PECL_SOURCE))
 	dh_auto_build --sourcedirectory=$(SOURCE_DIR)
 	if ! echo $$DEB_BUILD_OPTIONS | grep -qo nocheck; then TEST_PHP_ARGS="-q" REPORT_EXIST_STATUS=1 make -C $(SOURCE_DIR)/$(PECL_SOURCE) test; fi
 	touch build-$*-stamp
