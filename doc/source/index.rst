@@ -16,6 +16,7 @@ Documentation
    installation
    config
    download
+   debian
    changelog
    faq
    papers

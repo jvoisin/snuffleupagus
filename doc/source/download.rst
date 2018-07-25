@@ -18,7 +18,7 @@ Debian and Ubuntu
 
 We're currently not providing a Debian/Ubuntu repository,
 but you can grab the latest release on `github <https://github.com/nbs-system/snuffleupagus/releases>`__,
-or build your own package by cloning the source code and typing ``make debian``.
+or build your own package by following the :doc:`debian page <debian>`
 
 Source code
 -----------
