@@ -2,32 +2,59 @@
 
 DH_VERBOSE = 1
 
-DPKG_EXPORT_BUILDFLAGS = 1
-include /usr/share/dpkg/default.mk
+# We want package name to be named snuffleupagus, not php-snuffleupagus
+# even if it doesn't follow Debian PHP module package naming scheme
+# or else we need to review the whole file hierarchy and to generate the
+# package.xml file
+# These two vars have to be set before we include pkg-pecl.mk or else 
+# compilation will fail
+PECL_NAME_OVERRIDE := snuffleupagus
+DH_PHP_VERSIONS_OVERRIDE := $(shell /usr/sbin/phpquery -V)
+include /usr/share/dh-php/pkg-pecl.mk
 
+# make harderning var visible here even if it is defined in pkg-pecl.mk
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
+# target directory is debian/snuffleupagus, not debian/php-snuffleupagus
+INSTALL_ROOT = $(CURDIR)/debian/$(PECL_NAME)
+
+DIR_TARGETS = $(addprefix build-,$(DH_PHP_VERSIONS))
+
+## PECL_SOURCE: folder containing source code ex: src
+## SOURCE_DIR: build directory ex: build-7.2
+## PECL_NAME: name of the package
+
+PECL_SOURCE=$(filter-out APKBUILD CONTRIBUTING.md debian doc LICENSE Makefile.dis PKGBUILD README.md scripts slides $(DIR_TARGETS),$(wildcard *))
+$(foreach ver,$(DH_PHP_VERSIONS),$(eval PECL_SOURCE_$(ver) := $(PECL_SOURCE)))
+$(foreach ver,$(DH_PHP_VERSIONS),$(mkdir build-$(ver)))
+
 %:
-	dh $@ 
+	dh $@ --with php
 
-override_dh_auto_clean:
-	cd ./src; phpize --clean
+configure-%-stamp: SOURCE_DIR = build-$(*)
+configure-%-stamp:
+	$(warning PECL_SOURCE_$(*): $(PECL_SOURCE_$(*)))
+	cp -a $(PECL_SOURCE_$(*)) $(SOURCE_DIR)
+	cd $(SOURCE_DIR)/src && phpize$(*)
+	dh_auto_configure --sourcedirectory=$(SOURCE_DIR)/src -- --enable-$(PECL_NAME) --with-php-config=/usr/bin/php-config$* $(PECL_CONFIGURE_MAINT_APPEND)
+	touch configure-$(*)-stamp
 
-override_dh_auto_configure:
-	cd ./src; phpize
-	cd ./src; ./configure --enable-snuffleupagus
-
-override_dh_auto_build:
-	make -C src
-
-override_dh_auto_install:
+override_dh_testdir: $(DIR_TARGETS)
 	dh_testdir
-	dh_testroot
-	dh_installdirs
-	mkdir -p debian/snuffleupagus/$$(/usr/bin/php-config --extension-dir)/
-	mkdir -p debian/snuffleupagus/etc/php/$$(/usr/bin/php-config --version | cut -d '.' -f1-2)/mods-available/
-	install -m 644 -o root -g root src/modules/snuffleupagus.so debian/snuffleupagus/$$(/usr/bin/php-config --extension-dir)/snuffleupagus.so
-	install -m 644 -o root -g root config/snuffleupagus.ini debian/snuffleupagus/etc/php/$$(/usr/bin/php-config --version | cut -d '.' -f1-2)/mods-available/snuffleupagus.ini
 
-override_dh_auto_test:
-	TEST_PHP_ARGS="-q" REPORT_EXIST_STATUS=1 make -C src test
+build-%-stamp: SOURCE_DIR = build-$(*)
+build-%-stamp:
+	$(warning $(SOURCE_DIR)/$(PECL_SOURCE): $(SOURCE_DIR)/$(PECL_SOURCE))
+	dh_auto_build --sourcedirectory=$(SOURCE_DIR)/src
+	if ! echo $$DEB_BUILD_OPTIONS | grep -qo nocheck; then TEST_PHP_ARGS="-q" REPORT_EXIST_STATUS=1 make -C $(SOURCE_DIR)/src test; fi
+	touch build-$*-stamp
+
+install-%-stamp: SOURCE_DIR = build-$(*)
+install-%-stamp:
+	dh_auto_install --sourcedirectory=$(SOURCE_DIR)/src -- INSTALL_ROOT=$(INSTALL_ROOT)
+	touch install-$*-stamp
+
+# this is just a Makefile target to create build-7.X folders for each php7 dev packages found
+# snuffleupagus source files are copied and compiled in build-7.X folders
+build-%:
+	mkdir -p build-$(*)

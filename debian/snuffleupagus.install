@@ -1,0 +1,2 @@
+config/default.rules /etc/snuffleupagus/
+scripts /usr/lib/nbs/

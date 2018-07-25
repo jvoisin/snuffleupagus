@@ -1,20 +1,4 @@
-snuffleupagus (0.3.1) UNRELEASED; urgency=medium
-
-  * Disable XXE and harden PRNG by default
-  * Use SameSite on PHP's session cookie in the default rules
-  * Relax a bit what files can be included in the default rules  
-  * Add the possibility to ignore files hashes when generating rules
-  * The filename filter is now accepting phar paths  
-  * The harden rand_feature is not ignoring parameters anymore in function calls
-  * Fix possible crashes/hangs when using php-fpm's pools  
-  * Fix an infinite loop on echo hook
-  * Fix an issue with filename filter
-  * Fix some documentation issues
-  * Fix the Arch Linux's PKGBUILD
-
- -- he2ss <snuffleupagus@nbs-system.com>  Tue, 20 Aug 2018 15:00:00 +0200
-
-snuffleupagus (0.3.0) UNRELEASED; urgency=medium
+snuffleupagus (0.3.0-1) UNRELEASED; urgency=medium
 
   * Session cookies can now be encrypted
   * Some occurrences of type juggling can now be eradicated

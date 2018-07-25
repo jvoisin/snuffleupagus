@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ] && [ -n "$2" ]; then
+    for ver in $(phpquery -V); do
+	for sapi in $(phpquery -v "$ver" -S); do
+	    ini="/etc/php/$ver/$sapi/conf.d/20-snuffleupagus.ini"
+	    if [ -h "$ini" ]; then
+		rm "$ini"
+	    fi
+	done
+    done
+fi
+
+#DEBHELPER#
+
+exit 0
