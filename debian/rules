@@ -24,8 +24,8 @@ DIR_TARGETS = $(addprefix build-,$(DH_PHP_VERSIONS))
 ## SOURCE_DIR: build directory ex: build-7.2
 ## PECL_NAME: name of the package
 
-PECL_SOURCE=$(filter-out APKBUILD CONTRIBUTING.md debian doc LICENSE Makefile.dis PKGBUILD README.md scripts slides $(DIR_TARGETS),$(wildcard *))
-$(foreach ver,$(DH_PHP_VERSIONS),$(eval PECL_SOURCE_$(ver) := $(PECL_SOURCE)))
+PECL_SOURCE := src
+CONFIG := config
 $(foreach ver,$(DH_PHP_VERSIONS),$(mkdir build-$(ver)))
 
 %:
@@ -34,9 +34,9 @@ $(foreach ver,$(DH_PHP_VERSIONS),$(mkdir build-$(ver)))
 configure-%-stamp: SOURCE_DIR = build-$(*)
 configure-%-stamp:
 	$(warning PECL_SOURCE_$(*): $(PECL_SOURCE_$(*)))
-	cp -a $(PECL_SOURCE_$(*)) $(SOURCE_DIR)
-	cd $(SOURCE_DIR)/src && phpize$(*)
-	dh_auto_configure --sourcedirectory=$(SOURCE_DIR)/src -- --enable-$(PECL_NAME) --with-php-config=/usr/bin/php-config$* $(PECL_CONFIGURE_MAINT_APPEND)
+	cp -a $(PECL_SOURCE) $(CONFIG) $(SOURCE_DIR)
+	cd $(PECL_SOURCE) && phpize$(*)
+	dh_auto_configure --sourcedirectory=$(SOURCE_DIR)/$(PECL_SOURCE) -- --enable-$(PECL_NAME) --with-php-config=/usr/bin/php-config$* $(PECL_CONFIGURE_MAINT_APPEND)
 	touch configure-$(*)-stamp
 
 override_dh_testdir: $(DIR_TARGETS)
@@ -45,13 +45,13 @@ override_dh_testdir: $(DIR_TARGETS)
 build-%-stamp: SOURCE_DIR = build-$(*)
 build-%-stamp:
 	$(warning $(SOURCE_DIR)/$(PECL_SOURCE): $(SOURCE_DIR)/$(PECL_SOURCE))
-	dh_auto_build --sourcedirectory=$(SOURCE_DIR)/src
-	if ! echo $$DEB_BUILD_OPTIONS | grep -qo nocheck; then TEST_PHP_ARGS="-q" REPORT_EXIST_STATUS=1 make -C $(SOURCE_DIR)/src test; fi
+	dh_auto_build --sourcedirectory=$(SOURCE_DIR)
+	if ! echo $$DEB_BUILD_OPTIONS | grep -qo nocheck; then TEST_PHP_ARGS="-q" REPORT_EXIST_STATUS=1 make -C $(SOURCE_DIR)/$(PECL_SOURCE) test; fi
 	touch build-$*-stamp
 
 install-%-stamp: SOURCE_DIR = build-$(*)
 install-%-stamp:
-	dh_auto_install --sourcedirectory=$(SOURCE_DIR)/src -- INSTALL_ROOT=$(INSTALL_ROOT)
+	dh_auto_install --sourcedirectory=$(SOURCE_DIR)/$(PECL_SOURCE) -- INSTALL_ROOT=$(INSTALL_ROOT)
 	touch install-$*-stamp
 
 # this is just a Makefile target to create build-7.X folders for each php7 dev packages found
