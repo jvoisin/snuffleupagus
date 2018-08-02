@@ -278,7 +278,8 @@ int parse_cookie(char *line) {
       return -1;
     }
   }
-  SNUFFLEUPAGUS_G(config).config_cookie->cookies =
+  SNUFFLEUPAGUS_G(config)
+      .config_cookie->cookies =
       sp_list_insert(SNUFFLEUPAGUS_G(config).config_cookie->cookies, cookie);
   return SUCCESS;
 }
@@ -392,11 +393,14 @@ int parse_disabled_functions(char *line) {
                " must take a function name on line %zu.",
                line, sp_line_no);
     return -1;
-  } else if (df->filename && *ZSTR_VAL(df->filename) != '/') {
-    sp_log_err("config",
-               "Invalid configuration line: 'sp.disabled_functions%s':"
-               "'.filename' must be an absolute path on line %zu.",
-               line, sp_line_no);
+  } else if (df->filename && (*ZSTR_VAL(df->filename) != '/') &&
+             (0 !=
+              strncmp(ZSTR_VAL(df->filename), "phar://", strlen("phar://")))) {
+    sp_log_err(
+        "config",
+        "Invalid configuration line: 'sp.disabled_functions%s':"
+        "'.filename' must be an absolute path or a phar archive on line %zu.",
+        line, sp_line_no);
     return -1;
   } else if (!(allow ^ drop)) {
     sp_log_err("config",
