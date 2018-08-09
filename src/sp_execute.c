@@ -5,9 +5,9 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-static void (*orig_execute_ex)(zend_execute_data *execute_data);
+static void (*orig_execute_ex)(zend_execute_data *execute_data) = NULL;
 static void (*orig_zend_execute_internal)(zend_execute_data *execute_data,
-                                          zval *return_value);
+                                          zval *return_value) = NULL;
 static int (*orig_zend_stream_open)(const char *filename,
                                     zend_file_handle *handle) = NULL;
 
@@ -271,7 +271,7 @@ end:
 int hook_execute(void) {
   TSRMLS_FETCH();
 
-  if (NULL == orig_zend_stream_open) {
+  if (NULL == orig_execute_ex) {
     /* zend_execute_ex is used for "user" function calls */
     orig_execute_ex = zend_execute_ex;
     zend_execute_ex = sp_execute_ex;
