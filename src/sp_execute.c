@@ -9,7 +9,7 @@ static void (*orig_execute_ex)(zend_execute_data *execute_data);
 static void (*orig_zend_execute_internal)(zend_execute_data *execute_data,
                                           zval *return_value);
 static int (*orig_zend_stream_open)(const char *filename,
-                                    zend_file_handle *handle);
+                                    zend_file_handle *handle) = NULL;
 
 // FIXME handle symlink
 ZEND_COLD static inline void terminate_if_writable(const char *filename) {
@@ -271,17 +271,23 @@ end:
 int hook_execute(void) {
   TSRMLS_FETCH();
 
-  /* zend_execute_ex is used for "user" function calls */
-  orig_execute_ex = zend_execute_ex;
-  zend_execute_ex = sp_execute_ex;
+  if (NULL == orig_zend_stream_open) {
+    /* zend_execute_ex is used for "user" function calls */
+    orig_execute_ex = zend_execute_ex;
+    zend_execute_ex = sp_execute_ex;
+  }
 
-  /* zend_execute_internal is used for "builtin" functions calls */
-  orig_zend_execute_internal = zend_execute_internal;
-  zend_execute_internal = sp_zend_execute_internal;
+  if (NULL == orig_zend_execute_internal) {
+    /* zend_execute_internal is used for "builtin" functions calls */
+    orig_zend_execute_internal = zend_execute_internal;
+    zend_execute_internal = sp_zend_execute_internal;
+  }
 
-  /* zend_stream_open_function is used for include-related stuff */
-  orig_zend_stream_open = zend_stream_open_function;
-  zend_stream_open_function = sp_stream_open;
+  if (NULL == orig_zend_stream_open) {
+    /* zend_stream_open_function is used for include-related stuff */
+    orig_zend_stream_open = zend_stream_open_function;
+    zend_stream_open_function = sp_stream_open;
+  }
 
   return SUCCESS;
 }
