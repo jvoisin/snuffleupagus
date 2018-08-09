@@ -3,15 +3,14 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
+int (*sp_rfc1867_orig_callback)(unsigned int event, void *event_data,
+                                void **extra);
+int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra);
+
 #define EFREE_3(env)               \
   for (size_t i = 0; i < 4; i++) { \
     efree(env[i]);                 \
   }
-
-void hook_upload() {
-  sp_rfc1867_orig_callback = php_rfc1867_callback;
-  php_rfc1867_callback = sp_rfc1867_callback;
-}
 
 int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
   int retval = SUCCESS;
@@ -98,4 +97,11 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
     ZEND_HASH_FOREACH_END();
   }
   return retval;
+}
+
+void hook_upload() {
+  if (NULL == sp_rfc1867_orig_callback) {
+    sp_rfc1867_orig_callback = php_rfc1867_callback;
+    php_rfc1867_callback = sp_rfc1867_callback;
+  }
 }
