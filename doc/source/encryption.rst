@@ -64,13 +64,16 @@ The key is derived from multiple sources, such as :
   If the simulation mode isn’t specified in the configuration, snuffleupagus will drop any request that it was unable to decrypt.
 
 Since PHP doesn't handle session cookie and non-session cookie in the same way,
-thus we are providing two different options:
+thus we are providing two different ways.
 
- * For the session cookie, the encryption happens server-side: The cookie's value isn't encrypted, only the session content is.
- * For the non-session cookie, the value is encrypted.
 
 Session cookie
 ..............
+
+For the session cookie, the encryption happens server-side: Nothing is
+encrypted in the cookie: neither the cookie's name (usually ``PHPSESSID``) nor
+its content (the session's name).  What is in fact encrypted, is the session's
+content, on the server (usually stored in ``/tmp/sess_<XXXX>`` files).
 
 :ref:`Session encryption <cookie-encryption-feature>`, disabled by default, will activate transparent session encryption.
 It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` mode.
@@ -83,6 +86,8 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 
 Non-session cookie
 ..................
+
+For the non-session cookie, the cookie's name is left untouched, only its value is encrypted.
 
 :ref:`Cookie encryption <cookie-encryption-feature>`, disabled by default, will activate transparent encryption of specific cookies.
 
