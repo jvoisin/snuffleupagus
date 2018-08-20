@@ -265,6 +265,8 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     // This is needed to implement the global strict mode
     CG(compiler_options) |= ZEND_COMPILE_HANDLE_OP_ARRAY;
   }
+
+  // If `zend_write_default` is not NULL it is already hooked.
   if ((zend_hash_str_find(
           SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked, "echo",
           strlen("echo")) ||
