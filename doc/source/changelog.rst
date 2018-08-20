@@ -1,6 +1,29 @@
 Changelog
 =========
 
+0.3.1 - `Elephant Arch <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.3.1>`__ 2018/08/20
+------------------------------------------------------------------------------------------------------
+
+Improvements
+^^^^^^^^^^^^
+
+- Disable XXE and harden PRNG by default
+- Use ``SameSite`` on PHP's session cookie in the default rules
+- Relax a bit what files can be included in the default rules  
+- Add the possibility to ignore files hashes when generating rules
+- The ``filename`` filter is now accepting phar paths  
+
+Bug fixes
+^^^^^^^^^
+
+- The harden rand_feature is not ignoring parameters anymore in function calls
+- Fix possible crashes/hangs when using php-fpm's pools  
+- Fix an infinite loop on ``echo`` hook
+- Fix an issue with ``filename`` filter
+- Fix some documentation issues
+- Fix the Arch Linux's PKGBUILD
+
+
 0.3.0 - `Dentalium elephantinum <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.3.0>`__ 2018/07/17
 ---------------------------------------------------------------------------------------------------------------
 
