@@ -327,10 +327,9 @@ annotated types and native functions, so it doesn't cover every instances of
 during comparisons. Since comparison between different types in PHP is
 `notoriously <https://secure.php.net/manual/en/types.comparisons.php>`__
 difficult to get right, Snuffleupagus offers a way to **always** use the
-``identical`` operator instead of the ``equal`` one (see the `operator section
-<https://secure.php.net/manual/en/language.operators.comparison.php>` for PHP's documentation
-for more details), so that values with different types will always be treated
-as being different.
+``identical`` operator instead of the ``equal`` one (see the `operator section <https://secure.php.net/manual/en/language.operators.comparison.php>`__
+for PHP's documentation for more details), so that values with different types
+will always be treated as being different.
 
 .. _readonly-exec-feature:
 
