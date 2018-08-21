@@ -109,8 +109,9 @@ It can either be ``enabled`` or ``disabled``.
 Prevent sloppy comparison
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-sloppy_comparison, disabled by default, will prevent php `type
-juggling <https://secure.php.net/manual/en/language.types.type-juggling.php>`_ (``==``) , preventing any bypass of a comparison.
+:ref:`Sloppy comparison prevention <sloppy-comparisons-feature>`, disabled by default, will prevent php `type
+juggling <https://secure.php.net/manual/en/language.types.type-juggling.php>`_ (``==``):
+two values with different types will always be different.
 
 It can either be ``enabled`` or ``disabled``.
 

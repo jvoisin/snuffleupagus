@@ -316,6 +316,22 @@ This feature is largely inspired from the
 `autostrict <https://github.com/krakjoe/autostrict>`_ module from `krakjoe <http://krakjoe.ninja>`__.
 
 
+.. _sloppy-comparisons-feature:
+
+Preventing sloppy comparisons
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The aforementioned :ref:`strict mode <global-strict-feature>` only works with
+annotated types and native functions, so it doesn't cover every instances of
+`type juggling <https://secure.php.net/manual/en/language.types.type-juggling.php>`
+during comparisons. Since comparison between different types in PHP is
+`notoriously <https://secure.php.net/manual/en/types.comparisons.php>`__
+difficult to get right, Snuffleupagus offers a way to **always** use the
+``identical`` operator instead of the ``equal`` one (see the `operator section
+<https://secure.php.net/manual/en/language.operators.comparison.php>` for PHP's documentation
+for more details), so that values with different types will always be treated
+as being different.
+
 .. _readonly-exec-feature:
 
 Preventing execution of writable PHP files
