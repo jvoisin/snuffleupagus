@@ -181,6 +181,7 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
   ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
+  // We need to disable wrappers loaded by extensions loaded after SNUFFLEUPAGUS.
   if (SNUFFLEUPAGUS_G(config).config_wrapper->enabled &&
       zend_hash_num_elements(php_stream_get_url_stream_wrappers_hash()) !=
       SNUFFLEUPAGUS_G(config).config_wrapper->num_wrapper) {

@@ -80,7 +80,7 @@ typedef struct {
 typedef struct {
   sp_list_node *whitelist;
   bool enabled;
-  size_t num_wrapper;
+  size_t num_wrapper;  // Used to verify if wrappers were added.
 } sp_config_wrapper;
 
 typedef struct {
@@ -211,7 +211,7 @@ typedef struct {
 #define SP_TOKEN_EVAL_BLACKLIST ".eval_blacklist"
 #define SP_TOKEN_EVAL_WHITELIST ".eval_whitelist"
 #define SP_TOKEN_SLOPPY_COMPARISON ".sloppy_comparison"
-#define SP_TOKEN_ALLOW_WRAPPERS ".allow_wrappers"
+#define SP_TOKEN_ALLOW_WRAPPERS ".wrappers_whitelist"
 
 // common tokens
 #define SP_TOKEN_ENABLE ".enable("
