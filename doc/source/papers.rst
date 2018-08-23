@@ -17,9 +17,14 @@ Articles
 
 - `Killing php bug classes at berlinsides <https://dustri.org/b/killing-php-bug-classes-at-berlinsides.html>`_ - 2017-06-05
 - `Snuffleu…what? <https://fr33tux.org/post/snuffleupagus/>`_ - 2017-10-07
+- `How to harden AdwCleaner’s web backend using PHP <https://blog.malwarebytes.com/security-world/technology/2017/12/harden-adwcleaner-php-web-backend/>`__ - 06-12-2017
 - `First release of Snuffleupagus <https://dustri.org/b/first-release-of-snuffleupagus.html>`__ - 2017-12-21
 - `Snuffleupagus 0.3.0 - Dentalium elephantinum <https://dustri.org/b/snuffleupagus-030-dentalium-elephantinum.html>`__ - 2018-07-18
+- `Snuffleupagus version 0.3.0 - Dentalium elephantinum <https://linuxfr.org/news/snuffleupagus-version-0-3-0-dentalium-elephantinum>`__ (fr) - 2018-07-18
 
+Papers
+------
+- `Sécurisez vos applications php avec Snuffleupagus <https://connect.ed-diamond.com/GNU-Linux-Magazine/GLMF-213/Securisez-vos-applications-PHP-avec-Snuffleupagus>`__ (fr) (paywall) - 2018-03-2018
 
 Notable users
 -------------
