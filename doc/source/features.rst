@@ -323,7 +323,7 @@ Preventing sloppy comparisons
 
 The aforementioned :ref:`strict mode <global-strict-feature>` only works with
 annotated types and native functions, so it doesn't cover every instances of
-`type juggling <https://secure.php.net/manual/en/language.types.type-juggling.php>`
+`type juggling <https://secure.php.net/manual/en/language.types.type-juggling.php>`__
 during comparisons. Since comparison between different types in PHP is
 `notoriously <https://secure.php.net/manual/en/types.comparisons.php>`__
 difficult to get right, Snuffleupagus offers a way to **always** use the
