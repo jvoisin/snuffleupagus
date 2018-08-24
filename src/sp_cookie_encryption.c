@@ -43,11 +43,13 @@ static zend_string *encrypt_data(zend_string *data) {
 }
 
 PHP_FUNCTION(sp_setcookie) {
-  zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL,
-#if PHP_VERSION_ID >= 70300
-              *samesite = NULL,
+  zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL, *value_enc = NULL,
+#if PHP_VERSION_ID < 70300
+              *path_samesite = NULL;
+#else
+              *samesite = NULL;
 #endif
-              *value2 = NULL, *path2 = NULL;
+
   zend_long expires = 0;
   zend_bool secure = 0, httponly = 0;
   const sp_cookie *cookie_node = NULL;
@@ -90,7 +92,7 @@ PHP_FUNCTION(sp_setcookie) {
 
   /* Shall we encrypt the cookie's value? */
   if (cookie_node && cookie_node->encrypt && value) {
-    value2 = encrypt_data(value);
+    value_enc = encrypt_data(value);
   }
 
 
@@ -104,10 +106,10 @@ PHP_FUNCTION(sp_setcookie) {
                           : SAMESITE_COOKIE_FORMAT SP_TOKEN_SAMESITE_STRICT;
 
     /* Concatenating everything, as is in PHP internals */
-    path2 = zend_string_init(ZSTR_VAL(path), ZSTR_LEN(path), 0);
-    path2 = zend_string_extend(
-        path2, ZSTR_LEN(path) + strlen(cookie_samesite) + 1, 0);
-    memcpy(ZSTR_VAL(path2) + ZSTR_LEN(path), cookie_samesite,
+    path_samesite = zend_string_init(ZSTR_VAL(path), ZSTR_LEN(path), 0);
+    path_samesite = zend_string_extend(
+        path_samesite, ZSTR_LEN(path) + strlen(cookie_samesite) + 1, 0);
+    memcpy(ZSTR_VAL(path_samesite) + ZSTR_LEN(path), cookie_samesite,
            strlen(cookie_samesite) + 1);
 #else
     cookie_samesite = (cookie_node->samesite == lax)
@@ -120,21 +122,23 @@ PHP_FUNCTION(sp_setcookie) {
 
 
 #if PHP_VERSION_ID < 70300
-  if (php_setcookie(name, (value2 ? value2 : value), expires, (path2 ? path2 : path), domain, secure, 1, httponly)) {
+  if (php_setcookie(name, (value_enc ? value_enc : value), expires, (path_samesite ? path_samesite : path), domain, secure, 1, httponly)) {
 #else
-  if (php_setcookie(name, (value2 ? value2 : value), expires, (path2 ? path2 : path), domain, secure, httponly, samesite, 1)) {
+  if (php_setcookie(name, (value_enc ? value_enc : value), expires, path, domain, secure, httponly, samesite, 1)) {
 #endif
     RETVAL_TRUE;
   } else {
     RETVAL_FALSE;
   }
 
-  if (value2) {
-    zend_string_release(value2);
+  if (value_enc) {
+    zend_string_release(value_enc);
   }
-  if (path2) {
-    zend_string_release(path2);
+#if PHP_VERSION_ID < 70300
+  if (path_samesite) {
+    zend_string_release(path_samesite);
   }
+#endif
   RETURN_TRUE; // TODO why always true ?
 }
 
