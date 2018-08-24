@@ -1,6 +1,7 @@
 #include "php_snuffleupagus.h"
 
 #include "ext/standard/url.h"
+#include "ext/standard/head.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
@@ -42,13 +43,14 @@ static zend_string *encrypt_data(zend_string *data) {
 }
 
 PHP_FUNCTION(sp_setcookie) {
-  zval params[7] = {{{0}}};
   zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL,
-              *samesite = NULL;
+#if PHP_VERSION_ID >= 70300
+              *samesite = NULL,
+#endif
+              *value2 = NULL, *path2 = NULL;
   zend_long expires = 0;
   zend_bool secure = 0, httponly = 0;
   const sp_cookie *cookie_node = NULL;
-  zval func_name;
   char *cookie_samesite;
 
   // LCOV_EXCL_BR_START
@@ -88,64 +90,52 @@ PHP_FUNCTION(sp_setcookie) {
 
   /* Shall we encrypt the cookie's value? */
   if (cookie_node && cookie_node->encrypt && value) {
-    zend_string *encrypted_data = encrypt_data(value);
-    ZVAL_STR_COPY(&params[1], encrypted_data);
-    zend_string_release(encrypted_data);
-  } else if (value) {
-    ZVAL_STR_COPY(&params[1], value);
+    value2 = encrypt_data(value);
   }
 
-  ZVAL_STRING(&func_name, "setcookie");
-  ZVAL_STR_COPY(&params[0], name);
-  ZVAL_LONG(&params[2], expires);
-  if (domain) {
-    ZVAL_STR_COPY(&params[4], domain);
-  }
-  if (secure) {
-    ZVAL_LONG(&params[5], secure);
-  }
-  if (httponly) {
-    ZVAL_LONG(&params[6], httponly);
-  }
 
-  /* param[3](path) is concatenated to path= and is not filtered in PHP < 7.3
-     we can inject the samesite parameter here
-     TODO find another solution with 7.3 */
   if (cookie_node && cookie_node->samesite) {
     if (!path) {
       path = zend_string_init("", 0, 0);
     }
+#if PHP_VERSION_ID < 70300
     cookie_samesite = (cookie_node->samesite == lax)
                           ? SAMESITE_COOKIE_FORMAT SP_TOKEN_SAMESITE_LAX
                           : SAMESITE_COOKIE_FORMAT SP_TOKEN_SAMESITE_STRICT;
+
     /* Concatenating everything, as is in PHP internals */
-    samesite = zend_string_init(ZSTR_VAL(path), ZSTR_LEN(path), 0);
-    samesite = zend_string_extend(
-        samesite, ZSTR_LEN(path) + strlen(cookie_samesite) + 1, 0);
-    memcpy(ZSTR_VAL(samesite) + ZSTR_LEN(path), cookie_samesite,
+    path2 = zend_string_init(ZSTR_VAL(path), ZSTR_LEN(path), 0);
+    path2 = zend_string_extend(
+        path2, ZSTR_LEN(path) + strlen(cookie_samesite) + 1, 0);
+    memcpy(ZSTR_VAL(path2) + ZSTR_LEN(path), cookie_samesite,
            strlen(cookie_samesite) + 1);
-    ZVAL_STR_COPY(&params[3], samesite);
-  } else if (path) {
-    ZVAL_STR_COPY(&params[3], path);
+#else
+    cookie_samesite = (cookie_node->samesite == lax)
+                          ? SP_TOKEN_SAMESITE_LAX
+                          : SP_TOKEN_SAMESITE_STRICT;
+
+    samesite = zend_string_init(cookie_samesite, strlen(cookie_samesite), 0);
+#endif
   }
 
-  /* This is the _fun_ part: because PHP is utterly idiotic and nonsensical,
-  the `call_user_function` macro will __discard__ (yes) its first argument
-  (the hashtable), effectively calling functions from `CG(function_table)`.
-  This is why were replacing our hook with the original function, calling
-  the function, and then re-hooking it. */
-  void (*handler)(INTERNAL_FUNCTION_PARAMETERS);
-  handler = zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
-                                   "setcookie", strlen("setcookie"));
-  zend_internal_function *func = zend_hash_str_find_ptr(
-      CG(function_table), "setcookie", strlen("setcookie"));
-  func->handler = handler;
 
-  call_user_function(CG(function_table), NULL, &func_name, return_value, 7,
-                     params);
+#if PHP_VERSION_ID < 70300
+  if (php_setcookie(name, (value2 ? value2 : value), expires, (path2 ? path2 : path), domain, secure, 1, httponly)) {
+#else
+  if (php_setcookie(name, (value2 ? value2 : value), expires, (path2 ? path2 : path), domain, secure, httponly, samesite, 1)) {
+#endif
+    RETVAL_TRUE;
+  } else {
+    RETVAL_FALSE;
+  }
 
-  func->handler = PHP_FN(sp_setcookie);
-  RETURN_TRUE;
+  if (value2) {
+    zend_string_release(value2);
+  }
+  if (path2) {
+    zend_string_release(path2);
+  }
+  RETURN_TRUE; // TODO why always true ?
 }
 
 int hook_cookies() {
