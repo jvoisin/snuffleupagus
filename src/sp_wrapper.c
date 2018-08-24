@@ -4,10 +4,10 @@
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 static bool wrapper_is_whitelisted(const zend_string *zs) {
-  sp_list_node *list = SNUFFLEUPAGUS_G(config).config_wrapper->whitelist;
+  const sp_list_node *list = SNUFFLEUPAGUS_G(config).config_wrapper->whitelist;
 
   while (list) {
-    if (zend_string_equals_ci(zs, (zend_string*)list->data)) {
+    if (zend_string_equals_ci(zs, (const zend_string*)list->data)) {
       return true;
     }
     list = list->next;
