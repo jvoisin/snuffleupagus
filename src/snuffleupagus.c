@@ -255,6 +255,9 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   if (SNUFFLEUPAGUS_G(config).config_disable_xxe->enable == 0) {
     hook_libxml_disable_entity_loader();
   }
+  if (SNUFFLEUPAGUS_G(config).config_wrapper->enabled) {
+    hook_stream_wrappers();
+  }
   hook_disabled_functions();
   hook_execute();
 
