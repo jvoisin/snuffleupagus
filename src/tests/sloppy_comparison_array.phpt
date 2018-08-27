@@ -6,8 +6,9 @@ Sloppy comparison
 sp.configuration_file={PWD}/config/sloppy_comparison.ini
 --FILE--
 <?php 
-var_dump(in_array(0, ["qwe", "asd"]));
-var_dump(in_array(0, ["qwe", "asd"], 0));
+$qwe = array(rand(1,2), "qwe");
+var_dump(in_array(0, $qwe));
+var_dump(in_array(0, $qwe, 0));
 ?>
 --EXPECT--
 bool(false)
