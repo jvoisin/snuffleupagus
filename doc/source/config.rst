@@ -191,6 +191,17 @@ disable_xxe
   sp.disable_xxe.enable();
 
 
+Whitelist of stream-wrappers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:ref:`Stream-wrapper whitelist <stream-wrapper-whitelist-feature>` allows
+to explicitly whitelist some `stream wrappers <https://secure.php.net/manual/en/intro.stream.php>`__.
+
+::
+
+  sp.wrappers_whitelist.list("file,php,phar");
+
+
 Eval white and blacklist
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

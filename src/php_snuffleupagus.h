@@ -44,6 +44,7 @@
 #include "sp_crypt.h"
 #include "sp_session.h"
 #include "sp_sloppy.h"
+#include "sp_wrapper.h"
 
 extern zend_module_entry snuffleupagus_module_entry;
 #define phpext_snuffleupagus_ptr &snuffleupagus_module_entry
