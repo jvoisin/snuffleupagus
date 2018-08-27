@@ -48,5 +48,5 @@ if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
 Outside of eval: my_fun: 1337 1337 1337
 After allowed eval: my_fun: 1234
 
-Warning: [snuffleupagus][Eval_whitelist] The function 'my_other_fun' isn't in the eval whitelist, logging its call. in /home/sle/git/snuffleupagus/src/tests/dump_eval_whitelist.php on line 12
+Warning: [snuffleupagus][Eval_whitelist] The function 'my_other_fun' isn't in the eval whitelist, logging its call. in %a/tests/dump_eval_whitelist.php on line 12
 After eval: my_other_fun: 1234
