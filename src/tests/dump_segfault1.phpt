@@ -9,5 +9,4 @@ sp.configuration_file={PWD}/config/config_dump_segfault1.ini
 echo strpos("pouet", "p") . "\n";
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'strpos' in %a/tests/dump_segfault1.php:2, because the function returned '0', which matched the rule 'test'.
-
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on return of the function 'strpos', because the function returned '0', which matched the rule 'test' in %a/dump_segfault1.php on line 2

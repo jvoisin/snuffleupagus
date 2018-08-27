@@ -39,5 +39,6 @@ if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' get_c='aaaaaaaaaaaaaaa
 ?>
 --EXPECTF--
 1
-[snuffleupagus][127.0.0.1][disabled_function][simulation] Aborted execution on call of the function 'system' in %a/dump_request_too_big.php:%d.
+
+Warning: [snuffleupagus][disabled_function] Aborted execution on call of the function 'system' in %a/src/tests/dump_request_too_big.php on line 8
 1337

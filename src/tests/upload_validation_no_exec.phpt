@@ -30,3 +30,19 @@ array(1) {
     int(0)
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Fatal error: [snuffleupagus][config] The `script` (tests/data/upload_no_exec.sh) isn't executable on line 1 in Unknown on line 0

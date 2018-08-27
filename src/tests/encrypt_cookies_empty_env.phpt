@@ -12,4 +12,4 @@ super_cookie=cGFkZGluZ3BhZGRpbmdwYWRkaW5ncGFkZGluZ3BhZGRpbmdwYWRkaW5ncGFkZGluZ3B
 --FILE--
 <?php echo "1\n\n\n\n\n"; ?>
 --EXPECT--
-1
+Fatal error: [snuffleupagus][cookie_encryption] The environment variable 'SUPER_ENV_VAR' is empty, cookies are weakly encrypted in Unknown on line 0

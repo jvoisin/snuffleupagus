@@ -6,4 +6,6 @@ Global strict mode
 sp.configuration_file={PWD}/config/borken_conf_enable_disable.ini
 --FILE--
 --EXPECTF--
-[snuffleupagus][0.0.0.0][config][error] A rule can't be enabled and disabled on line 1.
+PHP Fatal error:  [snuffleupagus][config] A rule can't be enabled and disabled on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] A rule can't be enabled and disabled on line 1 in Unknown on line 0

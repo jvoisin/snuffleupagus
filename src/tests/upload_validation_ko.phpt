@@ -11,4 +11,4 @@ Content-Disposition: form-data; name="test"; filename="test.php"
 --blabla--
 --FILE--
 --EXPECTF--
-[snuffleupagus][0.0.0.0][upload_validation][drop] The upload of test.php on ? was rejected.
+Fatal error: [snuffleupagus][upload_validation] The upload of test.php on ? was rejected. in Unknown on line 0

@@ -6,4 +6,6 @@ Borken configuration - encrypted cookie with name and regexp
 sp.configuration_file={PWD}/config/broken_conf_cookie_name_and_regexp.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][config][error] name and name_r are mutually exclusive on line 2.
+PHP Fatal error:  [snuffleupagus][config] name and name_r are mutually exclusive on line 2 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] name and name_r are mutually exclusive on line 2 in Unknown on line 0

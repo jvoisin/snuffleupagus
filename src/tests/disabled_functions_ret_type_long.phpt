@@ -9,4 +9,4 @@ sp.configuration_file={PWD}/config/disabled_functions_ret_type_long.ini
 echo strlen("pouet") . "\n";
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'strlen' in %a/disabled_functions_ret_type_long.php:%d, because the function returned '5', which matched the rule 'Return value is a long'.
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on return of the function 'strlen', because the function returned '5', which matched the rule 'Return value is a long' in %a/disabled_functions_ret_type_long.php on line 2

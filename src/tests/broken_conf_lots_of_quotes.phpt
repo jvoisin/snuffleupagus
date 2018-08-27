@@ -6,4 +6,6 @@ Configuration line with too many quotes
 sp.configuration_file={PWD}/config/broken_conf_lots_of_quotes.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][error][error] There is an issue with the parsing of '"this\"is a weird\"\"\"cookie\"name"");': it doesn't look like a valid string on line 1.
+PHP Fatal error:  [snuffleupagus][error] There is an issue with the parsing of '"this\"is a weird\"\"\"cookie\"name"");': it doesn't look like a valid string on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][error] There is an issue with the parsing of '"this\"is a weird\"\"\"cookie\"name"");': it doesn't look like a valid string on line 1 in Unknown on line 0

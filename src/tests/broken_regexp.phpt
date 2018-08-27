@@ -6,5 +6,9 @@ Broken regexp
 sp.configuration_file={PWD}/config/broken_regexp.ini
 --FILE--
 --EXPECTF--
-[snuffleupagus][0.0.0.0][config][error] Failed to compile '^$[': %aon line 1.
-[snuffleupagus][0.0.0.0][config][error] '.value_r()' is expecting a valid regexp, and not '"^$["' on line 1.
+PHP Fatal error:  [snuffleupagus][config] Failed to compile '^$[': missing terminating ] for character class on line 1. in Unknown on line 0
+PHP Fatal error:  [snuffleupagus][config] '.value_r()' is expecting a valid regexp, and not '"^$["' on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Failed to compile '^$[': missing terminating ] for character class on line 1. in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] '.value_r()' is expecting a valid regexp, and not '"^$["' on line 1 in Unknown on line 0

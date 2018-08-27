@@ -6,4 +6,6 @@ Bad config, invalid samesite type.
 sp.configuration_file={PWD}/config/broken_conf_cookie_samesite.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][config][error] nop is an invalid value to samesite (expected Lax or Strict) on line 1.
+PHP Fatal error:  [snuffleupagus][config] nop is an invalid value to samesite (expected Lax or Strict) on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] nop is an invalid value to samesite (expected Lax or Strict) on line 1 in Unknown on line 0

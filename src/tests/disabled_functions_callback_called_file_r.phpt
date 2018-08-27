@@ -30,10 +30,10 @@ include "$dir/myfunc_callback.php";
 echo test('test_callback');
 
 ?>
---EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'test_callback' in %a/myfunc_callback.php:%d.
 --CLEAN--
 <?php
 $dir = __DIR__;
 @unlink("$dir/myfunc_callback.php");
 ?>
+--EXPECTF--
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'test_callback' in %a/myfunc_callback.php on line 4

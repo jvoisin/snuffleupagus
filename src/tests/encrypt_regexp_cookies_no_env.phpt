@@ -17,3 +17,9 @@ EOF;
 <?php echo "1\n\n\n\n\n"; ?>
 --EXPECT--
 1
+
+
+
+
+
+Fatal error: [snuffleupagus][config] You're trying to use the cookie encryption featureon line 2 without having set the `.cookie_env_var` option in`sp.global`: please set it first in Unknown on line 0

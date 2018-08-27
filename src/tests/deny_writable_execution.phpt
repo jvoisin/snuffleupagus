@@ -31,8 +31,6 @@ chmod("$dir/writable_file.txt", 0777);
 include "$dir/non_writable_file.txt";
 include "$dir/writable_file.txt";
 ?>
---EXPECTF--
-[snuffleupagus][0.0.0.0][readonly_exec][drop] Attempted execution of a writable file (%a/tests/deny_writable_execution.php).
 --CLEAN--
 <?php
 $dir = __DIR__;
@@ -41,3 +39,5 @@ chmod("$dir/writable_file.txt", 0777);
 unlink("$dir/non_writable_file.txt");
 unlink("$dir/writable_file.txt");
 ?>
+--EXPECTF--
+Fatal error: [snuffleupagus][readonly_exec] Attempted execution of a writable file (%a/deny_writable_execution.php). in %a/deny_writable_execution.php on line 2

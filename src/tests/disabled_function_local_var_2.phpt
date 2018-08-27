@@ -43,4 +43,5 @@ array(2) {
   [123]=>
   string(5) "block"
 }
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strlen' in %a/tests/disabled_function_local_var_2.php:%d.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_function_local_var_2.php on line 4

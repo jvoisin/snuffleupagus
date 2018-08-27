@@ -27,4 +27,4 @@ my_function();
 }
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strcmp' in %a/disabled_functions_namespace.php:%d.
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strcmp' in %a/disabled_functions_namespace.php on line 16

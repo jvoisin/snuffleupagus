@@ -6,4 +6,6 @@ Bad config, unknown keyword
 sp.configuration_file={PWD}/config/broken_conf_weird_keyword.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][config][error] Trailing chars '.not_a_valid_keyword("test");' at the end of '.enable().not_a_valid_keyword("test");' on line 1.
+PHP Fatal error:  [snuffleupagus][config] Trailing chars '.not_a_valid_keyword("test");' at the end of '.enable().not_a_valid_keyword("test");' on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Trailing chars '.not_a_valid_keyword("test");' at the end of '.enable().not_a_valid_keyword("test");' on line 1 in Unknown on line 0

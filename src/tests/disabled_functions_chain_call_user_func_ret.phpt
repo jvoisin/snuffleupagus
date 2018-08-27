@@ -21,6 +21,6 @@ echo one('matching') . "\n";
 echo one('still not matching') . "\n";
 
 ?>
---EXPECTF--
 --XFAIL--
+--EXPECTF--
 Match on ret is broken :/

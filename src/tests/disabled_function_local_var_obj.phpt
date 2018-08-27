@@ -22,4 +22,5 @@ echo strlen($test->$arg) . "\n";
 ?>
 --EXPECTF--
 3
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strlen' in %a/tests/disabled_function_local_var_obj.php:%d.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_function_local_var_obj.php on line 14

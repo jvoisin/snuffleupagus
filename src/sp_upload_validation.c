@@ -90,7 +90,7 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
                    "The upload of %s on %s was rejected.", filename,
                    uri ? uri : "?");
         if (!SNUFFLEUPAGUS_G(config).config_upload_validation->simulation) {
-          zend_bailout();
+          sp_terminate();
         }
       }
     }

@@ -11,4 +11,4 @@ eval('$var = 1337 + 1337;');
 print("Variable: $var\n");
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'eval' in %a/tests/disabled_functions_eval.php(%d) : eval()'d code:%d.
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'eval' in %a/disabled_functions_eval.php(3) : eval()'d code on line 1

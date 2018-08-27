@@ -23,4 +23,5 @@ echo "I'm after the call to outer\n";
 --EXPECTF--
 I'm before the call to outer
 I'm in the outer function, before the call!
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'outer>inner' in %a/disabled_functions_chain_call_user_func.php:%d.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'outer>inner' in %a/disabled_functions_chain_call_user_func.php on line 5

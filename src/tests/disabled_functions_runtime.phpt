@@ -21,11 +21,12 @@ if (rand() % 2) {
 test('1338');test('1337');
 
 ?>
---EXPECTF--
-1338
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'test' in %a, because its argument '$param' content (1337) matched a rule.
 --CLEAN--
 <?php
 unlink("file_to_include1.php");
 unlink("file_to_include2.php");
 ?>
+--EXPECTF--
+1338
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'test', because its argument '$param' content (1337) matched a rule in %a/src/file_to_include%d.php on line 1

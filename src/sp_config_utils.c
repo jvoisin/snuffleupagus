@@ -25,7 +25,7 @@ int parse_keywords(sp_config_functions *funcs, char *line) {
   }
 
   if (*line) {
-    sp_log_err("config", "Trailing chars '%s' at the end of '%s' on line %zu.",
+    sp_log_err("config", "Trailing chars '%s' at the end of '%s' on line %zu",
                line, original_line, sp_line_no);
     return -1;
   }
@@ -91,12 +91,12 @@ zend_string *get_param(size_t *consumed, char *restrict line, sp_type type,
   }
 err:
   if (0 == j) {
-    sp_log_err("error", "A valid string as parameter is expected on line %zu.",
+    sp_log_err("error", "A valid string as parameter is expected on line %zu",
                sp_line_no);
   } else {
     sp_log_err("error",
                "There is an issue with the parsing of '%s': it doesn't look "
-               "like a valid string on line %zu.",
+               "like a valid string on line %zu",
                original_line ? original_line : "NULL", sp_line_no);
   }
   line = NULL;

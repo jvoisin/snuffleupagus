@@ -41,4 +41,5 @@ array(2) {
     }
   }
 }
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strlen' in %a/tests/disabled_function_local_var_10.php:%d.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_function_local_var_10.php on line 7

@@ -25,10 +25,10 @@ include "$dir/myfunc.php";
 test();
 
 ?>
---EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'test' in %a/disabled_functions_called_file_r.php:18.
 --CLEAN--
 <?php
 $dir = __DIR__;
 @unlink("$dir/myfunc.php");
 ?>
+--EXPECTF--
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'test' in %a/myfunc.php on line 3

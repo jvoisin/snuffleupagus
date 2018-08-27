@@ -13,4 +13,5 @@ echo strcmp([1], "pouet") . "\n";
 --EXPECTF--
 0
 -1
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strcmp' in %a/disabled_functions_name_regexp_type.php:4, because its argument 'str1' content (?) matched a rule.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strcmp', because its argument 'str1' content (?) matched a rule in %a/disabled_functions_name_regexp_type.php on line 4

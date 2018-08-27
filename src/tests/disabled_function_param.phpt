@@ -16,4 +16,5 @@ qweqwe(Array(2));
 ?>
 --EXPECTF--
 OK
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'qweqwe' in %a/tests/disabled_function_param.php:%d, because its argument '$asd' content (2) matched a rule.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'qweqwe', because its argument '$asd' content (2) matched a rule in %a/disabled_function_param.php on line 3

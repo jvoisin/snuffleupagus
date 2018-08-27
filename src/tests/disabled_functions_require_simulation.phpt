@@ -13,14 +13,15 @@ require $dir . '/test.bla';
 require $dir . '/test.sim';
 echo "1337\n";
 ?>
---EXPECTF--
-BLA
-[snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'require' in %a/disabled_functions_require_simulation.php:%d, because its argument 'inclusion path' content (%a/test.sim) matched a rule.
-MEH
-1337
 --CLEAN--
 <?php
 $dir = __DIR__;
 unlink($dir . '/test.bla');
 unlink($dir . '/test.sim');
 ?>
+--EXPECTF--
+BLA
+
+Warning: [snuffleupagus][disabled_function] Aborted execution on call of the function 'require', because its argument 'inclusion path' content (%a/test.sim) matched a rule in %a/disabled_functions_require_simulation.php on line 6
+MEH
+1337

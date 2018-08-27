@@ -16,4 +16,4 @@ EOF;
 --FILE--
 <?php echo "1\n\n\n\n\n"; ?>
 --EXPECT--
-1
+Fatal error: [snuffleupagus][cookie_encryption] Buffer underflow tentative detected in cookie encryption handling in Unknown on line 0

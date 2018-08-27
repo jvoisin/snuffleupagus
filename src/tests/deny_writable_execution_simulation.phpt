@@ -32,10 +32,6 @@ chmod("$dir/non_writable_file.txt", 0400);
 include "$dir/writable_file.txt";
 include "$dir/non_writable_file.txt";
 ?>
---EXPECTF--
-[snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/writable_file.txt).
-Code execution within a writable file.
-Code execution within a non-writable file.
 --CLEAN--
 <?php
 $dir = __DIR__;
@@ -44,3 +40,11 @@ chmod("$dir/writable_file.txt", 0777);
 unlink("$dir/non_writable_file.txt");
 unlink("$dir/writable_file.txt");
 ?>
+--EXPECTF--
+Warning: [snuffleupagus][readonly_exec] Attempted execution of a writable file (%a/src/tests/deny_writable_execution_simulation.php). in %a/src/tests/deny_writable_execution_simulation.php on line 2
+
+Warning: [snuffleupagus][readonly_exec] Attempted execution of a writable file (%a/src/tests/writable_file.txt). in %a/src/tests/deny_writable_execution_simulation.php on line 12
+
+Warning: [snuffleupagus][readonly_exec] Attempted execution of a writable file (%a/src/tests/writable_file.txt). in %a/src/tests/writable_file.txt on line 1
+Code execution within a writable file.
+Code execution within a non-writable file.

@@ -13,4 +13,5 @@ echo "After eval: $a\n";
 ?>
 --EXPECTF--
 Outside of eval: 14
-[snuffleupagus][0.0.0.0][eval][drop] A call to strlen was tried in eval, in %a/tests/eval_backlist_list.php:1, dropping it.
+
+Fatal error: [snuffleupagus][eval] A call to strlen was tried in eval, in %a/eval_backlist_list.php:1, dropping it. in %a/eval_backlist_list.php(4) : eval()'d code on line 1

@@ -6,4 +6,6 @@ Bad config, invalid action.
 sp.configuration_file={PWD}/config/broken_conf_cookie_action.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][config][error] You must specify a at least one action to a cookie on line 1.
+PHP Fatal error:  [snuffleupagus][config] You must specify a at least one action to a cookie on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] You must specify a at least one action to a cookie on line 1 in Unknown on line 0

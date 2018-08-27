@@ -9,6 +9,7 @@ sp.configuration_file={PWD}/config/disabled_functions_invalid_pos.ini
 system("echo 1");
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][config][error] Failed to parse arg 'qwe' of `pos` on line 1.
-1
+PHP Fatal error:  [snuffleupagus][config] Failed to parse arg 'qwe' of `pos` on line 1 in Unknown on line 0
 
+Fatal error: [snuffleupagus][config] Failed to parse arg 'qwe' of `pos` on line 1 in Unknown on line 0
+1

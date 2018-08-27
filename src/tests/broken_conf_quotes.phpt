@@ -6,5 +6,9 @@ Broken configuration - missing quote
 sp.configuration_file={PWD}/config/broken_conf_quotes.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][config][error] You forgot to close a bracket.
-[snuffleupagus][0.0.0.0][config][error] Invalid value '_SERVER[PHP_SELF' for `var` on line 1.
+PHP Fatal error:  [snuffleupagus][config] You forgot to close a bracket. in Unknown on line 0
+PHP Fatal error:  [snuffleupagus][config] Invalid value '_SERVER[PHP_SELF' for `var` on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] You forgot to close a bracket. in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid value '_SERVER[PHP_SELF' for `var` on line 1 in Unknown on line 0

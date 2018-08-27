@@ -19,4 +19,5 @@ echo str_repeat("fufufu",1);
 ?>
 --EXPECTF--
 fufu
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'str_repeat' in %a/disabled_functions_ret_val_dump.php:%d, because the function returned 'fufufu', which matched a rule.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on return of the function 'str_repeat', because the function returned 'fufufu', which matched a rule in %a/src/tests/disabled_functions_ret_val_dump.php on line 3

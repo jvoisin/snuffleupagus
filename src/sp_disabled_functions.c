@@ -290,8 +290,6 @@ bool should_disable(zend_execute_data* execute_data,
                     const char* builtin_param_name, const sp_list_node* config,
                     const zend_string* current_filename) {
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
-  unsigned int line = 0;
-  char* filename = NULL;
 
   while (config) {
     sp_disabled_function const* const config_node =
@@ -327,9 +325,6 @@ bool should_disable(zend_execute_data* execute_data,
           is_file_matching(execute_data, config_node, current_filename);
       if (!ex) {
         goto next;
-      } else if (ex != execute_data) {
-        line = ex->opline->lineno;
-        filename = ZSTR_VAL(ex->func->op_array.filename);
       }
     }
 
@@ -391,10 +386,10 @@ bool should_disable(zend_execute_data* execute_data,
 
     if (config_node->functions_list) {
       sp_log_disable(ZSTR_VAL(config_node->function), arg_name, arg_value_str,
-                     config_node, line, filename);
+                     config_node);
     } else {
       sp_log_disable(complete_function_path, arg_name, arg_value_str,
-                     config_node, line, filename);
+                     config_node);
     }
     if (true == config_node->simulation) {
       goto next;

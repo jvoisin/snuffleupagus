@@ -8,6 +8,6 @@ sp.configuration_file={PWD}/config/disabled_functions_die.ini
 <?php 
 die('OMG');
 ?>
---EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'die' in %a/tests/disabled_functions_die.php:%d.
 --XFAIL--
+--EXPECTF--
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'die' in %a/disabled_function_echo.php on line 3
