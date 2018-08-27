@@ -31,8 +31,7 @@ echo test('test_callback');
 
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'test_callback' in %a/disabled_functions_callback__called_file_r.php:%d.
---XFAIL--
+[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'test_callback' in %a/myfunc_callback.php:%d.
 --CLEAN--
 <?php
 $dir = __DIR__;

@@ -78,6 +78,12 @@ typedef struct {
 } sp_cookie;
 
 typedef struct {
+  sp_list_node *whitelist;
+  bool enabled;
+  size_t num_wrapper;  // Used to verify if wrappers were added.
+} sp_config_wrapper;
+
+typedef struct {
   bool encrypt;
   bool simulation;
 } sp_config_session;
@@ -166,6 +172,7 @@ typedef struct {
   sp_config_global_strict *config_global_strict;
   sp_config_disable_xxe *config_disable_xxe;
   sp_config_eval *config_eval;
+  sp_config_wrapper *config_wrapper;
   sp_config_session *config_session;
   bool hook_execute;
 
@@ -204,6 +211,7 @@ typedef struct {
 #define SP_TOKEN_EVAL_BLACKLIST ".eval_blacklist"
 #define SP_TOKEN_EVAL_WHITELIST ".eval_whitelist"
 #define SP_TOKEN_SLOPPY_COMPARISON ".sloppy_comparison"
+#define SP_TOKEN_ALLOW_WRAPPERS ".wrappers_whitelist"
 
 // common tokens
 #define SP_TOKEN_ENABLE ".enable("
@@ -256,8 +264,7 @@ typedef struct {
 // upload_validator
 #define SP_TOKEN_UPLOAD_SCRIPT ".script("
 
-// eval blacklist
-#define SP_TOKEN_EVAL_LIST ".list("
+#define SP_TOKEN_LIST ".list("
 
 int sp_parse_config(const char *);
 int parse_array(sp_disabled_function *);
@@ -267,6 +274,7 @@ int parse_regexp(char *restrict, char *restrict, void *);
 int parse_empty(char *restrict, char *restrict, void *);
 int parse_cidr(char *restrict, char *restrict, void *);
 int parse_php_type(char *restrict, char *restrict, void *);
+int parse_list(char *restrict, char *restrict, void *);
 
 // cleanup
 void sp_disabled_function_list_free(sp_list_node *);
