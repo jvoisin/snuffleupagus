@@ -3,6 +3,10 @@
 Cookies
 =======
 
+Some cookies-related features might prevent other extensions from hooking
+the `setcookie<https://secure.php.net/manual/en/function.setcookie.php>`__
+function. Pay attention to the loading order of your extensions in this case.
+
 auto_cookie_secure
 """"""""""""""""""
  
