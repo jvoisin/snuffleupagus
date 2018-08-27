@@ -11,7 +11,7 @@ release:  ## compile with releases flags
 	make -C src
 
 install: release  ## compile and install snuffleupagus
-	make -C install
+	make -C src install
 
 debug: ## compile a debug build
 	cd src; phpize
