@@ -323,7 +323,7 @@ Preventing sloppy comparisons
 
 The aforementioned :ref:`strict mode <global-strict-feature>` only works with
 annotated types and native functions, so it doesn't cover every instances of
-`type juggling <https://secure.php.net/manual/en/language.types.type-juggling.php>`
+`type juggling <https://secure.php.net/manual/en/language.types.type-juggling.php>`__
 during comparisons. Since comparison between different types in PHP is
 `notoriously <https://secure.php.net/manual/en/types.comparisons.php>`__
 difficult to get right, Snuffleupagus offers a way to **always** use the
@@ -343,6 +343,27 @@ this file is writable by the PHP process.
 Snuffleupagus can prevent the execution of this kind of file. A good practice
 would be to use a different user to run PHP than for administrating the website,
 and using this feature to lock this up.
+
+.. _stream-wrapper-whitelist-feature:
+
+Whitelist of stream-wrappers
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Php comes with a `lot of different <https://secure.php.net/manual/en/wrappers.php>`__
+`stream wrapper <https://secure.php.net/manual/en/intro.stream.php>`__, and most of them
+are enabled by default.
+
+The only way to tighten a bit this exposition surface is to use the
+`allow_url_fopen/allow_url_include <https://secure.php.net/manual/en/features.remote-files.php>`__
+configuration options, but it's `not possible <https://bugs.php.net/bug.php?id=50715>`__
+to deactivate them on an individual basis.
+
+Examples of related vulnerabilities
+"""""""""""""""""""""""""""""""""""
+
+- `RCE via phar:// <https://github.com/orangetw/My-CTF-Web-Challenges#babyh-master-php-2017>`__
+- `Data exfiltration via stream wrapper <https://www.idontplaydarts.com/2011/02/using-php-filter-for-local-file-inclusion/>`__
+- `Inclusion via zip/phar <https://lightless.me/archives/include-file-from-zip-or-phar.html>`__
 
 .. _eval-feature:
 
