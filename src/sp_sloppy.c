@@ -1,4 +1,7 @@
+#include "php_snuffleupagus.h"
 #include "sp_sloppy.h"
+
+ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 ZEND_API zend_op_array* (*orig_zend_compile_file)(zend_file_handle* file_handle,
                                                   int type) = NULL;
@@ -33,7 +36,35 @@ ZEND_API zend_op_array* sp_compile_file(zend_file_handle* file_handle,
   return opline;
 }
 
+PHP_FUNCTION(sp_in_array) {
+  void (*handler)(INTERNAL_FUNCTION_PARAMETERS);
+  zval func_name;
+  zval params[3] = {{{0}}};
+  zval *value, *array;
+  zend_bool strict;
+
+  zend_parse_parameters(ZEND_NUM_ARGS(), "zz|b", &value, &array, &strict);
+
+  ZVAL_COPY(&params[0], value);
+  ZVAL_COPY(&params[1], array);
+  ZVAL_BOOL(&params[2], 1);
+  ZVAL_STRING(&func_name, "in_array");
+
+  handler = zend_hash_str_find_ptr(
+      SNUFFLEUPAGUS_G(sp_internal_functions_hook), "in_array", sizeof("in_array") - 1);
+  zend_internal_function *func = zend_hash_str_find_ptr(
+      CG(function_table), "in_array", sizeof("in_array") - 1);
+  func->handler = handler;
+
+  call_user_function(CG(function_table), NULL, &func_name, return_value, 3,
+                     params);
+
+  func->handler = PHP_FN(sp_in_array);
+}
+
 void hook_sloppy() {
+  TSRMLS_FETCH();
+
   if (NULL == orig_zend_compile_file) {
     orig_zend_compile_file = zend_compile_file;
     zend_compile_file = sp_compile_file;
@@ -43,4 +74,6 @@ void hook_sloppy() {
     orig_zend_compile_string = zend_compile_string;
     zend_compile_string = sp_compile_string;
   }
+
+  HOOK_FUNCTION("in_array", sp_internal_functions_hook, PHP_FN(sp_in_array));
 }
