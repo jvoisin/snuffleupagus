@@ -40,18 +40,10 @@ PHP_FUNCTION(sp_in_array) {
   void (*handler)(INTERNAL_FUNCTION_PARAMETERS);
   zval func_name;
   zval params[3] = {{{0}}};
-  zval *value, *array;
-  zend_bool strict;
+  zend_bool dummy;
 
-  ZEND_PARSE_PARAMETERS_START(1, 3)
-  Z_PARAM_ZVAL(value)
-  Z_PARAM_ARRAY(array)
-  Z_PARAM_OPTIONAL
-  Z_PARAM_BOOL(strict)
-  ZEND_PARSE_PARAMETERS_END();
+  zend_parse_parameters(ZEND_NUM_ARGS(), "zz|b", &params[0], &params[1], &dummy);
 
-  ZVAL_COPY(&params[0], value);
-  ZVAL_COPY(&params[1], array);
   ZVAL_BOOL(&params[2], 1);
   ZVAL_STRING(&func_name, "in_array");
 
