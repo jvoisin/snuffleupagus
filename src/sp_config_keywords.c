@@ -166,12 +166,11 @@ int parse_global(char *line) {
 }
 
 static int parse_eval_filter_conf(char *line, sp_list_node **list) {
-  char *token, *tmp;
   zend_string *rest = NULL;
   sp_config_eval *eval = SNUFFLEUPAGUS_G(config).config_eval;
 
   sp_config_functions sp_config_funcs[] = {
-      {parse_str, SP_TOKEN_EVAL_LIST, &rest},
+      {parse_list, SP_TOKEN_LIST, list},
       {parse_empty, SP_TOKEN_SIMULATION,
        &(SNUFFLEUPAGUS_G(config).config_eval->simulation)},
       {parse_str, SP_TOKEN_DUMP, &(SNUFFLEUPAGUS_G(config).config_eval->dump)},
@@ -184,12 +183,21 @@ static int parse_eval_filter_conf(char *line, sp_list_node **list) {
     return ret;
   }
 
-  tmp = ZSTR_VAL(rest);
-  while ((token = strtok_r(tmp, ",", &tmp))) {
-    *list = sp_list_insert(*list, zend_string_init(token, strlen(token), 1));
-  }
   if (rest != NULL) {
     pefree(rest, 1);
+  }
+  return SUCCESS;
+}
+
+int parse_wrapper_whitelist(char *line) {
+  SNUFFLEUPAGUS_G(config).config_wrapper->enabled = true;
+  sp_config_functions sp_config_funcs[] = {
+      {parse_list, SP_TOKEN_LIST,
+       &SNUFFLEUPAGUS_G(config).config_wrapper->whitelist},
+      {0}};
+  int ret = parse_keywords(sp_config_funcs, line);
+  if (0 != ret) {
+    return ret;
   }
   return SUCCESS;
 }

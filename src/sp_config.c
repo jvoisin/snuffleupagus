@@ -23,6 +23,7 @@ sp_config_tokens const sp_func[] = {
     {.func = parse_eval_whitelist, .token = SP_TOKEN_EVAL_WHITELIST},
     {.func = parse_session, .token = SP_TOKEN_SESSION_ENCRYPTION},
     {.func = parse_sloppy_comparison, .token = SP_TOKEN_SLOPPY_COMPARISON},
+    {.func = parse_wrapper_whitelist, .token = SP_TOKEN_ALLOW_WRAPPERS},
     {NULL, NULL}};
 
 /* Top level keyword parsing */
@@ -59,6 +60,26 @@ static int parse_line(char *line) {
 int parse_empty(char *restrict line, char *restrict keyword, void *retval) {
   *(bool *)retval = true;
   return 0;
+}
+
+int parse_list(char *restrict line, char *restrict keyword, void *list_ptr) {
+  zend_string *value = NULL;
+  sp_list_node **list = list_ptr;
+  char *token, *tmp;
+
+  size_t consumed = 0;
+  value = get_param(&consumed, line, SP_TYPE_STR, keyword);
+  if (!value) {
+    return -1;
+  }
+
+  tmp = ZSTR_VAL(value);
+  while ((token = strtok_r(tmp, ",", &tmp))) {
+    *list = sp_list_insert(*list, zend_string_init(token, strlen(token), 1));
+  }
+
+  pefree(value, 1);
+  return consumed;
 }
 
 int parse_php_type(char *restrict line, char *restrict keyword, void *retval) {
