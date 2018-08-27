@@ -484,7 +484,7 @@ int parse_disabled_functions(char *line) {
     return ret;
   }
 
-  if (df->function && zend_string_equals_literal(df->function, "print")) {
+  if (df->function && zend_string_equals_literal_ci(df->function, "print")) {
     zend_string_release(df->function);
     df->function = zend_string_init("echo", strlen("echo"), 1);
   }
