@@ -9,17 +9,6 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-static inline void _sp_log_err(const char* fmt, ...) {
-  char* msg;
-  va_list args;
-
-  va_start(args, fmt);
-  vspprintf(&msg, 0, fmt, args);
-  /*zend_error_va_list(E_WARNING, fmt, args);*/
-  zend_error(E_ERROR, "QWE");
-  va_end(args);
-}
-
 static bool sp_zend_string_equals(const zend_string* s1,
                                   const zend_string* s2) {
   // We can't use `zend_string_equals` here because it doesn't work on
