@@ -1,5 +1,5 @@
 --TEST--
-Sloppy comparison
+Sloppy comparison in_array disabled
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --FILE--
