@@ -5,7 +5,7 @@ ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus);
 
 #ifdef ZTS
 static ts_rsrc_id session_globals_id = 0;
-#define SESSION_G(v) ZEND_TSRMG(session_globals_id, php_ps_globals *, v)
+#define SESSION_G(v) ZEND_TSRMG(session_globals_id, const php_ps_globals *, v)
 #ifdef COMPILE_DL_SESSION
 ZEND_TSRMLS_CACHE_EXTERN();
 #endif
