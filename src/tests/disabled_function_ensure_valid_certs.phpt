@@ -9,6 +9,7 @@ if (!extension_loaded("curl")) die "skip";
 sp.configuration_file={PWD}/config/disabled_function_curl_verify_certs.ini
 --FILE--
 <?php
+$ch = curl_init();
 curl_setopt($ch, CURLOPT_VERBOSE, '1'); 
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, '0'); 
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, '0'); 
