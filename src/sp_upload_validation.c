@@ -63,7 +63,7 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
                 ZSTR_VAL(
                     SNUFFLEUPAGUS_G(config).config_upload_validation->script),
                 cmd, env) == -1) {
-          sp_log_err(
+          sp_log_warn(
               "upload_validation", "Could not call '%s' : %s",
               ZSTR_VAL(
                   SNUFFLEUPAGUS_G(config).config_upload_validation->script),

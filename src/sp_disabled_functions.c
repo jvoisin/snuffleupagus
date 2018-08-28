@@ -355,7 +355,7 @@ bool should_disable(zend_execute_data* execute_data,
         (config_node->pos != -1)) {
       if (!builtin_param &&
           execute_data->func->op_array.arg_info->is_variadic) {
-        sp_log_err(
+        sp_log_warn(
             "disable_function",
             "Snuffleupagus doesn't support variadic functions yet, sorry. "
             "Check https://github.com/nbs-system/snuffleupagus/issues/164 for "

@@ -13,7 +13,7 @@ Content-Disposition: form-data; name="test"; filename="test.php"
 echo 1;
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][upload_validation] Could not call './tests/data/upload_invalid.sh' : Exec format error in Unknown on line 0
+Warning: [snuffleupagus][upload_validation] Could not call './tests/data/upload_invalid.sh' : Exec format error in Unknown on line 0
 X-Powered-By: PHP/%a
 Content-type: text/html; charset=UTF-8%a
 %a
