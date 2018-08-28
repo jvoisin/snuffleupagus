@@ -10,7 +10,7 @@ static int parse_enable(char *line, bool *restrict retval,
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
       {parse_empty, SP_TOKEN_SIMULATION, simulation},
-      {0}};
+      {0, 0, 0}};
 
   int ret = parse_keywords(sp_config_funcs, line);
 
@@ -35,7 +35,7 @@ int parse_session(char *line) {
   sp_config_functions sp_config_funcs_session_encryption[] = {
       {parse_empty, SP_TOKEN_ENCRYPT, &(session->encrypt)},
       {parse_empty, SP_TOKEN_SIMULATION, &(session->simulation)},
-      {0}};
+      {0, 0, 0}};
   int ret = parse_keywords(sp_config_funcs_session_encryption, line);
   if (0 != ret) {
     return ret;
@@ -104,7 +104,7 @@ int parse_unserialize(char *line) {
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
       {parse_empty, SP_TOKEN_SIMULATION, &(unserialize->simulation)},
       {parse_str, SP_TOKEN_DUMP, &(unserialize->dump)},
-      {0}};
+      {0, 0, 0}};
 
   unserialize->textual_representation = zend_string_init(line, strlen(line), 1);
 
@@ -134,7 +134,7 @@ int parse_readonly_exec(char *line) {
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
       {parse_empty, SP_TOKEN_SIMULATION, &(readonly_exec->simulation)},
       {parse_str, SP_TOKEN_DUMP, &(readonly_exec->dump)},
-      {0}};
+      {0, 0, 0}};
 
   readonly_exec->textual_representation =
       zend_string_init(line, strlen(line), 1);
@@ -161,7 +161,7 @@ int parse_global(char *line) {
        &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)},
       {parse_str, SP_TOKEN_ENV_VAR,
        &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)},
-      {0}};
+      {0, 0, 0}};
   return parse_keywords(sp_config_funcs_global, line);
 }
 
@@ -174,7 +174,7 @@ static int parse_eval_filter_conf(char *line, sp_list_node **list) {
       {parse_empty, SP_TOKEN_SIMULATION,
        &(SNUFFLEUPAGUS_G(config).config_eval->simulation)},
       {parse_str, SP_TOKEN_DUMP, &(SNUFFLEUPAGUS_G(config).config_eval->dump)},
-      {0}};
+      {0, 0, 0}};
 
   eval->textual_representation = zend_string_init(line, strlen(line), 1);
 
@@ -194,7 +194,7 @@ int parse_wrapper_whitelist(char *line) {
   sp_config_functions sp_config_funcs[] = {
       {parse_list, SP_TOKEN_LIST,
        &SNUFFLEUPAGUS_G(config).config_wrapper->whitelist},
-      {0}};
+      {0, 0, 0}};
   int ret = parse_keywords(sp_config_funcs, line);
   if (0 != ret) {
     return ret;
@@ -223,7 +223,7 @@ int parse_cookie(char *line) {
       {parse_str, SP_TOKEN_SAMESITE, &samesite},
       {parse_empty, SP_TOKEN_ENCRYPT, &cookie->encrypt},
       {parse_empty, SP_TOKEN_SIMULATION, &cookie->simulation},
-      {0}};
+      {0, 0, 0}};
 
   ret = parse_keywords(sp_config_funcs_cookie_encryption, line);
   if (0 != ret) {
@@ -338,7 +338,7 @@ int parse_disabled_functions(char *line) {
       {parse_str, SP_TOKEN_LOCAL_VAR, &(var)},
       {parse_str, SP_TOKEN_VALUE_ARG_POS, &(pos)},
       {parse_str, SP_TOKEN_LINE_NUMBER, &(line_number)},
-      {0}};
+      {0, 0, 0}};
 
   ret = parse_keywords(sp_config_funcs_disabled_functions, line);
 
@@ -525,7 +525,7 @@ int parse_upload_validation(char *line) {
        &(SNUFFLEUPAGUS_G(config).config_upload_validation->simulation)},
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
-      {0}};
+      {0, 0, 0}};
 
   int ret = parse_keywords(sp_config_funcs_upload_validation, line);
 

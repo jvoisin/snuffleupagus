@@ -113,8 +113,9 @@ int sp_log_request(const zend_string* folder, const zend_string* text_repr,
     HashTable* ht = Z_ARRVAL(PG(http_globals)[zones[i].key]);
     fprintf(file, "%s:", zones[i].str);
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, variable_key, variable_value) {
-      smart_str a = {0};
+      smart_str a;
 
+      memset(&a, 0, sizeof(a));
       php_var_export_ex(variable_value, 1, &a);
       ZSTR_VAL(a.s)[ZSTR_LEN(a.s)] = '\0';
       fprintf(file, "%s=%s ", ZSTR_VAL(variable_key), ZSTR_VAL(a.s));

@@ -45,7 +45,7 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS,
   zval *value, *array;
   zend_bool strict;
 
-  memset(params, 0, sizeof(params));
+  memset(&params, 0, sizeof(params));
   zend_parse_parameters(ZEND_NUM_ARGS(), "zz|b", &value, &array, &strict);
 
   ZVAL_COPY(&params[0], value);
