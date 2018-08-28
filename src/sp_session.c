@@ -13,7 +13,7 @@ ZEND_TSRMLS_CACHE_EXTERN();
 #define SESSION_G(v) (ps_globals.v)
 #endif
 
-#ifndef ZTF
+#ifndef ZTS
 static php_ps_globals *session_globals = NULL;
 #endif
 
