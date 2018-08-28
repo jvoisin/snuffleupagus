@@ -5,7 +5,7 @@
 sp_pcre* sp_pcre_compile(const char* const pattern) {
   sp_pcre* ret = NULL;
 #ifdef SP_HAS_PCRE2
-  char pcre_error[128] = {0};
+  unsigned char pcre_error[128] = {0};
   int errornumber;
   PCRE2_SIZE erroroffset;
   ret = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED,
