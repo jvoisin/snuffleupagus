@@ -208,11 +208,11 @@ static zend_execute_data* is_file_matching(
 
   zend_execute_data* ex = execute_data;
   if (config_node->filename) {
-    if (zend_string_equals(current_filename, config_node->filename)) {
+    if (zend_string_equals_ci(current_filename, config_node->filename)) {
       return ex;
     }
     ITERATE(ex);
-    if (zend_string_equals(ex->func->op_array.filename,
+    if (zend_string_equals_ci(ex->func->op_array.filename,
                                    config_node->filename)) {
       return ex;
     }
@@ -233,11 +233,11 @@ static zend_execute_data* is_file_matching(
 static bool check_is_builtin_name(
     sp_disabled_function const* const config_node) {
   if (config_node->function) {
-    return (zend_string_equals_literal(config_node->function, "include") ||
-            zend_string_equals_literal(config_node->function, "include_once") ||
-            zend_string_equals_literal(config_node->function, "require") ||
-            zend_string_equals_literal(config_node->function, "require_once") ||
-            zend_string_equals_literal(config_node->function, "echo"));
+    return (zend_string_equals_literal_ci(config_node->function, "include") ||
+            zend_string_equals_literal_ci(config_node->function, "include_once") ||
+            zend_string_equals_literal_ci(config_node->function, "require") ||
+            zend_string_equals_literal_ci(config_node->function, "require_once") ||
+            zend_string_equals_literal_ci(config_node->function, "echo"));
   }
   if (config_node->r_function) {
     return (sp_is_regexp_matching(config_node->r_function, "include") ||
