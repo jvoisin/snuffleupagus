@@ -91,3 +91,10 @@ sp.disable_function.function("is_callable").param("var").value("passthru").drop(
 #File upload
 sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ph").drop();
 sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ht").drop();
+
+# Ensure that certificates are properly verified
+sp.disable_function.function("curl_setopt").param("value").value("1").allow();
+sp.disable_function.function("curl_setopt").param("value").value("2").allow();
+# `81` is SSL_VERIFYHOST and `64` SSL_VERIFYPEER
+sp.disable_function.function("curl_setopt").param("option").value("64").drop().alias("Please don't turn CURLOPT_SSL_VERIFYCLIENT off.");
+sp.disable_function.function("curl_setopt").param("option").value("81").drop().alias("Please don't turn CURLOPT_SSL_VERIFYHOST off.");
