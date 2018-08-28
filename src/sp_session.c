@@ -10,11 +10,8 @@ static ts_rsrc_id session_globals_id = 0;
 ZEND_TSRMLS_CACHE_EXTERN();
 #endif
 #else
-#define SESSION_G(v) (ps_globals.v)
-#endif
-
-#ifndef ZTS
 static php_ps_globals *session_globals = NULL;
+#define SESSION_G(v) (ps_globals.v)
 #endif
 
 static ps_module *s_module;
