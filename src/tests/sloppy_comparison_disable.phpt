@@ -7,8 +7,11 @@ Sloppy comparison
 <?php 
 $qwe = "abc";
 if ($qwe == 0) {
-  echo "OK";
+  echo "OK\n";
 }
+$qwe = array(rand(1,2), "qwe");
+var_dump(in_array(0, $qwe));
 ?>
 --EXPECT--
 OK
+bool(true)
