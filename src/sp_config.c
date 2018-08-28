@@ -24,6 +24,7 @@ sp_config_tokens const sp_func[] = {
     {.func = parse_session, .token = SP_TOKEN_SESSION_ENCRYPTION},
     {.func = parse_sloppy_comparison, .token = SP_TOKEN_SLOPPY_COMPARISON},
     {.func = parse_wrapper_whitelist, .token = SP_TOKEN_ALLOW_WRAPPERS},
+    {.func = parse_curl_verify_certificates, .token = SP_TOKEN_CURL_VERIFY_CERTIFICATES},
     {NULL, NULL}};
 
 /* Top level keyword parsing */
