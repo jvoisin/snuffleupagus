@@ -74,6 +74,11 @@ PHP_FUNCTION(sp_array_search) {
       sizeof("array_search") - 1, PHP_FN(sp_array_search));
 }
 
+PHP_FUNCTION(sp_array_keys) {
+  array_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, "array_keys",
+      sizeof("array_keys") - 1, PHP_FN(sp_array_keys));
+}
+
 void hook_sloppy() {
   TSRMLS_FETCH();
 
@@ -89,4 +94,5 @@ void hook_sloppy() {
 
   HOOK_FUNCTION("in_array", sp_internal_functions_hook, PHP_FN(sp_in_array));
   HOOK_FUNCTION("array_search", sp_internal_functions_hook, PHP_FN(sp_array_search));
+  HOOK_FUNCTION("array_keys", sp_internal_functions_hook, PHP_FN(sp_array_keys));
 }
