@@ -21,4 +21,6 @@ echo "2\n";
 --EXPECTF--
 1
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'system' in %a/src/tests/dump_request_invalid_folder.php on line 3
+Warning: [snuffleupagus][request_logging] Unable to create the folder '/root/NON_EXISTENT/FOLDER/PLEASE/' in %a/tests/dump_request_invalid_folder.php on line %d
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'system' in %a/tests/dump_request_invalid_folder.php on line %d

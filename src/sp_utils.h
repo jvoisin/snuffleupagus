@@ -32,8 +32,10 @@
 #define SP_LOG_DROP E_ERROR
 #define SP_LOG_DEBUG E_NOTICE
 #define SP_LOG_ERROR E_ERROR
+#define SP_LOG_WARN E_WARNING
 
 #define sp_log_err(feature, ...) sp_log_msg(feature, SP_LOG_ERROR, __VA_ARGS__)
+#define sp_log_warn(feature, ...) sp_log_msg(feature, SP_LOG_WARN, __VA_ARGS__)
 #ifdef SP_DEBUG
 #define sp_log_debug(...) sp_log_msg("DEBUG", SP_LOG_DEBUG, __VA_ARGS__)
 #else

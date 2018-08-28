@@ -59,8 +59,8 @@ static int construct_filename(char* filename, const zend_string* folder,
   char strhash[65] = {0};
 
   if (-1 == mkdir(ZSTR_VAL(folder), 0700) && errno != EEXIST) {
-    sp_log_err("request_logging", "Unable to create the folder '%s'",
-               ZSTR_VAL(folder));
+    sp_log_warn("request_logging", "Unable to create the folder '%s'",
+                ZSTR_VAL(folder));
     return -1;
   }
 
@@ -94,8 +94,8 @@ int sp_log_request(const zend_string* folder, const zend_string* text_repr,
     return -1;
   }
   if (NULL == (file = fopen(filename, "w+"))) {
-    sp_log_err("request_logging", "Unable to open %s: %s", filename,
-               strerror(errno));
+    sp_log_warn("request_logging", "Unable to open %s: %s", filename,
+                strerror(errno));
     return -1;
   }
 
@@ -207,6 +207,10 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
   const zend_string* alias = config_node->alias;
   const int sim = config_node->simulation;
 
+  if (dump) {
+    sp_log_request(config_node->dump, config_node->textual_representation,
+                   SP_TOKEN_DISABLE_FUNC);
+  }
   if (arg_name) {
     char* char_repr = NULL;
     if (arg_value) {
@@ -238,10 +242,6 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
                  path);
     }
   }
-  if (dump) {
-    sp_log_request(config_node->dump, config_node->textual_representation,
-                   SP_TOKEN_DISABLE_FUNC);
-  }
 }
 
 void sp_log_disable_ret(const char* restrict path,
@@ -252,6 +252,10 @@ void sp_log_disable_ret(const char* restrict path,
   const int sim = config_node->simulation;
   char* char_repr = NULL;
 
+  if (dump) {
+    sp_log_request(dump, config_node->textual_representation,
+                   SP_TOKEN_DISABLE_FUNC);
+  }
   if (ret_value) {
     char_repr = zend_string_to_char(ret_value);
   }
@@ -269,10 +273,6 @@ void sp_log_disable_ret(const char* restrict path,
                path, char_repr ? char_repr : "?");
   }
   efree(char_repr);
-  if (dump) {
-    sp_log_request(dump, config_node->textual_representation,
-                   SP_TOKEN_DISABLE_FUNC);
-  }
 }
 
 bool sp_match_array_key(const zval* zv, const zend_string* to_match,
