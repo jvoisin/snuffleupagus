@@ -17,14 +17,10 @@ PHP_FUNCTION(sp_curl_setopt) {
 
 	__asm__("int3");
 
-	if (option & CURLOPT_SSL_VERIFYCLIENT) {
-		if (zval_get_long(zvalue) != 1) {
+	if (options & CURLOPT_SSL_VERIFYPEER && zval_get_long(zvalue) != 1) {
 			sp_log_err("verify_vertificates", "Please don't deactivate server certificate validation");
-		}
-	} else if (option & CURLOPT_SSL_VERIFYHOST) {
-		if (zval_get_long(zvalue) != 2) {
+	} else if (options & CURLOPT_SSL_VERIFYHOST && zval_get_long(zvalue) != 2) {
 			sp_log_err("verify_vertificates", "Please don't deactivate client certificate validation");
-		}
 	}
 
 	orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
