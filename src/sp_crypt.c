@@ -27,7 +27,7 @@ void generate_key(unsigned char *key) {
   if (env_var) {
     PHP_SHA256Update(&ctx, (unsigned char *)env_var, strlen(env_var));
   } else {
-    sp_log_err(
+    sp_log_warn(
         "cookie_encryption",
         "The environment variable '%s' "
         "is empty, cookies are weakly encrypted",
