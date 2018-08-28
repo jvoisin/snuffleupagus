@@ -3,7 +3,6 @@ Cookie samesite
 --SKIPIF--
 <?php
 if (!extension_loaded("snuffleupagus")) die("skip");
-if (PHP_VERSION_ID >= 70300) die("skip BROKEN with 7.3");
 ?>
 --INI--
 sp.configuration_file={PWD}/config/config_samesite_cookies.ini
