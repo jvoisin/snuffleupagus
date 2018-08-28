@@ -20,4 +20,5 @@ echo "After eval: $a\n";
 ?>
 --EXPECTF--
 Outside of eval: -0.54402111088937
-[snuffleupagus][0.0.0.0][Eval_whitelist][drop] The function 'sin' isn't in the eval whitelist, dropping its call.
+
+Fatal error: [snuffleupagus][Eval_whitelist] The function 'sin' isn't in the eval whitelist, dropping its call. in %a/eval_whitelist_user_then_builtin.php on line 4

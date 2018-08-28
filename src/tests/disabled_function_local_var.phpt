@@ -21,4 +21,5 @@ test();
 Value of a: 1338
 2
 Value of a: 1337
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strlen' in %a/tests/disabled_function_local_var.php:%d.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_function_local_var.php on line 4

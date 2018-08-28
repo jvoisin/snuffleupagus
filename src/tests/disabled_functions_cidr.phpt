@@ -13,4 +13,4 @@ sp.configuration_file={PWD}/config/disabled_functions_cidr.ini
 system("echo 42");
 ?>
 --EXPECTF--
-[snuffleupagus][127.0.0.1][disabled_function][drop] Aborted execution on call of the function 'system' in %a/tests/disabled_functions_cidr.php:2.
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'system' in %a/disabled_functions_cidr.php on line 2

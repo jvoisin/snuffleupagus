@@ -41,5 +41,4 @@ Some random text again
 echo 1;
 ?>
 --EXPECTF--
-Upload_validation: Found an opcode: INIT_FCALL
-[snuffleupagus][0.0.0.0][upload_validation][drop] The upload of test.php on ? was rejected.
+Fatal error: [snuffleupagus][upload_validation] The upload of test.php on ? was rejected. in Unknown on line 0

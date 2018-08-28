@@ -13,4 +13,5 @@ echo is_numeric("1234") . "\n";
 --EXPECTF--
 bool(false)
 1337
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'is_numeric' in %a/disabled_functions_ret_type_true.php:%d, because the function returned 'TRUE', which matched the rule 'Return value is a true'.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on return of the function 'is_numeric', because the function returned 'TRUE', which matched the rule 'Return value is a true' in %a/disabled_functions_ret_type_true.php on line 4

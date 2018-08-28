@@ -16,8 +16,4 @@ EOF;
 --FILE--
 <?php var_dump($_COOKIE); ?>
 --EXPECT--
-
-array(1) {
-  ["awful_cookie"]=>
-  string(18) "awful_cookie_value"
-}
+Fatal error: [snuffleupagus][cookie_encryption] Something went wrong with the decryption of super_cookie in Unknown on line 0

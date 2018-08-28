@@ -8,5 +8,7 @@ sp.configuration_file={PWD}/config/broken_conf_missing_script.ini
 echo 1;
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][config][error] The `script` directive is mandatory in '.enable();' on line 1.
+PHP Fatal error:  [snuffleupagus][config] The `script` directive is mandatory in '.enable();' on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] The `script` directive is mandatory in '.enable();' on line 1 in Unknown on line 0
 1

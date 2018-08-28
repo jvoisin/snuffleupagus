@@ -28,12 +28,14 @@
 #define HOOK_FUNCTION_BY_REGEXP(regexp, hook_table, new_function) \
   hook_regexp(regexp, SNUFFLEUPAGUS_G(hook_table), new_function)
 
-#define SP_LOG_SIMULATION "simulation"
-#define SP_LOG_DROP "drop"
-#define SP_LOG_DEBUG "debug"
-#define SP_LOG_ERROR "error"
+#define SP_LOG_SIMULATION E_WARNING
+#define SP_LOG_DROP E_ERROR
+#define SP_LOG_DEBUG E_NOTICE
+#define SP_LOG_ERROR E_ERROR
+#define SP_LOG_WARN E_WARNING
 
 #define sp_log_err(feature, ...) sp_log_msg(feature, SP_LOG_ERROR, __VA_ARGS__)
+#define sp_log_warn(feature, ...) sp_log_msg(feature, SP_LOG_WARN, __VA_ARGS__)
 #ifdef SP_DEBUG
 #define sp_log_debug(...) sp_log_msg("DEBUG", SP_LOG_DEBUG, __VA_ARGS__)
 #else
@@ -42,15 +44,14 @@
 
 #define GET_SUFFIX(x) (x == 1) ? "st" : ((x == 2) ? "nd" : "th")
 
-void sp_log_msg(char const *feature, char const *level, const char *fmt, ...);
+void sp_log_msg(char const *feature, int type, const char *fmt, ...);
 int compute_hash(const char *const filename, char *file_hash);
 const zend_string *sp_zval_to_zend_string(zval *);
 bool sp_match_value(const zend_string *, const zend_string *, const sp_pcre *);
 bool sp_match_array_key(const zval *, const zend_string *, const sp_pcre *);
 bool sp_match_array_value(const zval *, const zend_string *, const sp_pcre *);
 void sp_log_disable(const char *restrict, const char *restrict,
-                    const zend_string *restrict, const sp_disabled_function *,
-                    unsigned int, const char *restrict);
+                    const zend_string *restrict, const sp_disabled_function *);
 void sp_log_disable_ret(const char *restrict, const zend_string *restrict,
                         const sp_disabled_function *);
 int hook_function(const char *, HashTable *,

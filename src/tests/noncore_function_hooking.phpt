@@ -12,4 +12,4 @@ function custom_fun($a) {
 custom_fun("hello");
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'custom_fun' in %a/tests/noncore_function_hooking.php:3.
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'custom_fun' in %a/noncore_function_hooking.php on line 3

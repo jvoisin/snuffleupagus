@@ -11,4 +11,5 @@ system("id");
 ?>
 --EXPECTF--
 1337
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'system' in %a/disabled_functions_param_line.php:3.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'system' in %a/disabled_functions_param_line.php on line 3

@@ -13,5 +13,6 @@ echo "After eval: $a\n";
 ?>
 --EXPECTF--
 Outside of eval: 14
-[snuffleupagus][0.0.0.0][eval][simulation] A call to strlen was tried in eval, in %a/tests/eval_backlist_simulation.php:1, logging it.
+
+Warning: [snuffleupagus][eval] A call to strlen was tried in eval, in %a/eval_backlist_simulation.php:1, logging it. in %a/eval_backlist_simulation.php(4) : eval()'d code on line 1
 After eval: 4

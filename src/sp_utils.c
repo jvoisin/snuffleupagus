@@ -9,16 +9,6 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-static inline void _sp_log_err(const char* fmt, ...) {
-  char* msg;
-  va_list args;
-
-  va_start(args, fmt);
-  vspprintf(&msg, 0, fmt, args);
-  va_end(args);
-  php_log_err(msg);
-}
-
 static bool sp_zend_string_equals(const zend_string* s1,
                                   const zend_string* s2) {
   // We can't use `zend_string_equals` here because it doesn't work on
@@ -27,7 +17,7 @@ static bool sp_zend_string_equals(const zend_string* s1,
          !memcmp(ZSTR_VAL(s1), ZSTR_VAL(s2), ZSTR_LEN(s1));
 }
 
-void sp_log_msg(char const* feature, char const* level, const char* fmt, ...) {
+void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
   char* msg;
   va_list args;
 
@@ -35,9 +25,7 @@ void sp_log_msg(char const* feature, char const* level, const char* fmt, ...) {
   vspprintf(&msg, 0, fmt, args);
   va_end(args);
 
-  char const* const client_ip = getenv("REMOTE_ADDR");
-  _sp_log_err("[snuffleupagus][%s][%s][%s] %s",
-              client_ip ? client_ip : "0.0.0.0", feature, level, msg);
+  zend_error(type, "[snuffleupagus][%s] %s", feature, msg);
 }
 
 int compute_hash(const char* const filename, char* file_hash) {
@@ -50,7 +38,7 @@ int compute_hash(const char* const filename, char* file_hash) {
       php_stream_open_wrapper(filename, "rb", REPORT_ERRORS, NULL);
   if (!stream) {
     sp_log_err("hash_computation",
-               "Can not open the file %s to compute its hash.\n", filename);
+               "Can not open the file %s to compute its hash", filename);
     return FAILURE;
   }
 
@@ -71,8 +59,8 @@ static int construct_filename(char* filename, const zend_string* folder,
   char strhash[65] = {0};
 
   if (-1 == mkdir(ZSTR_VAL(folder), 0700) && errno != EEXIST) {
-    sp_log_err("request_logging", "Unable to create the folder '%s'.",
-               ZSTR_VAL(folder));
+    sp_log_warn("request_logging", "Unable to create the folder '%s'",
+                ZSTR_VAL(folder));
     return -1;
   }
 
@@ -106,8 +94,8 @@ int sp_log_request(const zend_string* folder, const zend_string* text_repr,
     return -1;
   }
   if (NULL == (file = fopen(filename, "w+"))) {
-    sp_log_err("request_logging", "Unable to open %s: %s", filename,
-               strerror(errno));
+    sp_log_warn("request_logging", "Unable to open %s: %s", filename,
+                strerror(errno));
     return -1;
   }
 
@@ -146,7 +134,7 @@ static char* zend_string_to_char(const zend_string* zs) {
 
   if (ZSTR_LEN(zs) + 1 < ZSTR_LEN(zs)) {
     sp_log_err("overflow_error",
-               "Overflow tentative detected in zend_string_to_char.");
+               "Overflow tentative detected in zend_string_to_char");
     sp_terminate();
   }
   char* copy = emalloc(ZSTR_LEN(zs) + 1);
@@ -214,15 +202,15 @@ bool sp_match_value(const zend_string* value, const zend_string* to_match,
 
 void sp_log_disable(const char* restrict path, const char* restrict arg_name,
                     const zend_string* restrict arg_value,
-                    const sp_disabled_function* config_node, unsigned int line,
-                    const char* restrict filename) {
+                    const sp_disabled_function* config_node) {
   const zend_string* dump = config_node->dump;
   const zend_string* alias = config_node->alias;
   const int sim = config_node->simulation;
 
-  filename = filename ? filename : zend_get_executed_filename(TSRMLS_C);
-  line = line ? line : zend_get_executed_lineno(TSRMLS_C);
-
+  if (dump) {
+    sp_log_request(config_node->dump, config_node->textual_representation,
+                   SP_TOKEN_DISABLE_FUNC);
+  }
   if (arg_name) {
     char* char_repr = NULL;
     if (arg_value) {
@@ -231,32 +219,28 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
     if (alias) {
       sp_log_msg(
           "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-          "Aborted execution on call of the function '%s' in %s:%d, "
-          "because its argument '%s' content (%s) matched the rule '%s'.",
-          path, filename, line, arg_name, char_repr ? char_repr : "?",
+          "Aborted execution on call of the function '%s', "
+          "because its argument '%s' content (%s) matched the rule '%s'",
+          path, arg_name, char_repr ? char_repr : "?",
           ZSTR_VAL(alias));
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                 "Aborted execution on call of the function '%s' in %s:%d, "
-                 "because its argument '%s' content (%s) matched a rule.",
-                 path, filename, line, arg_name, char_repr ? char_repr : "?");
+                 "Aborted execution on call of the function '%s', "
+                 "because its argument '%s' content (%s) matched a rule",
+                 path, arg_name, char_repr ? char_repr : "?");
     }
     efree(char_repr);
   } else {
     if (alias) {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                 "Aborted execution on call of the function '%s' in %s:%d, "
-                 "because of the the rule '%s'.",
-                 path, filename, line, ZSTR_VAL(alias));
+                 "Aborted execution on call of the function '%s', "
+                 "because of the the rule '%s'",
+                 path, ZSTR_VAL(alias));
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                 "Aborted execution on call of the function '%s' in %s:%d.",
-                 path, filename, line);
+                 "Aborted execution on call of the function '%s'",
+                 path);
     }
-  }
-  if (dump) {
-    sp_log_request(config_node->dump, config_node->textual_representation,
-                   SP_TOKEN_DISABLE_FUNC);
   }
 }
 
@@ -268,29 +252,27 @@ void sp_log_disable_ret(const char* restrict path,
   const int sim = config_node->simulation;
   char* char_repr = NULL;
 
+  if (dump) {
+    sp_log_request(dump, config_node->textual_representation,
+                   SP_TOKEN_DISABLE_FUNC);
+  }
   if (ret_value) {
     char_repr = zend_string_to_char(ret_value);
   }
   if (alias) {
     sp_log_msg(
         "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-        "Aborted execution on return of the function '%s' in %s:%d, "
-        "because the function returned '%s', which matched the rule '%s'.",
-        path, zend_get_executed_filename(TSRMLS_C),
-        zend_get_executed_lineno(TSRMLS_C), char_repr ? char_repr : "?",
+        "Aborted execution on return of the function '%s', "
+        "because the function returned '%s', which matched the rule '%s'",
+        path, char_repr ? char_repr : "?",
         ZSTR_VAL(alias));
   } else {
     sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-               "Aborted execution on return of the function '%s' in %s:%d, "
-               "because the function returned '%s', which matched a rule.",
-               path, zend_get_executed_filename(TSRMLS_C),
-               zend_get_executed_lineno(TSRMLS_C), char_repr ? char_repr : "?");
+               "Aborted execution on return of the function '%s', "
+               "because the function returned '%s', which matched a rule",
+               path, char_repr ? char_repr : "?");
   }
   efree(char_repr);
-  if (dump) {
-    sp_log_request(dump, config_node->textual_representation,
-                   SP_TOKEN_DISABLE_FUNC);
-  }
 }
 
 bool sp_match_array_key(const zval* zv, const zend_string* to_match,

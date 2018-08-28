@@ -6,4 +6,6 @@ Broken configuration
 sp.configuration_file={PWD}/config/broken_conf_mutually_exclusive.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][config][error] Invalid configuration line: 'sp.disabled_functions.function("system").param("id").value("42").value_r("^id$").drop();': '.value' and '.regexp' are mutually exclusive on line 1.
+PHP Fatal error:  [snuffleupagus][config] Invalid configuration line: 'sp.disabled_functions.function("system").param("id").value("42").value_r("^id$").drop();': '.value' and '.regexp' are mutually exclusive on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration line: 'sp.disabled_functions.function("system").param("id").value("42").value_r("^id$").drop();': '.value' and '.regexp' are mutually exclusive on line 1 in Unknown on line 0

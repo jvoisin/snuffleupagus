@@ -8,6 +8,6 @@ sp.configuration_file={PWD}/config/disabled_functions_exit.ini
 <?php 
 exit('OMG');
 ?>
---EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'exit' in %a/tests/disabled_functions_exit.php:%d.
 --XFAIL--
+--EXPECTF--
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'exit' in %a/disabled_function_echo.php on line 3

@@ -13,4 +13,4 @@ vaR_DUmp("this is a super test");
 echo sTRPOs("pouet", "o");
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'system' in %a/tests/disabled_functions_upper.php:%d.
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'system' in %a/disabled_functions_upper.php on line 2

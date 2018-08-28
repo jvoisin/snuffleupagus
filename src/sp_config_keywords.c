@@ -19,7 +19,7 @@ static int parse_enable(char *line, bool *restrict retval,
   }
 
   if (!(enable ^ disable)) {
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu.",
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu",
                sp_line_no);
     return -1;
   }
@@ -44,9 +44,9 @@ int parse_session(char *line) {
     if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)) {
       sp_log_err(
           "config",
-          "You're trying to use the session cookie encryption feature"
+          "You're trying to use the session cookie encryption feature "
           "on line %zu without having set the `.cookie_env_var` option in"
-          "`sp.global`: please set it first.",
+          "`sp.global`: please set it first",
           sp_line_no);
       pefree(session, 0);
       return -1;
@@ -54,9 +54,9 @@ int parse_session(char *line) {
                (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
       sp_log_err(
           "config",
-          "You're trying to use the session cookie encryption feature"
+          "You're trying to use the session cookie encryption feature "
           "on line %zu without having set the `.encryption_key` option in"
-          "`sp.global`: please set it first.",
+          "`sp.global`: please set it first",
           sp_line_no);
       pefree(session, 0);
       return -1;
@@ -114,7 +114,7 @@ int parse_unserialize(char *line) {
   }
 
   if (!(enable ^ disable)) {
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu.",
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu",
                sp_line_no);
     return -1;
   }
@@ -145,7 +145,7 @@ int parse_readonly_exec(char *line) {
   }
 
   if (!(enable ^ disable)) {
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu.",
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu",
                sp_line_no);
     return -1;
   }
@@ -236,7 +236,7 @@ int parse_cookie(char *line) {
           "config",
           "You're trying to use the cookie encryption feature"
           "on line %zu without having set the `.cookie_env_var` option in"
-          "`sp.global`: please set it first.",
+          "`sp.global`: please set it first",
           sp_line_no);
       return -1;
     } else if (0 ==
@@ -245,28 +245,28 @@ int parse_cookie(char *line) {
           "config",
           "You're trying to use the cookie encryption feature"
           "on line %zu without having set the `.encryption_key` option in"
-          "`sp.global`: please set it first.",
+          "`sp.global`: please set it first",
           sp_line_no);
       return -1;
     }
   } else if (!samesite) {
     sp_log_err("config",
                "You must specify a at least one action to a cookie on line "
-               "%zu.",
+               "%zu",
                sp_line_no);
     return -1;
   }
   if ((!cookie->name || 0 == ZSTR_LEN(cookie->name)) && !cookie->name_r) {
     sp_log_err("config",
                "You must specify a cookie name/regexp on line "
-               "%zu.",
+               "%zu",
                sp_line_no);
     return -1;
   }
   if (cookie->name && cookie->name_r) {
     sp_log_err("config",
                "name and name_r are mutually exclusive on line "
-               "%zu.",
+               "%zu",
                sp_line_no);
     return -1;
   }
@@ -280,7 +280,7 @@ int parse_cookie(char *line) {
       sp_log_err(
           "config",
           "%s is an invalid value to samesite (expected %s or %s) on line "
-          "%zu.",
+          "%zu",
           ZSTR_VAL(samesite), SP_TOKEN_SAMESITE_LAX, SP_TOKEN_SAMESITE_STRICT,
           sp_line_no);
       return -1;
@@ -350,7 +350,7 @@ int parse_disabled_functions(char *line) {
   if (X && Y) {                                                          \
     sp_log_err("config",                                                 \
                "Invalid configuration line: 'sp.disabled_functions%s': " \
-               "'.%s' and '.%s' are mutually exclusive on line %zu.",    \
+               "'.%s' and '.%s' are mutually exclusive on line %zu",    \
                line, STR1, STR2, sp_line_no);                            \
     return 1;                                                            \
   }
@@ -367,38 +367,38 @@ int parse_disabled_functions(char *line) {
     sp_log_err(
         "config",
         "Invalid configuration line: 'sp.disabled_functions%s':"
-        "'.r_param', '.param' and '.pos' are mutually exclusive on line %zu.",
+        "'.r_param', '.param' and '.pos' are mutually exclusive on line %zu",
         line, sp_line_no);
     return -1;
   } else if ((df->r_key || df->key) && (df->r_value || df->value)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               "`key` and `value` are mutually exclusive on line %zu.",
+               "`key` and `value` are mutually exclusive on line %zu",
                line, sp_line_no);
     return -1;
   } else if ((df->r_ret || df->ret || df->ret_type) && (df->r_param || param)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               "`ret` and `param` are mutually exclusive on line %zu.",
+               "`ret` and `param` are mutually exclusive on line %zu",
                line, sp_line_no);
     return -1;
   } else if ((df->r_ret || df->ret || df->ret_type) && (var)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               "`ret` and `var` are mutually exclusive on line %zu.",
+               "`ret` and `var` are mutually exclusive on line %zu",
                line, sp_line_no);
     return -1;
   } else if ((df->r_ret || df->ret || df->ret_type) &&
              (df->value || df->r_value)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               "`ret` and `value` are mutually exclusive on line %zu.",
+               "`ret` and `value` are mutually exclusive on line %zu",
                line, sp_line_no);
     return -1;
   } else if (!(df->r_function || df->function)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
-               " must take a function name on line %zu.",
+               " must take a function name on line %zu",
                line, sp_line_no);
     return -1;
   } else if (df->filename && (*ZSTR_VAL(df->filename) != '/') &&
@@ -407,13 +407,13 @@ int parse_disabled_functions(char *line) {
     sp_log_err(
         "config",
         "Invalid configuration line: 'sp.disabled_functions%s':"
-        "'.filename' must be an absolute path or a phar archive on line %zu.",
+        "'.filename' must be an absolute path or a phar archive on line %zu",
         line, sp_line_no);
     return -1;
   } else if (!(allow ^ drop)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s': The "
-               "rule must either be a `drop` or `allow` one on line %zu.",
+               "rule must either be a `drop` or `allow` one on line %zu",
                line, sp_line_no);
     return -1;
   }
@@ -423,7 +423,7 @@ int parse_disabled_functions(char *line) {
     char *endptr;
     df->pos = (int)strtol(ZSTR_VAL(pos), &endptr, 10);
     if (errno != 0 || endptr == ZSTR_VAL(pos)) {
-      sp_log_err("config", "Failed to parse arg '%s' of `pos` on line %zu.",
+      sp_log_err("config", "Failed to parse arg '%s' of `pos` on line %zu",
                  ZSTR_VAL(pos), sp_line_no);
       return -1;
     }
@@ -434,7 +434,7 @@ int parse_disabled_functions(char *line) {
     char *endptr;
     df->line = (unsigned int)strtoul(ZSTR_VAL(line_number), &endptr, 10);
     if (errno != 0 || endptr == ZSTR_VAL(line_number)) {
-      sp_log_err("config", "Failed to parse arg '%s' of `line` on line %zu.",
+      sp_log_err("config", "Failed to parse arg '%s' of `line` on line %zu",
                  ZSTR_VAL(line_number), sp_line_no);
       return -1;
     }
@@ -460,7 +460,7 @@ int parse_disabled_functions(char *line) {
       df->param = sp_parse_var(ZSTR_VAL(param));
     }
     if (!df->param) {
-      sp_log_err("config", "Invalid value '%s' for `param` on line %zu.",
+      sp_log_err("config", "Invalid value '%s' for `param` on line %zu",
                  ZSTR_VAL(param), sp_line_no);
       return -1;
     }
@@ -470,12 +470,12 @@ int parse_disabled_functions(char *line) {
     if (ZSTR_LEN(var)) {
       df->var = sp_parse_var(ZSTR_VAL(var));
       if (!df->var) {
-        sp_log_err("config", "Invalid value '%s' for `var` on line %zu.",
+        sp_log_err("config", "Invalid value '%s' for `var` on line %zu",
                    ZSTR_VAL(var), sp_line_no);
         return -1;
       }
     } else {
-      sp_log_err("config", "Empty value in `var` on line %zu.", sp_line_no);
+      sp_log_err("config", "Empty value in `var` on line %zu", sp_line_no);
       return -1;
     }
   }
@@ -534,7 +534,7 @@ int parse_upload_validation(char *line) {
   }
 
   if (!(enable ^ disable)) {
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu.",
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu",
                sp_line_no);
     return -1;
   }
@@ -545,15 +545,15 @@ int parse_upload_validation(char *line) {
 
   if (!script) {
     sp_log_err("config",
-               "The `script` directive is mandatory in '%s' on line %zu.", line,
+               "The `script` directive is mandatory in '%s' on line %zu", line,
                sp_line_no);
     return -1;
   } else if (-1 == access(ZSTR_VAL(script), F_OK)) {
-    sp_log_err("config", "The `script` (%s) doesn't exist on line %zu.",
+    sp_log_err("config", "The `script` (%s) doesn't exist on line %zu",
                ZSTR_VAL(script), sp_line_no);
     return -1;
   } else if (-1 == access(ZSTR_VAL(script), X_OK)) {
-    sp_log_err("config", "The `script` (%s) isn't executable on line %zu.",
+    sp_log_err("config", "The `script` (%s) isn't executable on line %zu",
                ZSTR_VAL(script), sp_line_no);
     return -1;
   }

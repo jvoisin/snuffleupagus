@@ -14,3 +14,4 @@ echo 1;
 ?>
 --EXPECTF--
 1
+Fatal error: [snuffleupagus][config] A rule can't be enabled and disabled on line 1 in Unknown on line 0

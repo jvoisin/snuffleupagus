@@ -21,4 +21,4 @@ session_start(); 			// Re start the session, It will read and decrypt the non em
 var_dump($_SESSION); 		// Dump the session
 ?>
 --EXPECTF--
-[snuffleupagus][127.0.0.2][cookie_encryption][drop] Something went wrong with the decryption of the session.
+Fatal error: [snuffleupagus][cookie_encryption] Something went wrong with the decryption of the session in %a/src/tests/crypt_session_invalid.php on line 9

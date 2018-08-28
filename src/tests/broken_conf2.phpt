@@ -6,4 +6,6 @@ Broken configuration
 sp.configuration_file={PWD}/config/broken_conf2.ini
 --FILE--
 --EXPECT--
-[snuffleupagus][0.0.0.0][config][error] Invalid configuration section 'sp.wrong' on line 1.
+PHP Fatal error:  [snuffleupagus][config] Invalid configuration section 'sp.wrong' on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration section 'sp.wrong' on line 1 in Unknown on line 0

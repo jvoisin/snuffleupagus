@@ -17,4 +17,5 @@ test();
 ?>
 --EXPECTF--
 4
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strlen' in %s/tests/disabled_function_super_global_var.php:%d.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/src/tests/disabled_function_super_global_var.php on line 3

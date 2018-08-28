@@ -14,4 +14,4 @@ strpos("a", "b");
 printf(1337);
 ?>
 --EXPECTF--
-[snuffleupagus][2001:0db8:0000:0000:0000:ff00:0042:8328][disabled_function][drop] Aborted execution on call of the function 'strpos' in %a/tests/disabled_functions_cidr_6.php:2.
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strpos' in %a/disabled_functions_cidr_6.php on line 2

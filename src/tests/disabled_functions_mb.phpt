@@ -9,4 +9,4 @@ sp.configuration_file={PWD}/config/disabled_functions_mb.ini
 echo strlen("id");
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strlen' in %a/tests/disabled_functions_mb.php:2.
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_functions_mb.php on line 2

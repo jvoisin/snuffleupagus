@@ -11,4 +11,5 @@ echo "1", "oops";
 ?>
 --CLEAN--
 --EXPECTF--
-qwe1[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'echo' in %a/tests/disabled_function_echo_2.php:3.
+qwe1
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'echo' in %a/disabled_function_echo_2.php on line 3

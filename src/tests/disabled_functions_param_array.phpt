@@ -21,4 +21,5 @@ foo($a);
 --EXPECTF--
 test1
 abcde
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'foo' in %a/disabled_functions_param_array.php:3, because its argument '$arr' content (abcd) matched the rule '1'.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'foo', because its argument '$arr' content (abcd) matched the rule '1' in %a/disabled_functions_param_array.php on line 3

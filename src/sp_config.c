@@ -40,7 +40,7 @@ static int parse_line(char *line) {
   }
 
   if (strncmp(ptr, SP_TOKEN_BASE, strlen(SP_TOKEN_BASE))) {
-    sp_log_err("config", "Invalid configuration prefix for '%s' on line %zu.",
+    sp_log_err("config", "Invalid configuration prefix for '%s' on line %zu",
                line, sp_line_no);
     return -1;
   }
@@ -51,7 +51,7 @@ static int parse_line(char *line) {
       return sp_func[i].func(ptr + strlen(sp_func[i].token));
     }
   }
-  sp_log_err("config", "Invalid configuration section '%s' on line %zu.", line,
+  sp_log_err("config", "Invalid configuration section '%s' on line %zu", line,
              sp_line_no);
   return -1;
 }
@@ -114,7 +114,7 @@ int parse_php_type(char *restrict line, char *restrict keyword, void *retval) {
                  "%s) is expecting a valid php type ('false', 'true',"
                  " 'array'. 'object', 'long', 'double', 'null', 'resource', "
                  "'reference',"
-                 " 'undef') on line %zu.",
+                 " 'undef') on line %zu",
                  keyword, sp_line_no);
       return -1;
     }
@@ -149,7 +149,7 @@ int parse_cidr(char *restrict line, char *restrict keyword, void *retval) {
     *(sp_cidr **)retval = cidr;
     return consumed;
   } else {
-    sp_log_err("config", "%s doesn't contain a valid cidr on line %zu.", line,
+    sp_log_err("config", "%s doesn't contain a valid cidr on line %zu", line,
                sp_line_no);
     return -1;
   }
@@ -174,7 +174,7 @@ int parse_regexp(char *restrict line, char *restrict keyword, void *retval) {
     closing_paren[0] = '\0';
   }
   sp_log_err("config",
-             "'%s)' is expecting a valid regexp, and not '%s' on line %zu.",
+             "'%s)' is expecting a valid regexp, and not '%s' on line %zu",
              keyword, line, sp_line_no);
   return -1;
 }

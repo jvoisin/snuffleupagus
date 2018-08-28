@@ -15,4 +15,5 @@ register_tick_function('my_super_function');
 ?>
 --EXPECTF--
 1337
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'my_super_function' in %a/tests/disabled_functions_register_tick_function.php:4.
+
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'my_super_function' in %a/disabled_functions_register_tick_function.php on line 4

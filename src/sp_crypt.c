@@ -27,10 +27,10 @@ void generate_key(unsigned char *key) {
   if (env_var) {
     PHP_SHA256Update(&ctx, (unsigned char *)env_var, strlen(env_var));
   } else {
-    sp_log_err(
+    sp_log_warn(
         "cookie_encryption",
-        "The environment variable '%s'"
-        "is empty, cookies are weakly encrypted.",
+        "The environment variable '%s' "
+        "is empty, cookies are weakly encrypted",
         ZSTR_VAL(
             SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var));
   }
@@ -58,13 +58,13 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
       sp_log_msg(
           "cookie_encryption", SP_LOG_SIMULATION,
           "Buffer underflow tentative detected in cookie encryption handling "
-          "for %s. Using the cookie 'as it' instead of decrypting it.",
+          "for %s. Using the cookie 'as it' instead of decrypting it",
           hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       return ZEND_HASH_APPLY_KEEP;
     } else {
       sp_log_msg(
           "cookie_encryption", SP_LOG_DROP,
-          "Buffer underflow tentative detected in cookie encryption handling.");
+          "Buffer underflow tentative detected in cookie encryption handling");
       return ZEND_HASH_APPLY_REMOVE;
     }
   }
@@ -106,7 +106,7 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
       return ZEND_HASH_APPLY_KEEP;
     } else {
       sp_log_msg("cookie_encryption", SP_LOG_DROP,
-                 "Something went wrong with the decryption of %s.",
+                 "Something went wrong with the decryption of %s",
                  hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       return ZEND_HASH_APPLY_REMOVE;
     }

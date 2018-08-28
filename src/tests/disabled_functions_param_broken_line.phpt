@@ -10,6 +10,8 @@ system("echo 1337");
 system("echo 1338");
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][config][error] Failed to parse arg 'qwe' of `line` on line 1.
+PHP Fatal error:  [snuffleupagus][config] Failed to parse arg 'qwe' of `line` on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Failed to parse arg 'qwe' of `line` on line 1 in Unknown on line 0
 1337
 1338

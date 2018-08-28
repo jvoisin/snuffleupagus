@@ -9,4 +9,4 @@ sp.configuration_file={PWD}/config/disabled_functions_ret_type_resource.ini
 echo fopen("/etc/passwd", "r");
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'fopen' in %a/disabled_functions_ret_type_resource.php:2, because the function returned 'RESOURCE', which matched the rule 'Return value is a resource'.
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on return of the function 'fopen', because the function returned 'RESOURCE', which matched the rule 'Return value is a resource' in %a/disabled_functions_ret_type_resource.php on line 2

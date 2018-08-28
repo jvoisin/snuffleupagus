@@ -16,8 +16,8 @@ foo();
 bla();
 ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'foo' in %s/tests/glob_config.php:%d.
+Warning: [snuffleupagus][disabled_function] Aborted execution on call of the function 'foo' in %a/glob_config.php on line 3
 1
-[snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'bla' in %s/tests/glob_config.php:%d.
-2
 
+Warning: [snuffleupagus][disabled_function] Aborted execution on call of the function 'bla' in %a/glob_config.php on line 6
+2

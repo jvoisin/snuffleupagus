@@ -7,4 +7,6 @@ sp.configuration_file={PWD}/../../config/default.rules,{PWD}/non_existent_config
 --FILE--
 <?php ?>
 --EXPECTF--
-[snuffleupagus][0.0.0.0][config][error] Could not open configuration file%a/non_existent_configuration_file : No such file or directory
+PHP Fatal error:  [snuffleupagus][config] Could not open configuration file %a/non_existent_configuration_file : No such file or directory in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Could not open configuration file %a/non_existent_configuration_file : No such file or directory in Unknown on line 0
