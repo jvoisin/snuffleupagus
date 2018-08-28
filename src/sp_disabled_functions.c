@@ -208,7 +208,7 @@ static zend_execute_data* is_file_matching(
 
   zend_execute_data* ex = execute_data;
   if (config_node->filename) {
-    if (zend_string_equals(current_filename, config_node->filename)) {
+    if (sp_zend_string_equals(current_filename, config_node->filename)) {
       return ex;
     }
     ITERATE(ex);
