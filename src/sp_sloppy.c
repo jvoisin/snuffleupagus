@@ -36,7 +36,9 @@ ZEND_API zend_op_array* sp_compile_file(zend_file_handle* file_handle,
   return opline;
 }
 
-PHP_FUNCTION(sp_in_array) {
+static void array_handler(INTERNAL_FUNCTION_PARAMETERS,
+    const char *name, size_t size,
+    void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS)) {
   void (*handler)(INTERNAL_FUNCTION_PARAMETERS);
   zval func_name;
   zval params[3] = {{{0}}};
@@ -48,18 +50,28 @@ PHP_FUNCTION(sp_in_array) {
   ZVAL_COPY(&params[0], value);
   ZVAL_COPY(&params[1], array);
   ZVAL_BOOL(&params[2], 1);
-  ZVAL_STRING(&func_name, "in_array");
+  ZVAL_STRING(&func_name, name);
 
   handler = zend_hash_str_find_ptr(
-      SNUFFLEUPAGUS_G(sp_internal_functions_hook), "in_array", sizeof("in_array") - 1);
+      SNUFFLEUPAGUS_G(sp_internal_functions_hook), name, size);
   zend_internal_function *func = zend_hash_str_find_ptr(
-      CG(function_table), "in_array", sizeof("in_array") - 1);
+      CG(function_table), name, size);
   func->handler = handler;
 
-  call_user_function(CG(function_table), NULL, &func_name, return_value, 3,
-                     params);
+  call_user_function(CG(function_table), NULL, &func_name,
+      return_value, 3, params);
 
-  func->handler = PHP_FN(sp_in_array);
+  func->handler = orig_handler;
+}
+
+PHP_FUNCTION(sp_in_array) {
+  array_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, "in_array",
+      sizeof("in_array") - 1, PHP_FN(sp_in_array));
+}
+
+PHP_FUNCTION(sp_array_search) {
+  array_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, "array_search",
+      sizeof("array_search") - 1, PHP_FN(sp_array_search));
 }
 
 void hook_sloppy() {
@@ -76,4 +88,5 @@ void hook_sloppy() {
   }
 
   HOOK_FUNCTION("in_array", sp_internal_functions_hook, PHP_FN(sp_in_array));
+  HOOK_FUNCTION("array_search", sp_internal_functions_hook, PHP_FN(sp_array_search));
 }
