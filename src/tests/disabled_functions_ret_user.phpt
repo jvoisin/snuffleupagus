@@ -10,5 +10,7 @@ function qwe() {
   return "asd";
 }
 qwe();
+echo 1;
 ?>
 --EXPECT--
+1
