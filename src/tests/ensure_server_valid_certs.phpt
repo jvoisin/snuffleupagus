@@ -15,4 +15,4 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, '0');
 echo "1337";
 ?>
 --EXPECTF--
-[snuffleupagus][verify_vertificates] Please don't deactivate client certificate validation in %s/tests/ensure_server_valid_certs.php on line %d
+Fatal error: [snuffleupagus][verify_vertificates] Please don't deactivate client certificate validation in %s/tests/ensure_server_valid_certs.php on line 3
