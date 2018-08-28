@@ -65,7 +65,8 @@ without having to touch the PHP code.
 * Hardening features
 	* Automatic `secure` and `samesite` flag for cookies
 	* Bundled set of rule to detect post-compromissions behaviours
-	* Global [strict mode]( https://secure.php.net/manual/en/migration70.new-features.php#migration70.new-features.scalar-type-declarations)
+	* Global [strict mode]( https://secure.php.net/manual/en/migration70.new-features.php#migration70.new-features.scalar-type-declarations) and type-juggling prevention
+	* Whitelisting of [stream wrappers](https://secure.php.net/manual/en/intro.stream.php)
 	* Preventing writeable files execution
 	* Whitelist/blacklist for `eval`
 	* Request dumping capability
