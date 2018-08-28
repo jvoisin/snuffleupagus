@@ -32,6 +32,7 @@
 #include "sp_config.h"
 #include "sp_config_utils.h"
 #include "sp_config_keywords.h"
+#include "sp_curl_verify_certificates.h"
 #include "sp_cookie_encryption.h"
 #include "sp_disable_xxe.h"
 #include "sp_disabled_functions.h"

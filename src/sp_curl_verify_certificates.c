@@ -15,6 +15,8 @@ PHP_FUNCTION(sp_curl_setopt) {
 		Z_PARAM_ZVAL(zvalue)
 	ZEND_PARSE_PARAMETERS_END();
 
+	__asm__("int3");
+
 	if (option & CURLOPT_SSL_VERIFYCLIENT) {
 		if (zval_get_long(zvalue) != 1) {
 			sp_log_err("verify_vertificates", "Please don't deactivate server certificate validation");
