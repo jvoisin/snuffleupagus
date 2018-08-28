@@ -187,14 +187,16 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
 
     orig_execute_ex(execute_data);
 
-    if (UNEXPECTED(
+    if (EX(return_value) != NULL) {
+      if (UNEXPECTED(
             true ==
             should_drop_on_ret_ht(
-                EX(return_value), function_name,
-                SNUFFLEUPAGUS_G(config)
-                    .config_disabled_functions_reg_ret->disabled_functions,
-                SNUFFLEUPAGUS_G(config).config_disabled_functions_ret))) {
-      sp_terminate();
+              EX(return_value), function_name,
+              SNUFFLEUPAGUS_G(config)
+              .config_disabled_functions_reg_ret->disabled_functions,
+              SNUFFLEUPAGUS_G(config).config_disabled_functions_ret))) {
+        sp_terminate();
+      }
     }
     efree(function_name);
   } else {
