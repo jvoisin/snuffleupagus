@@ -105,7 +105,7 @@ static bool is_param_matching(zend_execute_data* execute_data,
   if (config_node->pos != -1) {
     if (config_node->pos > nb_param - 1) {
       char* complete_function_path = get_complete_function_path(execute_data);
-      sp_log_err("config",
+      sp_log_warn("config",
                  "It seems that you wrote a rule filtering on the "
                  "%d%s argument of the function '%s', but it takes only %d "
                  "arguments. "
