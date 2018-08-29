@@ -224,7 +224,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   char *rest = new_value->val;
 
   while ((config_file = strtok_r(rest, ",", &rest))) {
-    int ret = glob(config_file, GLOB_BRACE | GLOB_NOCHECK, NULL, &globbuf);
+    int ret = glob(config_file, GLOB_NOCHECK, NULL, &globbuf);
 
     if (ret != 0) {
       SNUFFLEUPAGUS_G(is_config_valid) = false;
