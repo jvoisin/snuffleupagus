@@ -29,8 +29,8 @@ Papers
 Notable users
 -------------
 
-- `Nbs System <https://www.nbs-system.com/>`__ - a french hosting/security company and author of snuffleupagus
-- `net4all <https://net4all.ch/>`__ - a swiss hosting company
+- `NBS System <https://www.nbs-system.com/>`__ - a french hosting/security company and author of snuffleupagus
+- `Net4All <https://net4all.ch/>`__ - a swiss hosting company
 - `Oceanet Technology <https://www.oceanet-technology.com/>`__ - a french hosting company
 - `SwissCenter <https://swisscenter.com>`__ - a swiss datacenter & web hosting company
 - `Toolslib <https://toolslib.net/>`__ - an `Alexa top 10k <https://www.alexa.com/siteinfo/toolslib.net>`__ website
