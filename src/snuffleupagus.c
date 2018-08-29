@@ -47,7 +47,7 @@ static PHP_INI_MH(StrictMode) {
 PHP_INI_BEGIN()
 PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM,
               OnUpdateConfiguration)
-PHP_INI_ENTRY("sp.allow_broken_configuration", "", PHP_INI_SYSTEM,
+PHP_INI_ENTRY("sp.allow_broken_configuration", "0", PHP_INI_SYSTEM,
               StrictMode)
 PHP_INI_END()
 
@@ -197,7 +197,6 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
 
   if (!SNUFFLEUPAGUS_G(allow_broken_configuration) && !SNUFFLEUPAGUS_G(is_config_valid)) {
     sp_log_err("config", "Invalid configuration file");
-    sp_terminate();
   }
 
   // We need to disable wrappers loaded by extensions loaded after SNUFFLEUPAGUS.
