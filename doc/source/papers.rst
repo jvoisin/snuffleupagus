@@ -29,5 +29,9 @@ Papers
 Notable users
 -------------
 
-- `Toolslib <https://toolslib.net/>`__ - an `Alexa top 10k <https://www.alexa.com/siteinfo/toolslib.net>`__ website
 - `AdwCleaner <https://www.malwarebytes.com/adwcleaner/>`__'s backend- a notorious anti-pup
+- `NBS System <https://www.nbs-system.com/>`__ - a French hosting/security company and author of snuffleupagus
+- `Net4All <https://net4all.ch/>`__ - a Swiss hosting company
+- `Oceanet Technology <https://www.oceanet-technology.com/>`__ - a French hosting company
+- `SwissCenter <https://swisscenter.com>`__ - a Swiss datacenter & web hosting company
+- `Toolslib <https://toolslib.net/>`__ - an `Alexa top 10k <https://www.alexa.com/siteinfo/toolslib.net>`__ website
