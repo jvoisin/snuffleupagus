@@ -94,6 +94,11 @@ int parse_global_strict(char *line) {
       line, &(SNUFFLEUPAGUS_G(config).config_global_strict->enable), NULL);
 }
 
+int parse_curl_verify_certificates(char *line) {
+  return parse_enable(
+      line, &(SNUFFLEUPAGUS_G(config).config_curl_verify_certificates->enable), NULL);
+}
+
 int parse_unserialize(char *line) {
   bool enable = false, disable = false;
   sp_config_unserialize *unserialize =
