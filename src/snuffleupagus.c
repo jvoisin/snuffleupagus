@@ -47,7 +47,7 @@ static PHP_INI_MH(StrictMode) {
 PHP_INI_BEGIN()
 PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM,
               OnUpdateConfiguration)
-PHP_INI_ENTRY("sp.allow_broken_configuration", "1", PHP_INI_SYSTEM,
+PHP_INI_ENTRY("sp.allow_broken_configuration", "", PHP_INI_SYSTEM,
               StrictMode)
 PHP_INI_END()
 
@@ -195,7 +195,7 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
   ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
-  if (SNUFFLEUPAGUS_G(allow_broken_configuration) && !SNUFFLEUPAGUS_G(is_config_valid)) {
+  if (!SNUFFLEUPAGUS_G(allow_broken_configuration) && !SNUFFLEUPAGUS_G(is_config_valid)) {
     sp_log_err("config", "Invalid configuration file");
     sp_terminate();
   }

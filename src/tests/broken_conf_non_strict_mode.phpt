@@ -13,4 +13,6 @@ echo 1337;
 PHP Fatal error:  [snuffleupagus][config] Invalid configuration prefix for 'this is a broken line' on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] Invalid configuration prefix for 'this is a broken line' on line 1 in Unknown on line 0
-1337
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.
