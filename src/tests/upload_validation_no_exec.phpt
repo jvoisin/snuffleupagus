@@ -14,20 +14,6 @@ Content-Disposition: form-data; name="test"; filename="test.php"
 var_dump($_FILES);
 ?>
 --EXPECTF--
-array(1) {
-  ["test"]=>
-  array(5) {
-    ["name"]=>
-    string(8) "test.php"
-    ["type"]=>
-    string(0) ""
-    ["tmp_name"]=>
-    string(0) ""
-    ["error"]=>
-    int(3)
-    ["size"]=>
-    int(0)
-  }
-}
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] The `script` (tests/data/upload_no_exec.sh) isn't executable on line 1 in Unknown on line 0

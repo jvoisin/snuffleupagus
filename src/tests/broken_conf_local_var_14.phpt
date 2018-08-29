@@ -12,3 +12,6 @@ PHP Fatal error:  [snuffleupagus][config] Invalid value '$i+valid var name ' for
 Fatal error: [snuffleupagus][config] Invalid var name: $i+valid var name . in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] Invalid value '$i+valid var name ' for `var` on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

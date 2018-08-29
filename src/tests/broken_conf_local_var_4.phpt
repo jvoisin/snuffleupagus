@@ -12,3 +12,6 @@ PHP Fatal error:  [snuffleupagus][config] Invalid value '"asd"asd[]' for `var` o
 Fatal error: [snuffleupagus][config] Invalid `"` position. in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] Invalid value '"asd"asd[]' for `var` on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

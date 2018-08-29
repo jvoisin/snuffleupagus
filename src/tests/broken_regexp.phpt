@@ -12,3 +12,6 @@ PHP Fatal error:  [snuffleupagus][config] '.value_r()' is expecting a valid rege
 Fatal error: [snuffleupagus][config] Failed to compile '^$[': missing terminating ] for character class on line 1. in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] '.value_r()' is expecting a valid regexp, and not '"^$["' on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

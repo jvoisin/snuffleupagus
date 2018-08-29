@@ -12,3 +12,6 @@ PHP Fatal error:  [snuffleupagus][config] Invalid value 'asd::' for `param` on l
 Fatal error: [snuffleupagus][config] Invalid `::` position. in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] Invalid value 'asd::' for `param` on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

@@ -9,3 +9,6 @@ sp.configuration_file={PWD}/config/broken_conf_invalid_cidr6.ini
 PHP Fatal error:  [snuffleupagus][config] 'ZZZ' isn't a valid network mask. in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] 'ZZZ' isn't a valid network mask. in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.
