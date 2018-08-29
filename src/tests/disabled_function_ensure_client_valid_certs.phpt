@@ -2,8 +2,8 @@
 Disable functions - Ensure that client certificates validation can't be disabled
 --SKIPIF--
 <?php
-if (!extension_loaded("snuffleupagus")) die "skip";
-if (!extension_loaded("curl")) die "skip";
+if (!extension_loaded("snuffleupagus")) { die("skip"); }
+if (!extension_loaded("curl")) { die("skip"); }
 ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_function_curl_verify_certs.ini
