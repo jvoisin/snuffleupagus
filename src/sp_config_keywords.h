@@ -17,6 +17,5 @@ int parse_eval_whitelist(char *line);
 int parse_session(char *line);
 int parse_sloppy_comparison(char *line);
 int parse_wrapper_whitelist(char *line);
-int parse_curl_verify_certificates(char *line);
 
 #endif  // __SP_CONFIG_KEYWORDS_H

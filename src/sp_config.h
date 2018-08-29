@@ -55,10 +55,6 @@ typedef struct {
 
 typedef struct {
   bool enable;
-} sp_config_curl_verify_certificates;
-
-typedef struct {
-  bool enable;
 } sp_config_random;
 
 typedef struct {
@@ -166,7 +162,6 @@ typedef struct {
 
 typedef struct {
   sp_config_random *config_random;
-	sp_config_curl_verify_certificates *config_curl_verify_certificates;
   sp_config_sloppy *config_sloppy;
   sp_config_unserialize *config_unserialize;
   sp_config_readonly_exec *config_readonly_exec;
@@ -268,9 +263,6 @@ typedef struct {
 
 // upload_validator
 #define SP_TOKEN_UPLOAD_SCRIPT ".script("
-
-// cURL certificate verify
-# define SP_TOKEN_CURL_VERIFY_CERTIFICATES ".curl_verify_certificates"
 
 #define SP_TOKEN_LIST ".list("
 
