@@ -66,6 +66,7 @@ ZEND_BEGIN_MODULE_GLOBALS(snuffleupagus)
 size_t in_eval;
 sp_config config;
 bool is_config_valid;
+bool is_strict_mode;
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;
 HashTable *sp_eval_blacklist_functions_hook;
