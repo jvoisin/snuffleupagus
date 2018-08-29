@@ -37,9 +37,9 @@ ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 static PHP_INI_MH(StrictMode) {
   TSRMLS_FETCH();
 
-  SNUFFLEUPAGUS_G(is_strict_mode) = false;
+  SNUFFLEUPAGUS_G(allow_broken_configuration) = false;
   if (new_value && zend_string_equals_literal(new_value, "1")) {
-    SNUFFLEUPAGUS_G(is_strict_mode) = true;
+    SNUFFLEUPAGUS_G(allow_broken_configuration) = true;
   }
   return SUCCESS;
 }
@@ -195,7 +195,7 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
   ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
-  if (SNUFFLEUPAGUS_G(is_strict_mode) && !SNUFFLEUPAGUS_G(is_config_valid)) {
+  if (SNUFFLEUPAGUS_G(allow_broken_configuration) && !SNUFFLEUPAGUS_G(is_config_valid)) {
     sp_log_err("config", "Invalid configuration file");
     sp_terminate();
   }
