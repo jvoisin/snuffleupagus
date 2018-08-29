@@ -13,7 +13,7 @@ sp.configuration_file={PWD}/config/disabled_function_curl_verify_certs.ini
 <?php
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_VERBOSE, '1');
-$options = array(CURLOPT_SSL_VERIFYPEER => false);
+$options = array(CURLOPT_SSL_VERIFYPEER => 0);
 curl_setopt_array($ch, $options);
 echo "1337";
 ?>
