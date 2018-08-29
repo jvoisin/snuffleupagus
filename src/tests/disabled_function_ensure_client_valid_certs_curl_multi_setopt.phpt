@@ -11,7 +11,7 @@ if (!extension_loaded("curl")) { die("skip"); }
 sp.configuration_file={PWD}/config/disabled_function_curl_verify_certs.ini
 --FILE--
 <?php
-$ch = curl_multi_init();
+$mch = curl_multi_init();
 curl_multi_setopt($mch, CURLOPT_SSL_VERIFYPEER, 0);
 echo "1337";
 ?>
