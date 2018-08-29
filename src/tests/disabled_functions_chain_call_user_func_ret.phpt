@@ -24,7 +24,3 @@ echo one('still not matching') . "\n";
 --XFAIL--
 --EXPECTF--
 Match on ret is broken :/
-
-
-Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
-Could not startup.
