@@ -47,7 +47,7 @@ static PHP_INI_MH(StrictMode) {
 PHP_INI_BEGIN()
 PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM,
               OnUpdateConfiguration)
-PHP_INI_ENTRY("sp.strict_mode", "", PHP_INI_SYSTEM,
+PHP_INI_ENTRY("sp.allow_broken_configuration", "", PHP_INI_SYSTEM,
               StrictMode)
 PHP_INI_END()
 
