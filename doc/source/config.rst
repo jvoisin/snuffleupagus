@@ -202,17 +202,6 @@ to explicitly whitelist some `stream wrappers <https://secure.php.net/manual/en/
   sp.wrappers_whitelist.list("file,php,phar");
 
 
-Mandatory certificates validation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-:ref:`Mandatory certificate validation <mandatory-cert-validation>` ensures
-that it's not possible to turn off certificate validation for `cURL usage <https://secure.php.net/manual/en/book.curl.php>`__.
-
-::
-
-  sp.curl_verify_certificates.enable();
-
-
 Eval white and blacklist
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

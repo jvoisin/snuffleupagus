@@ -7,9 +7,6 @@ sp.disable_xxe.enable();
 # use SameSite on session cookie
 sp.cookie.name("PHPSESSID").samesite("lax");
 
-# Always verify certificates
-sp.curl_verify_certificates.enable();
-
 # Harden the `chmod` function
 sp.disable_function.function("chmod").param("mode").value_r("^[0-9]{2}[67]$").drop();
 
@@ -91,7 +88,13 @@ sp.disable_function.function("is_callable").param("var").value("passthru").drop(
 # sp.disable_function.function("mysqli_query").ret("FALSE").drop();
 # sp.disable_function.function("PDO::query").ret("FALSE").drop();
 
+# Ensure that certificates are properly verified
+sp.disable_function.function("curl_setopt").param("value").value("1").allow();
+sp.disable_function.function("curl_setopt").param("value").value("2").allow();
+# `81` is SSL_VERIFYHOST and `64` SSL_VERIFYPEER
+sp.disable_function.function("curl_setopt").param("option").value("64").drop().alias("Please don't turn CURLOPT_SSL_VERIFYCLIENT off.");
+sp.disable_function.function("curl_setopt").param("option").value("81").drop().alias("Please don't turn CURLOPT_SSL_VERIFYHOST off.");
+
 #File upload
 sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ph").drop();
 sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ht").drop();
-
