@@ -6,4 +6,5 @@ Broken configuration - No configuration file specified
 --FILE--
 <?php echo "1\n"; ?>
 --EXPECT--
-1
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

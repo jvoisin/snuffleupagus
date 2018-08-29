@@ -4,7 +4,7 @@ Broken configuration with strict mode enabled
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/broken_conf.ini
-sp.strict_mode=On
+sp.allow_broken_configuration=On
 --FILE--
 <?php
 echo 1337;

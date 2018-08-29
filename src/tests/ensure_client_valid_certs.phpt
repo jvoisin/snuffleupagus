@@ -16,7 +16,3 @@ echo "1337";
 ?>
 --EXPECTF--
 Fatal error: [snuffleupagus][verify_vertificates] Please don't deactivate client certificate validation in %s/tests/ensure_client_valid_certs.php on line %d
-
-
-Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
-Could not startup.
