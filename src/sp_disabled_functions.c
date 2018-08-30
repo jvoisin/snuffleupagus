@@ -580,13 +580,13 @@ ZEND_FUNCTION(eval_blacklist_callback) {
   if (SNUFFLEUPAGUS_G(in_eval) > 0) {
     zend_string* filename = get_eval_filename(zend_get_executed_filename());
     const int line_number = zend_get_executed_lineno(TSRMLS_C);
-    if (SNUFFLEUPAGUS_G(config).config_eval->dump) {
-      sp_log_request(
-          SNUFFLEUPAGUS_G(config).config_eval->dump,
-          SNUFFLEUPAGUS_G(config).config_eval->textual_representation,
+    const sp_config_eval* config_eval = SNUFFLEUPAGUS_G(config).config_eval;
+
+    if (config_eval->dump) {
+      sp_log_request(config_eval->dump, config_eval->textual_representation,
           SP_TOKEN_EVAL_BLACKLIST);
     }
-    if (SNUFFLEUPAGUS_G(config).config_eval->simulation) {
+    if (config_eval->simulation) {
       sp_log_msg("eval", SP_LOG_SIMULATION,
                  "A call to %s was tried in eval, in %s:%d, logging it.",
                  current_function_name, ZSTR_VAL(filename), line_number);
