@@ -344,21 +344,6 @@ Snuffleupagus can prevent the execution of this kind of file. A good practice
 would be to use a different user to run PHP than for administrating the website,
 and using this feature to lock this up.
 
-
-.. _mandatory-cert-validation:
-
-Mandatory certificates validation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-It's a common practise to disable `certificate validation <https://en.wikipedia.org/wiki/Transport_Layer_Security>`__
-during development for convenience's sake. Unfortunately, it's equally common
-to forget to turn it back on.
-
-Snuffleupagus can prevent php code from turning off certificate validation
-for anything `cURL <https://secure.php.net/manual/en/book.curl.php>`__-based.
-
-
-
 .. _stream-wrapper-whitelist-feature:
 
 Whitelist of stream-wrappers

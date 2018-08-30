@@ -108,7 +108,6 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT(snuffleupagus_globals->config.config_session);
   SP_INIT(snuffleupagus_globals->config.config_eval);
   SP_INIT(snuffleupagus_globals->config.config_wrapper);
-  SP_INIT(snuffleupagus_globals->config.config_curl_verify_certificates);
 
   snuffleupagus_globals->config.config_disabled_functions_reg
       ->disabled_functions = NULL;
@@ -156,7 +155,6 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   pefree(SNUFFLEUPAGUS_G(config.config_random), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_readonly_exec), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_global_strict), 1);
-  pefree(SNUFFLEUPAGUS_G(config.config_curl_verify_certificates), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_auto_cookie_secure), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_snuffleupagus), 1);
   pefree(SNUFFLEUPAGUS_G(config.config_disable_xxe), 1);
@@ -288,10 +286,6 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
   if (SNUFFLEUPAGUS_G(config).config_session->encrypt) {
     hook_session();
-  }
-
-  if (SNUFFLEUPAGUS_G(config).config_curl_verify_certificates->enable) {
-    hook_curl_verify_certificates();
   }
 
   if (true == SNUFFLEUPAGUS_G(config).config_global_strict->enable) {
