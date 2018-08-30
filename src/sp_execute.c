@@ -151,6 +151,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
 
   if (SNUFFLEUPAGUS_G(config).hook_execute) {
     char *function_name = get_complete_function_path(execute_data);
+    zval ret_val;
 
     if (!function_name) {
       orig_execute_ex(execute_data);
@@ -185,23 +186,34 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
       }
     }
 
+    // When a function's return value isn't used, php doesn't store it in the execute_data,
+    // so we need to use a local variable to be able to match on it later.
+    if (EX(return_value) == NULL) {
+      memset(&ret_val, 0, sizeof(ret_val));
+      EX(return_value) = &ret_val;
+    }
+
     orig_execute_ex(execute_data);
 
-    if (EX(return_value) != NULL) {
-      if (UNEXPECTED(
-            true ==
-            should_drop_on_ret_ht(
-              EX(return_value), function_name,
-              SNUFFLEUPAGUS_G(config)
-              .config_disabled_functions_reg_ret->disabled_functions,
-              SNUFFLEUPAGUS_G(config).config_disabled_functions_ret))) {
-        sp_terminate();
-      }
+    if (UNEXPECTED(
+          true ==
+          should_drop_on_ret_ht(
+            EX(return_value), function_name,
+            SNUFFLEUPAGUS_G(config)
+            .config_disabled_functions_reg_ret->disabled_functions,
+            SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
+            execute_data))) {
+      sp_terminate();
     }
     efree(function_name);
+
+    if (EX(return_value) == &ret_val) {
+      EX(return_value) = NULL;
+    }
   } else {
     orig_execute_ex(execute_data);
   }
+
 }
 
 static void sp_zend_execute_internal(INTERNAL_FUNCTION_PARAMETERS) {

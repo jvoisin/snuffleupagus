@@ -151,7 +151,7 @@ static char* zend_string_to_char(const zend_string* zs) {
   return copy;
 }
 
-const zend_string* sp_zval_to_zend_string(zval* zv) {
+const zend_string* sp_zval_to_zend_string(const zval* zv) {
   switch (Z_TYPE_P(zv)) {
     case IS_LONG: {
       char* msg;
