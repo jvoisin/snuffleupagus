@@ -104,7 +104,7 @@ PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT(config_wrapper);
 #undef SP_INIT
 
-#define SP_INIT_NULL(F) snuffleupagus_globals->config.F = NULL
+#define SP_INIT_NULL(F) snuffleupagus_globals->config.F = NULL;
   SP_INIT_NULL(config_disabled_functions_reg->disabled_functions);
   SP_INIT_NULL(config_disabled_functions_reg_ret->disabled_functions);
   SP_INIT_NULL(config_cookie->cookies);
@@ -144,22 +144,6 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
 #undef FREE_HT_LIST
 #undef FREE_HT
 
-#define FREE_CFG(C) pefree(SNUFFLEUPAGUS_G(config).C, 1);
-  FREE_CFG(config_unserialize);
-  FREE_CFG(config_random);
-  FREE_CFG(config_readonly_exec);
-  FREE_CFG(config_global_strict);
-  FREE_CFG(config_auto_cookie_secure);
-  FREE_CFG(config_snuffleupagus);
-  FREE_CFG(config_disable_xxe);
-  FREE_CFG(config_upload_validation);
-  FREE_CFG(config_session);
-  FREE_CFG(config_disabled_functions_reg);
-  FREE_CFG(config_disabled_functions_reg_ret);
-  FREE_CFG(config_cookie);
-  FREE_CFG(config_wrapper);
-#undef FREE_CFG
-
 #define FREE_LST_DISABLE(L)                \
     do {                                     \
       sp_list_node *_n = SNUFFLEUPAGUS_G(config).L; \
@@ -176,6 +160,22 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_LST(config_eval->whitelist);
   FREE_LST(config_wrapper->whitelist);
 #undef FREE_LST
+
+#define FREE_CFG(C) pefree(SNUFFLEUPAGUS_G(config).C, 1);
+  FREE_CFG(config_unserialize);
+  FREE_CFG(config_random);
+  FREE_CFG(config_readonly_exec);
+  FREE_CFG(config_global_strict);
+  FREE_CFG(config_auto_cookie_secure);
+  FREE_CFG(config_snuffleupagus);
+  FREE_CFG(config_disable_xxe);
+  FREE_CFG(config_upload_validation);
+  FREE_CFG(config_session);
+  FREE_CFG(config_disabled_functions_reg);
+  FREE_CFG(config_disabled_functions_reg_ret);
+  FREE_CFG(config_cookie);
+  FREE_CFG(config_wrapper);
+#undef FREE_CFG
 
   UNREGISTER_INI_ENTRIES();
 
