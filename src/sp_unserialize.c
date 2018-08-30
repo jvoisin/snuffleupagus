@@ -7,7 +7,8 @@ PHP_FUNCTION(sp_serialize) {
 
   /* Call the original `serialize` function. */
   orig_handler = zend_hash_str_find_ptr(
-      SNUFFLEUPAGUS_G(sp_internal_functions_hook), "serialize", 9);
+      SNUFFLEUPAGUS_G(sp_internal_functions_hook), "serialize",
+      sizeof("serialize") - 1);
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 
   /* Compute the HMAC of the textual representation of the serialized data*/
@@ -88,7 +89,8 @@ PHP_FUNCTION(sp_unserialize) {
 
   if (0 == status) {
     if ((orig_handler = zend_hash_str_find_ptr(
-             SNUFFLEUPAGUS_G(sp_internal_functions_hook), "unserialize", 11))) {
+             SNUFFLEUPAGUS_G(sp_internal_functions_hook), "unserialize",
+             sizeof("unserialize") - 1))) {
       orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     }
   } else {
@@ -97,7 +99,7 @@ PHP_FUNCTION(sp_unserialize) {
                  serialized_str);
       if ((orig_handler = zend_hash_str_find_ptr(
                SNUFFLEUPAGUS_G(sp_internal_functions_hook), "unserialize",
-               11))) {
+               sizeof("unserialize") - 1))) {
         orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
       }
     } else {

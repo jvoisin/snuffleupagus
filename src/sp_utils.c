@@ -170,17 +170,17 @@ const zend_string* sp_zval_to_zend_string(const zval* zv) {
       return Z_STR_P(zv);
     }
     case IS_FALSE:
-      return zend_string_init("FALSE", 5, 0);
+      return zend_string_init("FALSE", sizeof("FALSE") - 1, 0);
     case IS_TRUE:
-      return zend_string_init("TRUE", 4, 0);
+      return zend_string_init("TRUE", sizeof("TRUE") - 1, 0);
     case IS_NULL:
-      return zend_string_init("NULL", 4, 0);
+      return zend_string_init("NULL", sizeof("NULL") - 1, 0);
     case IS_OBJECT:
-      return zend_string_init("OBJECT", 6, 0);
+      return zend_string_init("OBJECT", sizeof("OBJECT") - 1, 0);
     case IS_ARRAY:
-      return zend_string_init("ARRAY", 5, 0);
+      return zend_string_init("ARRAY", sizeof("ARRAY") - 1, 0);
     case IS_RESOURCE:
-      return zend_string_init("RESOURCE", 8, 0);
+      return zend_string_init("RESOURCE", sizeof("RESOURCE") - 1, 0);
   }
   return zend_string_init("", 0, 0);
 }
@@ -352,7 +352,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
   } else {  // TODO this can be moved somewhere else to gain some marginal perfs
     CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
     char* mb_name = ecalloc(strlen(original_name) + 3 + 1, 1);
-    memcpy(mb_name, "mb_", 3);
+    memcpy(mb_name, "mb_", sizeof("mb_") - 1);
     memcpy(mb_name + 3, VAR_AND_LEN(original_name));
     if (zend_hash_str_find(CG(function_table), VAR_AND_LEN(mb_name))) {
       return hook_function(mb_name, hook_table, new_function);

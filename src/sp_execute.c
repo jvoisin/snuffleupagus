@@ -132,7 +132,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
 
   if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
     const sp_list_node * config = zend_hash_str_find_ptr(
-        config_disabled_functions, "eval", 4);
+        config_disabled_functions, "eval", sizeof("eval") - 1);
 
     zend_string *filename = get_eval_filename(zend_get_executed_filename());
     is_builtin_matching(filename, "eval", NULL, config, config_disabled_functions);
@@ -247,25 +247,29 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
         case ZEND_INCLUDE:
           is_builtin_matching(
               zend_filename, "include", "inclusion path",
-              zend_hash_str_find_ptr(disabled_functions_hooked, "include", 7),
+              zend_hash_str_find_ptr(disabled_functions_hooked,
+                    "include", sizeof("include") - 1),
               disabled_functions_hooked);
           break;
         case ZEND_REQUIRE:
           is_builtin_matching(
               zend_filename, "require", "inclusion path",
-              zend_hash_str_find_ptr(disabled_functions_hooked, "require", 7),
+              zend_hash_str_find_ptr(disabled_functions_hooked,
+                  "require", sizeof("require") - 1),
               disabled_functions_hooked);
           break;
         case ZEND_REQUIRE_ONCE:
           is_builtin_matching(
               zend_filename, "require_once", "inclusion path",
-              zend_hash_str_find_ptr(disabled_functions_hooked, "require_once", 12),
+              zend_hash_str_find_ptr(disabled_functions_hooked,
+                  "require_once", sizeof("require_once") - 1),
               disabled_functions_hooked);
           break;
         case ZEND_INCLUDE_ONCE:
           is_builtin_matching(
               zend_filename, "include_once", "inclusion path",
-              zend_hash_str_find_ptr(disabled_functions_hooked, "include_once", 12),
+              zend_hash_str_find_ptr(disabled_functions_hooked,
+                  "include_once", sizeof("include_once") - 1),
               disabled_functions_hooked);
           break;
           EMPTY_SWITCH_DEFAULT_CASE();

@@ -33,11 +33,11 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
                                   file_key, file) {  // for each uploaded file
 
       char *filename =
-          Z_STRVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "name", 4));
+          Z_STRVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "name", sizeof("name") - 1));
       char *tmp_name =
-          Z_STRVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "tmp_name", 8));
+          Z_STRVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "tmp_name", sizeof("tmp_name") - 1));
       size_t filesize =
-          Z_LVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "size", 4));
+          Z_LVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "size", sizeof("size") - 1));
       char *cmd[3] = {0};
       char *env[5] = {0};
 
