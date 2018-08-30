@@ -45,9 +45,9 @@ static zend_string *encrypt_data(zend_string *data) {
 PHP_FUNCTION(sp_setcookie) {
   zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL, *value_enc = NULL,
 #if PHP_VERSION_ID < 70300
-              *path_samesite = NULL;
+  *path_samesite = NULL;
 #else
-              *samesite = NULL;
+  *samesite = NULL;
 #endif
 
   zend_long expires = 0;

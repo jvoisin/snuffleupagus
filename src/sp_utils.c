@@ -126,7 +126,6 @@ int sp_log_request(const zend_string* folder, const zend_string* text_repr,
   }
   fclose(file);
 
-#undef CAT_AND_DEC
   return 0;
 }
 

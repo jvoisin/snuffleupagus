@@ -113,8 +113,7 @@ int parse_php_type(char *restrict line, char *restrict keyword, void *retval) {
       sp_log_err("error",
                  "%s) is expecting a valid php type ('false', 'true',"
                  " 'array'. 'object', 'long', 'double', 'null', 'resource', "
-                 "'reference',"
-                 " 'undef') on line %zu",
+                 "'reference', 'undef') on line %zu",
                  keyword, sp_line_no);
       return -1;
     }
