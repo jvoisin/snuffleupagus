@@ -10,8 +10,9 @@ bool should_disable(zend_execute_data *, const char *, const zend_string *,
 bool should_disable_ht(zend_execute_data *, const char *, const zend_string *,
                        const char *, const sp_list_node *, const HashTable *);
 bool should_drop_on_ret_ht(zval *, const char *, const sp_list_node *config,
-                           const HashTable *);
-bool should_drop_on_ret(zval *, const sp_list_node *config, const char *);
+                           const HashTable *, zend_execute_data *);
+bool should_drop_on_ret(zval *, const sp_list_node *config, const char *,
+                        zend_execute_data *);
 char *get_complete_function_path(zend_execute_data const *const);
 
 #endif /* __SP_DISABLE_FUNCTIONS_H */

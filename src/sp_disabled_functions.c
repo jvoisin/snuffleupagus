@@ -404,7 +404,8 @@ allow:
 }
 
 bool should_drop_on_ret_ht(zval* return_value, const char* function_name,
-                           const sp_list_node* config, const HashTable* ht) {
+                           const sp_list_node* config, const HashTable* ht,
+                           zend_execute_data* execute_data) {
   const sp_list_node* ht_entry = NULL;
   bool ret = false;
 
@@ -414,17 +415,19 @@ bool should_drop_on_ret_ht(zval* return_value, const char* function_name,
 
   ht_entry = zend_hash_str_find_ptr(ht, function_name, strlen(function_name));
 
-  if (ht_entry && should_drop_on_ret(return_value, ht_entry, function_name)) {
+  if (ht_entry && should_drop_on_ret(return_value, ht_entry, function_name,
+        execute_data)) {
     ret = true;
   } else if (config && config->data) {
-    ret = should_drop_on_ret(return_value, config, function_name);
+    ret = should_drop_on_ret(return_value, config, function_name, execute_data);
   }
 
   return ret;
 }
 
 bool should_drop_on_ret(zval* return_value, const sp_list_node* config,
-                        const char* complete_function_path) {
+                        const char* complete_function_path,
+                        zend_execute_data* execute_data) {
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
   bool match_type = false, match_value = false;
@@ -436,7 +439,12 @@ bool should_drop_on_ret(zval* return_value, const sp_list_node* config,
 
     assert(config_node->function || config_node->r_function);
 
-    if (config_node->function) {
+    if (config_node->functions_list) {
+      if (false == is_functions_list_matching(execute_data,
+                                              config_node->functions_list)) {
+        goto next;
+      }
+    } else if (config_node->function) {
       if (0 !=
           strcmp(ZSTR_VAL(config_node->function), complete_function_path)) {
         goto next;
@@ -513,7 +521,8 @@ ZEND_FUNCTION(check_disabled_function) {
           return_value, current_function_name,
           SNUFFLEUPAGUS_G(config)
               .config_disabled_functions_reg_ret->disabled_functions,
-          SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked)) {
+          SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked,
+          execute_data)) {
     sp_terminate();
   }
 }

@@ -12,5 +12,5 @@ function qwe() {
 qwe();
 echo 1;
 ?>
---EXPECT--
-1
+--EXPECTF--
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on return of the function 'qwe', because the function returned 'asd', which matched a rule in %a/tests/disabled_functions_ret_user.php on line %d
