@@ -9,3 +9,6 @@ sp.configuration_file={PWD}/config/broken_conf_key_value.ini
 PHP Fatal error:  [snuffleupagus][config] Invalid configuration line: 'sp.disabled_functions.function("system").var("").value("").key("").drop();':`key` and `value` are mutually exclusive on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] Invalid configuration line: 'sp.disabled_functions.function("system").var("").value("").key("").drop();':`key` and `value` are mutually exclusive on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

@@ -11,4 +11,6 @@ echo 1;
 PHP Fatal error:  [snuffleupagus][config] Trailing chars '234);' at the end of '.enable(1234);' on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] Trailing chars '234);' at the end of '.enable(1234);' on line 1 in Unknown on line 0
-1
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

@@ -9,3 +9,6 @@ sp.configuration_file={PWD}/config/broken_conf_line_empty_string.ini
 PHP Fatal error:  [snuffleupagus][error] A valid string as parameter is expected on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][error] A valid string as parameter is expected on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

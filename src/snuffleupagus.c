@@ -34,9 +34,21 @@ static inline void sp_op_array_handler(zend_op_array *op) {
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
+static PHP_INI_MH(StrictMode) {
+  TSRMLS_FETCH();
+
+  SNUFFLEUPAGUS_G(allow_broken_configuration) = false;
+  if (new_value && zend_string_equals_literal(new_value, "1")) {
+    SNUFFLEUPAGUS_G(allow_broken_configuration) = true;
+  }
+  return SUCCESS;
+}
+
 PHP_INI_BEGIN()
 PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM,
               OnUpdateConfiguration)
+PHP_INI_ENTRY("sp.allow_broken_configuration", "0", PHP_INI_SYSTEM,
+              StrictMode)
 PHP_INI_END()
 
 void free_disabled_functions_hashtable(HashTable *ht) {
@@ -180,6 +192,10 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
 #if defined(COMPILE_DL_SNUFFLEUPAGUS) && defined(ZTS)
   ZEND_TSRMLS_CACHE_UPDATE();
 #endif
+
+  if (!SNUFFLEUPAGUS_G(allow_broken_configuration) && !SNUFFLEUPAGUS_G(is_config_valid)) {
+    sp_log_err("config", "Invalid configuration file");
+  }
 
   // We need to disable wrappers loaded by extensions loaded after SNUFFLEUPAGUS.
   if (SNUFFLEUPAGUS_G(config).config_wrapper->enabled &&

@@ -2,6 +2,8 @@
 Sloppy comparison in_array disabled
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+--INI--
+sp.allow_broken_configuration=On
 --FILE--
 <?php 
 $qwe = array(rand(1,2), "qwe");

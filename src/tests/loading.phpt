@@ -7,4 +7,5 @@ Check for snuffleupagus presence
 echo "snuffleupagus extension is available";
 ?>
 --EXPECT--
-snuffleupagus extension is available
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

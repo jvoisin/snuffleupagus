@@ -12,4 +12,6 @@ system("echo 1");
 PHP Fatal error:  [snuffleupagus][config] Failed to parse arg 'qwe' of `pos` on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] Failed to parse arg 'qwe' of `pos` on line 1 in Unknown on line 0
-1
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.
