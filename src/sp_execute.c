@@ -186,6 +186,8 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
       }
     }
 
+    // When a return value isn't used, php don't store it in the execute_data.
+    // So we keep it in a local var.
     if (EX(return_value) == NULL) {
       memset(&ret_val, 0, sizeof(ret_val));
       EX(return_value) = &ret_val;
