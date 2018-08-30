@@ -237,6 +237,7 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
   zend_string *zend_filename = zend_string_init(filename, strlen(filename), 0);
   const HashTable* disabled_functions_hooked =
       SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked;
+
   switch (data->opline->opcode) {
     case ZEND_INCLUDE_OR_EVAL:
       if (true == SNUFFLEUPAGUS_G(config).config_readonly_exec->enable) {
