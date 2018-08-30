@@ -11,4 +11,6 @@ echo 1;
 PHP Fatal error:  [snuffleupagus][config] The `script` (./non_existing_script.sh) doesn't exist on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] The `script` (./non_existing_script.sh) doesn't exist on line 1 in Unknown on line 0
-1
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.
