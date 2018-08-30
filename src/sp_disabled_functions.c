@@ -403,7 +403,7 @@ allow:
   return false;
 }
 
-bool should_drop_on_ret_ht(zval* return_value, const char* function_name,
+bool should_drop_on_ret_ht(const zval* return_value, const char* function_name,
                            const sp_list_node* config, const HashTable* ht,
                            zend_execute_data* execute_data) {
   const sp_list_node* ht_entry = NULL;
@@ -425,7 +425,7 @@ bool should_drop_on_ret_ht(zval* return_value, const char* function_name,
   return ret;
 }
 
-bool should_drop_on_ret(zval* return_value, const sp_list_node* config,
+bool should_drop_on_ret(const zval* return_value, const sp_list_node* config,
                         const char* complete_function_path,
                         zend_execute_data* execute_data) {
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
