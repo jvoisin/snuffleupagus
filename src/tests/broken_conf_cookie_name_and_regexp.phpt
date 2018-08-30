@@ -9,3 +9,6 @@ sp.configuration_file={PWD}/config/broken_conf_cookie_name_and_regexp.ini
 PHP Fatal error:  [snuffleupagus][config] name and name_r are mutually exclusive on line 2 in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] name and name_r are mutually exclusive on line 2 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

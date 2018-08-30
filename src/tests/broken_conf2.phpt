@@ -9,3 +9,6 @@ sp.configuration_file={PWD}/config/broken_conf2.ini
 PHP Fatal error:  [snuffleupagus][config] Invalid configuration section 'sp.wrong' on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] Invalid configuration section 'sp.wrong' on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

@@ -10,3 +10,6 @@ sp.configuration_file={PWD}/config/unexistent_configuration_file.ini
 PHP Fatal error:  [snuffleupagus][config] Could not open configuration file %a/config/unexistent_configuration_file.ini : No such file or directory in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] Could not open configuration file %a/config/unexistent_configuration_file.ini : No such file or directory in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

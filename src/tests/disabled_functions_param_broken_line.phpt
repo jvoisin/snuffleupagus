@@ -13,5 +13,6 @@ system("echo 1338");
 PHP Fatal error:  [snuffleupagus][config] Failed to parse arg 'qwe' of `line` on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] Failed to parse arg 'qwe' of `line` on line 1 in Unknown on line 0
-1337
-1338
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

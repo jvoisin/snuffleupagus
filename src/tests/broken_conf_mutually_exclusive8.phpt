@@ -9,3 +9,6 @@ sp.configuration_file={PWD}/config/broken_conf_mutually_exclusive8.ini
 PHP Fatal error:  [snuffleupagus][config] Invalid configuration line: 'sp.disabled_functions.ret("0").drop();': must take a function name on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] Invalid configuration line: 'sp.disabled_functions.ret("0").drop();': must take a function name on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

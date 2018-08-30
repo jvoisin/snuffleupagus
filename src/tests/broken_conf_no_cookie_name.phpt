@@ -9,3 +9,6 @@ sp.configuration_file={PWD}/config/config_encrypted_cookies_noname.ini
 PHP Fatal error:  [snuffleupagus][config] You must specify a cookie name/regexp on line 2 in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] You must specify a cookie name/regexp on line 2 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

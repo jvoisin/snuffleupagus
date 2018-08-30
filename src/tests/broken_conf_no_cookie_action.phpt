@@ -9,3 +9,6 @@ sp.configuration_file={PWD}/config/broken_conf_cookie_action.ini
 PHP Fatal error:  [snuffleupagus][config] You must specify a at least one action to a cookie on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] You must specify a at least one action to a cookie on line 1 in Unknown on line 0
+
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Could not startup.

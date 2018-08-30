@@ -50,6 +50,14 @@ To sum up, you should put this in your ``php.ini``:
 
 And the **snuffleupagus rules** into the ``.rules`` files.
 
+Since our configuration format is a bit more complex than php's one,
+we have a ``sp.allow_broken_configuration`` parameter (``false`` by default),
+that you can set to ``true`` if you want PHP to carry on if your Snuffleupagus'
+configuration contains syntax errors. You'll still get a big scary message in
+your logs of course. We do **not** recommend to use it of course, but sometimes
+it might be useful to be able to "debug in production" without breaking your
+website.
+
 Miscellaneous
 -------------
 
@@ -69,6 +77,7 @@ This configuration variable contains parameters that are used by multiple featur
 
 - ``cookie_env_var``: A environment variable used as part of cookies encryption.
   See the :ref:`relevant documentation <config_cookie-encryption>`
+
 
 Bugclass-killer features
 ------------------------

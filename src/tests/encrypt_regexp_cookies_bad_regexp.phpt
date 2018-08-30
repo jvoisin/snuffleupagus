@@ -15,12 +15,7 @@ EOF;
 --FILE--
 <?php var_dump($_COOKIE); ?>
 --EXPECT--
-array(2) {
-  ["super_cookie"]=>
-  string(92) "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP3gV9YJZL/pUeNAjCKFW0U2ywmf1CwHzwd2pWM="
-  ["awful_cookie"]=>
-  string(18) "awful_cookie_value"
-}
+Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
 
 Fatal error: [snuffleupagus][config] Failed to compile '^super_co[a-z+$': missing terminating ] for character class on line 2. in Unknown on line 0
 
