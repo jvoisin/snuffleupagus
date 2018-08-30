@@ -21,11 +21,12 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
 
   if (event == MULTIPART_EVENT_END) {
     zend_string *file_key __attribute__((unused)) = NULL;
+    const sp_config_upload_validation* config_upload =
+        SNUFFLEUPAGUS_G(config).config_upload_validation;
     zval *file;
     pid_t pid;
 
-    sp_log_debug(
-        "Got %d files",
+    sp_log_debug("Got %d files",
         zend_hash_num_elements(Z_ARRVAL(PG(http_globals)[TRACK_VARS_FILES])));
 
     ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL(PG(http_globals)[TRACK_VARS_FILES]),
@@ -44,10 +45,9 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
           "Filename: %s\nTmpname: %s\nSize: %d\nError: %d\nScript: %s",
           filename, tmp_name, filesize,
           Z_LVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "error", 5)),
-          ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_upload_validation->script));
+          ZSTR_VAL(config_upload->script));
 
-      cmd[0] =
-          ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_upload_validation->script);
+      cmd[0] = ZSTR_VAL(config_upload->script);
       cmd[1] = tmp_name;
       cmd[2] = NULL;
 
@@ -59,14 +59,10 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
       env[4] = NULL;
 
       if ((pid = fork()) == 0) {
-        if (execve(
-                ZSTR_VAL(
-                    SNUFFLEUPAGUS_G(config).config_upload_validation->script),
-                cmd, env) == -1) {
+        if (execve(ZSTR_VAL(config_upload->script), cmd, env) == -1) {
           sp_log_warn(
               "upload_validation", "Could not call '%s' : %s",
-              ZSTR_VAL(
-                  SNUFFLEUPAGUS_G(config).config_upload_validation->script),
+              ZSTR_VAL(config_upload->script),
               strerror(errno));
           EFREE_3(env);
           exit(1);
@@ -85,11 +81,11 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
       wait(&waitstatus);
       if (WEXITSTATUS(waitstatus) != 0) {  // Nope
         char *uri = getenv("REQUEST_URI");
-        int sim = SNUFFLEUPAGUS_G(config).config_upload_validation->simulation;
+        int sim = config_upload->simulation;
         sp_log_msg("upload_validation", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                    "The upload of %s on %s was rejected.", filename,
                    uri ? uri : "?");
-        if (!SNUFFLEUPAGUS_G(config).config_upload_validation->simulation) {
+        if (!config_upload->simulation) {
           sp_terminate();
         }
       }

@@ -31,8 +31,7 @@ void generate_key(unsigned char *key) {
         "cookie_encryption",
         "The environment variable '%s' "
         "is empty, cookies are weakly encrypted",
-        ZSTR_VAL(
-            SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var));
+        ZSTR_VAL(env_var_zend));
   }
 
   if (encryption_key) {

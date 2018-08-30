@@ -50,6 +50,9 @@ PHP_FUNCTION(sp_unserialize) {
   size_t buf_len = 0;
   zval *opts = NULL;
 
+  const sp_config_unserialize* config_unserialize =
+      SNUFFLEUPAGUS_G(config).config_unserialize;
+
   if (zend_parse_parameters(ZEND_NUM_ARGS(), "s|a", &buf, &buf_len, &opts) ==
       FAILURE) {
     RETURN_FALSE;
@@ -89,7 +92,7 @@ PHP_FUNCTION(sp_unserialize) {
       orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     }
   } else {
-    if (true == SNUFFLEUPAGUS_G(config).config_unserialize->simulation) {
+    if (true == config_unserialize->simulation) {
       sp_log_msg("unserialize", SP_LOG_SIMULATION, "Invalid HMAC for %s",
                  serialized_str);
       if ((orig_handler = zend_hash_str_find_ptr(
@@ -102,10 +105,9 @@ PHP_FUNCTION(sp_unserialize) {
                  serialized_str);
     }
   }
-  if (SNUFFLEUPAGUS_G(config).config_unserialize->dump) {
-    sp_log_request(
-        SNUFFLEUPAGUS_G(config).config_unserialize->dump,
-        SNUFFLEUPAGUS_G(config).config_unserialize->textual_representation,
+  if (config_unserialize->dump) {
+    sp_log_request(config_unserialize->dump,
+        config_unserialize->textual_representation,
         SP_TOKEN_UNSERIALIZE_HMAC);
   }
   efree(serialized_str);
