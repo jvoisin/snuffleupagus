@@ -1,0 +1,28 @@
+#
+# This list is used by git-shortlog to aggregate contributions.  It is
+# necessary when either the author's full name is not always written
+# the same way, and/or the same author contributes from different
+# email addresses.
+#
+
+Kevin Kadosh <32873649+kkadosh@users.noreply.github.com>
+Kevin Kadosh <kevin.kadosh@nbs-system.com>
+Kevin Kadosh <kka@nbs-system.com> kka <security@nbs-system.com>
+
+Mathieu Deous <mde@nbs-system.com> MatToufoutu <mattoufootu@gmail.com>
+Mathieu Deous <mde@nbs-system.com> Mathieu D <mattoufoutu@users.noreply.github.com>
+
+Sebastien Blot <sebastien.blot@nbs-system.com> blotus <sebastien@blot.me>
+
+Sylvain "caillou" Lefevre <sylvain.lefevre@epitech.eu>
+Sylvain "caillou" Lefevre <sylvain.lefevre@epitech.eu> <slefevre@nbs-system.com>
+
+Thibault "bui" Koechlin <tko@nbs-system.com> <orixxx@gmail.com>
+Thibault "bui" Koechlin <tko@nbs-system.com> bui <bui@nbs-system.com>
+
+Julien "jvoisin" Voisin <jvo@nbs-system.com> jvoisin <security@nbs-system.com>
+Julien "jvoisin" Voisin <jvo@nbs-system.com>
+Julien "jvoisin" Voisin <jvoisin@users.noreply.github.com>
+Julien "jvoisin" Voisin <julien.voisin@dustri.org>
+Julien "jvoisin" Voisin <julien.voisin@nbs-system.com>
+
