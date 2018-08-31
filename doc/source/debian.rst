@@ -1,42 +1,12 @@
 Debian
 ======
 
-Here are the intructions to build the debian package of snuffleupagus
+Here are the intructions to build the Debian package of snuffleupagus
 
-PHP dependencies
-----------------
+Requirements
+------------
 
-Here I'm using a Debian Stretch instance so the default PHP dev package required for compilation is php7.0-dev.
-
-The resulting package will have proper dependencies.
-
-If I install php7.1-dev and php7.2-dev in my instance, dependencies will be ajusted.
-
-You'll then get a single snuffleupagus package compatible with php7.0, php7.1 and php7.2
-
-If you want to compile with php7.3-dev you'll have to add the dependency in debian/control:
-
-::
-
-    Build-Depends: debhelper (>= 9),
-                  php7.0-dev | php7.1-dev | php7.2-dev | php7.3-dev
-
-To avoid requiring to add specific PHP dev package version, there is a PHP dev package named `php-all-dev <https://packages.debian.org/sid/php-all-dev>`_
-
-You would then just need to add it to Build-Depends instead :
-
-::
-
-    Build-Depends: debhelper (>= 9),
-                  php-all-dev
-
-**The issue is that php-all-dev only provides php7.2-dev at the moment.**
-
-
-Environment
------------
-
-We need some packages to compile the package
+I'm on Debian Stretch, I setup my compilation environment.
 
 ::
 
@@ -44,7 +14,7 @@ We need some packages to compile the package
 	user@debian:~$ sudo apt install dpkg-dev devscripts
 	[...]
 
-	# the build directory is where the final package files will be
+	# the final package files will be in the directory "build"
 	user@debian:~$ mkdir build
 	user@debian:~$ cd build
 
@@ -59,52 +29,10 @@ We need some packages to compile the package
 	user@debian:~/build$ cd snuffleupagus/
 	user@debian:~/build/snuffleupagus$ 
 
-	user@debian:~/build/snuffleupagus$ mk-build-deps 
-	Use of uninitialized value $fullname in concatenation (.) or string at /usr/bin/equivs-build line 210.
-	dh_testdir
-	dh_testroot
-	dh_prep
-	dh_testdir
-	dh_testroot
-	dh_install
-	dh_install: Compatibility levels before 9 are deprecated (level 7 in use)
-	dh_installdocs
-	dh_installdocs: Compatibility levels before 9 are deprecated (level 7 in use)
-	dh_installchangelogs
-	dh_installchangelogs: Compatibility levels before 9 are deprecated (level 7 in use)
-	dh_compress
-	dh_fixperms
-	dh_installdeb
-	dh_installdeb: Compatibility levels before 9 are deprecated (level 7 in use)
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-	dpkg-deb: building package 'snuffleupagus-build-deps' in '../snuffleupagus-build-deps_0.3.0-1_all.deb'.
-
-	The package has been created.
-	Attention, the package has been created in the current directory,
-	not in ".." as indicated by the message above!
-
-	# install the dependencies
-	# you can install php7.{0,1,2}-dev packages, the resulting snuffleupagus package will be built against each of these php7 versions
-	user@debian:~/build/snuffleupagus$ sudo dpkg -i snuffleupagus-build-deps_0.3.0-1_all.deb 
-	Selecting previously unselected package snuffleupagus-build-deps.
-	(Reading database ... 29348 files and directories currently installed.)
-	Preparing to unpack snuffleupagus-build-deps_0.3.0-1_all.deb ...
-	Unpacking snuffleupagus-build-deps (0.3.0-1) ...
-	dpkg: dependency problems prevent configuration of snuffleupagus-build-deps:
-	 snuffleupagus-build-deps depends on php7.0-dev | php7.1-dev | php7.2-dev; however:
-	  Package php7.0-dev is not installed.
-	  Package php7.1-dev is not installed.
-	  Package php7.2-dev is not installed.
-
-	dpkg: error processing package snuffleupagus-build-deps (--install):
-	 dependency problems - leaving unconfigured
-	Errors were encountered while processing:
-	 snuffleupagus-build-deps
-
-	user@debian:~/build/snuffleupagus$ sudo apt --fix-broken install
-	[...]
+	# install snuffleupagus build dependencies
+	# this will create and install the package snuffleupagus-build-deps that will pull required dependencies
+	sudo DEBIAN_FRONTEND=noninteractive mk-build-deps -ri --tool "apt-get --no-install-recommends -y"
+ 
 
 Compilation
 -----------
@@ -114,15 +42,12 @@ Now we can compile the package
 ::
 
 	# build the package
-	# DEB_BUILD_OPTIONS="noddebs nocheck"
-	# nocheck : skip PHP tests after compilation
-	# noddebs : do not build a dbgsym package
+	# -b : build a binary package
 	# -j$(nproc) : compile using $(nproc) CPU
-	# -b : build a binary package, remove this option to build a source package
-	user@debian:~/build/snuffleupagus$ DEB_BUILD_OPTIONS="noddebs" dpkg-buildpackage --no-sign -b -j$(nproc) 
+	user@debian:~/build/snuffleupagus$ dpkg-buildpackage -b -j$(nproc) 
 	[...]
 
-	# the package is ../
+	# the package is in ../
 	user@debian:~/build/snuffleupagus$ ls ../snuffleupagus_0.3.0-1_amd64.deb 
 	../snuffleupagus_0.3.0-1_amd64.deb
 
@@ -175,3 +100,45 @@ Now we can compile the package
 	-rw-r--r-- root/root       267 2018-07-17 13:00 ./usr/share/doc/snuffleupagus/copyright
 	drwxr-xr-x root/root         0 2018-07-17 13:00 ./usr/share/doc/snuffleupagus/examples/
 	-rw-r--r-- root/root      1012 2018-07-17 13:00 ./usr/share/doc/snuffleupagus/examples/default.rules.gz
+
+::
+
+         # we then can remove the package snuffleupagus-build-deps
+         user@debian:~/build/snuffleupagus$ sudo apt-get purge snuffleupagus-build-deps
+
+Cleaning
+-----------
+
+We clean generated files during compilation
+
+Because we didn't generate any original tar file debclean will ask you whether you want to continue
+
+::
+
+	user@debian:~/build/snuffleupagus$ debclean
+	 Cleaning in directory .
+	 This package has a Debian revision number but there does not seem to be
+	 an appropriate original tar file or .orig directory in the parent directory;
+	 (expected one of snuffleupagus_0.3.0.orig.tar.gz, snuffleupagus_0.3.0.orig.tar.bz2,
+	 snuffleupagus_0.3.0.orig.tar.lzma,  snuffleupagus_0.3.0.orig.tar.xz or tst5.orig)
+	 continue anyway? (y/n) y
+	  dpkg-buildpackage --rules-target clean -rfakeroot -us -uc
+	 dpkg-buildpackage: info: source package snuffleupagus
+	 dpkg-buildpackage: info: source version 0.3.0-1
+	 dpkg-buildpackage: info: source distribution UNRELEASED
+	 dpkg-buildpackage: info: source changed by kkadosh <snuffleupagus@nbs-system.com>
+	 dpkg-buildpackage: info: host architecture amd64
+	  fakeroot debian/rules clean
+	 debian/rules:63: warning: overriding recipe for target 'override_dh_php'
+	 /usr/share/dh-php/pkg-pecl.mk:80: warning: ignoring old recipe for target 'override_dh_php'
+	 dh clean --with php
+	    debian/rules override_dh_auto_clean
+	 make[1]: Entering directory '/home/pkger/build/snuffleupagus/github/tst5'
+	 debian/rules:63: warning: overriding recipe for target 'override_dh_php'
+	 /usr/share/dh-php/pkg-pecl.mk:80: warning: ignoring old recipe for target 'override_dh_php'
+	 rm -rf build-7.0
+	 touch clean-7.0-stamp
+	 rm -f configure-7.0-stamp build-7.0-stamp install-7.0-stamp clean-7.0-stamp
+	 make[1]: Leaving directory '/home/pkger/build/snuffleupagus/github/tst5'
+	    dh_autoreconf_clean
+	    dh_clean
