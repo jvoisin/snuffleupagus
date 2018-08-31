@@ -1,6 +1,45 @@
 Changelog
 =========
 
+0.4.0 - `Oliphant Chuckerbutty <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.4.0>`__ 2018/08/31
+--------------------------------------------------------------------------------------------------------------
+
+New features
+^^^^^^^^^^^^
+
+- Add the possibility to whitelist `stream
+  wrappers <https://secure.php.net/manual/en/intro.stream.php>`__
+- Snuffleupagus is now using php's logging mechanisms, instead of 
+  outputting its log directly into the syslog.
+- PHP is now prevented from ever disabling certificate verification
+  thanks to a few lines in our default configuration.
+
+
+Improvements
+^^^^^^^^^^^^
+
+- Significant code simplification for cookies handling
+  thanks to `Remi Collet <http://famillecollet.com>`__
+- Our ``sloppy comparison`` feature is now complete
+- Snuffleupagus won't start with an invalid config anymore,
+  except if the ``sp.allow_broken_configuration`` is set.
+- It's now possible to place virtual-patches on the return value
+  of user-defined functions.
+- Since Snuffleupagus is used by more and more organisations,
+  we added a bunch of them in our propaganda page.
+
+Bug fixes
+^^^^^^^^^
+
+- Add some missing pieces of documentation and fix some links
+- Fix the ``make install`` command
+- Fix various compilation warnings
+- Snuffleupagus is now running on platforms that aren't using
+  the glibc, thanks to an external contributor `Antoine Tenart
+  <https://ack.tf>`__
+
+
+
 0.3.1 - `Elephant Arch <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.3.1>`__ 2018/08/20
 ------------------------------------------------------------------------------------------------------
 
