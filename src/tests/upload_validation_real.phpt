@@ -10,11 +10,11 @@ if (PHP_VERSION_ID >= 70300) {
   die("skip BROKEN with 7.3");
 }
 
-if (strpos(system("php -d error_log=/dev/null -d extension=vld.so -m 2>/dev/null"), "vld") === FALSE) {
+if (strpos(system(PHP_BINARY . " -d error_log=/dev/null -d extension=vld.so -m 2>/dev/null"), "vld") === FALSE) {
 	print "skip";
 }
 
-if (strpos(system("php -d extension=vld.so -m 2>&1 | grep 'Unable to load'"), "Unable to load dynamic library 'vld.so'") !== FALSE) {
+if (strpos(system(PHP_BINARY . " -d extension=vld.so -m 2>&1 | grep 'Unable to load'"), "Unable to load dynamic library 'vld.so'") !== FALSE) {
 	print "skip";
 }
 
