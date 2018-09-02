@@ -3,6 +3,8 @@
 
 extern zend_write_func_t zend_write_default;
 
+#define VARIADIC_ARG_NAME "variadic"
+
 int hook_disabled_functions();
 int hook_echo(const char *, size_t);
 bool should_disable(zend_execute_data *, const char *, const zend_string *,

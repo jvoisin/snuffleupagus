@@ -98,12 +98,12 @@ static bool is_param_matching(zend_execute_data* execute_data,
                               const char** arg_name,
                               const char* builtin_param_name,
                               const zend_string** arg_value_str) {
-  int nb_param = ZEND_CALL_NUM_ARGS(execute_data);
-  int i = 0;
+  size_t nb_param = ZEND_CALL_NUM_ARGS(execute_data);
+  size_t i = 0;
   zval* arg_value;
 
-  if (config_node->pos != -1) {
-    if (config_node->pos > nb_param - 1) {
+  if (config_node->pos > -1) {
+    if ((size_t)config_node->pos > nb_param - 1) {
       char* complete_function_path = get_complete_function_path(execute_data);
       sp_log_warn("config",
                  "It seems that you wrote a rule filtering on the "
@@ -130,8 +130,14 @@ static bool is_param_matching(zend_execute_data* execute_data,
   } else if (config_node->r_param || config_node->pos != -1) {
     // We're matching on a function (and not a language construct)
     for (; i < nb_param; i++) {
+      // Varidics arguments positions are greater than the number of arguments.
+      bool is_variadic = i >= execute_data->func->op_array.num_args;
       if (ZEND_USER_CODE(execute_data->func->type)) {  // yay consistency
-        *arg_name = ZSTR_VAL(execute_data->func->common.arg_info[i].name);
+        if (is_variadic) {
+          *arg_name = VARIADIC_ARG_NAME;
+        } else {
+          *arg_name = ZSTR_VAL(execute_data->func->common.arg_info[i].name);
+        }
       } else {
         *arg_name = execute_data->func->internal_function.arg_info[i].name;
       }
@@ -141,8 +147,20 @@ static bool is_param_matching(zend_execute_data* execute_data,
 
       /* This is the parameter name we're looking for. */
       if (true == pcre_matching || config_node->pos != -1) {
+        // Use a local zval to not have to alloc one.
+        zval tmp;
         arg_value = ZEND_CALL_ARG(execute_data, i + 1);
 
+        if (is_variadic) {
+          // This is where the fun begins.
+          // PHP copy the extra arguments in `zend_copy_extra_args` using this delta.
+          // The current argument is never used again.
+          size_t delta = (execute_data->func->op_array.last_var
+              + execute_data->func->op_array.T
+              - execute_data->func->op_array.num_args) * sizeof(zval);
+          ZVAL_COPY_VALUE(&tmp, (zval*)(((char*)arg_value) + delta));
+          arg_value = &tmp;
+        }
         if (config_node->param_type) {  // Are we matching on the `type`?
           if (config_node->param_type == Z_TYPE_P(arg_value)) {
             return true;
