@@ -52,7 +52,7 @@ static void random_int_wrapper(INTERNAL_FUNCTION_PARAMETERS) {
 }
 
 PHP_FUNCTION(sp_rand) {
-  void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
+  zif_handler orig_handler;
 
   /* call the original `rand` function,
    * since we might no be the only ones to hook it*/
@@ -64,7 +64,7 @@ PHP_FUNCTION(sp_rand) {
 }
 
 PHP_FUNCTION(sp_mt_rand) {
-  void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
+  zif_handler orig_handler;
 
   /* call the original `mt_rand` function,
    * since we might no be the only ones to hook it*/
