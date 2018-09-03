@@ -38,8 +38,8 @@ ZEND_API zend_op_array* sp_compile_file(zend_file_handle* file_handle,
 
 static void array_handler(INTERNAL_FUNCTION_PARAMETERS,
     const char *name, size_t size,
-    void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS)) {
-  void (*handler)(INTERNAL_FUNCTION_PARAMETERS);
+    zif_handler orig_handler) {
+  zif_handler handler;
   zval func_name;
   zval params[3];
   zval *value, *array;
