@@ -3,7 +3,7 @@ Disable functions - match on a variadic param
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
 --INI--
-sp.configuration_file={PWD}/config/config_disabled_function_variadic.ini
+sp.configuration_file={PWD}/config/config_disabled_functions_variadic.ini
 --FILE--
 <?php
 function test_variadic($asd) {

@@ -11,8 +11,8 @@ function foo(...$b) {
 }
 
 echo foo(5, 4, 3, 2, 1);
+echo foo(5, 4, 2, 2, 1);
 ?>
 --EXPECTF--
-Warning: [snuffleupagus][disable_function] Snuffleupagus doesn't support variadic functions yet, sorry. Check https://github.com/nbs-system/snuffleupagus/issues/164 for details. in %a/tests/disabled_functions_variadic.php on line %d
-
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'foo' in %a/tests/disabled_functions_variadic.php on line %d
+5
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'foo', because its argument 'variadic' content (2) matched a rule in /qwe/src/tests/disabled_functions_variadic.php on line 2

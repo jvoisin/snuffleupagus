@@ -147,7 +147,6 @@ static bool is_param_matching(zend_execute_data* execute_data,
 
       /* This is the parameter name we're looking for. */
       if (true == pcre_matching || config_node->pos != -1) {
-        // Use a local zval to not have to alloc one.
         arg_value = ZEND_CALL_ARG(execute_data, i + 1);
 
         if (is_variadic) {
@@ -369,15 +368,7 @@ bool should_disable(zend_execute_data* execute_data,
     /* Check if we filter on parameter value*/
     if (config_node->param || config_node->r_param ||
         (config_node->pos != -1)) {
-      // This need to be removed, it only checks the first argument and can NULL deref.
-      if (!builtin_param &&
-          execute_data->func->op_array.arg_info->is_variadic) {
-        sp_log_warn(
-            "disable_function",
-            "Snuffleupagus doesn't support variadic functions yet, sorry. "
-            "Check https://github.com/nbs-system/snuffleupagus/issues/164 for "
-            "details.");
-      } else if (false == is_param_matching(
+      if (false == is_param_matching(
                               execute_data, config_node, builtin_param,
                               &arg_name, builtin_param_name, &arg_value_str)) {
         goto next;
