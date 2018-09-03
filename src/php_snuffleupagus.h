@@ -25,6 +25,11 @@
 #include "zend_string.h"
 #include "zend_extensions.h"
 
+/* Compatibility */
+#if PHP_VERSION_ID < 70200
+typedef void (*zif_handler)(INTERNAL_FUNCTION_PARAMETERS);
+#endif
+
 #include "sp_pcre_compat.h"
 #include "sp_list.h"
 #include "sp_tree.h"

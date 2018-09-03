@@ -45,7 +45,7 @@ void sp_disable_wrapper() {
 }
 
 PHP_FUNCTION(sp_stream_wrapper_register) {
-  void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
+  zif_handler orig_handler;
   zend_string *protocol_name = NULL;
 
   ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_QUIET, 2, EX_NUM_ARGS());
