@@ -15,4 +15,4 @@ echo foo(5, 4, 2, 2, 1);
 ?>
 --EXPECTF--
 5
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'foo', because its argument 'variadic' content (2) matched a rule in /qwe/src/tests/disabled_functions_variadic.php on line 2
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'foo', because its argument 'variadic' content (2) matched a rule in %a/tests/disabled_functions_variadic.php on line %d
