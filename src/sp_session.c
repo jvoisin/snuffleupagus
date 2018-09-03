@@ -15,7 +15,11 @@ static php_ps_globals *session_globals = NULL;
 #endif
 
 static ps_module *s_module;
+#if PHP_VERSION_ID < 70300
 static ps_module *s_original_mod;
+#else
+static const ps_module *s_original_mod;
+#endif
 static int (*old_s_read)(PS_READ_ARGS);
 static int (*old_s_write)(PS_WRITE_ARGS);
 static int (*previous_sessionRINIT)(INIT_FUNC_ARGS) = NULL;
@@ -56,7 +60,11 @@ static int sp_hook_s_write(PS_WRITE_ARGS) {
 }
 
 static void sp_hook_session_module() {
+#if PHP_VERSION_ID < 70300
   ps_module *old_mod = SESSION_G(mod);
+#else
+  const ps_module *old_mod = SESSION_G(mod);
+#endif
   ps_module *mod;
 
   if (old_mod == NULL || s_module == old_mod) {
