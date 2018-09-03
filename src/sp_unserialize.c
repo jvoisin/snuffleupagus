@@ -3,7 +3,7 @@
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 PHP_FUNCTION(sp_serialize) {
-  void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
+  zif_handler orig_handler;
 
   /* Call the original `serialize` function. */
   orig_handler = zend_hash_str_find_ptr(
@@ -42,7 +42,7 @@ PHP_FUNCTION(sp_serialize) {
 }
 
 PHP_FUNCTION(sp_unserialize) {
-  void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
+  zif_handler orig_handler;
 
   char *buf = NULL;
   char *serialized_str = NULL;
