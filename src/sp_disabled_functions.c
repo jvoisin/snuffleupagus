@@ -501,7 +501,7 @@ bool should_drop_on_ret(const zval* return_value, const sp_list_node* config,
 }
 
 ZEND_FUNCTION(check_disabled_function) {
-  void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
+  zif_handler orig_handler;
   const char* current_function_name = get_active_function_name(TSRMLS_C);
 
   if (true == should_disable_ht(
@@ -566,7 +566,7 @@ static int hook_functions(HashTable* to_hook_ht, HashTable* hooked_ht) {
 }
 
 ZEND_FUNCTION(eval_blacklist_callback) {
-  void (*orig_handler)(INTERNAL_FUNCTION_PARAMETERS);
+  zif_handler orig_handler;
   const char* current_function_name = get_active_function_name(TSRMLS_C);
   zend_string* tmp =
       zend_string_init(current_function_name, strlen(current_function_name), 0);

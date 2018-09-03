@@ -320,7 +320,7 @@ bool sp_match_array_value(const zval* arr, const zend_string* to_match,
 }
 
 int hook_function(const char* original_name, HashTable* hook_table,
-                  void (*new_function)(INTERNAL_FUNCTION_PARAMETERS)) {
+                  zif_handler new_function) {
   zend_internal_function* func;
   bool ret = FAILURE;
 
@@ -363,7 +363,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
 }
 
 int hook_regexp(const sp_pcre* regexp, HashTable* hook_table,
-                void (*new_function)(INTERNAL_FUNCTION_PARAMETERS)) {
+                zif_handler new_function) {
   zend_string* key;
 
   ZEND_HASH_FOREACH_STR_KEY(CG(function_table), key)
