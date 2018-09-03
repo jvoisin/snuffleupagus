@@ -287,7 +287,7 @@ bool sp_match_array_key(const zval* zv, const zend_string* to_match,
       }
     } else {
       char* idx_str = NULL;
-      spprintf(&idx_str, 0, "%lu", idx);
+      spprintf(&idx_str, 0, ZEND_ULONG_FMT, idx);
       zend_string* tmp = zend_string_init(idx_str, strlen(idx_str), 0);
       if (sp_match_value(tmp, to_match, rx)) {
         efree(idx_str);
