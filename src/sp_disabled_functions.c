@@ -148,7 +148,6 @@ static bool is_param_matching(zend_execute_data* execute_data,
       /* This is the parameter name we're looking for. */
       if (true == pcre_matching || config_node->pos != -1) {
         // Use a local zval to not have to alloc one.
-        zval tmp;
         arg_value = ZEND_CALL_ARG(execute_data, i + 1);
 
         if (is_variadic) {
@@ -158,8 +157,7 @@ static bool is_param_matching(zend_execute_data* execute_data,
           size_t delta = (execute_data->func->op_array.last_var
               + execute_data->func->op_array.T
               - execute_data->func->op_array.num_args) * sizeof(zval);
-          ZVAL_COPY_VALUE(&tmp, (zval*)(((char*)arg_value) + delta));
-          arg_value = &tmp;
+          arg_value = (zval*)(((char*)arg_value) + delta);
         }
         if (config_node->param_type) {  // Are we matching on the `type`?
           if (config_node->param_type == Z_TYPE_P(arg_value)) {
@@ -371,6 +369,7 @@ bool should_disable(zend_execute_data* execute_data,
     /* Check if we filter on parameter value*/
     if (config_node->param || config_node->r_param ||
         (config_node->pos != -1)) {
+      // This need to be removed, it only checks the first argument and can NULL deref.
       if (!builtin_param &&
           execute_data->func->op_array.arg_info->is_variadic) {
         sp_log_warn(
