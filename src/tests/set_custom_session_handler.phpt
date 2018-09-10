@@ -4,18 +4,17 @@ Set a custom session handler
 <?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_crypt_session.ini
+session.save_path = "/tmp"
 --ENV--
 return <<<EOF
 REMOTE_ADDR=127.0.0.1
 EOF;
 --FILE--
 <?php
-class FileSessionHandler
-{
+class FileSessionHandler {
     private $savePath;
 
-    function open($savePath, $sessionName)
-    {
+    function open($savePath, $sessionName) {
         $this->savePath = $savePath;
         if (!is_dir($this->savePath)) {
             mkdir($this->savePath, 0777);
@@ -24,23 +23,19 @@ class FileSessionHandler
         return true;
     }
 
-    function close()
-    {
+    function close() {
         return true;
     }
 
-    function read($id)
-    {
+    function read($id) {
         return (string)@file_get_contents("$this->savePath/sess_$id");
     }
 
-    function write($id, $data)
-    {
+    function write($id, $data) {
         return file_put_contents("$this->savePath/sess_$id", $data) === false ? false : true;
     }
 
-    function destroy($id)
-    {
+    function destroy($id) {
         $file = "$this->savePath/sess_$id";
         if (file_exists($file)) {
             unlink($file);
@@ -49,14 +44,12 @@ class FileSessionHandler
         return true;
     }
 
-    function gc($maxlifetime)
-    {
+    function gc($maxlifetime) {
         foreach (glob("$this->savePath/sess_*") as $file) {
             if (filemtime($file) + $maxlifetime < time() && file_exists($file)) {
                 unlink($file);
             }
         }
-
         return true;
     }
 }
