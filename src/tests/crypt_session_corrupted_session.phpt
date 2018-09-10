@@ -14,9 +14,9 @@ EOF;
 session_start();			// Start new_session , it will read an empty session
 $_SESSION["tete"] = "titi"; // Encrypt and write the session
 $id = session_id(); 		// Get the session_id to use it later
+$filename = session_save_path() . '/sess_' . $id;
 session_write_close();
 
-$filename = session_save_path() . '/sess_' . $id;
 $file_handle = fopen($filename, 'w'); 
 fwrite($file_handle, 'toto|s:4:"tata";');
 fclose($file_handle);
