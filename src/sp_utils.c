@@ -130,16 +130,15 @@ int sp_log_request(const zend_string* folder, const zend_string* text_repr,
 }
 
 static char* zend_string_to_char(const zend_string* zs) {
-  // Remove \0 from the middle of a string
+  // Remove all \0 in a zend_string and replace them with '0' instead.
 
   if (ZSTR_LEN(zs) + 1 < ZSTR_LEN(zs)) {
     sp_log_err("overflow_error",
                "Overflow tentative detected in zend_string_to_char");
     sp_terminate();
   }
-  char* copy = emalloc(ZSTR_LEN(zs) + 1);
 
-  copy[ZSTR_LEN(zs)] = 0;
+  char* copy = ecalloc(ZSTR_LEN(zs) + 1, 1);
   for (size_t i = 0; i < ZSTR_LEN(zs); i++) {
     if (ZSTR_VAL(zs)[i] == '\0') {
       copy[i] = '0';
