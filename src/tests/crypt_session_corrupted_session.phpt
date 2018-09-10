@@ -4,6 +4,7 @@ Set a custom session handler
 <?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_crypt_session.ini
+session.save_path = /tmp
 --ENV--
 return <<<EOF
 REMOTE_ADDR=127.0.0.1
@@ -14,6 +15,7 @@ EOF;
 session_start();			// Start new_session , it will read an empty session
 $_SESSION["tete"] = "titi"; // Encrypt and write the session
 $id = session_id(); 		// Get the session_id to use it later
+if
 $filename = session_save_path() . '/sess_' . $id;
 session_write_close();
 
