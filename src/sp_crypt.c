@@ -68,6 +68,7 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
     }
   }
 
+	// LCOV_EXCL_START
   if (ZSTR_LEN(debase64) + (size_t)crypto_secretbox_ZEROBYTES <
       ZSTR_LEN(debase64)) {
     if (true == simulation) {
@@ -84,6 +85,7 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
       return ZEND_HASH_APPLY_REMOVE;
     }
   }
+	// LCOV_EXCL_END
 
   generate_key(key);
 
