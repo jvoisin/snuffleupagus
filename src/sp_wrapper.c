@@ -48,9 +48,11 @@ PHP_FUNCTION(sp_stream_wrapper_register) {
   zif_handler orig_handler;
   zend_string *protocol_name = NULL;
 
+	// LCOV_EXCL_BR_START
   ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_QUIET, 2, EX_NUM_ARGS());
   Z_PARAM_STR(protocol_name);
   ZEND_PARSE_PARAMETERS_END_EX((void)0);
+	// LCOV_EXCL_BR_END
 
   if (wrapper_is_whitelisted(protocol_name)) {
     orig_handler = zend_hash_str_find_ptr(
