@@ -10,6 +10,7 @@ Talks
 - `Hack.lu 2017 <https://2017.hack.lu/talks/>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/hacklu_2017.pdf>`__ - `video <https://www.youtube.com/watch?v=RzaRiuJ6MkI>`__ - 2017-10-18
 - `BlackAlps <https://blackalps.ch/2017program.php>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/blackalps_2017.pdf>`__ - `video <https://www.youtube.com/watch?v=2GeUnOzDGxc>`__ - 2017-11-16
 - `Pass the Salt <https://2018.pass-the-salt.org/schedule/#snuffleupagus>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/passthesalt_2018.pdf>`__ - `video <https://passthesalt.ubicast.tv/videos/snuffleupagus-killing-bug-classes-and-virtual-patching-the-rest/>`__ - 2018-07-03
+- `44con <https://44con.com/44con/44con-2018/44con-2018-talks/>`__ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/44con_2018.pdf>`__ - 2018-09-12
 
 
 Mentions
