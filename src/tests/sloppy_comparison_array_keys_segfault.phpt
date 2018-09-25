@@ -12,6 +12,7 @@ $toto = [
         "tata" => 3,
 ];
 var_dump(array_keys($toto));
+var_dump(array_keys($toto, 0, 0)); // This should return all the keys since "toto" == 0 , but SP should block it
 ?>
 --EXPECT--
 array(3) {
@@ -21,6 +22,8 @@ array(3) {
   string(4) "titi"
   [2]=>
   string(4) "tata"
+}
+array(0) {
 }
 
 
