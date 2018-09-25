@@ -36,38 +36,6 @@ ZEND_API zend_op_array* sp_compile_file(zend_file_handle* file_handle,
   return opline;
 }
 
-/*static void array_keys_handler(INTERNAL_FUNCTION_PARAMETERS, const char *name,
-size_t size, zif_handler orig_handler){ zif_handler handler; zval func_name;
-  zval params[3];
-  zval *value, *array;
-  zend_bool strict;
-
-  memset(&params, 0, sizeof(params));
-  zend_parse_parameters(ZEND_NUM_ARGS(), "z|zb", &value, &array, &strict);
-
-  ZVAL_COPY(&params[0], value);
-  if (array) {
-    ZVAL_COPY(&params[1], array);
-    ZVAL_BOOL(&params[2], 1);
-  } else {
-    ZVAL_BOOL(&params[1], 1);
-  }
-
-  ZVAL_STRING(&func_name, name);
-
-  handler = zend_hash_str_find_ptr(
-      SNUFFLEUPAGUS_G(sp_internal_functions_hook), name, size);
-  zend_internal_function *func = zend_hash_str_find_ptr(
-      CG(function_table), name, size);
-  func->handler = handler;
-
-  call_user_function(CG(function_table), NULL, &func_name,
-      return_value, 3, params);
-
-  func->handler = orig_handler;
-}
-*/
-
 static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
                           size_t size, zif_handler orig_handler,
                           const char* spec) {
