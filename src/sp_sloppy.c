@@ -36,6 +36,7 @@ ZEND_API zend_op_array* sp_compile_file(zend_file_handle* file_handle,
   return opline;
 }
 
+
 static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
                           size_t size, zif_handler orig_handler,
                           const char* spec) {
@@ -65,7 +66,7 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
       zend_hash_str_find_ptr(CG(function_table), name, size);
   func->handler = handler;
 
-  call_user_function(CG(function_table), NULL, &func_name, return_value, 3,
+  call_user_function(CG(function_table), NULL, &func_name, return_value, array?3:2,
                      params);
 
   func->handler = orig_handler;
