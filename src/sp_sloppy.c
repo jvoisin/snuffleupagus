@@ -43,7 +43,7 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
   zif_handler handler;
   zval func_name;
   zval params[3];
-  zval *value, *array;
+  zval *value, *array = NULL;
   zend_bool strict;
 
   memset(&params, 0, sizeof(params));
@@ -54,6 +54,8 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
   if (array) {
     ZVAL_COPY(&params[1], array);
     ZVAL_BOOL(&params[2], 1);
+  } else {
+    ZVAL_BOOL(&params[2], 0);
   }
 
   ZVAL_STRING(&func_name, name);
