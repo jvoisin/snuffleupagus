@@ -36,48 +36,57 @@ ZEND_API zend_op_array* sp_compile_file(zend_file_handle* file_handle,
   return opline;
 }
 
-static void array_handler(INTERNAL_FUNCTION_PARAMETERS,
-    const char *name, size_t size,
-    zif_handler orig_handler) {
+
+static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
+                          size_t size, zif_handler orig_handler,
+                          const char* spec) {
   zif_handler handler;
   zval func_name;
   zval params[3];
-  zval *value, *array;
-  zend_bool strict;
+  zval *value, *array = NULL;
+  zend_bool strict = 1;
 
   memset(&params, 0, sizeof(params));
-  zend_parse_parameters(ZEND_NUM_ARGS(), "zz|b", &value, &array, &strict);
+
+  zend_parse_parameters(ZEND_NUM_ARGS(), spec, &value, &array, &strict);
 
   ZVAL_COPY(&params[0], value);
-  ZVAL_COPY(&params[1], array);
-  ZVAL_BOOL(&params[2], 1);
+  if (array) {
+    ZVAL_COPY(&params[1], array);
+    ZVAL_BOOL(&params[2], 1);
+  } else {
+		// if there is no array as parameter, don't set strict mode.
+		// check php's implementation for details.
+    ZVAL_BOOL(&params[2], 0);
+  }
+
   ZVAL_STRING(&func_name, name);
 
-  handler = zend_hash_str_find_ptr(
-      SNUFFLEUPAGUS_G(sp_internal_functions_hook), name, size);
-  zend_internal_function *func = zend_hash_str_find_ptr(
-      CG(function_table), name, size);
+  handler = zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
+                                   name, size);
+  zend_internal_function* func =
+      zend_hash_str_find_ptr(CG(function_table), name, size);
   func->handler = handler;
 
-  call_user_function(CG(function_table), NULL, &func_name,
-      return_value, 3, params);
+  call_user_function(CG(function_table), NULL, &func_name, return_value, 3,
+                     params);
 
   func->handler = orig_handler;
 }
 
 PHP_FUNCTION(sp_in_array) {
   array_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, "in_array",
-      sizeof("in_array") - 1, PHP_FN(sp_in_array));
+                sizeof("in_array") - 1, PHP_FN(sp_in_array), "zz|b");
 }
 
 PHP_FUNCTION(sp_array_search) {
   array_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, "array_search",
-      sizeof("array_search") - 1, PHP_FN(sp_array_search));
+                sizeof("array_search") - 1, PHP_FN(sp_array_search), "zz|b");
 }
 
 PHP_FUNCTION(sp_array_keys) {
   array_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, "array_keys",
-      sizeof("array_keys") - 1, PHP_FN(sp_array_keys));
+                sizeof("array_keys") - 1, PHP_FN(sp_array_keys), "z|zb");
 }
 
 void hook_sloppy() {
@@ -94,6 +103,8 @@ void hook_sloppy() {
   }
 
   HOOK_FUNCTION("in_array", sp_internal_functions_hook, PHP_FN(sp_in_array));
-  HOOK_FUNCTION("array_search", sp_internal_functions_hook, PHP_FN(sp_array_search));
-  HOOK_FUNCTION("array_keys", sp_internal_functions_hook, PHP_FN(sp_array_keys));
+  HOOK_FUNCTION("array_search", sp_internal_functions_hook,
+                PHP_FN(sp_array_search));
+  HOOK_FUNCTION("array_keys", sp_internal_functions_hook,
+                PHP_FN(sp_array_keys));
 }
