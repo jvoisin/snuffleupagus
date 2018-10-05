@@ -44,7 +44,7 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
   zval func_name;
   zval params[3];
   zval *value, *array = NULL;
-  zend_bool strict;
+  zend_bool strict = 1;
 
   memset(&params, 0, sizeof(params));
 
@@ -55,6 +55,8 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
     ZVAL_COPY(&params[1], array);
     ZVAL_BOOL(&params[2], 1);
   } else {
+		// if there is no array as parameter, don't set strict mode.
+		// check php's implementation for details.
     ZVAL_BOOL(&params[2], 0);
   }
 
