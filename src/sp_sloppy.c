@@ -53,10 +53,8 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
   ZVAL_COPY(&params[0], value);
   if (array) {
     ZVAL_COPY(&params[1], array);
-    ZVAL_BOOL(&params[2], 1);
-  } else {
-    ZVAL_BOOL(&params[1], 1);
   }
+	ZVAL_BOOL(&params[2], 1);
 
   ZVAL_STRING(&func_name, name);
 
