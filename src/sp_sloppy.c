@@ -64,7 +64,7 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
       zend_hash_str_find_ptr(CG(function_table), name, size);
   func->handler = handler;
 
-  call_user_function(CG(function_table), NULL, &func_name, return_value, array?3:2,
+  call_user_function(CG(function_table), NULL, &func_name, return_value, 3,
                      params);
 
   func->handler = orig_handler;
