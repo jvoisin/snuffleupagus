@@ -9,8 +9,7 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-bool sp_zend_string_equals(const zend_string* s1,
-                           const zend_string* s2) {
+bool sp_zend_string_equals(const zend_string* s1, const zend_string* s2) {
   // We can't use `zend_string_equals` here because it doesn't work on
   // `const` zend_string.
   return ZSTR_LEN(s1) == ZSTR_LEN(s2) &&
@@ -37,9 +36,11 @@ int compute_hash(const char* const filename, char* file_hash) {
   php_stream* stream =
       php_stream_open_wrapper(filename, "rb", REPORT_ERRORS, NULL);
   if (!stream) {
+    // LCOV_EXCL_START
     sp_log_err("hash_computation",
                "Can not open the file %s to compute its hash", filename);
     return FAILURE;
+    // LCOV_EXCL_STOP
   }
 
   PHP_SHA256Init(&context);
@@ -133,9 +134,11 @@ static char* zend_string_to_char(const zend_string* zs) {
   // Remove all \0 in a zend_string and replace them with '0' instead.
 
   if (ZSTR_LEN(zs) + 1 < ZSTR_LEN(zs)) {
+    // LCOV_EXCL_START
     sp_log_err("overflow_error",
                "Overflow tentative detected in zend_string_to_char");
     zend_bailout();
+    // LCOV_EXCL_STOP
   }
 
   char* copy = ecalloc(ZSTR_LEN(zs) + 1, 1);
@@ -180,8 +183,9 @@ const zend_string* sp_zval_to_zend_string(const zval* zv) {
       return zend_string_init("ARRAY", sizeof("ARRAY") - 1, 0);
     case IS_RESOURCE:
       return zend_string_init("RESOURCE", sizeof("RESOURCE") - 1, 0);
+    default:
+      return zend_string_init("", 0, 0);  // LCOV_EXCL_LINE
   }
-  return zend_string_init("", 0, 0);
 }
 
 bool sp_match_value(const zend_string* value, const zend_string* to_match,
@@ -216,12 +220,10 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
       char_repr = zend_string_to_char(arg_value);
     }
     if (alias) {
-      sp_log_msg(
-          "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-          "Aborted execution on call of the function '%s', "
-          "because its argument '%s' content (%s) matched the rule '%s'",
-          path, arg_name, char_repr ? char_repr : "?",
-          ZSTR_VAL(alias));
+      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
+                 "Aborted execution on call of the function '%s', "
+                 "because its argument '%s' content (%s) matched the rule '%s'",
+                 path, arg_name, char_repr ? char_repr : "?", ZSTR_VAL(alias));
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                  "Aborted execution on call of the function '%s', "
@@ -237,8 +239,7 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
                  path, ZSTR_VAL(alias));
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                 "Aborted execution on call of the function '%s'",
-                 path);
+                 "Aborted execution on call of the function '%s'", path);
     }
   }
 }
@@ -263,8 +264,7 @@ void sp_log_disable_ret(const char* restrict path,
         "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
         "Aborted execution on return of the function '%s', "
         "because the function returned '%s', which matched the rule '%s'",
-        path, char_repr ? char_repr : "?",
-        ZSTR_VAL(alias));
+        path, char_repr ? char_repr : "?", ZSTR_VAL(alias));
   } else {
     sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                "Aborted execution on return of the function '%s', "
@@ -331,9 +331,11 @@ int hook_function(const char* original_name, HashTable* hook_table,
     if (func->handler != new_function) {
       if (zend_hash_str_add_new_ptr((hook_table), VAR_AND_LEN(original_name),
                                     func->handler) == NULL) {
+        // LCOV_EXCL_START
         sp_log_err("function_pointer_saving",
                    "Could not save function pointer for %s", original_name);
         return FAILURE;
+        // LCOV_EXCL_STOP
       }
       func->handler = new_function;
       ret = SUCCESS;

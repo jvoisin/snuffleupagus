@@ -43,11 +43,12 @@ static zend_string *encrypt_data(zend_string *data) {
 }
 
 PHP_FUNCTION(sp_setcookie) {
-  zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL, *value_enc = NULL,
+  zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL,
+              *value_enc = NULL,
 #if PHP_VERSION_ID < 70300
-  *path_samesite = NULL;
+              *path_samesite = NULL;
 #else
-  *samesite = NULL;
+              *samesite = NULL;
 #endif
 
   zend_long expires = 0;
@@ -95,7 +96,6 @@ PHP_FUNCTION(sp_setcookie) {
     value_enc = encrypt_data(value);
   }
 
-
   if (cookie_node && cookie_node->samesite) {
     if (!path) {
       path = zend_string_init("", 0, 0);
@@ -112,19 +112,20 @@ PHP_FUNCTION(sp_setcookie) {
     memcpy(ZSTR_VAL(path_samesite) + ZSTR_LEN(path), cookie_samesite,
            strlen(cookie_samesite) + 1);
 #else
-    cookie_samesite = (cookie_node->samesite == lax)
-                          ? SP_TOKEN_SAMESITE_LAX
-                          : SP_TOKEN_SAMESITE_STRICT;
+    cookie_samesite = (cookie_node->samesite == lax) ? SP_TOKEN_SAMESITE_LAX
+                                                     : SP_TOKEN_SAMESITE_STRICT;
 
     samesite = zend_string_init(cookie_samesite, strlen(cookie_samesite), 0);
 #endif
   }
 
-
 #if PHP_VERSION_ID < 70300
-  if (php_setcookie(name, (value_enc ? value_enc : value), expires, (path_samesite ? path_samesite : path), domain, secure, 1, httponly)) {
+  if (php_setcookie(name, (value_enc ? value_enc : value), expires,
+                    (path_samesite ? path_samesite : path), domain, secure, 1,
+                    httponly) == SUCCESS) {
 #else
-  if (php_setcookie(name, (value_enc ? value_enc : value), expires, path, domain, secure, httponly, samesite, 1)) {
+  if (php_setcookie(name, (value_enc ? value_enc : value), expires, path,
+                    domain, secure, httponly, samesite, 1) == SUCCESS) {
 #endif
     RETVAL_TRUE;
   } else {
@@ -139,7 +140,6 @@ PHP_FUNCTION(sp_setcookie) {
     zend_string_release(path_samesite);
   }
 #endif
-  RETURN_TRUE; // TODO why always true ?
 }
 
 int hook_cookies() {

@@ -36,7 +36,6 @@ ZEND_API zend_op_array* sp_compile_file(zend_file_handle* file_handle,
   return opline;
 }
 
-
 static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
                           size_t size, zif_handler orig_handler,
                           const char* spec) {
@@ -55,8 +54,8 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
     ZVAL_COPY(&params[1], array);
     ZVAL_BOOL(&params[2], 1);
   } else {
-		// if there is no array as parameter, don't set strict mode.
-		// check php's implementation for details.
+    // if there is no array as parameter, don't set strict mode.
+    // check php's implementation for details.
     ZVAL_BOOL(&params[2], 0);
   }
 

@@ -10,7 +10,7 @@ sp_pcre* sp_pcre_compile(const char* const pattern) {
   PCRE2_SIZE erroroffset;
   ret = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED,
                       PCRE2_CASELESS, &errornumber, &erroroffset, NULL);
-	pcre2_get_error_message(errornumber, pcre_error, sizeof(pcre_error));
+  pcre2_get_error_message(errornumber, pcre_error, sizeof(pcre_error));
 #else
   const char* pcre_error = NULL;
   int erroroffset;
@@ -46,7 +46,9 @@ bool ZEND_HOT sp_is_regexp_matching_len(const sp_pcre* regexp, const char* str,
 #else
     if (ret != PCRE_ERROR_NOMATCH) {
 #endif
+      // LCOV_EXCL_START
       sp_log_err("regexp", "Something went wrong with a regexp (%d).", ret);
+      // LCOV_EXCL_STOP
     }
     return false;
   }

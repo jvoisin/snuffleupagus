@@ -21,31 +21,31 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
 
   if (event == MULTIPART_EVENT_END) {
     zend_string *file_key __attribute__((unused)) = NULL;
-    const sp_config_upload_validation* config_upload =
+    const sp_config_upload_validation *config_upload =
         SNUFFLEUPAGUS_G(config).config_upload_validation;
     zval *file;
     pid_t pid;
 
-    sp_log_debug("Got %d files",
+    sp_log_debug(
+        "Got %d files",
         zend_hash_num_elements(Z_ARRVAL(PG(http_globals)[TRACK_VARS_FILES])));
 
     ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL(PG(http_globals)[TRACK_VARS_FILES]),
                                   file_key, file) {  // for each uploaded file
 
-      char *filename =
-          Z_STRVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "name", sizeof("name") - 1));
-      char *tmp_name =
-          Z_STRVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "tmp_name", sizeof("tmp_name") - 1));
-      size_t filesize =
-          Z_LVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "size", sizeof("size") - 1));
+      char *filename = Z_STRVAL_P(
+          zend_hash_str_find(Z_ARRVAL_P(file), "name", sizeof("name") - 1));
+      char *tmp_name = Z_STRVAL_P(zend_hash_str_find(
+          Z_ARRVAL_P(file), "tmp_name", sizeof("tmp_name") - 1));
+      size_t filesize = Z_LVAL_P(
+          zend_hash_str_find(Z_ARRVAL_P(file), "size", sizeof("size") - 1));
       char *cmd[3] = {0};
       char *env[5] = {0};
 
-      sp_log_debug(
-          "Filename: %s\nTmpname: %s\nSize: %d\nError: %d\nScript: %s",
-          filename, tmp_name, filesize,
-          Z_LVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "error", 5)),
-          ZSTR_VAL(config_upload->script));
+      sp_log_debug("Filename: %s\nTmpname: %s\nSize: %d\nError: %d\nScript: %s",
+                   filename, tmp_name, filesize,
+                   Z_LVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "error", 5)),
+                   ZSTR_VAL(config_upload->script));
 
       cmd[0] = ZSTR_VAL(config_upload->script);
       cmd[1] = tmp_name;
@@ -60,10 +60,8 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
 
       if ((pid = fork()) == 0) {
         if (execve(ZSTR_VAL(config_upload->script), cmd, env) == -1) {
-          sp_log_warn(
-              "upload_validation", "Could not call '%s' : %s",
-              ZSTR_VAL(config_upload->script),
-              strerror(errno));
+          sp_log_warn("upload_validation", "Could not call '%s' : %s",
+                      ZSTR_VAL(config_upload->script), strerror(errno));
           EFREE_3(env);
           exit(1);
         }
