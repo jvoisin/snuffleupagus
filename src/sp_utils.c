@@ -134,9 +134,11 @@ static char* zend_string_to_char(const zend_string* zs) {
   // Remove all \0 in a zend_string and replace them with '0' instead.
 
   if (ZSTR_LEN(zs) + 1 < ZSTR_LEN(zs)) {
+    // LCOV_EXCL_START
     sp_log_err("overflow_error",
                "Overflow tentative detected in zend_string_to_char");
     zend_bailout();
+    // LCOV_EXCL_STOP
   }
 
   char* copy = ecalloc(ZSTR_LEN(zs) + 1, 1);
@@ -181,8 +183,9 @@ const zend_string* sp_zval_to_zend_string(const zval* zv) {
       return zend_string_init("ARRAY", sizeof("ARRAY") - 1, 0);
     case IS_RESOURCE:
       return zend_string_init("RESOURCE", sizeof("RESOURCE") - 1, 0);
+    default:
+      return zend_string_init("", 0, 0);  // LCOV_EXCL_LINE
   }
-  return zend_string_init("", 0, 0);
 }
 
 bool sp_match_value(const zend_string* value, const zend_string* to_match,
