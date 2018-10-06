@@ -9,6 +9,6 @@ sp.configuration_file={PWD}/config/config_serialize.ini
 $a=serialize("a");
 var_dump(unserialize($a, "too", "many", "aaaaaaaarguments!"));
 ?>
---EXPECT--
+--EXPECTF--
 Warning: unserialize() expects at most 2 parameters, 4 given in %a/tests/unserialize_wrong_call.php on line %d
 bool(false)
