@@ -20,9 +20,11 @@ static inline void sp_op_array_handler(zend_op_array *op);
 
 ZEND_EXTENSION();
 
+// LCOV_EXCL_START
 ZEND_DLEXPORT int sp_zend_startup(zend_extension *extension) {
   return zend_startup_module(&snuffleupagus_module_entry);
 }
+// LCOV_EXCL_END
 
 static inline void sp_op_array_handler(zend_op_array *op) {
   if (NULL == op->filename) {

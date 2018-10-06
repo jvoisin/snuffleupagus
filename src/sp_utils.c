@@ -135,7 +135,7 @@ static char* zend_string_to_char(const zend_string* zs) {
   if (ZSTR_LEN(zs) + 1 < ZSTR_LEN(zs)) {
     sp_log_err("overflow_error",
                "Overflow tentative detected in zend_string_to_char");
-    sp_terminate();
+    zend_bailout();
   }
 
   char* copy = ecalloc(ZSTR_LEN(zs) + 1, 1);

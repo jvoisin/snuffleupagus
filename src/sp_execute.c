@@ -27,7 +27,7 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
     } else {
       sp_log_msg("readonly_exec", SP_LOG_DROP,
                  "Attempted execution of a writable file (%s).", filename);
-      sp_terminate();
+      zend_bailout();
     }
   } else {
     if (EACCES != errno) {
@@ -52,7 +52,7 @@ inline static void is_builtin_matching(
                         SNUFFLEUPAGUS_G(config)
                             .config_disabled_functions_reg->disabled_functions,
                         ht)) {
-    sp_terminate();
+    zend_bailout();
   }
 }
 
@@ -95,7 +95,7 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
             "Eval_whitelist", SP_LOG_DROP,
             "The function '%s' isn't in the eval whitelist, dropping its call.",
             ZSTR_VAL(current_function));
-        sp_terminate();
+        zend_bailout();
       }
     }
   }
@@ -170,7 +170,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
                      should_disable_ht(execute_data, function_name, NULL, NULL,
                          config_disabled_functions_reg,
                          config_disabled_functions))) {
-        sp_terminate();
+        zend_bailout();
       }
     } else if ((execute_data->prev_execute_data->opline->opcode ==
                     ZEND_DO_FCALL ||
@@ -182,7 +182,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
                      should_disable_ht(execute_data, function_name, NULL, NULL,
                          config_disabled_functions_reg,
                          config_disabled_functions))) {
-        sp_terminate();
+        zend_bailout();
       }
     }
 
@@ -203,7 +203,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
             .config_disabled_functions_reg_ret->disabled_functions,
             SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
             execute_data))) {
-      sp_terminate();
+      zend_bailout();
     }
     efree(function_name);
 

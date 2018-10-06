@@ -28,7 +28,7 @@ PHP_FUNCTION(sp_serialize) {
   if (len < Z_STRLEN_P(return_value)) {
     sp_log_err("overflow_error",
                "Overflow tentative detected in sp_serialize.");
-    sp_terminate();
+    zend_bailout();
   }
   zend_string *res = zend_string_alloc(len, 0);
 

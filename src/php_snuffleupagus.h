@@ -85,6 +85,4 @@ ZEND_TSRMLS_CACHE_EXTERN()
 PHP_FUNCTION(check_disabled_function);
 PHP_FUNCTION(eval_blacklist_callback);
 
-static inline void sp_terminate() { zend_bailout(); }
-
 #endif /* PHP_SNUFFLEUPAGUS_H */

@@ -509,7 +509,7 @@ ZEND_FUNCTION(check_disabled_function) {
                   SNUFFLEUPAGUS_G(config)
                       .config_disabled_functions_reg->disabled_functions,
                   SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked)) {
-    sp_terminate();
+    zend_bailout();
   }
 
   orig_handler = zend_hash_str_find_ptr(
@@ -523,7 +523,7 @@ ZEND_FUNCTION(check_disabled_function) {
               .config_disabled_functions_reg_ret->disabled_functions,
           SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked,
           execute_data)) {
-    sp_terminate();
+    zend_bailout();
   }
 }
 
@@ -594,7 +594,7 @@ ZEND_FUNCTION(eval_blacklist_callback) {
       sp_log_msg("eval", SP_LOG_DROP,
                  "A call to %s was tried in eval, in %s:%d, dropping it.",
                  current_function_name, ZSTR_VAL(filename), line_number);
-      sp_terminate();
+      zend_bailout();
     }
     efree(filename);
   }
@@ -653,7 +653,7 @@ int hook_echo(const char* str, size_t str_length) {
   zend_string_release(zs);
 
   if (ret) {
-    sp_terminate();
+    zend_bailout();
   }
 
   return zend_write_default(str, str_length);
