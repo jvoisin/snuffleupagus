@@ -36,9 +36,11 @@ int compute_hash(const char* const filename, char* file_hash) {
   php_stream* stream =
       php_stream_open_wrapper(filename, "rb", REPORT_ERRORS, NULL);
   if (!stream) {
+    // LCOV_EXCL_START
     sp_log_err("hash_computation",
                "Can not open the file %s to compute its hash", filename);
     return FAILURE;
+    // LCOV_EXCL_STOP
   }
 
   PHP_SHA256Init(&context);
@@ -326,9 +328,11 @@ int hook_function(const char* original_name, HashTable* hook_table,
     if (func->handler != new_function) {
       if (zend_hash_str_add_new_ptr((hook_table), VAR_AND_LEN(original_name),
                                     func->handler) == NULL) {
+        // LCOV_EXCL_START
         sp_log_err("function_pointer_saving",
                    "Could not save function pointer for %s", original_name);
         return FAILURE;
+        // LCOV_EXCL_STOP
       }
       func->handler = new_function;
       ret = SUCCESS;

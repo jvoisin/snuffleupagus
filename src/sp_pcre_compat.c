@@ -46,8 +46,9 @@ bool ZEND_HOT sp_is_regexp_matching_len(const sp_pcre* regexp, const char* str,
 #else
     if (ret != PCRE_ERROR_NOMATCH) {
 #endif
-      sp_log_err("regexp", "Something went wrong with a regexp (%d).",
-                 ret);  // LCOV_EXCL_LINE
+      // LCOV_EXCL_START
+      sp_log_err("regexp", "Something went wrong with a regexp (%d).", ret);
+      // LCOV_EXCL_STOP
     }
     return false;
   }
