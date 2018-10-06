@@ -29,13 +29,21 @@ Quickstart
     make install
 
 This should install the ``snuffleupagus.so`` file in your extension directory.
-The final step is adding a load directive to ``php.ini``
-and to specify the location of the :doc:`configuration file <config>`:
+The final step is adding a load directive and to specify the location of the
+:doc:`configuration file <config>`, either in a ``conf.d/20-snuffleupagus.ini``
+file, or directly in you ``php.ini`` if you prefer:
 
 ::
 
     extension=snuffleupagus.so
-    sp.configuration_file=/etc/php/conf.d/snuffleupagus.ini
+
+    # This is only an example,
+    # you can place your rules wherever you want.
+    sp.configuration_file=/etc/php/conf.d/snuffleupagus.rules
+
+
+Be careful, on some distribution, there are separate configurations for
+cli/fmp/cgi/… be sure to edit the right one.
 
 Upgrading
 ---------
