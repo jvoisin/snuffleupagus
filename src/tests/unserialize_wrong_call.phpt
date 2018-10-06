@@ -10,5 +10,5 @@ $a=serialize("a");
 var_dump(unserialize($a, "too", "many", "aaaaaaaarguments!"));
 ?>
 --EXPECT--
-Warning: unserialize() expects at most 2 parameters, 4 given in /home/jvoisin/dev/snuffleupagus/src/tests/unserialize_wrong_call.php on line 3
+Warning: unserialize() expects at most 2 parameters, 4 given in %a/tests/unserialize_wrong_call.php on line %d
 bool(false)
