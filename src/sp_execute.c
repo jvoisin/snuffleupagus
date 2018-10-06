@@ -178,6 +178,8 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
                 execute_data->prev_execute_data->opline->opcode ==
                     ZEND_DO_UCALL ||
                 execute_data->prev_execute_data->opline->opcode ==
+                    ZEND_DO_ICALL ||
+                execute_data->prev_execute_data->opline->opcode ==
                     ZEND_DO_FCALL_BY_NAME)) {
       if (UNEXPECTED(true == should_disable_ht(execute_data, function_name,
                                                NULL, NULL,
