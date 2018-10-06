@@ -7,7 +7,7 @@ ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 char* get_complete_function_path(zend_execute_data const* const execute_data) {
   if (zend_is_executing() && !EG(current_execute_data)->func) {
-    return NULL;
+    return NULL;  // LCOV_EXCL_LINE
   }
   if (!(execute_data->func->common.function_name)) {
     return NULL;
@@ -259,7 +259,7 @@ bool should_disable_ht(zend_execute_data* execute_data,
   zend_string* current_filename;
 
   if (!execute_data) {
-    return false;
+    return false;  // LCOV_EXCL_LINE
   }
 
   if (UNEXPECTED(builtin_param && !strcmp(function_name, "eval"))) {
@@ -509,7 +509,6 @@ ZEND_FUNCTION(check_disabled_function) {
                   SNUFFLEUPAGUS_G(config)
                       .config_disabled_functions_reg->disabled_functions,
                   SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked)) {
-    zend_bailout();
   }
 
   orig_handler = zend_hash_str_find_ptr(
@@ -522,7 +521,6 @@ ZEND_FUNCTION(check_disabled_function) {
                       .config_disabled_functions_reg_ret->disabled_functions,
                   SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked,
                   execute_data)) {
-    zend_bailout();
   }
 }
 
@@ -593,7 +591,6 @@ ZEND_FUNCTION(eval_blacklist_callback) {
       sp_log_msg("eval", SP_LOG_DROP,
                  "A call to %s was tried in eval, in %s:%d, dropping it.",
                  current_function_name, ZSTR_VAL(filename), line_number);
-      zend_bailout();
     }
     efree(filename);
   }
@@ -644,16 +641,12 @@ zend_write_func_t zend_write_default = NULL;
 int hook_echo(const char* str, size_t str_length) {
   zend_string* zs = zend_string_init(str, str_length, 0);
 
-  bool ret = should_disable_ht(
+  should_disable_ht(
       EG(current_execute_data), "echo", zs, NULL,
       SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
       SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
 
   zend_string_release(zs);
-
-  if (ret) {
-    zend_bailout();
-  }
 
   return zend_write_default(str, str_length);
 }

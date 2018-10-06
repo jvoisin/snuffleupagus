@@ -223,8 +223,9 @@ static void sp_zend_execute_internal(INTERNAL_FUNCTION_PARAMETERS) {
   is_in_eval_and_whitelisted(execute_data);
 
   if (UNEXPECTED(NULL != orig_zend_execute_internal)) {
-    orig_zend_execute_internal(
-        INTERNAL_FUNCTION_PARAM_PASSTHRU);  // LCOV_EXCL_LINE
+    // LCOV_EXCL_START
+    orig_zend_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+    // LCOV_EXCL_STOP
   } else {
     EX(func)->internal_function.handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   }
