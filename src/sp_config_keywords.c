@@ -55,7 +55,7 @@ int parse_session(char *line) {
       sp_log_err(
           "config",
           "You're trying to use the session cookie encryption feature "
-          "on line %zu without having set the `.encryption_key` option in"
+          "on line %zu without having set the `.secret_key` option in"
           "`sp.global`: please set it first",
           sp_line_no);
       pefree(session, 0);
@@ -166,7 +166,6 @@ int parse_global(char *line) {
 }
 
 static int parse_eval_filter_conf(char *line, sp_list_node **list) {
-  zend_string *rest = NULL;
   sp_config_eval *eval = SNUFFLEUPAGUS_G(config).config_eval;
 
   sp_config_functions sp_config_funcs[] = {
@@ -183,9 +182,6 @@ static int parse_eval_filter_conf(char *line, sp_list_node **list) {
     return ret;
   }
 
-  if (rest != NULL) {
-    pefree(rest, 1);
-  }
   return SUCCESS;
 }
 
