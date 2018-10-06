@@ -183,7 +183,7 @@ const zend_string* sp_zval_to_zend_string(const zval* zv) {
       return zend_string_init("ARRAY", sizeof("ARRAY") - 1, 0);
     case IS_RESOURCE:
       return zend_string_init("RESOURCE", sizeof("RESOURCE") - 1, 0);
-    default:
+    default:  // LCOV_EXCL_LINE
       return zend_string_init("", 0, 0);  // LCOV_EXCL_LINE
   }
 }

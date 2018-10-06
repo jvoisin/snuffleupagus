@@ -59,7 +59,7 @@ static zval *get_constant(const char *value) {
 static zval *get_var_value(zend_execute_data *ed, const char *var_name,
                            bool is_param) {
   if (!var_name) {
-    return NULL;
+    return NULL;  // LCOV_EXCL_LINE
   }
 
   if (*var_name != VARIABLE_TOKEN) {

@@ -69,13 +69,13 @@ static void sp_hook_session_module() {
   ps_module *mod;
 
   if (old_mod == NULL || s_module == old_mod) {
-    return;
+    return;  // LCOV_EXCL_LINE
   }
 
   if (s_module == NULL) {
     s_module = mod = malloc(sizeof(ps_module));
     if (mod == NULL) {
-      return;
+      return;  // LCOV_EXCL_LINE
     }
   }
 
@@ -129,7 +129,7 @@ void hook_session() {
 
   if ((module = zend_hash_str_find_ptr(&module_registry,
                                        ZEND_STRL("session"))) == NULL) {
-    return;
+    return;  // LCOV_EXCL_LINE
   }
 
 #ifdef ZTS
@@ -142,7 +142,7 @@ void hook_session() {
   }
 #endif
   if (old_OnUpdateSaveHandler != NULL) {
-    return;
+    return;  // LCOV_EXCL_LINE
   }
 
   previous_sessionRINIT = module->request_startup_func;

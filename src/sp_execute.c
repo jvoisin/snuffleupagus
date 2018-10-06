@@ -98,7 +98,6 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
             "Eval_whitelist", SP_LOG_DROP,
             "The function '%s' isn't in the eval whitelist, dropping its call.",
             ZSTR_VAL(current_function));
-        zend_bailout();
       }
     }
   }
@@ -130,7 +129,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
       SNUFFLEUPAGUS_G(config).config_disabled_functions;
 
   if (!execute_data) {
-    return;
+    return;  // LCOV_EXCL_LINE
   }
 
   if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
