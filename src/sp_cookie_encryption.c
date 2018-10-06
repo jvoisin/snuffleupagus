@@ -122,9 +122,9 @@ PHP_FUNCTION(sp_setcookie) {
 
 
 #if PHP_VERSION_ID < 70300
-  if (php_setcookie(name, (value_enc ? value_enc : value), expires, (path_samesite ? path_samesite : path), domain, secure, 1, httponly)) {
+  if (php_setcookie(name, (value_enc ? value_enc : value), expires, (path_samesite ? path_samesite : path), domain, secure, 1, httponly) == SUCCESS) {
 #else
-  if (php_setcookie(name, (value_enc ? value_enc : value), expires, path, domain, secure, httponly, samesite, 1)) {
+  if (php_setcookie(name, (value_enc ? value_enc : value), expires, path, domain, secure, httponly, samesite, 1) == SUCCESS) {
 #endif
     RETVAL_TRUE;
   } else {
@@ -139,7 +139,6 @@ PHP_FUNCTION(sp_setcookie) {
     zend_string_release(path_samesite);
   }
 #endif
-  RETURN_TRUE; // TODO why always true ?
 }
 
 int hook_cookies() {

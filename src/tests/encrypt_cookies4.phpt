@@ -16,8 +16,13 @@ EOF;
 setcookie("super_cookie", "super_value");
 setcookie("awful_cookie", "awful_value");
 setcookie("nice_cookie", "nice_value", 1, "1", "1", true, true);
+$ret = setcookie("", "Cookie with no name", 1, "1", "1", true, true);
+if ($ret == TRUE) {
+	echo "fail :/";
+}
 var_dump($_COOKIE);
 ?>
---EXPECT--
+--EXPECTF--
+Warning: Cookie names must not be empty in %a/tests/encrypt_cookies4.php on line %d
 array(0) {
 }
