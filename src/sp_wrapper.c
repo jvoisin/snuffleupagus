@@ -7,7 +7,7 @@ static bool wrapper_is_whitelisted(const zend_string *zs) {
   const sp_list_node *list = SNUFFLEUPAGUS_G(config).config_wrapper->whitelist;
 
   if (!zs) {
-    return false;
+    return false;  // LCOV_EXCL_LINE
   }
 
   while (list) {
