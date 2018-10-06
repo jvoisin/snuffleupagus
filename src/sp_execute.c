@@ -55,7 +55,6 @@ inline static void is_builtin_matching(
                         SNUFFLEUPAGUS_G(config)
                             .config_disabled_functions_reg->disabled_functions,
                         ht)) {
-    zend_bailout();
   }
 }
 
@@ -72,7 +71,7 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
   }
 
   if (zend_is_executing() && !EG(current_execute_data)->func) {
-    return;
+    return;  // LCOV_EXCL_LINE
   }
 
   if (UNEXPECTED(!(execute_data->func->common.function_name))) {
@@ -173,7 +172,6 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
                                                NULL, NULL,
                                                config_disabled_functions_reg,
                                                config_disabled_functions))) {
-        zend_bailout();
       }
     } else if ((execute_data->prev_execute_data->opline->opcode ==
                     ZEND_DO_FCALL ||
@@ -185,7 +183,6 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
                                                NULL, NULL,
                                                config_disabled_functions_reg,
                                                config_disabled_functions))) {
-        zend_bailout();
       }
     }
 
@@ -207,7 +204,6 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
                     .config_disabled_functions_reg_ret->disabled_functions,
                 SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
                 execute_data))) {
-      zend_bailout();
     }
     efree(function_name);
 
