@@ -1,5 +1,5 @@
 --TEST--
-Cookie encryption
+Cookie encryption - invalid decryption
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
 --INI--
@@ -8,12 +8,19 @@ display_errors=1
 display_startup_errors=1
 error_reporting=E_ALL
 --COOKIE--
-super_cookie=jWjORGsgZyqzk3WA63XZBmUoSknXWnXDfAAAAAAAAAAAAAAAAAAAAAA7LiMDfkpP94jDnMVH%2Fm41GeL0Y00q3mbOFYz%2FS9mQGySu;awful_cookie=awful_cookie_value;
+super_cookie=Wk9NR1RISVNJU05PVEVOQ1JZUFRFREFUQUxMV0hBVFRIRUhFTExJU0hIRUxMQVJFWU9VRE9JTkdaT01Hb2htYXliZXRoaXNpc2Fub2xkc2Vzc2lvbmNvb2tpZQo=;awfulcookie=awfulcookievalue;
 --ENV--
 return <<<EOF
 REMOTE_ADDR=127.0.0.1
 EOF;
 --FILE--
-<?php var_dump($_COOKIE); ?>
+<?php
+echo "1337\n";
+var_dump($_COOKIE); ?>
 --EXPECT--
-Fatal error: [snuffleupagus][cookie_encryption] Something went wrong with the decryption of super_cookie in Unknown on line 0
+Warning: [snuffleupagus][cookie_encryption] Something went wrong with the decryption of super_cookie in Unknown on line 0
+1337
+array(1) {
+  ["awfulcookie"]=>
+  string(16) "awfulcookievalue"
+}

@@ -107,7 +107,7 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
           hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       return ZEND_HASH_APPLY_KEEP;
     } else {
-      sp_log_msg("cookie_encryption", SP_LOG_DROP,
+      sp_log_msg("cookie_encryption", SP_LOG_WARN,
                  "Something went wrong with the decryption of %s",
                  hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       return ZEND_HASH_APPLY_REMOVE;
