@@ -209,12 +209,12 @@ static zend_execute_data* is_file_matching(
   zend_execute_data* ex = execute_data;
   if (config_node->filename) {
     if (sp_zend_string_equals(current_filename, config_node->filename)) {
-      return ex;
+      return ex;  // LCOV_EXCL_LINE
     }
     ITERATE(ex);
     if (zend_string_equals(ex->func->op_array.filename,
                                    config_node->filename)) {
-      return ex;
+      return ex;  // LCOV_EXCL_LINE
     }
   } else if (config_node->r_filename) {
     if (sp_is_regexp_matching_zend(config_node->r_filename, current_filename)) {

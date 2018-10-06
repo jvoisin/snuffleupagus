@@ -61,10 +61,12 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
           hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       return ZEND_HASH_APPLY_KEEP;
     } else {
+		// LCOV_EXCL_START
       sp_log_msg(
           "cookie_encryption", SP_LOG_DROP,
           "Buffer underflow tentative detected in cookie encryption handling");
       return ZEND_HASH_APPLY_REMOVE;
+		// LCOV_EXCL_STOP
     }
   }
 
@@ -85,7 +87,7 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
       return ZEND_HASH_APPLY_REMOVE;
     }
   }
-	// LCOV_EXCL_END
+	// LCOV_EXCL_STOP
 
   generate_key(key);
 

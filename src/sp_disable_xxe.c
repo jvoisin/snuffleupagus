@@ -2,7 +2,7 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-PHP_FUNCTION(sp_libxml_disable_entity_loader) { RETURN_TRUE; }
+PHP_FUNCTION(sp_libxml_disable_entity_loader) { RETURN_TRUE; } // LCOV_EXCL_LINE
 
 int hook_libxml_disable_entity_loader() {
   zval func_name;

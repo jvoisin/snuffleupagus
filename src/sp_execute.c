@@ -31,8 +31,10 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
     }
   } else {
     if (EACCES != errno) {
+			// LCOV_EXCL_START
       sp_log_err("Writable execution", "Error while accessing %s: %s", filename,
                  strerror(errno));
+			// LCOV_EXCL_STOP
     }
   }
 }
@@ -220,7 +222,7 @@ static void sp_zend_execute_internal(INTERNAL_FUNCTION_PARAMETERS) {
   is_in_eval_and_whitelisted(execute_data);
 
   if (UNEXPECTED(NULL != orig_zend_execute_internal)) {
-    orig_zend_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+    orig_zend_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);  // LCOV_EXCL_LINE
   } else {
     EX(func)->internal_function.handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   }
@@ -272,7 +274,7 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
                   "include_once", sizeof("include_once") - 1),
               disabled_functions_hooked);
           break;
-          EMPTY_SWITCH_DEFAULT_CASE();
+          EMPTY_SWITCH_DEFAULT_CASE();  // LCOV_EXCL_LINE
       }
   }
   efree(zend_filename);

@@ -40,7 +40,7 @@ static int sp_hook_s_read(PS_READ_ARGS) {
       if (config_session->simulation) {
         return ret;
       } else {
-        sp_terminate();
+        zend_bailout();
       }
     }
 
