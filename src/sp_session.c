@@ -27,10 +27,11 @@ static ZEND_INI_MH((*old_OnUpdateSaveHandler)) = NULL;
 
 static int sp_hook_s_read(PS_READ_ARGS) {
   int r = old_s_read(mod_data, key, val, maxlifetime);
-  const sp_config_session* config_session = SNUFFLEUPAGUS_G(config).config_session;
+  const sp_config_session *config_session =
+      SNUFFLEUPAGUS_G(config).config_session;
 
-  if (r == SUCCESS && config_session->encrypt &&
-      val != NULL && *val != NULL && ZSTR_LEN(*val)) {
+  if (r == SUCCESS && config_session->encrypt && val != NULL && *val != NULL &&
+      ZSTR_LEN(*val)) {
     zend_string *orig_val = *val;
     zval val_zval;
     ZVAL_PSTRINGL(&val_zval, ZSTR_VAL(*val), ZSTR_LEN(*val));

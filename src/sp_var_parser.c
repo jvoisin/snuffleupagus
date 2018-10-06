@@ -64,10 +64,10 @@ static int create_var(sp_tree *tree, const char *restrict value,
     var_node->type = VAR;
   }
   if (!(var_node->value = pestrndup(value, value_len, 1))) {
-		// LCOV_EXCL_START
+    // LCOV_EXCL_START
     sp_log_err("config", "Can't allocate a strndup");
     return -1;
-		// LCOV_EXCL_STOP
+    // LCOV_EXCL_STOP
   }
   if (var_node->type != INTERPRETED_STRING &&
       !is_var_name_valid(var_node->value)) {

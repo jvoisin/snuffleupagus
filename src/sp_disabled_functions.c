@@ -106,12 +106,12 @@ static bool is_param_matching(zend_execute_data* execute_data,
     if (config_node->pos > nb_param - 1) {
       char* complete_function_path = get_complete_function_path(execute_data);
       sp_log_warn("config",
-                 "It seems that you wrote a rule filtering on the "
-                 "%d%s argument of the function '%s', but it takes only %d "
-                 "arguments. "
-                 "Matching on _all_ arguments instead.",
-                 config_node->pos, GET_SUFFIX(config_node->pos),
-                 complete_function_path, nb_param);
+                  "It seems that you wrote a rule filtering on the "
+                  "%d%s argument of the function '%s', but it takes only %d "
+                  "arguments. "
+                  "Matching on _all_ arguments instead.",
+                  config_node->pos, GET_SUFFIX(config_node->pos),
+                  complete_function_path, nb_param);
       efree(complete_function_path);
     } else {
       i = config_node->pos;
@@ -213,7 +213,7 @@ static zend_execute_data* is_file_matching(
     }
     ITERATE(ex);
     if (zend_string_equals(ex->func->op_array.filename,
-                                   config_node->filename)) {
+                           config_node->filename)) {
       return ex;  // LCOV_EXCL_LINE
     }
   } else if (config_node->r_filename) {
@@ -415,8 +415,8 @@ bool should_drop_on_ret_ht(const zval* return_value, const char* function_name,
 
   ht_entry = zend_hash_str_find_ptr(ht, function_name, strlen(function_name));
 
-  if (ht_entry && should_drop_on_ret(return_value, ht_entry, function_name,
-        execute_data)) {
+  if (ht_entry &&
+      should_drop_on_ret(return_value, ht_entry, function_name, execute_data)) {
     ret = true;
   } else if (config && config->data) {
     ret = should_drop_on_ret(return_value, config, function_name, execute_data);
@@ -516,13 +516,12 @@ ZEND_FUNCTION(check_disabled_function) {
       SNUFFLEUPAGUS_G(disabled_functions_hook), current_function_name,
       strlen(current_function_name));
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-  if (true ==
-      should_drop_on_ret_ht(
-          return_value, current_function_name,
-          SNUFFLEUPAGUS_G(config)
-              .config_disabled_functions_reg_ret->disabled_functions,
-          SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked,
-          execute_data)) {
+  if (true == should_drop_on_ret_ht(
+                  return_value, current_function_name,
+                  SNUFFLEUPAGUS_G(config)
+                      .config_disabled_functions_reg_ret->disabled_functions,
+                  SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked,
+                  execute_data)) {
     zend_bailout();
   }
 }
@@ -584,7 +583,7 @@ ZEND_FUNCTION(eval_blacklist_callback) {
 
     if (config_eval->dump) {
       sp_log_request(config_eval->dump, config_eval->textual_representation,
-          SP_TOKEN_EVAL_BLACKLIST);
+                     SP_TOKEN_EVAL_BLACKLIST);
     }
     if (config_eval->simulation) {
       sp_log_msg("eval", SP_LOG_SIMULATION,

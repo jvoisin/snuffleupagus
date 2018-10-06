@@ -11,7 +11,7 @@ static bool wrapper_is_whitelisted(const zend_string *zs) {
   }
 
   while (list) {
-    if (zend_string_equals_ci(zs, (const zend_string*)list->data)) {
+    if (zend_string_equals_ci(zs, (const zend_string *)list->data)) {
       return true;
     }
     list = list->next;
@@ -41,23 +41,24 @@ void sp_disable_wrapper() {
 
   zend_hash_destroy(orig_complete);
   pefree(orig_complete, 1);
-  SNUFFLEUPAGUS_G(config).config_wrapper->num_wrapper = zend_hash_num_elements(orig);
+  SNUFFLEUPAGUS_G(config).config_wrapper->num_wrapper =
+      zend_hash_num_elements(orig);
 }
 
 PHP_FUNCTION(sp_stream_wrapper_register) {
   zif_handler orig_handler;
   zend_string *protocol_name = NULL;
 
-	// LCOV_EXCL_BR_START
+  // LCOV_EXCL_BR_START
   ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_QUIET, 2, EX_NUM_ARGS());
   Z_PARAM_STR(protocol_name);
   ZEND_PARSE_PARAMETERS_END_EX((void)0);
-	// LCOV_EXCL_BR_END
+  // LCOV_EXCL_BR_END
 
   if (wrapper_is_whitelisted(protocol_name)) {
     orig_handler = zend_hash_str_find_ptr(
-        SNUFFLEUPAGUS_G(sp_internal_functions_hook),
-        "stream_wrapper_register", sizeof("stream_wrapper_register") - 1);
+        SNUFFLEUPAGUS_G(sp_internal_functions_hook), "stream_wrapper_register",
+        sizeof("stream_wrapper_register") - 1);
     orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   }
 }

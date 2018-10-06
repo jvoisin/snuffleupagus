@@ -6,9 +6,9 @@ PHP_FUNCTION(sp_serialize) {
   zif_handler orig_handler;
 
   /* Call the original `serialize` function. */
-  orig_handler = zend_hash_str_find_ptr(
-      SNUFFLEUPAGUS_G(sp_internal_functions_hook), "serialize",
-      sizeof("serialize") - 1);
+  orig_handler =
+      zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
+                             "serialize", sizeof("serialize") - 1);
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 
   /* Compute the HMAC of the textual representation of the serialized data*/
@@ -51,7 +51,7 @@ PHP_FUNCTION(sp_unserialize) {
   size_t buf_len = 0;
   zval *opts = NULL;
 
-  const sp_config_unserialize* config_unserialize =
+  const sp_config_unserialize *config_unserialize =
       SNUFFLEUPAGUS_G(config).config_unserialize;
 
   if (zend_parse_parameters(ZEND_NUM_ARGS(), "s|a", &buf, &buf_len, &opts) ==
@@ -109,8 +109,8 @@ PHP_FUNCTION(sp_unserialize) {
   }
   if (config_unserialize->dump) {
     sp_log_request(config_unserialize->dump,
-        config_unserialize->textual_representation,
-        SP_TOKEN_UNSERIALIZE_HMAC);
+                   config_unserialize->textual_representation,
+                   SP_TOKEN_UNSERIALIZE_HMAC);
   }
   efree(serialized_str);
   return;

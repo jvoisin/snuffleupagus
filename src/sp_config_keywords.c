@@ -52,12 +52,11 @@ int parse_session(char *line) {
       return -1;
     } else if (0 ==
                (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
-      sp_log_err(
-          "config",
-          "You're trying to use the session cookie encryption feature "
-          "on line %zu without having set the `.secret_key` option in"
-          "`sp.global`: please set it first",
-          sp_line_no);
+      sp_log_err("config",
+                 "You're trying to use the session cookie encryption feature "
+                 "on line %zu without having set the `.secret_key` option in"
+                 "`sp.global`: please set it first",
+                 sp_line_no);
       pefree(session, 0);
       return -1;
     }
@@ -282,8 +281,7 @@ int parse_cookie(char *line) {
       return -1;
     }
   }
-  SNUFFLEUPAGUS_G(config)
-      .config_cookie->cookies =
+  SNUFFLEUPAGUS_G(config).config_cookie->cookies =
       sp_list_insert(SNUFFLEUPAGUS_G(config).config_cookie->cookies, cookie);
   return SUCCESS;
 }
@@ -346,7 +344,7 @@ int parse_disabled_functions(char *line) {
   if (X && Y) {                                                          \
     sp_log_err("config",                                                 \
                "Invalid configuration line: 'sp.disabled_functions%s': " \
-               "'.%s' and '.%s' are mutually exclusive on line %zu",    \
+               "'.%s' and '.%s' are mutually exclusive on line %zu",     \
                line, STR1, STR2, sp_line_no);                            \
     return 1;                                                            \
   }

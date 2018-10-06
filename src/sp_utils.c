@@ -9,8 +9,7 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-bool sp_zend_string_equals(const zend_string* s1,
-                           const zend_string* s2) {
+bool sp_zend_string_equals(const zend_string* s1, const zend_string* s2) {
   // We can't use `zend_string_equals` here because it doesn't work on
   // `const` zend_string.
   return ZSTR_LEN(s1) == ZSTR_LEN(s2) &&
@@ -216,12 +215,10 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
       char_repr = zend_string_to_char(arg_value);
     }
     if (alias) {
-      sp_log_msg(
-          "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-          "Aborted execution on call of the function '%s', "
-          "because its argument '%s' content (%s) matched the rule '%s'",
-          path, arg_name, char_repr ? char_repr : "?",
-          ZSTR_VAL(alias));
+      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
+                 "Aborted execution on call of the function '%s', "
+                 "because its argument '%s' content (%s) matched the rule '%s'",
+                 path, arg_name, char_repr ? char_repr : "?", ZSTR_VAL(alias));
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                  "Aborted execution on call of the function '%s', "
@@ -237,8 +234,7 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
                  path, ZSTR_VAL(alias));
     } else {
       sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                 "Aborted execution on call of the function '%s'",
-                 path);
+                 "Aborted execution on call of the function '%s'", path);
     }
   }
 }
@@ -263,8 +259,7 @@ void sp_log_disable_ret(const char* restrict path,
         "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
         "Aborted execution on return of the function '%s', "
         "because the function returned '%s', which matched the rule '%s'",
-        path, char_repr ? char_repr : "?",
-        ZSTR_VAL(alias));
+        path, char_repr ? char_repr : "?", ZSTR_VAL(alias));
   } else {
     sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
                "Aborted execution on return of the function '%s', "
