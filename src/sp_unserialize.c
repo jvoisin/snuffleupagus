@@ -26,9 +26,11 @@ PHP_FUNCTION(sp_serialize) {
 
   size_t len = Z_STRLEN_P(return_value) + Z_STRLEN(hmac);
   if (len < Z_STRLEN_P(return_value)) {
+    // LCOV_EXCL_START
     sp_log_err("overflow_error",
                "Overflow tentative detected in sp_serialize.");
     zend_bailout();
+    // LCOV_EXCL_STOP
   }
   zend_string *res = zend_string_alloc(len, 0);
 
@@ -63,7 +65,6 @@ PHP_FUNCTION(sp_unserialize) {
   if (buf_len < 64) {
     sp_log_msg("unserialize", SP_LOG_DROP,
                "The serialized object is too small.");
-    RETURN_FALSE;
   }
 
   hmac = buf + buf_len - 64;
@@ -94,6 +95,11 @@ PHP_FUNCTION(sp_unserialize) {
       orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     }
   } else {
+    if (config_unserialize->dump) {
+      sp_log_request(config_unserialize->dump,
+                    config_unserialize->textual_representation,
+                    SP_TOKEN_UNSERIALIZE_HMAC);
+    }
     if (true == config_unserialize->simulation) {
       sp_log_msg("unserialize", SP_LOG_SIMULATION, "Invalid HMAC for %s",
                  serialized_str);
@@ -106,11 +112,6 @@ PHP_FUNCTION(sp_unserialize) {
       sp_log_msg("unserialize", SP_LOG_DROP, "Invalid HMAC for %s",
                  serialized_str);
     }
-  }
-  if (config_unserialize->dump) {
-    sp_log_request(config_unserialize->dump,
-                   config_unserialize->textual_representation,
-                   SP_TOKEN_UNSERIALIZE_HMAC);
   }
   efree(serialized_str);
   return;
