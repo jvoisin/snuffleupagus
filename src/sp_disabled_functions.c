@@ -5,6 +5,18 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
+static void should_disable(zend_execute_data* execute_data,
+                           const char* complete_function_path,
+                           const zend_string* builtin_param,
+                           const char* builtin_param_name,
+                           const sp_list_node* config,
+                           const zend_string* current_filename);
+
+static void should_drop_on_ret(const zval* return_value,
+                               const sp_list_node* config,
+                               const char* complete_function_path,
+                               zend_execute_data* execute_data);
+
 char* get_complete_function_path(zend_execute_data const* const execute_data) {
   if (zend_is_executing() && !EG(current_execute_data)->func) {
     return NULL;  // LCOV_EXCL_LINE
@@ -249,17 +261,16 @@ static bool check_is_builtin_name(
   return false;
 }
 
-bool should_disable_ht(zend_execute_data* execute_data,
+void should_disable_ht(zend_execute_data* execute_data,
                        const char* function_name,
                        const zend_string* builtin_param,
                        const char* builtin_param_name,
                        const sp_list_node* config, const HashTable* ht) {
   const sp_list_node* ht_entry = NULL;
-  bool ret = false;
   zend_string* current_filename;
 
   if (!execute_data) {
-    return false;  // LCOV_EXCL_LINE
+    return;  // LCOV_EXCL_LINE
   }
 
   if (UNEXPECTED(builtin_param && !strcmp(function_name, "eval"))) {
@@ -271,24 +282,23 @@ bool should_disable_ht(zend_execute_data* execute_data,
 
   ht_entry = zend_hash_str_find_ptr(ht, function_name, strlen(function_name));
 
-  if (ht_entry &&
-      should_disable(execute_data, function_name, builtin_param,
-                     builtin_param_name, ht_entry, current_filename)) {
-    ret = true;
+  if (ht_entry) {
+    should_disable(execute_data, function_name, builtin_param,
+                   builtin_param_name, ht_entry, current_filename);
   } else if (config && config->data) {
-    ret = should_disable(execute_data, function_name, builtin_param,
-                         builtin_param_name, config, current_filename);
+    should_disable(execute_data, function_name, builtin_param,
+                   builtin_param_name, config, current_filename);
   }
 
   efree(current_filename);
-  return ret;
 }
 
-bool should_disable(zend_execute_data* execute_data,
-                    const char* complete_function_path,
-                    const zend_string* builtin_param,
-                    const char* builtin_param_name, const sp_list_node* config,
-                    const zend_string* current_filename) {
+static void should_disable(zend_execute_data* execute_data,
+                           const char* complete_function_path,
+                           const zend_string* builtin_param,
+                           const char* builtin_param_name,
+                           const sp_list_node* config,
+                           const zend_string* current_filename) {
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
 
   while (config) {
@@ -381,7 +391,7 @@ bool should_disable(zend_execute_data* execute_data,
 
     /* Everything matched.*/
     if (true == config_node->allow) {
-      goto allow;
+      return;
     }
 
     if (config_node->functions_list) {
@@ -391,43 +401,34 @@ bool should_disable(zend_execute_data* execute_data,
       sp_log_disable(complete_function_path, arg_name, arg_value_str,
                      config_node);
     }
-    if (true == config_node->simulation) {
-      goto next;
-    } else {  // We've got a match, the function won't be executed
-      return true;
-    }
+
   next:
     config = config->next;
   }
-allow:
-  return false;
 }
 
-bool should_drop_on_ret_ht(const zval* return_value, const char* function_name,
+void should_drop_on_ret_ht(const zval* return_value, const char* function_name,
                            const sp_list_node* config, const HashTable* ht,
                            zend_execute_data* execute_data) {
   const sp_list_node* ht_entry = NULL;
-  bool ret = false;
 
   if (!function_name) {
-    return ret;
+    return;
   }
 
   ht_entry = zend_hash_str_find_ptr(ht, function_name, strlen(function_name));
 
-  if (ht_entry &&
-      should_drop_on_ret(return_value, ht_entry, function_name, execute_data)) {
-    ret = true;
+  if (ht_entry) {
+    should_drop_on_ret(return_value, ht_entry, function_name, execute_data);
   } else if (config && config->data) {
-    ret = should_drop_on_ret(return_value, config, function_name, execute_data);
+    should_drop_on_ret(return_value, config, function_name, execute_data);
   }
-
-  return ret;
 }
 
-bool should_drop_on_ret(const zval* return_value, const sp_list_node* config,
-                        const char* complete_function_path,
-                        zend_execute_data* execute_data) {
+static void should_drop_on_ret(const zval* return_value,
+                               const sp_list_node* config,
+                               const char* complete_function_path,
+                               zend_execute_data* execute_data) {
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
   bool match_type = false, match_value = false;
@@ -487,41 +488,34 @@ bool should_drop_on_ret(const zval* return_value, const sp_list_node* config,
 
     if (true == match_type || true == match_value) {
       if (true == config_node->allow) {
-        return false;
+        return;
       }
       sp_log_disable_ret(complete_function_path, ret_value_str, config_node);
-      if (false == config_node->simulation) {
-        return true;
-      }
     }
   next:
     config = config->next;
   }
-  return false;
 }
 
 ZEND_FUNCTION(check_disabled_function) {
   zif_handler orig_handler;
   const char* current_function_name = get_active_function_name(TSRMLS_C);
 
-  if (true == should_disable_ht(
-                  execute_data, current_function_name, NULL, NULL,
-                  SNUFFLEUPAGUS_G(config)
-                      .config_disabled_functions_reg->disabled_functions,
-                  SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked)) {
-  }
+  should_disable_ht(
+      execute_data, current_function_name, NULL, NULL,
+      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
+      SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
 
   orig_handler = zend_hash_str_find_ptr(
       SNUFFLEUPAGUS_G(disabled_functions_hook), current_function_name,
       strlen(current_function_name));
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-  if (true == should_drop_on_ret_ht(
-                  return_value, current_function_name,
-                  SNUFFLEUPAGUS_G(config)
-                      .config_disabled_functions_reg_ret->disabled_functions,
-                  SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked,
-                  execute_data)) {
-  }
+  should_drop_on_ret_ht(
+      return_value, current_function_name,
+      SNUFFLEUPAGUS_G(config)
+          .config_disabled_functions_reg_ret->disabled_functions,
+      SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked,
+      execute_data);
 }
 
 static int hook_functions_regexp(const sp_list_node* config) {
