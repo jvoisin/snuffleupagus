@@ -258,6 +258,7 @@ Filters
 - ``param(name)``: match on the function's parameter ``name``
 - ``param_r(regexp)``: match on the function's parameter ``regexp``
 - ``param_type(type)``: match on the function's parameter ``type``
+- ``pos(nth_argument)``: match on the nth argument, starting from ``0``
 - ``ret(value)``: match on the function's return ``value``
 - ``ret_r(regexp)``: match with a ``regexp`` on the function's return
 - ``ret_type(type_name)``: match on the ``type_name`` of the function's return value
