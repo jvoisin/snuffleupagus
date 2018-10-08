@@ -173,14 +173,8 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
                                                config_disabled_functions_reg,
                                                config_disabled_functions))) {
       }
-    } else if ((execute_data->prev_execute_data->opline->opcode ==
-                    ZEND_DO_FCALL ||
-                execute_data->prev_execute_data->opline->opcode ==
-                    ZEND_DO_UCALL ||
-                execute_data->prev_execute_data->opline->opcode ==
-                    ZEND_DO_ICALL ||
-                execute_data->prev_execute_data->opline->opcode ==
-                    ZEND_DO_FCALL_BY_NAME)) {
+    } else if (execute_data->prev_execute_data->opline->opcode ==
+               ZEND_DO_FCALL) {
       if (UNEXPECTED(true == should_disable_ht(execute_data, function_name,
                                                NULL, NULL,
                                                config_disabled_functions_reg,
