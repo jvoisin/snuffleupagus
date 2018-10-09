@@ -328,7 +328,9 @@ int hook_function(const char* original_name, HashTable* hook_table,
 
   if ((func = zend_hash_str_find_ptr(CG(function_table),
                                      VAR_AND_LEN(original_name)))) {
-    if (func->handler != new_function) {
+    if (func->handler == new_function) {
+      return SUCCESS;  // the function is already hooked
+    } else {
       if (zend_hash_str_add_new_ptr((hook_table), VAR_AND_LEN(original_name),
                                     func->handler) == NULL) {
         // LCOV_EXCL_START
@@ -339,25 +341,29 @@ int hook_function(const char* original_name, HashTable* hook_table,
       }
       func->handler = new_function;
       ret = SUCCESS;
-    } else {
-      return SUCCESS;
     }
   }
 
-  if (0 == strncmp(original_name, "mb_", 3)) {
-    CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
+  CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
+
+  if (0 == strncmp(original_name, "mb_", 3) && !CG(multibyte)) {
     if (zend_hash_str_find(CG(function_table),
-                           VAR_AND_LEN(original_name + 3))) {
+          VAR_AND_LEN(original_name + 3))) {
       return hook_function(original_name + 3, hook_table, new_function);
     }
-  } else {  // TODO this can be moved somewhere else to gain some marginal perfs
-    CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
+  } else if (CG(multibyte)) {
+    // LCOV_EXCL_START
     char* mb_name = ecalloc(strlen(original_name) + 3 + 1, 1);
+    if (NULL == mb_name) {
+      return FAILURE;
+    }
     memcpy(mb_name, "mb_", sizeof("mb_") - 1);
     memcpy(mb_name + 3, VAR_AND_LEN(original_name));
     if (zend_hash_str_find(CG(function_table), VAR_AND_LEN(mb_name))) {
       return hook_function(mb_name, hook_table, new_function);
     }
+    free(mb_name);
+    // LCOV_EXCL_STOP
   }
 
   return ret;
