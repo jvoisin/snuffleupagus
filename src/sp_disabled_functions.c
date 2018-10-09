@@ -413,7 +413,7 @@ void should_drop_on_ret_ht(const zval* return_value, const char* function_name,
   const sp_list_node* ht_entry = NULL;
 
   if (!function_name) {
-    return;
+    return;  // LCOV_EXCL_LINE
   }
 
   ht_entry = zend_hash_str_find_ptr(ht, function_name, strlen(function_name));
