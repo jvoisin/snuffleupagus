@@ -91,6 +91,8 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
   generate_key(key);
 
   decrypted = ecalloc(ZSTR_LEN(debase64) + crypto_secretbox_ZEROBYTES, 1);
+  char *backup = ecalloc(ZSTR_LEN(debase64), 1);
+  memcpy(backup, ZSTR_VAL(debase64), ZSTR_LEN(debase64));
 
   ret = crypto_secretbox_open(
       decrypted,
@@ -105,18 +107,24 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
           "Something went wrong with the decryption of %s. Using the cookie "
           "'as it' instead of decrypting it",
           hash_key ? ZSTR_VAL(hash_key->key) : "the session");
+      memcpy(ZSTR_VAL(debase64), backup, ZSTR_LEN(debase64));
+      efree(backup);
       return ZEND_HASH_APPLY_KEEP;
     } else {
       sp_log_msg("cookie_encryption", SP_LOG_WARN,
                  "Something went wrong with the decryption of %s",
                  hash_key ? ZSTR_VAL(hash_key->key) : "the session");
+      efree(backup);
       return ZEND_HASH_APPLY_REMOVE;
     }
   }
+  efree(backup);
 
   ZVAL_STRINGL(pDest, (char *)(decrypted + crypto_secretbox_ZEROBYTES),
                ZSTR_LEN(debase64) - crypto_secretbox_NONCEBYTES - 1 -
                    crypto_secretbox_ZEROBYTES);
+
+  zend_string_release(decrypted);
 
   return ZEND_HASH_APPLY_KEEP;
 }

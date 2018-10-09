@@ -30,19 +30,18 @@ static int sp_hook_s_read(PS_READ_ARGS) {
   const sp_config_session *config_session =
       SNUFFLEUPAGUS_G(config).config_session;
 
-  if (r == SUCCESS && config_session->encrypt && val != NULL && *val != NULL &&
-      ZSTR_LEN(*val)) {
+  if ((NULL == val) || (NULL == *val) || (0 == ZSTR_LEN(*val))) {
+    return r;
+  }
+
+  if (r == SUCCESS && config_session->encrypt) {
     zend_string *orig_val = *val;
     zval val_zval;
     ZVAL_PSTRINGL(&val_zval, ZSTR_VAL(*val), ZSTR_LEN(*val));
 
     int ret = decrypt_zval(&val_zval, config_session->simulation, NULL);
-    if (0 != ret) {
-      if (config_session->simulation) {
-        return ret;
-      } else {
-        zend_bailout();
-      }
+    if (ZEND_HASH_APPLY_KEEP != ret) {
+      zend_bailout();
     }
 
     *val = zend_string_dup(val_zval.value.str, 0);

@@ -348,7 +348,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
 
   if (0 == strncmp(original_name, "mb_", 3) && !CG(multibyte)) {
     if (zend_hash_str_find(CG(function_table),
-          VAR_AND_LEN(original_name + 3))) {
+                           VAR_AND_LEN(original_name + 3))) {
       return hook_function(original_name + 3, hook_table, new_function);
     }
   } else if (CG(multibyte)) {
