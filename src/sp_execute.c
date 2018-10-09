@@ -49,13 +49,10 @@ inline static void is_builtin_matching(
     return;
   }
 
-  if (true ==
-      should_disable_ht(EG(current_execute_data), function_name, param_value,
-                        param_name,
-                        SNUFFLEUPAGUS_G(config)
-                            .config_disabled_functions_reg->disabled_functions,
-                        ht)) {
-  }
+  should_disable_ht(
+      EG(current_execute_data), function_name, param_value, param_name,
+      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
+      ht);
 }
 
 static void ZEND_HOT
@@ -168,11 +165,9 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
         !execute_data->prev_execute_data->func ||
         !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
         !execute_data->prev_execute_data->opline) {
-      if (UNEXPECTED(true == should_disable_ht(execute_data, function_name,
-                                               NULL, NULL,
-                                               config_disabled_functions_reg,
-                                               config_disabled_functions))) {
-      }
+      should_disable_ht(execute_data, function_name, NULL, NULL,
+                        config_disabled_functions_reg,
+                        config_disabled_functions);
     } else if ((execute_data->prev_execute_data->opline->opcode ==
                     ZEND_DO_FCALL ||
                 execute_data->prev_execute_data->opline->opcode ==
@@ -181,11 +176,9 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
                     ZEND_DO_ICALL ||
                 execute_data->prev_execute_data->opline->opcode ==
                     ZEND_DO_FCALL_BY_NAME)) {
-      if (UNEXPECTED(true == should_disable_ht(execute_data, function_name,
-                                               NULL, NULL,
-                                               config_disabled_functions_reg,
-                                               config_disabled_functions))) {
-      }
+      should_disable_ht(execute_data, function_name, NULL, NULL,
+                        config_disabled_functions_reg,
+                        config_disabled_functions);
     }
 
     // When a function's return value isn't used, php doesn't store it in the
@@ -198,15 +191,11 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
 
     orig_execute_ex(execute_data);
 
-    if (UNEXPECTED(
-            true ==
-            should_drop_on_ret_ht(
-                EX(return_value), function_name,
-                SNUFFLEUPAGUS_G(config)
-                    .config_disabled_functions_reg_ret->disabled_functions,
-                SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
-                execute_data))) {
-    }
+    should_drop_on_ret_ht(
+        EX(return_value), function_name,
+        SNUFFLEUPAGUS_G(config)
+            .config_disabled_functions_reg_ret->disabled_functions,
+        SNUFFLEUPAGUS_G(config).config_disabled_functions_ret, execute_data);
     efree(function_name);
 
     if (EX(return_value) == &ret_val) {
