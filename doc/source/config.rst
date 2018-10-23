@@ -13,7 +13,10 @@ Some rules apply in a specific ``function`` (context) on a specific ``variable``
 
 .. warning::
 
-  If you configure Snuffleupagus incorrectly, you could break your website.
+  If you configure Snuffleupagus incorrectly, your website *might* not work
+  correctly until either you fix your configuration, or revert your changes
+  altogether.
+
   It's up to you to understand the :doc:`features <features>`,
   read the present documentation about how to configure them,
   evaluate your threat model and write your configuration file accordingly.
