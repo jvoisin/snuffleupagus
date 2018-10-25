@@ -12,6 +12,19 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra);
     efree(env[i]);                 \
   }
 
+#ifdef PHP_WIN32
+
+int sp_rfc1867_callback_win(unsigned int event, void *event_data,
+                            void **extra) {
+  sp_log_msg("upload_validation", SP_LOG_SIMULATION,
+             "The upload validation doesn't work for now on Windows yet, "
+             "see https://github.com/nbs-system/snuffleupagus/issues/248 for "
+             "details.");
+  return SUCCESS;
+}
+
+#else
+
 int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
   int retval = SUCCESS;
 
@@ -89,6 +102,7 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
   }
   return retval;
 }
+#endif
 
 void hook_upload() {
   if (NULL == sp_rfc1867_orig_callback) {
