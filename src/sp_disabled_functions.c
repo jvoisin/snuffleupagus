@@ -545,9 +545,11 @@ static int hook_functions(HashTable* to_hook_ht, HashTable* hooked_ht) {
   zval* value;
 
   ZEND_HASH_FOREACH_STR_KEY_VAL(to_hook_ht, key, value) {
-    if (!HOOK_FUNCTION(ZSTR_VAL(key), disabled_functions_hook,
-                       PHP_FN(check_disabled_function)) ||
-        check_is_builtin_name(((sp_list_node*)Z_PTR_P(value))->data)) {
+    bool hooked = !HOOK_FUNCTION(ZSTR_VAL(key), disabled_functions_hook,
+                                 PHP_FN(check_disabled_function));
+    bool is_builtin =
+        check_is_builtin_name(((sp_list_node*)Z_PTR_P(value))->data);
+    if (hooked || is_builtin) {
       zend_symtable_add_new(hooked_ht, key, value);
       zend_hash_del(to_hook_ht, key);
     }
