@@ -20,6 +20,7 @@ Mentions
 - `Paragon Initiative Enterprises Blog - The 2018 Guide to Building Secure PHP Software <https://paragonie.com/blog/2017/12/2018-guide-building-secure-php-software>`__ - 2017-12-12
 - `PhpStorm's blog - PHP Annotated Monthly <https://blog.jetbrains.com/phpstorm/2018/08/php-annotated-monthly-august-2018/>`__ - 2018-08-31
 
+
 Articles
 --------
 
@@ -30,14 +31,17 @@ Articles
 - `Snuffleupagus 0.3.0 - Dentalium elephantinum <https://dustri.org/b/snuffleupagus-030-dentalium-elephantinum.html>`__ - 2018-07-18
 - `Snuffleupagus version 0.3.0 - Dentalium elephantinum <https://linuxfr.org/news/snuffleupagus-version-0-3-0-dentalium-elephantinum>`__ (fr) - 2018-07-18
 
+
 Papers
 ------
 - `Sécurisez vos applications php avec Snuffleupagus <https://connect.ed-diamond.com/GNU-Linux-Magazine/GLMF-213/Securisez-vos-applications-PHP-avec-Snuffleupagus>`__ (fr) (paywall) - 2018-03-2018
+
 
 Notable users
 -------------
 
 - `AdwCleaner <https://www.malwarebytes.com/adwcleaner/>`__'s backend- a notorious anti-pup
+- `Alertot <https://www.alertot.com/>`__ - a Chilean continuous web security monitoring company
 - `NBS System <https://www.nbs-system.com/>`__ - a French hosting/security company and author of snuffleupagus
 - `Net4All <https://net4all.ch/>`__ - a Swiss hosting company
 - `Oceanet Technology <https://www.oceanet-technology.com/>`__ - a French hosting company
