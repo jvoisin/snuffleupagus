@@ -49,26 +49,28 @@ Cookie encryption
    
 The encryption is done via the `tweetnacl library <https://tweetnacl.cr.yp.to/>`_,
 thus using `curve25519 <https://en.wikipedia.org/wiki/Curve25519>`__, `xsalsa20 <https://en.wikipedia.org/wiki/Salsa20#ChaCha_variant>`__ and `poly1305 <https://en.wikipedia.org/wiki/Poly1305>`__ for the encryption. We chose this
-library because of its portability, simplicity and reduced size (a single `.h` and
+library because of its portability, license (public-domain), simplicity and reduced size (a single `.h` and
 `.c` file.).
 
-The key is derived from multiple sources, such as :
- * The ``secret_key`` provided in the configuration.
- * An environment variable, such as the ``REMOTE_ADDR`` (remote IP address) or the *extended master secret* from TLS connections (`RFC7627 <https://tools.ietf.org/html/rfc7627>`_)
- * The user-agent.
+The key is derived from multiple sources, such as:
+ * The ``secret_key`` provided in the configuration in the ``sp.global.secret_key``
+   option. It's recommended to use something like ``head -c 256 /dev/urandom | tr -dc
+   'a-zA-Z0-9'`` as a value.
+ * An optional environment variable, such as ``REMOTE_ADDR`` (remote IP address) or the *extended master secret* from TLS connections (`RFC7627 <https://tools.ietf.org/html/rfc7627>`_) in the ``sp.global.cookie_env_var`` option.
+ * The `user-agent <https://en.wikipedia.org/wiki/User_agent>`__.
 
 
 .. warning::
 
-  To use this feature, you **must** set the :ref:`global.secret_key <config_global>`
-  and the :ref:`global.cookie_env_var <config_global>` variables.
+  To use this feature, you **must** set the :ref:`global.secret_key <config_global>` variable
+  and **should** set the :ref:`global.cookie_env_var <config_global>` one too.
   This design decision prevents an attacker from
   `trivially bruteforcing <https://www.idontplaydarts.com/2011/11/decrypting-suhosin-sessions-and-cookies/>`_
   or re-using session cookies.
   If the simulation mode isn’t specified in the configuration, snuffleupagus will drop any request that it was unable to decrypt.
 
 Since PHP doesn't handle session cookie and non-session cookie in the same way,
-thus we are providing two different ways.
+so does Snuffleupagus.
 
 
 Session cookie
