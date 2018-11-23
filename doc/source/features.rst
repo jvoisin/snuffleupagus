@@ -24,6 +24,7 @@ Unfortunately, passing user-controlled parameters to it often leads to arbitrary
 
 We're mitigating it by filtering the ``$``, ``|``, ``;``, `````, ``\n`` and ``&`` chars in our
 default configuration, making it a lot harder for an attacker to inject arbitrary commands.
+This feature is even more effective when used along with :ref:`readonly_exec <readonly-exec-feature>`.
 
 
 Examples of related vulnerabilities
@@ -33,7 +34,7 @@ Examples of related vulnerabilities
 - `CVE-2014-4688 <https://www.pfsense.org/security/advisories/pfSense-SA-14_10.webgui.asc>`_: Authenticated remote code execution on pfSense
 - `CVE-2014-1610 <https://www.rapid7.com/db/modules/exploit/multi/http/mediawiki_thumb>`_: Unauthenticated remote code execution on DokuWiki
 - `CVE-2013-3630 <https://www.rapid7.com/db/modules/exploit/multi/http/moodle_cmd_exec>`_: Authenticated remote code execution on Moodle
-- Every single shitty `modem/router/switch/IoT <https://twitter.com/internetofshit>`_.
+- Every single `modem/router/switch/IoT/… <https://twitter.com/internetofshit>`_.
 
 
 ``mail``-related injections
@@ -51,6 +52,7 @@ often meaning an arbitrary code execution.
   --- `The PHP documentation about mail <https://secure.php.net/manual/en/function.mail.php>`_
 
 We're killing it by preventing any extra options in ``additional_parameters``.
+This feature is even more effective when used along with :ref:`readonly_exec <readonly-exec-feature>`.
 
 
 Examples of related vulnerabilities
@@ -76,7 +78,7 @@ if you're planning to use it.
 
 This feature is roughly the same than the `Suhosin one <https://suhosin.org/stories/configuration.html#transparent-encryption-options>`_.
 
-Having a secret server-side key will prevent anyone (even the user himself)
+Having a secret server-side key will prevent anyone (even the user)
 from reading the content of the cookie, reducing the impact of an application storing sensitive data client-side.
 
 
