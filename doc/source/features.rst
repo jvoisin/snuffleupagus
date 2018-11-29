@@ -439,8 +439,18 @@ Arbitrary file inclusion hardening
 """"""""""""""""""""""""""""""""""
 
 Arbitrary file inclusion is a common vulnerability, that might be detected
-by preventing the inclusion of anything that doens't match a strict set
+by preventing the inclusion of anything that doesn't match a strict set
 of file extensions in calls to ``include`` or ``require``.
+
+
+Enforcing certificate validation when using curl
+""""""""""""""""""""""""""""""""""""""""""""""""
+
+While it might be convenient to disable certificate validation on preproduction
+or during tests, it's `common <https://twitter.com/CiPHPerCoder/status/1056974646363516928>`__
+to see that people are disabling it on production too.
+We're detecting/preventing this by not allowing the ``CURLOPT_SSL_VERIFYPEER`` and
+``CURLOPT_SSL_VERIFYHOST`` options from being set to ``0``.
 
 *Cheap* SQL injections detection
 """"""""""""""""""""""""""""""""

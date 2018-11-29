@@ -69,6 +69,7 @@ without having to touch the PHP code.
 	* Whitelisting of [stream wrappers](https://secure.php.net/manual/en/intro.stream.php)
 	* Preventing writeable files execution
 	* Whitelist/blacklist for `eval`
+	* Enforcing TLS certificate validation when using [curl](https://secure.php.net/manual/en/book.curl.php)
 	* Request dumping capability
 
 ## Download
