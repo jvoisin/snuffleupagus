@@ -333,6 +333,12 @@ difficult to get right, Snuffleupagus offers a way to **always** use the
 for PHP's documentation for more details), so that values with different types
 will always be treated as being different.
 
+Keep in mind that this feature will not only affect the ``==`` operator,
+but also the `in_array
+<https://secure.php.net/manual/en/function.in-array.php>`__, `array_search
+<https://secure.php.net/manual/en/function.array-search.php>`__ and `array_keys
+<https://secure.php.net/manual/en/function.array-keys.php>`__ functions.
+
 .. _readonly-exec-feature:
 
 Preventing execution of writable PHP files
