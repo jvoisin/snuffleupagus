@@ -16,7 +16,7 @@ function check($filename) {
 		"-d", "vld.col_sep=@",
 		"-d", "log_errors=0",
 		"-d", "error_log=/dev/null",
-		$filename,
+		escapeshellarg($filename),
 		'2>&1',
 		];
 	exec(implode(' ', $cmd), $out, $ret);
