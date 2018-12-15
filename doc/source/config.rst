@@ -181,7 +181,8 @@ argument and various information about it in the environment:
 
 This feature can be used, for example, to check if an uploaded file contains php
 code, using `vld <https://derickrethans.nl/projects.html#vld>`_,
-via `this script <https://github.com/nbs-system/snuffleupagus/tree/master/scripts/upload_validation.py>`__.
+via `a python script <https://github.com/nbs-system/snuffleupagus/tree/master/scripts/upload_validation.py>`__,
+or `a php one <https://github.com/nbs-system/snuffleupagus/tree/master/scripts/upload_validation.php>`__.
 
 The upload will be **allowed** if the script returns the value ``0``. Every other
 value will prevent the file from being uploaded.
