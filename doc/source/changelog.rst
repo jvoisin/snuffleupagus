@@ -1,6 +1,28 @@
 Changelog
 =========
 
+
+0.4.1 - `Loxodonta <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.4.1>`__ 2018/12/21
+--------------------------------------------------------------------------------------------------------------
+
+Improvements
+^^^^^^^^^^^^
+
+- Improve and clarify the documentation
+- Add support for PHP7.3
+- Improve the coverage, we have reached 99% of coverage
+- Improve `mb_string` hooking logic
+- The script that check uploaded file is now available in PHP
+
+
+Bug fixes
+^^^^^^^^^
+
+- Fix segfault on 32-bit for PHP7.3
+- Fix segfault when using `sloppy_comparaison` feature with array
+
+
+
 0.4.0 - `Oliphant Chuckerbutty <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.4.0>`__ 2018/08/31
 --------------------------------------------------------------------------------------------------------------
 

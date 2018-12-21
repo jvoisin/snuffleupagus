@@ -1,5 +1,18 @@
+snuffleupagus (0.4.1) UNRELEASED; urgency=medium
+
+  * Improve and clarify the documentation
+  * Add support for PHP7.3
+  * Improve the coverage, we have now reached 99% of coverage
+  * Improve the `mb_string` hooking logic 
+  * The script that check uploaded file is now available in PHP
+  * Fix segfault on 32-bit for PHP7.3
+  * Fix segfault when using `sloppy_comparaison` feature with array
+
+ -- kkadosh <snuffleupagus@nbs-system.com>  Fri, 21 Dec 2018 11:50:00 +0200
+
 snuffleupagus (0.4.0) UNRELEASED; urgency=medium
 
+  [ jvoisin ]
   * Add the possibility to whitelist `stream wrappers`
   * Snuffleupagus is now using php's logging mechanisms, instead of outputting its log directly into the syslog.
   * PHP is now prevented from ever disabling certificate verification thanks to a few lines in our default configuration.
