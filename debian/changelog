@@ -6,7 +6,7 @@ snuffleupagus (0.4.1) UNRELEASED; urgency=medium
   * Improve the `mb_string` hooking logic 
   * The script that check uploaded file is now available in PHP
   * Fix segfault on 32-bit for PHP7.3
-  * Fix segfault when using `sloppy_comparaison` feature with array
+  * Fix segfault when using `sloppy_comparison` feature with array
 
  -- kkadosh <snuffleupagus@nbs-system.com>  Fri, 21 Dec 2018 11:50:00 +0200
 

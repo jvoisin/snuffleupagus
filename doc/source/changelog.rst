@@ -19,7 +19,7 @@ Bug fixes
 ^^^^^^^^^
 
 - Fix segfault on 32-bit for PHP7.3
-- Fix segfault when using `sloppy_comparaison` feature with array
+- Fix segfault when using `sloppy_comparison` feature with array
 
 
 
