@@ -27,10 +27,10 @@ sp.disable_function.function("require").drop()
 sp.disable_function.function("include").drop()
 
 # Prevent `system`-related injections
-sp.disable_function.function("system").param("command").value_r("[$|;&`\\n]").drop();
-sp.disable_function.function("shell_exec").param("command").value_r("[$|;&`\\n]").drop();
-sp.disable_function.function("exec").param("command").value_r("[$|;&`\\n]").drop();
-sp.disable_function.function("proc_open").param("command").value_r("[$|;&`\\n]").drop();
+sp.disable_function.function("system").param("command").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
+sp.disable_function.function("shell_exec").param("command").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
+sp.disable_function.function("exec").param("command").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
+sp.disable_function.function("proc_open").param("command").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
 
 # Prevent runtime modification of interesting things
 sp.disable_function.function("ini_set").param("var_name").value("assert.active").drop();
