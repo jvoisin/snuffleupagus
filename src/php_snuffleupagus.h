@@ -26,6 +26,10 @@
 #include "zend_extensions.h"
 
 /* Compatibility */
+#if PHP_VERSION_ID < 70000
+#error Snuffleupagus only works with PHP7+. You shouldn't use PHP5 anyway, \
+  since it's not supported anymore: https://secure.php.net/supported-versions.php
+#endif
 #if PHP_VERSION_ID < 70200
 typedef void (*zif_handler)(INTERNAL_FUNCTION_PARAMETERS);
 #endif
