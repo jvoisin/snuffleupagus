@@ -23,5 +23,4 @@ var_dump($_SESSION);
 session_destroy();
 ?>
 --EXPECTF--
-%s: SessionHandler::open(): Cannot call session save handler in a recursive manner in %s/tests/set_custom_session_handler2.php on line 8
 %a
