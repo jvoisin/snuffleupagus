@@ -13,7 +13,7 @@ by killing entire bug classes and providing a powerful virtual-patching system,
 allowing the administrator to fix specific vulnerabilities without having to touch the PHP code.
 
 
-Where does the name *Snuffeupagus* come from?
+Where does the name *Snuffleupagus* come from?
 """"""""""""""""""""""""""""""""""""""""""""""
 
   Aloysius Snuffleupagus, more commonly known as Mr. Snuffleupagus,
