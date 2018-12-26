@@ -242,23 +242,16 @@ static zend_execute_data* is_file_matching(
 #undef ITERATE
 }
 
-static bool check_is_builtin_name(
+inline static bool check_is_builtin_name(
     sp_disabled_function const* const config_node) {
-  if (config_node->function) {
+  if (EXPECTED(config_node->function)) {
     return (zend_string_equals_literal(config_node->function, "include") ||
             zend_string_equals_literal(config_node->function, "include_once") ||
             zend_string_equals_literal(config_node->function, "require") ||
             zend_string_equals_literal(config_node->function, "require_once") ||
             zend_string_equals_literal(config_node->function, "echo"));
   }
-  if (config_node->r_function) {
-    return (sp_is_regexp_matching(config_node->r_function, "include") ||
-            sp_is_regexp_matching(config_node->r_function, "include_once") ||
-            sp_is_regexp_matching(config_node->r_function, "require") ||
-            sp_is_regexp_matching(config_node->r_function, "require_once") ||
-            sp_is_regexp_matching(config_node->r_function, "echo"));
-  }
-  return false;
+  return false;  // LCOV_EXCL_LINE
 }
 
 void should_disable_ht(zend_execute_data* execute_data,
@@ -317,7 +310,7 @@ static void should_disable(zend_execute_data* execute_data,
     } else if (config_node->function) {
       if (0 !=
           strcmp(ZSTR_VAL(config_node->function), complete_function_path)) {
-        goto next;
+        goto next;  // LCOV_EXCL_LINE
       }
     } else if (config_node->r_function) {
       if (false == sp_is_regexp_matching(config_node->r_function,
@@ -378,9 +371,12 @@ static void should_disable(zend_execute_data* execute_data,
     }
 
     if (config_node->r_value || config_node->value) {
-      if (check_is_builtin_name(config_node) && !config_node->var &&
-          !config_node->param && !config_node->r_param && !config_node->key &&
-          !config_node->r_key) {
+      if (check_is_builtin_name(config_node) &&
+          !config_node->var &&
+          !config_node->key &&
+          !config_node->r_key &&
+          !config_node->param &&
+          !config_node->r_param) {
         if (false == is_param_matching(execute_data, config_node, builtin_param,
                                        &arg_name, builtin_param_name,
                                        &arg_value_str)) {
@@ -448,7 +444,7 @@ static void should_drop_on_ret(const zval* return_value,
     } else if (config_node->function) {
       if (0 !=
           strcmp(ZSTR_VAL(config_node->function), complete_function_path)) {
-        goto next;
+        goto next;  // LCOV_EXCL_LINE
       }
     } else if (config_node->r_function) {
       if (false == sp_is_regexp_matching(config_node->r_function,

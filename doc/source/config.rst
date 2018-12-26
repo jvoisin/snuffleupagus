@@ -334,8 +334,8 @@ Limitations
 It's currently not possible to:
 
 - Hook every `language construct <https://secure.php.net/manual/en/reserved.keywords.php>`__,
-  because each of them requires a specific implementation.
-- Hook on the return value of user-defined functions
+  because each of them requires a specific implementation. It's also not
+  possible to hook them via regular expression.
 - Use extra-convoluted rules for matching, like ``${$A}$$B->${'}[1]``, because if you're writing
   things like this, odds are that you're doing something wrong anyway.
 - Hooks on ``echo`` and on ``print`` are equivalent: there is no way to hook one
