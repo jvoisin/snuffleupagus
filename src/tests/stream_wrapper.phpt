@@ -20,9 +20,9 @@ Warning: Unknown: Unable to find the wrapper "php" - did you forget to enable it
 
 Warning: file_get_contents(): Unable to find the wrapper "http" - did you forget to enable it when you configured PHP? in %a/tests/stream_wrapper.php on line %d
 
-Warning: file_get_contents(): php_network_getaddresses: getaddrinfo failed: Name or service not known in %a/tests/stream_wrapper.php on line %d
+Warning: file_get_contents(): php_network_getaddresses: getaddrinfo failed: %s
 
-Warning: file_get_contents(https://qweqwezxc): failed to open stream: php_network_getaddresses: getaddrinfo failed: Name or service not known in %a/tests/stream_wrapper.php on line %d
+Warning: file_get_contents(https://qweqwezxc): failed to open stream: php_network_getaddresses: getaddrinfo failed: %s
 
 Warning: file_get_contents(ftp://qweqwezxc): failed to open stream: operation failed in %a/tests/stream_wrapper.php on line %d
 
