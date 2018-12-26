@@ -4,7 +4,7 @@ Disable functions
 <?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
 --ENV--
 return <<<EOF
-REMOTE_ADDR=2001:0db8:0000:0000:0000:ff00:0042:8328
+REMOTE_ADDR=2001:0db8:f000:f000:f000:ff00:0042:8328
 EOF;
 --INI--
 sp.configuration_file={PWD}/config/disabled_functions_cidr.ini
