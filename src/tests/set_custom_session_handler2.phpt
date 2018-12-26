@@ -23,14 +23,5 @@ var_dump($_SESSION);
 session_destroy();
 ?>
 --EXPECTF--
-Warning: SessionHandler::open(): Cannot call session save handler in a recursive manner in%s/tests/set_custom_session_handler2.php on line 8
-
-Warning: SessionHandler::close(): Cannot call session save handler in a recursive manner in %stests/set_custom_session_handler2.php on line 8
-
-Warning: session_start(): Failed to initialize storage module: user (path: %s) in %stests/set_custom_session_handler2.php on line 8
-array(1) {
-  ["a"]=>
-  string(1) "b"
-}
-
-Warning: session_destroy(): Trying to destroy uninitialized session in %s/tests/set_custom_session_handler2.php on line %d
+%s: SessionHandler::open(): Cannot call session save handler in a recursive manner in %s/tests/set_custom_session_handler2.php on line 8
+%a
