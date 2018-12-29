@@ -439,7 +439,7 @@ or ``is_callable`` with *suspicious* parameters.
 Some PHP applications are using broad rights when using the ``chmod`` function,
 like the infamous ``chmod(777)`` command, effectively making the file writable by everyone.
 Snuffleupagus is preventing this kind of behaviour by restricting the parameters
-than can be passer to ``chmod``.
+than can be passed to ``chmod``.
 
 Arbitrary file inclusion hardening
 """"""""""""""""""""""""""""""""""
