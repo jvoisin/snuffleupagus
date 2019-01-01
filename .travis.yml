@@ -45,6 +45,8 @@ matrix:
     php: nightly
   - env: TARGET="clang php7.3" CC="clang"  # https://bugs.llvm.org/show_bug.cgi?id=9295
     php: '7.3'
+  - env: TARGET="gcc php nightly" CC="gcc"
+    php: nightly
 
 script:
   - 'if [[ ! "${TARGET}" = *"nightly"* ]]; then
