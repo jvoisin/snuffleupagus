@@ -124,7 +124,7 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
                ZSTR_LEN(debase64) - crypto_secretbox_NONCEBYTES - 1 -
                    crypto_secretbox_ZEROBYTES);
 
-  zend_string_release(decrypted);
+  efree(decrypted);
 
   return ZEND_HASH_APPLY_KEEP;
 }
