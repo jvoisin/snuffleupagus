@@ -14,6 +14,10 @@
     <img src="https://travis-ci.org/nbs-system/snuffleupagus.svg?branch=master"
          alt="Travis-ci">
   </a>
+  <a href="https://gitlab.com/jvoisin/snuffleupagus/commits/master">
+		<img src="https://gitlab.com/jvoisin/snuffleupagus/badges/master/pipeline.svg"
+				 alt="gitlab pipeline testing _all_ distributions" />
+	</a>
   <a href="https://scan.coverity.com/projects/nbs-system-snuffleupagus">
 		<img src="https://scan.coverity.com/projects/13821/badge.svg?flat=1"
 				 alt="Coverity">

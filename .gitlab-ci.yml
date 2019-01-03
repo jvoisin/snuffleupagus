@@ -16,6 +16,14 @@ testsuite:fedora:
     - dnf install -y php-devel gcc make
     - make debug
 
+testsuite:ubuntu:
+  image: ubuntu
+  stage: testsuite
+  script:
+    - apt-get -qqy update
+    - DEBIAN_FRONTEND=noninteractive apt-get -qqy install --no-install-recommends php-dev gcc make
+    - make debug
+
 #testsuite:alpine:
 #  image: alpine
 #  stage: testsuite
