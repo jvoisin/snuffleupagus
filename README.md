@@ -1,7 +1,7 @@
 <h1 align="center">
   <br>
   <a href="https://snuffleupagus.readthedocs.io/">
-		<img src="https://github.com/nbs-system/snuffleupagus/raw/master/doc/source/_static/sp.png" alt="Snuffleupagus' logo" width="200"></a>
+    <img src="https://github.com/nbs-system/snuffleupagus/raw/master/doc/source/_static/sp.png" alt="Snuffleupagus' logo" width="200"></a>
   <br>
   Snuffleupagus
   <br>
@@ -15,28 +15,28 @@
          alt="Travis-ci">
   </a>
   <a href="https://gitlab.com/jvoisin/snuffleupagus/commits/master">
-		<img src="https://gitlab.com/jvoisin/snuffleupagus/badges/master/pipeline.svg"
-				 alt="gitlab pipeline testing _all_ distributions" />
-	</a>
+    <img src="https://gitlab.com/jvoisin/snuffleupagus/badges/master/pipeline.svg"
+         alt="gitlab pipeline testing _all_ distributions" />
+  </a>
   <a href="https://scan.coverity.com/projects/nbs-system-snuffleupagus">
-		<img src="https://scan.coverity.com/projects/13821/badge.svg?flat=1"
-				 alt="Coverity">
-	</a>
+    <img src="https://scan.coverity.com/projects/13821/badge.svg?flat=1"
+         alt="Coverity">
+  </a>
   <a href="https://bestpractices.coreinfrastructure.org/projects/1267">
       <img src="https://bestpractices.coreinfrastructure.org/projects/1267/badge"
-					 alt="CII Best Practises">
+           alt="CII Best Practises">
   </a>
   <a href="http://snuffleupagus.readthedocs.io/?badge=latest">
     <img src="https://readthedocs.org/projects/snuffleupagus/badge/?version=latest"
-				 alt="readthedocs.org">
+         alt="readthedocs.org">
   </a>
   <a href="https://coveralls.io/github/nbs-system/snuffleupagus?branch=master">
     <img src="https://coveralls.io/repos/github/nbs-system/snuffleupagus/badge.svg?branch=master"
-				 alt="coveralls">
+         alt="coveralls">
   </a>
   <a href="https://twitter.com/sp_php">
     <img src="https://img.shields.io/badge/twitter-follow-blue.svg"
-				 alt="twitter">
+         alt="twitter">
   </a>
 </p>
 
@@ -44,9 +44,9 @@
   <a href="#key-features">Key Features</a> •
   <a href="#download">Download</a> •
   <a href="#examples">Examples</a> •
-	<a href="https://snuffleupagus.readthedocs.io/">Documentation</a> •
+  <a href="https://snuffleupagus.readthedocs.io/">Documentation</a> •
   <a href="https://github.com/nbs-system/snuffleupagus/blob/master/LICENSE">License</a> •
-	<a href="#thanks">Thanks</a>
+  <a href="#thanks">Thanks</a>
 </p>
 
 Snuffleupagus is a [PHP 7+](https://secure.php.net/) module designed to
@@ -60,21 +60,27 @@ without having to touch the PHP code.
 * Close to zero performance impact
 * Powerful yet simple to write virtual-patching rules
 * Killing several classes of vulnerabilities
-	* [Unserialize-based](https://www.owasp.org/images/9/9e/Utilizing-Code-Reuse-Or-Return-Oriented-Programming-In-PHP-Application-Exploits.pdf) code execution
-	* [`mail`-based]( https://blog.ripstech.com/2016/roundcube-command-execution-via-email/ ) code execution
-	* Cookie-stealing [XSS]( https://en.wikipedia.org/wiki/Cross-site_scripting )
-	* File-upload based code execution
-	* Weak PRNG
-	* [XXE]( https://en.wikipedia.org/wiki/XML_external_entity_attack )
-* Hardening features
-	* Automatic `secure` and `samesite` flag for cookies
-	* Bundled set of rules to detect post-compromissions behaviours
-	* Global [strict mode]( https://secure.php.net/manual/en/migration70.new-features.php#migration70.new-features.scalar-type-declarations) and type-juggling prevention
-	* Whitelisting of [stream wrappers](https://secure.php.net/manual/en/intro.stream.php)
-	* Preventing writeable files execution
-	* Whitelist/blacklist for `eval`
-	* Enforcing TLS certificate validation when using [curl](https://secure.php.net/manual/en/book.curl.php)
-	* Request dumping capability
+  * [Unserialize-based](https://www.owasp.org/images/9/9e/Utilizing-Code-Reuse-Or-Return-Oriented-Programming-In-PHP-Application-Exploits.pdf) code execution
+  * [`mail`-based]( https://blog.ripstech.com/2016/roundcube-command-execution-via-email/ ) code execution
+  * Cookie-stealing [XSS]( https://en.wikipedia.org/wiki/Cross-site_scripting )
+  * File-upload based code execution
+  * Weak PRNG
+  * [XXE]( https://en.wikipedia.org/wiki/XML_external_entity_attack )
+* Several hardening features
+  * Automatic `secure` and `samesite` flag for cookies
+  * Bundled set of rules to detect post-compromissions behaviours
+  * Global [strict mode]( https://secure.php.net/manual/en/migration70.new-features.php#migration70.new-features.scalar-type-declarations) and type-juggling prevention
+  * Whitelisting of [stream wrappers](https://secure.php.net/manual/en/intro.stream.php)
+  * Preventing writeable files execution
+  * Whitelist/blacklist for `eval`
+  * Enforcing TLS certificate validation when using [curl](https://secure.php.net/manual/en/book.curl.php)
+  * Request dumping capability
+* A relatively sane codebase:
+  * A [comprehensive](https://coveralls.io/github/nbs-system/snuffleupagus?branch=master) testsuite
+  * Every commit is tested on [several distributions](https://gitlab.com/jvoisin/snuffleupagus/pipelines)
+  * An `clang-format`-enfored code style
+  * A [comprehensive documentation](https://snuffleupagus.rtfd.io)
+  * Usage of [coverity](https://scan.coverity.com/projects/nbs-system-snuffleupagus)
 
 ## Download
 
