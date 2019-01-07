@@ -1,33 +1,14 @@
 #!/usr/bin/make -f
 
-DH_VERBOSE = 1
+export DH_VERBOSE = 1
 
-DPKG_EXPORT_BUILDFLAGS = 1
-include /usr/share/dpkg/default.mk
+# pkg-pecl.mk contains all we need
+include /usr/share/dh-php/pkg-pecl.mk
 
-export DEB_BUILD_MAINT_OPTIONS = hardening=+all
-
-%:
-	dh $@ 
-
-override_dh_auto_clean:
-	cd ./src; phpize --clean
-
-override_dh_auto_configure:
-	cd ./src; phpize
-	cd ./src; ./configure --enable-snuffleupagus
+PECL_CONFIGURE_MAINT_APPEND = --enable-snuffleupagus
 
 override_dh_auto_build:
 	make -C src
 
-override_dh_auto_install:
-	dh_testdir
-	dh_testroot
-	dh_installdirs
-	mkdir -p debian/snuffleupagus/$$(/usr/bin/php-config --extension-dir)/
-	mkdir -p debian/snuffleupagus/etc/php/$$(/usr/bin/php-config --version | cut -d '.' -f1-2)/mods-available/
-	install -m 644 -o root -g root src/modules/snuffleupagus.so debian/snuffleupagus/$$(/usr/bin/php-config --extension-dir)/snuffleupagus.so
-	install -m 644 -o root -g root config/snuffleupagus.ini debian/snuffleupagus/etc/php/$$(/usr/bin/php-config --version | cut -d '.' -f1-2)/mods-available/snuffleupagus.ini
-
 override_dh_auto_test:
-	TEST_PHP_ARGS="-q" REPORT_EXIST_STATUS=1 make -C src test
+	TEST_PHP_ARGS="-q" REPORT_EXIST_STATUS="1" make -C src test
