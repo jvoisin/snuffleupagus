@@ -6,7 +6,7 @@ env:
 matrix:
   include:
   - env: TARGET="coverity"
-    php: '7.2'
+    php: "7.2"
     script: echo "Coverity, nothing to do."
     after_success: cat /home/travis/build/nbs-system/snuffleupagus/cov-int/scm_log.txt
     before_install: echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
@@ -15,10 +15,10 @@ matrix:
         project:
           name: "nbs-system/snuffleupagus"
           description: "Build submitted via Travis CI"
-        notification_email: devnull@nbs-system.com
+        notification_email: "devnull@nbs-system.com"
         build_command_prepend: "cd src; phpize; ./configure --enable-snuffleupagus; cd -"
         build_command: "make debug -j2"
-        branch_pattern: master
+        branch_pattern: "master"
   - env: TARGET="gcc php7.0" CC="gcc"
     php: "7.0"
   - env: TARGET="gcc php7.1" CC="gcc"
@@ -29,10 +29,10 @@ matrix:
   - env: TARGET="gcc php7.3" CC="gcc"
     php: "7.3"
   - env: TARGET="gcc php nightly" CC="gcc"
-    php: nightly
+    php: "nightly"
   allow_failures:
   - env: TARGET="gcc php nightly" CC="gcc"
-    php: nightly
+    php: "nightly"
 
 script:
   - if [[ "${TARGET}" != *nightly* ]]; then pecl install vld-beta; fi
