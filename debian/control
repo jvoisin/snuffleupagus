@@ -9,6 +9,6 @@ Vcs-Git: https://github.com/nbs-system/snuffleupagus
 
 Package: snuffleupagus
 Architecture: any
-Depends: ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Hardening for your php7 stack
 	Snuffleupagus is cool
