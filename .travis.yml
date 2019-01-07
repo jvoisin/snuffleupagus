@@ -20,14 +20,14 @@ matrix:
         build_command: "make debug -j2"
         branch_pattern: master
   - env: TARGET="gcc php7.0" CC="gcc"
-    php: '7.0'
+    php: "7.0"
   - env: TARGET="gcc php7.1" CC="gcc"
-    php: '7.1'
+    php: "7.1"
   - env: TARGET="gcc php7.2" CC="gcc"
     before_install: pip install --user cpp-coveralls
-    php: '7.2'
+    php: "7.2"
   - env: TARGET="gcc php7.3" CC="gcc"
-    php: '7.3'
+    php: "7.3"
   - env: TARGET="gcc php nightly" CC="gcc"
     php: nightly
   allow_failures:
@@ -35,26 +35,25 @@ matrix:
     php: nightly
 
 script:
-  - 'if [[ ! "${TARGET}" = *"nightly"* ]]; then
-      pecl install vld-beta ;
-    fi'
-  - cd src
+  - if [[ "${TARGET}" != *nightly* ]]; then pecl install vld-beta; fi
+  - cd src/
   - phpize
   - ./configure --enable-snuffleupagus --enable-coverage
   - make -j 2
-  - TEST_PHP_ARGS="-q" REPORT_EXIT_STATUS=1 make test
+  - TEST_PHP_ARGS="-q" REPORT_EXIT_STATUS="1" make test
 
 after_success:
-  - 'if [ "${TARGET}" = "gcc php7.2" ]; then
+  - |
+    if [ "${TARGET}" == "gcc php7.2" ]; then
       cd ../
-      git clone https://github.com/linux-test-project/lcov.git --depth 1 ;
-      rm -rf ./lcov/examples/ ./lcov/test/ ;
-      ./lcov/bin/lcov -c -o ./src/COV.info --rc lcov_branch_coverage=1 --base-directory ./src/ --directory . ;
-      ./lcov/bin/lcov --remove ./src/COV.info "/usr/*" --remove ./src/COV.info "./src/*tweetnacl.c" -o ./src/COV.info --rc lcov_branch_coverage=1 ;
-      ./lcov/bin/genhtml -o ./src/COV.html ./src/COV.info  --branch-coverage ;
-      coveralls --exclude "./src/tweetnacl.c" ;
-    fi'
+      git clone --depth 1 https://github.com/linux-test-project/lcov.git
+      rm -rf ./lcov/examples/ ./lcov/test/
+      ./lcov/bin/lcov -c -o ./src/COV.info --rc lcov_branch_coverage=1 --base-directory ./src/ --directory .
+      ./lcov/bin/lcov --remove ./src/COV.info "/usr/*" --remove ./src/COV.info "./src/*tweetnacl.c" -o ./src/COV.info --rc lcov_branch_coverage=1
+      ./lcov/bin/genhtml -o ./src/COV.html ./src/COV.info  --branch-coverage
+      coveralls --exclude "./src/tweetnacl.c"
+    fi
 
 after_failure:
-  - grep -r . ./tests/*.out
-  - grep -r . ./tests/*.diff
+  - grep -r '.' ./tests/*.out
+  - grep -r '.' ./tests/*.diff
