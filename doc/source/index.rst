@@ -19,7 +19,7 @@ Documentation
    changelog
    faq
    papers
-   encryption
+   cookies
 
 Greetings
 ---------
