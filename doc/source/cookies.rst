@@ -25,11 +25,12 @@ It can either be ``enabled`` or ``disabled``.
 cookie_samesite
 """""""""""""""
  
-:ref:`samesite <samesite-feature>`, disabled by default, will add the `samesite
+:ref:`samesite <samesite-feature>`, disabled by default, adds the `samesite
 <https://tools.ietf.org/html/draft-west-first-party-cookies-07>`_ attribute to
 cookies. It `prevents CSRF <https://www.owasp.org/index.php/SameSite>`_ but is
 not implemented by `all web browsers <https://caniuse.com/#search=samesite>`_
-yet.
+yet. Note that this is orthogonal to `PHP7.3+ SameSite support
+<https://wiki.php.net/rfc/same-site-cookie>`__.
 
 It can either be set to ``strict`` or ``lax``:
 
