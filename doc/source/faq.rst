@@ -93,8 +93,8 @@ How mature is this project?
 """""""""""""""""""""""""""
 
 This project has been floating around since early 2016 and we did the first commit
-the 28ᵗʰ of December of the same year. We're currently in an alpha phase,
-finding and fixing as many bugs as possible before the beta.
+the 28ᵗʰ of December of the same year. We're currently in an beta phase,
+finding and fixing as many bugs as possible before declaring it stable.
 
 Are you saying that PHP isn't secure?
 """""""""""""""""""""""""""""""""""""
