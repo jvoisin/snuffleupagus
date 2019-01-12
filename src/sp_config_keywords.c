@@ -40,6 +40,18 @@ int parse_session(char *line) {
   if (0 != ret) {
     return ret;
   }
+
+#if ( !HAVE_PHP_SESSION || defined(COMPILE_DL_SESSION) )
+  sp_log_err("config",
+      "You're trying to use the session cookie encryption feature "
+      "on line %zu without having session support statically built into PHP. "
+      "This isn't supported, see "
+      "https://github.com/nbs-system/snuffleupagus/issues/278 for details.",
+      sp_line_no);
+  pefree(session, 0);
+  return -1;
+#endif
+
   if (session->encrypt) {
     if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)) {
       sp_log_err(
