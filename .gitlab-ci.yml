@@ -24,10 +24,10 @@ testsuite:ubuntu:
     - DEBIAN_FRONTEND=noninteractive apt-get -qqy install --no-install-recommends php-dev gcc make
     - make debug
 
-#testsuite:alpine:
-#  image: alpine
-#  stage: testsuite
-#  script:
-#    - apk update
-#    - apk add php7-dev make gcc musl-dev
-#    - make debug
+testsuite:alpine:
+  image: alpine
+  stage: testsuite
+  script:
+    - apk update
+    - apk add php7-dev make gcc musl-dev
+    - make compile_debug
