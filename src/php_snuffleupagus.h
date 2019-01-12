@@ -26,6 +26,9 @@
 #include "zend_extensions.h"
 
 /* Compatibility */
+#if ( !HAVE_PCRE && !HAVE_BUNDLED_PCRE )
+#error Snuffleupagus requires PHP7+ with PCRE support
+#endif
 #if PHP_VERSION_ID < 70000
 #error Snuffleupagus only works with PHP7+. You shouldn't use PHP5 anyway, \
   since it's not supported anymore: https://secure.php.net/supported-versions.php
