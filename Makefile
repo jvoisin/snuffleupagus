@@ -13,10 +13,12 @@ release:  ## compile with releases flags
 install: release  ## compile and install snuffleupagus
 	make -C src install
 
-debug: ## compile a debug build
+compile_debug:  ## compile a debug build
 	cd src; phpize
 	export CFLAGS="-g3 -ggdb -O1 -g"; cd src; ./configure --enable-snuffleupagus --enable-debug
 	make -C src
+
+debug: compile_debug ## compile and run a debug build
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test
 
 coverage:  ## compile snuffleugpaus, and run the testsuite with coverage
