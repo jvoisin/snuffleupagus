@@ -28,7 +28,7 @@ not matching_one
 one
 two
 
-Warning: [snuffleupagus][disabled_function] Aborted execution on return of the function 'two', because the function returned 'matching_two', which matched a rule in %a/tests/disabled_functions_chain_call_user_func_ret.php on line %d
+Warning: [snuffleupagus][disabled_function] Aborted execution on return of the function 'two', because the function returned 'matching_two', which matched a rule in %a/disabled_functions_chain_call_user_func_ret.php on line %d
 matching_one
 one
 two
