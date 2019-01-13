@@ -31,3 +31,4 @@ testsuite:alpine:
     - apk update
     - apk add php7-dev make gcc musl-dev
     - make compile_debug
+    - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/disable_function"
