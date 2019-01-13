@@ -23,6 +23,6 @@ if ($ret == TRUE) {
 var_dump($_COOKIE);
 ?>
 --EXPECTF--
-Warning: Cookie names must not be empty in %a/tests/encrypt_cookies4.php on line %d
+Warning: Cookie names must not be empty in %a/encrypt_cookies4.php on line %d
 array(0) {
 }
