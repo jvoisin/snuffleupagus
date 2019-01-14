@@ -29,9 +29,9 @@ testsuite:alpine:
   stage: testsuite
   script:
     - apk update
-    - apk add php7-dev make gcc musl-dev
+    - apk add php7-dev php7-simplexml php7-xml make gcc musl-dev
     - make compile_debug
     - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/cookies_encryption tests/deny_writable tests/disable_function"
-    - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="test/dump_request tests/eval_blacklist tests/global_strict"
-    - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/harden_rand tests/sloppy_comparison tests/stream_wrappers"
-    - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/unserialize tests/xxe"
+    - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/dump_request tests/eval_blacklist tests/global_strict"
+    - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/harden_rand tests/sloppy_comparison tests/stream_wrapper"
+    - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/unserialize tests/xx tests/xxee"
