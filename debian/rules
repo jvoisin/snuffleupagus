@@ -6,6 +6,7 @@ export DH_VERBOSE = 1
 include /usr/share/dh-php/pkg-pecl.mk
 
 PECL_CONFIGURE_MAINT_APPEND = --enable-snuffleupagus
+PECL_NAME_OVERRIDE = php-snuffleupagus
 
 override_dh_auto_build:
 	make -C src
