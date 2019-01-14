@@ -3,7 +3,7 @@ Unserialize fail
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
-sp.configuration_file={PWD}/config/config_serialize.ini
+sp.configuration_file={PWD}/../../config/default.rules
 --FILE--
 <?php 
 ob_start () ;
