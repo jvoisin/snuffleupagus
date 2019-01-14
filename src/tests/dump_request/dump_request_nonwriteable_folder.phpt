@@ -33,6 +33,6 @@ echo "2\n";
 --EXPECTF--
 1
 
-Warning: [snuffleupagus][request_logging] Unable to open %a: Permission denied in %a/tests/dump_request_nonwriteable_folder.php on line %d
+Warning: [snuffleupagus][request_logging] Unable to open %a: Permission denied in %a/dump_request_nonwriteable_folder.php on line %d
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'system' in %a/tests/dump_request_nonwriteable_folder.php on line 3
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'system' in %a/dump_request_nonwriteable_folder.php on line 3
