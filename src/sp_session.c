@@ -1,7 +1,7 @@
 #include "php_snuffleupagus.h"
 #include "ext/session/php_session.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus);
+ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 #if ( HAVE_PHP_SESSION && !defined(COMPILE_DL_SESSION) )
 
