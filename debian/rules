@@ -8,7 +8,7 @@ include /usr/share/dpkg/default.mk
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
 %:
-	dh $@ 
+	dh $@ --sourcedirectory src --with php
 
 override_dh_auto_clean:
 	cd ./src; phpize --clean
@@ -16,9 +16,6 @@ override_dh_auto_clean:
 override_dh_auto_configure:
 	cd ./src; phpize
 	cd ./src; ./configure --enable-snuffleupagus
-
-override_dh_auto_build:
-	make -C src
 
 override_dh_auto_install:
 	dh_testdir
@@ -28,6 +25,6 @@ override_dh_auto_install:
 	mkdir -p debian/snuffleupagus/etc/php/$$(/usr/bin/php-config --version | cut -d '.' -f1-2)/mods-available/
 	install -m 644 -o root -g root src/modules/snuffleupagus.so debian/snuffleupagus/$$(/usr/bin/php-config --extension-dir)/snuffleupagus.so
 	install -m 644 -o root -g root config/snuffleupagus.ini debian/snuffleupagus/etc/php/$$(/usr/bin/php-config --version | cut -d '.' -f1-2)/mods-available/snuffleupagus.ini
-
+ 
 override_dh_auto_test:
 	TEST_PHP_ARGS="-q" REPORT_EXIST_STATUS=1 make -C src test
