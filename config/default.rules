@@ -1,10 +1,36 @@
+# This is the default configuration file for Snuffleupagus (https://snuffleupagus.rtfd.io).
+# It contains "reasonable" defaults that won't break your websites,
+# and a lot of commented directives that you can enable if you want to 
+# have a better protection.
+
 # Harden the PRNG
 sp.harden_random.enable();
 
 # Disabled XXE
 sp.disable_xxe.enable();
 
+# Global configuration variables
+# sp.global.secret_key("YOU _DO_ NEED TO CHANGE THIS WITH SOME RANDOM CHARACTERS.");
+
+# Globally activate strict mode
+# https://secure.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.strict
+# sp.global_strict.enable();
+
+# Prevent unserialize-related exploits
+# sp.unserialize_hmac.enable();
+
+# Only allow execution of read-only files. This is a low-hanging fruit that you should enable.
+# sp.readonly_exec.enable();
+
+# Php has a lot of wrappers, most of them aren't usually useful, you should 
+# only enable the ones you're using.
+# sp.wrappers_whitelist.list("file,php,phar");
+
+# Prevent sloppy comparisons.
+# sp.sloppy_comparison.enable();
+
 # use SameSite on session cookie
+# https://snuffleupagus.readthedocs.io/features.html#protection-against-cross-site-request-forgery
 sp.cookie.name("PHPSESSID").samesite("lax");
 
 # Harden the `chmod` function
