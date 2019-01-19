@@ -49,7 +49,7 @@ To sum up, you should put this in your ``php.ini``:
 ::
 
   module=snuffleupagus.so
-  sp.configuration_file=/path/to/your/snufflepagus/rules/file.rules
+  sp.configuration_file=/path/to/your/snuffleupagus/rules/file.rules
 
 And the **snuffleupagus rules** into the ``.rules`` files.
 
