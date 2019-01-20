@@ -386,6 +386,11 @@ it's broadly (mis)used all around the web.
 Snuffleupagus provides a white and blacklist mechanism, to explicitly allow
 and forbid specific functions call from being issued inside ``eval``.
 
+While it's heavily recommended to only use the whitelist feature, the blacklist
+one exists because some adminsys might want to use it to catch automated
+script-kiddies attacks, while being confident that doing so won't break a
+single website.
+
 .. _samesite-feature:
 
 Protection against cross site request forgery
