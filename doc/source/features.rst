@@ -309,7 +309,7 @@ be raised if the types aren't matching.
 are optional, but you don't have to use them in your code to benefit from them,
 since every internal function from php has them.
 
-This option provide a switch to globally activate this strict mode,
+This option provides a switch to globally activate this strict mode,
 helping to uncover vulnerabilities like the classical
 `strcmp bypass <https://danuxx.blogspot.fr/2013/03/unauthorized-access-bypassing-php-strcmp.html>`_
 and various other types mismatch.
@@ -384,10 +384,10 @@ besides templating and building mathematical expressions based on user input,
 it's broadly (mis)used all around the web.
 
 Snuffleupagus provides a white and blacklist mechanism, to explicitly allow
-and forbid specific functions call from being issued inside ``eval``.
+and forbid specific function calls from being issued inside ``eval``.
 
 While it's heavily recommended to only use the whitelist feature, the blacklist
-one exists because some adminsys might want to use it to catch automated
+one exists because some sysadmins might want to use it to catch automated
 script-kiddies attacks, while being confident that doing so won't break a
 single website.
 
