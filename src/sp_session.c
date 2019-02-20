@@ -3,7 +3,7 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-#if ( HAVE_PHP_SESSION && !defined(COMPILE_DL_SESSION) )
+#if (HAVE_PHP_SESSION && !defined(COMPILE_DL_SESSION))
 
 #ifdef ZTS
 static ts_rsrc_id session_globals_id = 0;
@@ -165,6 +165,6 @@ void hook_session() {
 
 #else
 
-void hook_session() { }
+void hook_session() {}
 
 #endif  // HAVE_PHP_SESSION && !defined(COMPILE_DL_SESSION)

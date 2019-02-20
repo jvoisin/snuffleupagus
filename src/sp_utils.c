@@ -344,7 +344,9 @@ int hook_function(const char* original_name, HashTable* hook_table,
     }
   }
 
+#if PHP_VERSION_ID < 80000
   CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
+#endif
 
   if (0 == strncmp(original_name, "mb_", 3) && !CG(multibyte)) {
     if (zend_hash_str_find(CG(function_table),

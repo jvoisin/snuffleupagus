@@ -41,8 +41,9 @@ int parse_session(char *line) {
     return ret;
   }
 
-#if ( !HAVE_PHP_SESSION || defined(COMPILE_DL_SESSION) )
-  sp_log_err("config",
+#if (!HAVE_PHP_SESSION || defined(COMPILE_DL_SESSION))
+  sp_log_err(
+      "config",
       "You're trying to use the session cookie encryption feature "
       "on line %zu without having session support statically built into PHP. "
       "This isn't supported, see "
