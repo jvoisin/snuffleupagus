@@ -371,11 +371,8 @@ static void should_disable(zend_execute_data* execute_data,
     }
 
     if (config_node->r_value || config_node->value) {
-      if (check_is_builtin_name(config_node) &&
-          !config_node->var &&
-          !config_node->key &&
-          !config_node->r_key &&
-          !config_node->param &&
+      if (check_is_builtin_name(config_node) && !config_node->var &&
+          !config_node->key && !config_node->r_key && !config_node->param &&
           !config_node->r_param) {
         if (false == is_param_matching(execute_data, config_node, builtin_param,
                                        &arg_name, builtin_param_name,

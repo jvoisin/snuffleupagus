@@ -43,20 +43,21 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
   zval func_name;
   zval params[3];
   zval *value, *array = NULL;
-  zend_bool strict = 1;
+  zend_bool strict = 0;
+  uint32_t nb_params = ZEND_NUM_ARGS();
 
-  memset(&params, 0, sizeof(params));
-
-  zend_parse_parameters(ZEND_NUM_ARGS(), spec, &value, &array, &strict);
+  zend_parse_parameters(nb_params, spec, &value, &array, &strict);
 
   ZVAL_COPY(&params[0], value);
+  ZVAL_BOOL(&params[2], 1);  // we want to always have strict mode enabled
+
   if (array) {
     ZVAL_COPY(&params[1], array);
-    ZVAL_BOOL(&params[2], 1);
+    // Lie about the number of parameters,
+    // since we are always passing strict = 1
+    nb_params = 3;
   } else {
-    // if there is no array as parameter, don't set strict mode.
-    // check php's implementation for details.
-    ZVAL_BOOL(&params[2], 0);
+    ZVAL_NULL(&params[1]);
   }
 
   ZVAL_STRING(&func_name, name);
@@ -67,8 +68,8 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
       zend_hash_str_find_ptr(CG(function_table), name, size);
   func->handler = handler;
 
-  call_user_function(CG(function_table), NULL, &func_name, return_value, 3,
-                     params);
+  call_user_function(CG(function_table), NULL, &func_name, return_value,
+                     nb_params, params);
 
   func->handler = orig_handler;
 }
