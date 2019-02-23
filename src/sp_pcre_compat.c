@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-#include "sp_pcre_compat.h"
-
 sp_pcre* sp_pcre_compile(const char* const pattern) {
   sp_pcre* ret = NULL;
 #ifdef SP_HAS_PCRE2

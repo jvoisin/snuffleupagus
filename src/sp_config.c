@@ -1,9 +1,6 @@
-#include <errno.h>
 #if defined(__FreeBSD__)
 #define _WITH_GETLINE
 #endif
-#include <stdio.h>
-#include <string.h>
 
 #include "php_snuffleupagus.h"
 

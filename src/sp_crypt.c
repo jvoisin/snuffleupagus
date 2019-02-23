@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-#include "ext/standard/url.h"
-
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 void generate_key(unsigned char *key) {

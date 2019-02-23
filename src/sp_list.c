@@ -1,6 +1,3 @@
-#include "sp_list.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include "php_snuffleupagus.h"
 
 void sp_list_free(sp_list_node *node) {

@@ -1,11 +1,5 @@
 #include "php_snuffleupagus.h"
 
-#include <fcntl.h>
-#include <inttypes.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 

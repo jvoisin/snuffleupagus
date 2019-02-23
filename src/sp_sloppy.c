@@ -1,5 +1,4 @@
 #include "php_snuffleupagus.h"
-#include "sp_sloppy.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 

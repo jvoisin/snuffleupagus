@@ -1,5 +1,4 @@
 #include "php_snuffleupagus.h"
-#include "rfc1867.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 

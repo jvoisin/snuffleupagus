@@ -7,23 +7,39 @@
 #define PHP_SNUFFLEUPAGUS_URL "https://github.com/nbs-system/snuffleupagus"
 #define PHP_SNUFFLEUPAGUS_COPYRIGHT "LGPLv2"
 
+#include <errno.h>
+#include <fcntl.h>
+#include <inttypes.h>
+#include <pcre.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
-#include <pcre.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
 #include "SAPI.h"
+#include "ext/session/php_session.h"
+#include "ext/standard/head.h"
 #include "ext/standard/info.h"
+#include "ext/standard/url.h"
 #include "ext/standard/php_var.h"
 #include "ext/pcre/php_pcre.h"
 #include "ext/session/php_session.h"
 #include "php.h"
 #include "php_ini.h"
+#include "rfc1867.h"
+#include "zend_execute.h"
+#include "zend_extensions.h"
 #include "zend_hash.h"
 #include "zend_string.h"
-#include "zend_extensions.h"
+#include "zend_types.h"
+#include "zend_vm.h"
 
 /* Compatibility */
 #if ( !HAVE_PCRE && !HAVE_BUNDLED_PCRE )

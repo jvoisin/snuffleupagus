@@ -9,7 +9,6 @@
 #endif
 
 #include "php_snuffleupagus.h"
-#include "sp_config.h"
 
 #ifndef ZEND_EXT_API
 #define ZEND_EXT_API ZEND_DLEXPORT
