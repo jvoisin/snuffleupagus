@@ -8,7 +8,7 @@ sp.configuration_file={PWD}/config/disabled_function_local_var.ini
 <?php
 namespace asd {
 function test(){
-  strlen("qwe");
+  strtoupper("qwe");
 }
 echo "Valeur: " . \asd\test_object::TEST_VALUE . "\n";
 test();
@@ -29,4 +29,4 @@ class test_object {
 --EXPECTF--
 Valeur: qwerty
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_function_local_var_7.php on line 4
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_7.php on line 4

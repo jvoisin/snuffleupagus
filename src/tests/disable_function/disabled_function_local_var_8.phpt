@@ -12,10 +12,10 @@ namespace qwe {
 namespace asd {
   const asd = 'qwe';
   echo "Valeur: " . \qwe\ASD . "\n";
-  strlen("qwe");
+  strtoupper("qwe");
 }
 ?>
 --EXPECTF--
 Valeur: qwerty
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_function_local_var_8.php on line 8
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_8.php on line 8

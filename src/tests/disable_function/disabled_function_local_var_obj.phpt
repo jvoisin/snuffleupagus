@@ -16,11 +16,11 @@ class test_class {
 $test_array = ['qwe'];
 $arg = 'qwe';
 $test = new test_class('qwe', 'qwe');
-echo strlen($test->$arg) . "\n";
+echo strtoupper($test->$arg) . "\n";
 $test = new test_class('qwe', 'nop_object');
-echo strlen($test->$arg) . "\n";
+echo strtoupper($test->$arg) . "\n";
 ?>
 --EXPECTF--
-3
+QWE
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_function_local_var_obj.php on line 14
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_obj.php on line 14

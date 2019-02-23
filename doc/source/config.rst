@@ -342,6 +342,8 @@ It's currently not possible to:
   without hooking the other, at least
   `for now <https://github.com/nbs-system/snuffleupagus/issues/190>`__).
   This is why hooked ``print`` will be displayed as ``echo`` in the logs.
+- Hook `strlen`, since in latest PHP versions, this function is usually
+  optimized away by the compiled.
 
 
 Examples

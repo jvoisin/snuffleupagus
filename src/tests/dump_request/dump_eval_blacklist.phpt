@@ -19,9 +19,9 @@ foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
     @unlink($dump);
 }
 
-$a = strlen("1337 1337 1337");
+$a = strtoupper("1337 1337 1337");
 echo "Outside of eval: $a\n";
-eval('$a = strlen("1234");');
+eval('$a = strtoupper("1234");');
 echo "After eval: $a\n";
 $filename = glob('/tmp/dump_result/sp_dump.*')[0];
 $res = file($filename);
@@ -34,7 +34,7 @@ if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
 }
 ?>
 --EXPECTF--
-Outside of eval: 14
+Outside of eval: 1337 1337 1337
 
-Warning: [snuffleupagus][eval] A call to strlen was tried in eval, in %a/dump_eval_blacklist.php:1, logging it. in %a/dump_eval_blacklist.php(9) : eval()'d code on line 1
-After eval: 4
+Warning: [snuffleupagus][eval] A call to strtoupper was tried in eval, in %a/dump_eval_blacklist.php:1, logging it. in %a/dump_eval_blacklist.php(9) : eval()'d code on line 1
+After eval: 1234

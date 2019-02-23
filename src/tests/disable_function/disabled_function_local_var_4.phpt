@@ -40,7 +40,7 @@ class test_object {
 $d = new test_object($c);
 $a = 1338;
 function test(){
-  strlen("qwe");
+  strtoupper("qwe");
 }
 echo "Valeur: " . $b['_GET]["obj->nop::qwe']["qwe"][$a]->uio . "\n";
 test();
@@ -54,4 +54,4 @@ test();
 Valeur: valeur de a
 Valeur: valeur de apres
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_function_local_var_4.php on line 36
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_4.php on line 36

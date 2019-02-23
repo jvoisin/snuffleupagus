@@ -8,9 +8,9 @@ sp.configuration_file={PWD}/config/eval_backlist.ini
 <?php 
 eval('
 	cos(1);
-	strlen(2);
+	strtoupper(2);
 	sin(3);
 ')
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][eval] A call to strlen was tried in eval, in %s/eval_backlist_chained.php:%d, dropping it. in %s/eval_backlist_chained.php(%d) : eval()'d code on line %d
+Fatal error: [snuffleupagus][eval] A call to strtoupper was tried in eval, in %s/eval_backlist_chained.php:%d, dropping it. in %s/eval_backlist_chained.php(%d) : eval()'d code on line %d

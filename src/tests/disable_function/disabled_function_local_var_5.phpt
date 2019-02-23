@@ -7,7 +7,7 @@ sp.configuration_file={PWD}/config/disabled_function_local_var.ini
 --FILE--
 <?php 
 function test(){
-    echo strlen("id") . "\n";
+    echo strtoupper("id") . "\n";
 }
 
 $a = Array();
@@ -24,11 +24,11 @@ test();
 Value of a:
 array(0) {
 }
-2
+ID
 Value of a:
 object(stdClass)#1 (1) {
   ["zxc"]=>
   string(16) "not a good value"
 }
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_function_local_var_5.php on line 3
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_5.php on line 3

@@ -8,10 +8,10 @@ sp.configuration_file={PWD}/config/disabled_function_local_var.ini
 <?php
 $qwe = Array('123' => Array('qwe'), '456' => Array('no block this'));
 var_dump($qwe);
-strlen("qwe");
+strtoupper("qwe");
 $qwe = Array('123' => Array('qwe'), '456' => Array(Array('block this')));
 var_dump($qwe);
-strlen("qwe");
+strtoupper("qwe");
 ?>
 --EXPECTF--
 array(2) {
@@ -42,4 +42,4 @@ array(2) {
   }
 }
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_function_local_var_10.php on line 7
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_10.php on line 7

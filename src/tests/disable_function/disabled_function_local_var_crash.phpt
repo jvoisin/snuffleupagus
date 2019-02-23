@@ -7,12 +7,12 @@ sp.configuration_file={PWD}/config/disabled_function_local_var.ini
 --FILE--
 <?php 
 function test(){
-    echo strlen("id") . "\n";
+    echo strtoupper("id") . "\n";
 }
 ob_start(test());
 echo "test\n";
 ?>
 --EXPECTF--
-2
+ID
 test
 

@@ -8,7 +8,7 @@ sp.configuration_file={PWD}/config/disabled_function_local_var_const.ini
 <?php
 $a = 1337;
 define("MY_CONST", $a);
-strlen("test");
+strtoupper("test");
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_function_local_var_const.php on line 4
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_const.php on line 4

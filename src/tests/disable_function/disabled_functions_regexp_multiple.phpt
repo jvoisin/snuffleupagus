@@ -6,13 +6,13 @@ Disable functions
 sp.configuration_file={PWD}/config/disabled_functions_regexp.ini
 --FILE--
 <?php 
-echo strlen("id") . "\n";
+echo strtoupper("id") . "\n";
 echo strcmp("1", "2") . "\n";
 print("After") . "\n";
 ?>
 --EXPECTF--
-Warning: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strlen' in %a/disabled_functions_regexp_multiple.php on line 2
-2
+Warning: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_functions_regexp_multiple.php on line 2
+ID
 
 Warning: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strcmp' in %a/disabled_functions_regexp_multiple.php on line 3
 -1

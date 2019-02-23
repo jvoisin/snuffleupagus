@@ -6,7 +6,7 @@ Disable functions check on `ret` by type matching (long).
 sp.configuration_file={PWD}/config/disabled_functions_ret_type_long.ini
 --FILE--
 <?php 
-echo strlen("pouet") . "\n";
+echo strpos("pouet", "o") . "\n";
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on return of the function 'strlen', because the function returned '5', which matched the rule 'Return value is a long' in %a/disabled_functions_ret_type_long.php on line 2
+Fatal error: [snuffleupagus][disabled_function] Aborted execution on return of the function 'strpos', because the function returned '1', which matched the rule 'Return value is a long' in %a/disabled_functions_ret_type_long.php on line 2
