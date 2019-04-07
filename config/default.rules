@@ -42,6 +42,13 @@ sp.disable_function.function("mail").param("additional_parameters").value_r("\\-
 # Since it's now burned, me might as well mitigate it publicly
 sp.disable_function.function("putenv").param("setting").value_r("LD_").drop()
 
+# This is also burned:
+# ini_set('open_basedir','..');chdir('..');…;chdir('..');ini_set('open_basedir','/');echo(file_get_contents('/etc/passwd'));
+# Since we have no way of matching on two parameters at the same time, we're
+# blocking calls to open_basedir altogether: nobody is using it via ini_set anyway.
+# Moreover, there are non-public bypasses that are also using this vector ;)
+sp.disable_function.function("ini_set").param("varname").value_r("open_basedir").drop()
+
 ##Prevent various `include`-related vulnerabilities
 sp.disable_function.function("require_once").value_r("\.(inc|phtml|php)$").allow();
 sp.disable_function.function("include_once").value_r("\.(inc|phtml|php)$").allow();
