@@ -33,7 +33,7 @@ matrix:
   - env: TARGET="gcc php nightly novld" CC="gcc"
     php: "nightly"
   allow_failures:
-  - env: TARGET="gcc php nightly" CC="gcc"
+  - env: TARGET="gcc php nightly novld" CC="gcc"
     php: "nightly"
 
 script:
