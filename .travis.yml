@@ -28,16 +28,16 @@ matrix:
     php: "7.2"
   - env: TARGET="gcc php7.3" CC="gcc"
     php: "7.3"
-  - env: TARGET="gcc php7.3" CC="gcc"
+  - env: TARGET="gcc php7.4 novld" CC="gcc"
     php: "7.4snapshot"
-  - env: TARGET="gcc php nightly" CC="gcc"
+  - env: TARGET="gcc php nightly novld" CC="gcc"
     php: "nightly"
   allow_failures:
   - env: TARGET="gcc php nightly" CC="gcc"
     php: "nightly"
 
 script:
-  - if [[ ! "${TARGET}" = *"nightly"* ]]; then pecl install vld-beta ; fi
+  - if [[ ! "${TARGET}" = *"novld"* ]]; then pecl install vld-beta ; fi
   - cd src/
   - phpize
   - ./configure --enable-snuffleupagus --enable-coverage
