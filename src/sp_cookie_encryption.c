@@ -1,6 +1,5 @@
 #include "php_snuffleupagus.h"
 
-
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 static inline const sp_cookie *sp_lookup_cookie_config(const zend_string *key) {
@@ -40,6 +39,54 @@ static zend_string *encrypt_data(zend_string *data) {
   return z;
 }
 
+#if PHP_VERSION_ID >= 70300
+static void php_head_parse_cookie_options_array(
+    zval *options, zend_long *expires, zend_string **path, zend_string **domain,
+    zend_bool *secure, zend_bool *httponly, zend_string **samesite) {
+  int found = 0;
+  zend_string *key;
+  zval *value;
+
+  ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(options), key, value) {
+    if (key) {
+      if (zend_string_equals_literal_ci(key, "expires")) {
+        *expires = zval_get_long(value);
+        found++;
+      } else if (zend_string_equals_literal_ci(key, "path")) {
+        *path = zval_get_string(value);
+        found++;
+      } else if (zend_string_equals_literal_ci(key, "domain")) {
+        *domain = zval_get_string(value);
+        found++;
+      } else if (zend_string_equals_literal_ci(key, "secure")) {
+        *secure = zval_is_true(value);
+        found++;
+      } else if (zend_string_equals_literal_ci(key, "httponly")) {
+        *httponly = zval_is_true(value);
+        found++;
+      } else if (zend_string_equals_literal_ci(key, "samesite")) {
+        *samesite = zval_get_string(value);
+        found++;
+      } else {
+        php_error_docref(NULL, E_WARNING,
+                         "Unrecognized key '%s' found in the options array",
+                         ZSTR_VAL(key));
+      }
+    } else {
+      php_error_docref(NULL, E_WARNING,
+                       "Numeric key found in the options array");
+    }
+  }
+  ZEND_HASH_FOREACH_END();
+
+  /* Array is not empty but no valid keys were found */
+  if (found == 0 && zend_hash_num_elements(Z_ARRVAL_P(options)) > 0) {
+    php_error_docref(NULL, E_WARNING,
+                     "No valid options were found in the given array");
+  }
+}
+#endif
+
 PHP_FUNCTION(sp_setcookie) {
   zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL,
               *value_enc = NULL,
@@ -50,6 +97,7 @@ PHP_FUNCTION(sp_setcookie) {
 #endif
 
   zend_long expires = 0;
+  zval *expires_or_options = NULL;
   zend_bool secure = 0, httponly = 0;
   const sp_cookie *cookie_node = NULL;
   char *cookie_samesite;
@@ -59,13 +107,32 @@ PHP_FUNCTION(sp_setcookie) {
   Z_PARAM_STR(name)
   Z_PARAM_OPTIONAL
   Z_PARAM_STR(value)
-  Z_PARAM_LONG(expires)
+  Z_PARAM_ZVAL(expires_or_options)
   Z_PARAM_STR(path)
   Z_PARAM_STR(domain)
   Z_PARAM_BOOL(secure)
   Z_PARAM_BOOL(httponly)
   ZEND_PARSE_PARAMETERS_END();
   // LCOV_EXCL_BR_END
+
+  if (expires_or_options) {
+#if PHP_VERSION_ID < 70300
+    expires = zval_get_long(expires_or_options);
+#else
+    if (Z_TYPE_P(expires_or_options) == IS_ARRAY) {
+      if (UNEXPECTED(ZEND_NUM_ARGS() > 3)) {
+        php_error_docref(NULL, E_WARNING,
+                         "Cannot pass arguments after the options array");
+        RETURN_FALSE;
+      }
+      php_head_parse_cookie_options_array(expires_or_options, &expires, &path,
+                                          &domain, &secure, &httponly,
+                                          &samesite);
+    } else {
+      expires = zval_get_long(expires_or_options);
+    }
+#endif
+  }
 
   /* If the request was issued over HTTPS, the cookie should be "secure" */
   if (SNUFFLEUPAGUS_G(config).config_auto_cookie_secure) {
