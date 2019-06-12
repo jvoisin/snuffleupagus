@@ -1,5 +1,25 @@
+snuffleupagus (0.5.0) UNRELEASED; urgency=medium
+
+  [ kkadosh ]
+  * Tighten a bit a command-injection prevention rule in the default rules set
+  * Increased the portability of the testsuite
+  * Improved documentation
+  * Usual code cleanup
+  * Snuffleupagus will throw an informative error when compiled for PHP5
+  * Snuffleupagus will throw an informative error when compiled for PHP5
+  * The testsuite is now run on Alpine, Fedora, Debian and Ubuntu
+  * Some rules against now-known vulnerabilities/techniques were added
+  * PHP7.4 is fully supported, without any compilation warning
+  * Snuffleupagus can now be used with PHP compiled without sessions support as a builtin (which is the case on Alpine)
+  * Fix a compilation warning on FreeBSD
+  * Cookies hardening is now supported on PHP7.3+
+
+
+ -- kkadosh <snuffleupagus@nbs-system.com>  Wed, 12 Jun 2019 16:40:00 +0200
+
 snuffleupagus (0.4.1) UNRELEASED; urgency=medium
 
+  [ kkadosh ]
   * Improve and clarify the documentation
   * Add support for PHP7.3
   * Improve the coverage, we have now reached 99% of coverage
@@ -7,6 +27,7 @@ snuffleupagus (0.4.1) UNRELEASED; urgency=medium
   * The script that check uploaded file is now available in PHP
   * Fix segfault on 32-bit for PHP7.3
   * Fix segfault when using `sloppy_comparison` feature with array
+
 
  -- kkadosh <snuffleupagus@nbs-system.com>  Fri, 21 Dec 2018 11:50:00 +0200
 
