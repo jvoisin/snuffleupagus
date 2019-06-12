@@ -13,7 +13,7 @@ testsuite:fedora:
   image: fedora
   stage: testsuite
   script:
-    - dnf install -y php-devel gcc make
+    - dnf install -y php-devel gcc make pcre-devel
     - make debug
 
 testsuite:ubuntu:
