@@ -2,6 +2,32 @@ Changelog
 =========
 
 
+0.5.0 - `Elephant Flats <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.5.0>`__ 2019/06/12
+--------------------------------------------------------------------------------------------------------------
+
+Improvements
+^^^^^^^^^^^^
+
+- Tighten a bit a command-injection prevention rule in the default rules set
+- Increased the portability of the testsuite
+- Improved documentation
+- Usual code cleanup
+- Snuffleupagus will throw an informative error when compiled for PHP5
+- Snuffleupagus will throw an informative error when compiled without PCRE support
+- The testsuite is now run on Alpine, Fedora, Debian and Ubuntu.
+- Some rules against now-known vulnerabilities/techniques were added
+
+
+Bug fixes
+^^^^^^^^^
+
+- PHP7.4 is fully supported, without any compilation warning
+- Snuffleupagus can now be used with PHP compiled without sessions support as a builtin (which is the case on Alpine).
+- Fix a compilation warning on FreeBSD
+- Cookies hardening is now supported on PHP7.3+
+
+
+
 0.4.1 - `Loxodonta <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.4.1>`__ 2018/12/21
 --------------------------------------------------------------------------------------------------------------
 
