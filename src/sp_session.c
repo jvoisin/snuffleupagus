@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
-
 #if (HAVE_PHP_SESSION && !defined(COMPILE_DL_SESSION))
 
 #ifdef ZTS

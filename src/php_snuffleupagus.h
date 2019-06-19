@@ -99,6 +99,7 @@ HashTable *sp_internal_functions_hook;
 HashTable *sp_eval_blacklist_functions_hook;
 ZEND_END_MODULE_GLOBALS(snuffleupagus)
 
+ZEND_EXTERN_MODULE_GLOBALS(snuffleupagus)
 #define SNUFFLEUPAGUS_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(snuffleupagus, v)
 
 #if defined(ZTS) && defined(COMPILE_DL_SNUFFLEUPAGUS)

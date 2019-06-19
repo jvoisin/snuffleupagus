@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
-
 ZEND_API zend_op_array* (*orig_zend_compile_file)(zend_file_handle* file_handle,
                                                   int type) = NULL;
 ZEND_API zend_op_array* (*orig_zend_compile_string)(zval* source_string,

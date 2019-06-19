@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
-
 static void (*orig_execute_ex)(zend_execute_data *execute_data) = NULL;
 static void (*orig_zend_execute_internal)(zend_execute_data *execute_data,
                                           zval *return_value) = NULL;

@@ -2,8 +2,6 @@
 
 extern ZEND_API zend_class_entry *zend_ce_error;
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
-
 /* This function is needed because `rand` and `mt_rand` parameters
  * are optional, while the ones from `random_int` aren't. */
 static void random_int_wrapper(INTERNAL_FUNCTION_PARAMETERS) {
