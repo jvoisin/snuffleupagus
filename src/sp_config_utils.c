@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-size_t sp_line_no;
-
 int parse_keywords(sp_config_functions *funcs, char *line) {
   int value_len = 0;
   const char *original_line = line;

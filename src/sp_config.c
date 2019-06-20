@@ -4,8 +4,6 @@
 
 #include "php_snuffleupagus.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
-
 size_t sp_line_no;
 
 sp_config_tokens const sp_func[] = {

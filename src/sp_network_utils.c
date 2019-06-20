@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
-
 static inline bool cidr4_match(const struct in_addr addr,
                                const struct in_addr net, uint8_t bits);
 static inline bool cidr6_match(const struct in6_addr address,
@@ -19,7 +17,7 @@ static inline bool cidr4_match(const struct in_addr addr,
 
 static inline bool cidr6_match(const struct in6_addr address,
                                const struct in6_addr network, uint8_t bits) {
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__APPLE__)
   const uint32_t *a = address.__u6_addr.__u6_addr32;
   const uint32_t *n = network.__u6_addr.__u6_addr32;
 #else

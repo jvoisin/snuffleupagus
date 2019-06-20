@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
-
 void generate_key(unsigned char *key) {
   PHP_SHA256_CTX ctx;
   const char *user_agent = getenv("HTTP_USER_AGENT");

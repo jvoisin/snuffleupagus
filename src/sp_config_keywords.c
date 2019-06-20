@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
-
 static int parse_enable(char *line, bool *restrict retval,
                         bool *restrict simulation) {
   bool enable = false, disable = false;

@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
-
 bool sp_zend_string_equals(const zend_string* s1, const zend_string* s2) {
   // We can't use `zend_string_equals` here because it doesn't work on
   // `const` zend_string.

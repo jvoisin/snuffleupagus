@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
-
 int (*sp_rfc1867_orig_callback)(unsigned int event, void *event_data,
                                 void **extra);
 int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra);

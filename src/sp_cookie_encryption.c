@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
-
 static inline const sp_cookie *sp_lookup_cookie_config(const zend_string *key) {
   const sp_list_node *it = SNUFFLEUPAGUS_G(config).config_cookie->cookies;
 
