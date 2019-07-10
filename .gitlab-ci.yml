@@ -6,7 +6,7 @@ testsuite:debian:
   stage: testsuite
   script:
     - apt-get -qqy update
-    - apt-get -qqy install --no-install-recommends php-dev gcc make libpcre2-dev
+    - apt-get -qqy install --no-install-recommends php-dev gcc make libpcre3-dev
     - make debug
 
 testsuite:fedora:
