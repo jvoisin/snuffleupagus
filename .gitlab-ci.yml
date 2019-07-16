@@ -6,7 +6,7 @@ testsuite:debian:
   stage: testsuite
   script:
     - apt-get -qqy update
-    - apt-get -qqy install --no-install-recommends php-dev gcc make
+    - apt-get -qqy install --no-install-recommends php-dev gcc make libpcre3-dev
     - make debug
 
 testsuite:fedora:
@@ -29,7 +29,7 @@ testsuite:alpine:
   stage: testsuite
   script:
     - apk update
-    - apk add php7-dev php7-cgi php7-simplexml php7-xml make gcc musl-dev pcre
+    - apk add php7-dev php7-cgi php7-simplexml php7-xml make gcc musl-dev pcre-dev
     - make compile_debug
     - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/cookies_encryption tests/deny_writable tests/disable_function"
     - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/dump_request tests/eval_blacklist tests/global_strict"

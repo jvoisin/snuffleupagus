@@ -1,7 +1,10 @@
 --TEST--
 Stream wrapper
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+<?php
+if (!extension_loaded("snuffleupagus")) print "skip snuffleupagus extension missing";
+if (!extension_loaded("openssl")) print "skip openssl extension missing";
+?>
 --INI--
 sp.configuration_file={PWD}/config/config_stream_wrapper.ini
 --FILE--

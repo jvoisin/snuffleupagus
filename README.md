@@ -57,7 +57,7 @@ without having to touch the PHP code.
 
 ## Key Features
 
-* Close to zero performance impact
+* No [noticeable performance impact](https://dustri.org/b/snuffleupagus-030-dentalium-elephantinum.html)
 * Powerful yet simple to write virtual-patching rules
 * Killing several classes of vulnerabilities
   * [Unserialize-based](https://www.owasp.org/images/9/9e/Utilizing-Code-Reuse-Or-Return-Oriented-Programming-In-PHP-Application-Exploits.pdf) code execution
@@ -75,10 +75,10 @@ without having to touch the PHP code.
   * Whitelist/blacklist for `eval`
   * Enforcing TLS certificate validation when using [curl](https://secure.php.net/manual/en/book.curl.php)
   * Request dumping capability
-* A relatively sane codebase:
-  * A [comprehensive](https://coveralls.io/github/nbs-system/snuffleupagus?branch=master) testsuite
+* A relatively sane code base:
+  * A [comprehensive](https://coveralls.io/github/nbs-system/snuffleupagus?branch=master) test suite close to 100% coverage
   * Every commit is tested on [several distributions](https://gitlab.com/jvoisin/snuffleupagus/pipelines)
-  * An `clang-format`-enfored code style
+  * An `clang-format`-enforced code style
   * A [comprehensive documentation](https://snuffleupagus.rtfd.io)
   * Usage of [coverity](https://scan.coverity.com/projects/nbs-system-snuffleupagus)
 
