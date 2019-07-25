@@ -93,6 +93,8 @@ ZEND_BEGIN_MODULE_GLOBALS(snuffleupagus)
 size_t in_eval;
 sp_config config;
 bool is_config_valid;
+bool log_mgmt_syslog; //0 no syslog, 1 use syslog
+bool log_mgmt_zend; //0 no zend management, 1 use zend management
 bool allow_broken_configuration;
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;

@@ -1,4 +1,7 @@
+#include <syslog.h>
 #include "php_snuffleupagus.h"
+
+ 
 
 bool sp_zend_string_equals(const zend_string* s1, const zend_string* s2) {
   // We can't use `zend_string_equals` here because it doesn't work on
@@ -9,13 +12,23 @@ bool sp_zend_string_equals(const zend_string* s1, const zend_string* s2) {
 
 void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
   char* msg;
+  const char *error_filename;
   va_list args;
 
+  
   va_start(args, fmt);
   vspprintf(&msg, 0, fmt, args);
   va_end(args);
+  if (SNUFFLEUPAGUS_G(log_mgmt_syslog)) {
+	  openlog("snuffleupagus", LOG_PID, LOG_AUTH);
+	  error_filename = zend_get_executed_filename();
+	  syslog(LOG_INFO, "[%s] %s in [%s]",feature, msg, error_filename);
+	  closelog();
+  }
+  if (SNUFFLEUPAGUS_G(log_mgmt_zend)) {
 
-  zend_error(type, "[snuffleupagus][%s] %s", feature, msg);
+	  zend_error(type, "[snuffleupagus][%s] %s", feature, msg);
+  }
 }
 
 int compute_hash(const char* const filename, char* file_hash) {

@@ -45,9 +45,38 @@ static PHP_INI_MH(StrictMode) {
   return SUCCESS;
 }
 
+static PHP_INI_MH(LogMgmtSyslog) {
+  TSRMLS_FETCH();
+
+  SNUFFLEUPAGUS_G(log_mgmt_syslog) = 0;
+  if (new_value && zend_string_equals_literal(new_value, "1")) {
+    SNUFFLEUPAGUS_G(log_mgmt_syslog) = 1;
+
+  }
+   
+  return SUCCESS;
+}
+
+static PHP_INI_MH(LogMgmtZend) {
+  TSRMLS_FETCH();
+
+  SNUFFLEUPAGUS_G(log_mgmt_zend) = 0;
+  if (new_value && zend_string_equals_literal(new_value, "1")) {
+    SNUFFLEUPAGUS_G(log_mgmt_zend) = 1;
+
+  }
+   
+  return SUCCESS;
+}
+
 PHP_INI_BEGIN()
 PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM,
               OnUpdateConfiguration)
+PHP_INI_ENTRY("sp.log_syslog","0",PHP_INI_SYSTEM,
+	      LogMgmtSyslog)
+PHP_INI_ENTRY("sp.log_zend","0",PHP_INI_SYSTEM,
+	      LogMgmtZend)
+
 PHP_INI_ENTRY("sp.allow_broken_configuration", "0", PHP_INI_SYSTEM,
               StrictMode)
 PHP_INI_END()
