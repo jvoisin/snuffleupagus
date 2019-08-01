@@ -131,3 +131,8 @@ sp.disable_function.function("curl_setopt").param("option").value("81").drop().a
 #File upload
 sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ph").drop();
 sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ht").drop();
+
+# Logging lockdown
+sp.disable_function.function("ini_set").param("varname").value_r("error_log").drop()
+sp.disable_function.function("ini_set").param("varname").value_r("error_reporting").drop()
+sp.disable_function.function("ini_set").param("varname").value_r("display_errors").drop()
