@@ -25,6 +25,9 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
     syslog(LOG_INFO, "[%s] %s in [%s]",feature, msg, error_filename);
     closelog();
     break;
+  default:
+    zend_error(type, "[snuffleupagus][%s] %s", feature, msg);
+    break;    
   }
 }
 
