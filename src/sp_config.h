@@ -28,6 +28,13 @@ typedef enum {
   SP_PHP_TYPE_REFERENCE = IS_REFERENCE
 } sp_php_type;
 
+
+typedef enum {
+  SP_DEFAULT = 0,
+  SP_ZEND = 0,
+  SP_SYSLOG = 1
+} sp_log_media;
+
 typedef struct {
   int ip_version;
   union {
@@ -175,6 +182,7 @@ typedef struct {
   sp_config_wrapper *config_wrapper;
   sp_config_session *config_session;
   bool hook_execute;
+  char log_media;
 
   HashTable *config_disabled_functions;
   HashTable *config_disabled_functions_hooked;
@@ -260,6 +268,7 @@ typedef struct {
 // Global configuration options
 #define SP_TOKEN_ENCRYPTION_KEY ".secret_key("
 #define SP_TOKEN_ENV_VAR ".cookie_env_var("
+#define SP_TOKEN_LOG_MEDIA ".log_media("
 
 // upload_validator
 #define SP_TOKEN_UPLOAD_SCRIPT ".script("

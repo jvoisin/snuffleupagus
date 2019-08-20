@@ -78,9 +78,26 @@ int parse_session(char *line) {
   return ret;
 }
 
+
 int parse_random(char *line) {
   return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_random->enable),
                       NULL);
+}
+
+int parse_log_media(char *line) {
+  size_t consumed = 0;
+  zend_string *value = get_param(&consumed, line, SP_TYPE_STR, SP_TOKEN_LOG_MEDIA);
+  
+  if (!strcmp(ZSTR_VAL(value), "zend")) {
+      SNUFFLEUPAGUS_G(config).log_media = SP_ZEND;
+  } else if (!strcmp(ZSTR_VAL(value), "syslog")) {
+    SNUFFLEUPAGUS_G(config).log_media = SP_SYSLOG;
+  } else {
+    sp_log_err("config","%s) only supports 'syslog' and 'zend', not '%s'", SP_TOKEN_LOG_MEDIA, ZSTR_VAL(value));
+    return -1;
+  }
+  sp_log_warn("config","logging is set to %d",  SNUFFLEUPAGUS_G(config).log_media);
+  return 0;
 }
 
 int parse_sloppy_comparison(char *line) {
@@ -121,7 +138,7 @@ int parse_unserialize(char *line) {
   if (0 != ret) {
     return ret;
   }
-
+  
   if (!(enable ^ disable)) {
     sp_log_err("config", "A rule can't be enabled and disabled on line %zu",
                sp_line_no);
