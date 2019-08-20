@@ -22,6 +22,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/syslog.h>
 
 #include "SAPI.h"
 #include "ext/session/php_session.h"
