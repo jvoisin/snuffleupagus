@@ -93,10 +93,9 @@ int parse_log_media(char *line) {
   } else if (!strcmp(ZSTR_VAL(value), "syslog")) {
     SNUFFLEUPAGUS_G(config).log_media = SP_SYSLOG;
   } else {
-    sp_log_err("config","%s) only supports 'syslog' and 'zend', not '%s'", SP_TOKEN_LOG_MEDIA, ZSTR_VAL(value));
+    sp_log_err("config","%s) only supports 'syslog' and 'zend', not '%s', on line %zu", SP_TOKEN_LOG_MEDIA, ZSTR_VAL(value), sp_line_no);
     return -1;
   }
-  sp_log_warn("config","logging is set to %d",  SNUFFLEUPAGUS_G(config).log_media);
   return 0;
 }
 
