@@ -16,6 +16,7 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
   vspprintf(&msg, 0, fmt, args);
   va_end(args);
   switch (SNUFFLEUPAGUS_G(config).log_media) {
+  default:
   case SP_ZEND:
     zend_error(type, "[snuffleupagus][%s] %s", feature, msg);
     break;
@@ -25,9 +26,6 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
     syslog(LOG_INFO, "[%s] %s in [%s]",feature, msg, error_filename);
     closelog();
     break;
-  default:
-    zend_error(type, "[snuffleupagus][%s] %s", feature, msg);
-    break;    
   }
 }
 
