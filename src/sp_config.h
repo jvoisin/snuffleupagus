@@ -30,7 +30,6 @@ typedef enum {
 
 
 typedef enum {
-  SP_DEFAULT = 0,
   SP_ZEND = 0,
   SP_SYSLOG = 1
 } sp_log_media;
