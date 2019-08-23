@@ -23,7 +23,7 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
   case SP_SYSLOG:
     openlog("snuffleupagus", LOG_PID, LOG_AUTH);
     error_filename = zend_get_executed_filename();
-    syslog(LOG_INFO, "[%s] %s in [%s]",feature, msg, error_filename);
+    syslog(LOG_INFO, "[%s] %s in %s on line %d",feature, msg, error_filename, zend_get_executed_lineno(TSRMLS_C));
     closelog();
     break;
   }
