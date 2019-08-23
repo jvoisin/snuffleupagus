@@ -88,12 +88,12 @@ int parse_log_media(char *line) {
   size_t consumed = 0;
   zend_string *value = get_param(&consumed, line, SP_TYPE_STR, SP_TOKEN_LOG_MEDIA);
   
-  if (!strcmp(ZSTR_VAL(value), "zend")) {
+  if (value && !strcmp(ZSTR_VAL(value), "php")) {
       SNUFFLEUPAGUS_G(config).log_media = SP_ZEND;
-  } else if (!strcmp(ZSTR_VAL(value), "syslog")) {
+  } else if (value && !strcmp(ZSTR_VAL(value), "syslog")) {
     SNUFFLEUPAGUS_G(config).log_media = SP_SYSLOG;
   } else {
-    sp_log_err("config","%s) only supports 'syslog' and 'zend', not '%s', on line %zu", SP_TOKEN_LOG_MEDIA, ZSTR_VAL(value), sp_line_no);
+    sp_log_err("config","%s) supports 'syslog' or 'php', on line %zu", SP_TOKEN_LOG_MEDIA, sp_line_no);
     return -1;
   }
   return 0;
