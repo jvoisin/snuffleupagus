@@ -81,6 +81,18 @@ This configuration variable contains parameters that are used by multiple featur
 - ``cookie_env_var``: A environment variable used as part of cookies encryption.
   See the :ref:`relevant documentation <config_cookie-encryption>`
 
+log_media
+^^^^^^^^^
+
+This configuration variable allows you to specify in which media you want snuffleupagus to log.
+It can be either ``php`` or ``syslog``.
+::
+
+  sp.log_media("php"); -> Will write snuffleupagus log into PHP errors log file
+  sp.log_media("syslog"); -> Will write snuffleupagus log into syslog file
+
+The default value for ``sp.log_media`` is ``php``.
+
 
 Bugclass-killer features
 ------------------------
