@@ -16,7 +16,11 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
   va_end(args);
 
   switch (SNUFFLEUPAGUS_G(config).log_media) {
+    case SP_ZEND:
+      zend_error(type, "[snuffleupagus][%s] %s", feature, msg);
+      break;
     case SP_SYSLOG:
+    default:
       openlog(PHP_SNUFFLEUPAGUS_EXTNAME, LOG_PID, LOG_AUTH);
       const char* error_filename = zend_get_executed_filename();
       int syslog_level = SP_LOG_DROP ? LOG_ERR : LOG_INFO;
@@ -27,10 +31,6 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
       if (type == SP_LOG_DROP) {
         zend_bailout();
       }
-      break;
-    case SP_ZEND:
-    default:
-      zend_error(type, "[snuffleupagus][%s] %s", feature, msg);
       break;
   }
 }
