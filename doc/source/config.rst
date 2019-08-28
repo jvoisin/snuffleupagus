@@ -84,14 +84,18 @@ This configuration variable contains parameters that are used by multiple featur
 log_media
 ^^^^^^^^^
 
-This configuration variable allows you to specify in which media you want snuffleupagus to log.
-It can be either ``php`` or ``syslog``.
+This configuration variable allows to specify how logs should be written,
+either via ``php`` or ``syslog``.
+
 ::
 
-  sp.log_media("php"); -> Will write snuffleupagus log into PHP errors log file
-  sp.log_media("syslog"); -> Will write snuffleupagus log into syslog file
+  sp.log_media("php");
+  sp.log_media("syslog");
 
-The default value for ``sp.log_media`` is ``php``.
+The default value for ``sp.log_media`` is ``syslog``, since it's `possible to
+modify php's logging system via php
+<https://www.php.net/manual/en/errorfunc.configuration.php>`__. The ``php``
+option is only provided for convenience, and is less secure.
 
 
 Bugclass-killer features
