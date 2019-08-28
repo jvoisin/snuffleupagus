@@ -10,25 +10,28 @@ bool sp_zend_string_equals(const zend_string* s1, const zend_string* s2) {
 void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
   char* msg;
   va_list args;
-  
+
   va_start(args, fmt);
   vspprintf(&msg, 0, fmt, args);
   va_end(args);
+
   switch (SNUFFLEUPAGUS_G(config).log_media) {
-  default:
-  case SP_ZEND:
-    zend_error(type, "[snuffleupagus][%s] %s", feature, msg);
-    break;
-  case SP_SYSLOG:
-    openlog("snuffleupagus", LOG_PID, LOG_AUTH);
-    const char *error_filename = zend_get_executed_filename();
-    int syslog_level = SP_LOG_DROP ? LOG_ERR : LOG_INFO;
-    syslog(syslog_level, "[%s] %s in %s on line %d",feature, msg, error_filename, zend_get_executed_lineno(TSRMLS_C));
-    closelog();
-    if (type == SP_LOG_DROP) {
-      zend_bailout();
-    }
-    break;
+    case SP_SYSLOG:
+      openlog(PHP_SNUFFLEUPAGUS_EXTNAME, LOG_PID, LOG_AUTH);
+      const char* error_filename = zend_get_executed_filename();
+      int syslog_level = SP_LOG_DROP ? LOG_ERR : LOG_INFO;
+      int error_lineno = zend_get_executed_lineno(TSRMLS_C);
+      syslog(syslog_level, "[%s] %s in %s on line %d", feature, msg,
+             error_filename, error_lineno);
+      closelog();
+      if (type == SP_LOG_DROP) {
+        zend_bailout();
+      }
+      break;
+    case SP_ZEND:
+    default:
+      zend_error(type, "[snuffleupagus][%s] %s", feature, msg);
+      break;
   }
 }
 

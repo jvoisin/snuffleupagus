@@ -78,7 +78,6 @@ int parse_session(char *line) {
   return ret;
 }
 
-
 int parse_random(char *line) {
   return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_random->enable),
                       NULL);
@@ -86,17 +85,21 @@ int parse_random(char *line) {
 
 int parse_log_media(char *line) {
   size_t consumed = 0;
-  zend_string *value = get_param(&consumed, line, SP_TYPE_STR, SP_TOKEN_LOG_MEDIA);
-  
-  if (value && !strcmp(ZSTR_VAL(value), "php")) {
+  zend_string *value =
+      get_param(&consumed, line, SP_TYPE_STR, SP_TOKEN_LOG_MEDIA);
+
+  if (value) {
+    if (!strcmp(ZSTR_VAL(value), "php")) {
       SNUFFLEUPAGUS_G(config).log_media = SP_ZEND;
-  } else if (value && !strcmp(ZSTR_VAL(value), "syslog")) {
-    SNUFFLEUPAGUS_G(config).log_media = SP_SYSLOG;
-  } else {
-    sp_log_err("config","%s) supports 'syslog' or 'php', on line %zu", SP_TOKEN_LOG_MEDIA, sp_line_no);
-    return -1;
+      return 0;
+    } else if (!strcmp(ZSTR_VAL(value), "syslog")) {
+      SNUFFLEUPAGUS_G(config).log_media = SP_SYSLOG;
+      return 0;
+    }
   }
-  return 0;
+  sp_log_err("config", "%s) only supports 'syslog' or 'php', on line %zu",
+             SP_TOKEN_LOG_MEDIA, sp_line_no);
+  return -1;
 }
 
 int parse_sloppy_comparison(char *line) {
@@ -137,7 +140,7 @@ int parse_unserialize(char *line) {
   if (0 != ret) {
     return ret;
   }
-  
+
   if (!(enable ^ disable)) {
     sp_log_err("config", "A rule can't be enabled and disabled on line %zu",
                sp_line_no);

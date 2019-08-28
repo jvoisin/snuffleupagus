@@ -28,11 +28,7 @@ typedef enum {
   SP_PHP_TYPE_REFERENCE = IS_REFERENCE
 } sp_php_type;
 
-
-typedef enum {
-  SP_ZEND = 0,
-  SP_SYSLOG = 1
-} sp_log_media;
+typedef enum { SP_ZEND = 0, SP_SYSLOG = 1 } sp_log_media;
 
 typedef struct {
   int ip_version;
