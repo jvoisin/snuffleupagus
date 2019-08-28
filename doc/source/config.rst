@@ -92,10 +92,12 @@ either via ``php`` or ``syslog``.
   sp.log_media("php");
   sp.log_media("syslog");
 
-The default value for ``sp.log_media`` is ``syslog``, since it's `possible to
-modify php's logging system via php
-<https://www.php.net/manual/en/errorfunc.configuration.php>`__. The ``php``
-option is only provided for convenience, and is less secure.
+The default value for ``sp.log_media`` is ``php``, to respect the `principle of
+least astonishment
+<https://en.wikipedia.org/wiki/Principle_of_least_astonishment>`__. But since
+it's `possible to modify php's logging system via php
+<https://www.php.net/manual/en/errorfunc.configuration.php>`__, it's
+heavily recommended to use the ``syslog`` option instead.
 
 
 Bugclass-killer features
