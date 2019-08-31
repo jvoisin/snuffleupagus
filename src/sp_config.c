@@ -9,6 +9,7 @@ size_t sp_line_no;
 sp_config_tokens const sp_func[] = {
     {.func = parse_unserialize, .token = SP_TOKEN_UNSERIALIZE_HMAC},
     {.func = parse_random, .token = SP_TOKEN_HARDEN_RANDOM},
+    {.func = parse_log_media, .token = SP_TOKEN_LOG_MEDIA},
     {.func = parse_disabled_functions, .token = SP_TOKEN_DISABLE_FUNC},
     {.func = parse_readonly_exec, .token = SP_TOKEN_READONLY_EXEC},
     {.func = parse_global_strict, .token = SP_TOKEN_GLOBAL_STRICT},

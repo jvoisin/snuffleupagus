@@ -81,6 +81,24 @@ This configuration variable contains parameters that are used by multiple featur
 - ``cookie_env_var``: A environment variable used as part of cookies encryption.
   See the :ref:`relevant documentation <config_cookie-encryption>`
 
+log_media
+^^^^^^^^^
+
+This configuration variable allows to specify how logs should be written,
+either via ``php`` or ``syslog``.
+
+::
+
+  sp.log_media("php");
+  sp.log_media("syslog");
+
+The default value for ``sp.log_media`` is ``php``, to respect the `principle of
+least astonishment
+<https://en.wikipedia.org/wiki/Principle_of_least_astonishment>`__. But since
+it's `possible to modify php's logging system via php
+<https://www.php.net/manual/en/errorfunc.configuration.php>`__, it's
+heavily recommended to use the ``syslog`` option instead.
+
 
 Bugclass-killer features
 ------------------------

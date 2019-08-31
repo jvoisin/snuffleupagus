@@ -15,7 +15,24 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
   vspprintf(&msg, 0, fmt, args);
   va_end(args);
 
-  zend_error(type, "[snuffleupagus][%s] %s", feature, msg);
+  switch (SNUFFLEUPAGUS_G(config).log_media) {
+    case SP_SYSLOG:
+      openlog(PHP_SNUFFLEUPAGUS_EXTNAME, LOG_PID, LOG_AUTH);
+      const char* error_filename = zend_get_executed_filename();
+      int syslog_level = SP_LOG_DROP ? LOG_ERR : LOG_INFO;
+      int error_lineno = zend_get_executed_lineno(TSRMLS_C);
+      syslog(syslog_level, "[%s] %s in %s on line %d", feature, msg,
+             error_filename, error_lineno);
+      closelog();
+      if (type == SP_LOG_DROP) {
+        zend_bailout();
+      }
+      break;
+    case SP_ZEND:
+    default:
+      zend_error(type, "[snuffleupagus][%s] %s", feature, msg);
+      break;
+  }
 }
 
 int compute_hash(const char* const filename, char* file_hash) {
