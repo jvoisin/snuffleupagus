@@ -41,20 +41,18 @@ Who are you and why did you write Snuffleupagus?
 
 We're working for `NBS System <https://nbs-system.com/en/>`__,
 a web hosting company (meaning that we're dealing with PHP code all day long),
-with a strong focus on security. We do have hardening
+with a strong focus on security. We do have several layers of hardening
 (`kernel <https://grsecurity.net/>`_, `WAF <https://naxsi.org>`_,
-`IDS <https://en.wikipedia.org/wiki/Intrusion_detection_system>`_, etc)
-below the web stack, but most of the time, when a website is compromised,
-it can be to send ads, spam, deface it, steal data etc.
-This is why we need to harden the website itself too, but we can't touch its
-source code.
+`IDS <https://en.wikipedia.org/wiki/Intrusion_detection_system>`_, etc),
+but we had nothing for PHP7.
+
 
 Why not Suhosin?
 """"""""""""""""
 
 We're huge fans of `Suhosin <https://suhosin.org>`_, unfortunately:
 
-- it doesn't work very well on PHP 7
+- it doesn't work very well on PHP7
 - it has some oudated features and misses new ones
 - it doesn't cope very well with our various industrialization needs
 - it has some shortcomings by design
@@ -65,10 +63,11 @@ the `system <https://secure.php.net/manual/en/function.system.php#refsect1-funct
 function to perform various mandatory maintenance tasks).
 
 This is why we decided to write our own hardening module, in the spirit of Suhosin,
-via virtual-patching support, and other cool new features.
+with virtual-patching support, as well as other cool new features.
 
-What license is Snuffleupagus under and why?
-""""""""""""""""""""""""""""""""""""""""""""
+
+What license is Snuffleupagus released under and why?
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 Snuffleupagus is licensed under the `LGPL <https://www.gnu.org/copyleft/lesser.html>`_
 and is developed by the fine people from `NBS System <https://nbs-system.com/>`__.
@@ -76,6 +75,18 @@ and is developed by the fine people from `NBS System <https://nbs-system.com/>`_
 We chose the LGPL because we don't care that much how you're using Snuffleupagus,
 but we'd like to force people to make their improvements/contributions
 available to everyone.
+
+
+What is the different between SNuffleupaugs and a (WAF) like ModSecurity?
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+`ModSecurity <https://modsecurity.org/>`__ and the other `Web Application
+Firewall (WAF) <https://en.wikipedia.org/wiki/Web_application_firewall>`__ are
+working by inspecting the http traffic. Snuffleupagus being a PHP module, is
+operating directly inside your website's code, with a lesser overhead, as well
+as a better understanding of what is currently happening inside your
+application.
+
 
 Should I use Snuffleupagus?
 """""""""""""""""""""""""""
@@ -112,6 +123,18 @@ is still a security issue, and should be treated as such.
 
 We don't have the pretension to state that Snuffleupagus will magically solve
 all your security issues, but we believe that it might definitely help.
+
+
+Sounds great, but is it working?
+""""""""""""""""""""""""""""""""
+
+We've been using it in production since a couple of years, and it thwarted
+numerous known and unknown attacks. If you want some evidences, one of the
+developer published in June 2019 a `blogpost
+<https://dustri.org/b/snuffleupagus-versus-recent-high-profile-vulnerabilities.html>`__
+showcasing how efficient Snuffleupagus was versus *major* web
+vulnerabilities from 2018/2019.
+
 
 Why should I send you bugs, security issues and patches?
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
