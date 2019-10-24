@@ -53,6 +53,10 @@
 #if PHP_VERSION_ID < 70200
 typedef void (*zif_handler)(INTERNAL_FUNCTION_PARAMETERS);
 #endif
+#if PHP_VERSION_ID >= 80000
+#define TSRMLS_FETCH()
+#define TSRMLS_C
+#endif
 
 #include "sp_pcre_compat.h"
 #include "sp_list.h"
