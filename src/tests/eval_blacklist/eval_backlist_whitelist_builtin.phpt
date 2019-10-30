@@ -21,4 +21,4 @@ echo "After eval: $a\n";
 Outside of eval: 1.5574077246549
 After allowed eval: 1.5574077246549
 
-Fatal error: [snuffleupagus][Eval_whitelist] The function 'cos' isn't in the eval whitelist, dropping its call. in %a/eval_backlist_whitelist_builtin.php(10) : eval()'d code on line 1
+Fatal error: [snuffleupagus][0.0.0.0][Eval_whitelist] The function 'cos' isn't in the eval whitelist, dropping its call. in %a/eval_backlist_whitelist_builtin.php(10) : eval()'d code on line 1

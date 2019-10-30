@@ -16,4 +16,4 @@ EOF;
 --FILE--
 <?php var_dump($_COOKIE); ?>
 --EXPECT--
-Fatal error: [snuffleupagus][cookie_encryption] Buffer underflow tentative detected in cookie encryption handling in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][cookie_encryption] Buffer underflow tentative detected in cookie encryption handling in Unknown on line 0

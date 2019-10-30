@@ -13,4 +13,4 @@ eval('
 ')
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][eval] A call to strtoupper was tried in eval, in %s/eval_backlist_chained.php:%d, dropping it. in %s/eval_backlist_chained.php(%d) : eval()'d code on line %d
+Fatal error: [snuffleupagus][0.0.0.0][eval] A call to strtoupper was tried in eval, in %s/eval_backlist_chained.php:%d, dropping it. in %s/eval_backlist_chained.php(%d) : eval()'d code on line %d

@@ -21,4 +21,4 @@ unlink($dir . '/test.meh');
 ?>
 --EXPECTF--
 BLA
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'require', because its argument 'inclusion path' content (%a/test.meh) matched a rule in %a/disabled_functions_require.php on line 6
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'require', because its argument 'inclusion path' content (%a/test.meh) matched a rule in %a/disabled_functions_require.php on line 6

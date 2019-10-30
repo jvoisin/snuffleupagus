@@ -6,9 +6,9 @@ Bad boolean value in configuration
 sp.configuration_file={PWD}/config/config_broken_conf_truncated.ini
 --FILE--
 --EXPECT--
-PHP Fatal error:  [snuffleupagus][error] A valid string as parameter is expected on line 1 in Unknown on line 0
+PHP Fatal error:  [snuffleupagus][0.0.0.0][error] A valid string as parameter is expected on line 1 in Unknown on line 0
 
-Fatal error: [snuffleupagus][error] A valid string as parameter is expected on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][error] A valid string as parameter is expected on line 1 in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config] Invalid configuration file in Unknown on line 0
 Could not startup.

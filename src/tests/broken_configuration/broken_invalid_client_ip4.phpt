@@ -13,4 +13,4 @@ sp.configuration_file={PWD}/config/disabled_functions_cidr.ini
 strpos("1337", "1");
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][cidr_match] Weird ip (xyz) family in %a/broken_invalid_client_ip4.php on line 2
+Fatal error: [snuffleupagus][xyz][cidr_match] Weird ip (xyz) family in %a/broken_invalid_client_ip4.php on line 2

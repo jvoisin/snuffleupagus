@@ -11,10 +11,10 @@ echo stripos("pouet", "p") . "\n";
 strcmp("p", "p") . "\n";
 ?>
 --EXPECTF--
-Warning: [snuffleupagus][disabled_function] Aborted execution on return of the function 'strpos', because the function returned '0', which matched a rule in %a/disabled_functions_ret_simulation.php on line 2
+Warning: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on return of the function 'strpos', because the function returned '0', which matched a rule in %a/disabled_functions_ret_simulation.php on line 2
 0
 
-Warning: [snuffleupagus][disabled_function] Aborted execution on return of the function 'stripos', because the function returned '0', which matched the rule '1' in %a/disabled_functions_ret_simulation.php on line 3
+Warning: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on return of the function 'stripos', because the function returned '0', which matched the rule '1' in %a/disabled_functions_ret_simulation.php on line 3
 0
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on return of the function 'strcmp', because the function returned '0', which matched a rule in %a/disabled_functions_ret_simulation.php on line 4
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on return of the function 'strcmp', because the function returned '0', which matched a rule in %a/disabled_functions_ret_simulation.php on line 4

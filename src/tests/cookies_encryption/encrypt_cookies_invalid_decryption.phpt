@@ -18,7 +18,7 @@ EOF;
 echo "1337\n";
 var_dump($_COOKIE); ?>
 --EXPECT--
-Warning: [snuffleupagus][cookie_encryption] Something went wrong with the decryption of super_cookie in Unknown on line 0
+Warning: [snuffleupagus][0.0.0.0][cookie_encryption] Something went wrong with the decryption of super_cookie in Unknown on line 0
 1337
 array(1) {
   ["awfulcookie"]=>

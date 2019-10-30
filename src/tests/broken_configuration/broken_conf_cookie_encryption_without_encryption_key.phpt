@@ -6,9 +6,9 @@ Borken configuration - encrypted cookie without encryption key
 sp.configuration_file={PWD}/config/broken_conf_cookie_encryption_without_encryption_key.ini
 --FILE--
 --EXPECT--
-PHP Fatal error:  [snuffleupagus][config] You're trying to use the cookie encryption featureon line 2 without having set the `.encryption_key` option in`sp.global`: please set it first in Unknown on line 0
+PHP Fatal error:  [snuffleupagus][0.0.0.0][config] You're trying to use the cookie encryption featureon line 2 without having set the `.encryption_key` option in`sp.global`: please set it first in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] You're trying to use the cookie encryption featureon line 2 without having set the `.encryption_key` option in`sp.global`: please set it first in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config] You're trying to use the cookie encryption featureon line 2 without having set the `.encryption_key` option in`sp.global`: please set it first in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config] Invalid configuration file in Unknown on line 0
 Could not startup.

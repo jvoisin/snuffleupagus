@@ -44,4 +44,4 @@ array(2) {
   string(5) "block"
 }
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_2.php on line 4
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_2.php on line 4

@@ -36,5 +36,5 @@ if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
 --EXPECTF--
 Outside of eval: 1337 1337 1337
 
-Warning: [snuffleupagus][eval] A call to strtoupper was tried in eval, in %a/dump_eval_blacklist.php:1, logging it. in %a/dump_eval_blacklist.php(9) : eval()'d code on line 1
+Warning: [snuffleupagus][0.0.0.0][eval] A call to strtoupper was tried in eval, in %a/dump_eval_blacklist.php:1, logging it. in %a/dump_eval_blacklist.php(9) : eval()'d code on line 1
 After eval: 1234

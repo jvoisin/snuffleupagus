@@ -27,4 +27,4 @@ session_start();
 var_dump($_SESSION);
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][cookie_encryption] Buffer underflow tentative detected in cookie encryption handling in %s/crypt_session_corrupted_session.php on line %s
+Fatal error: [snuffleupagus][127.0.0.1][cookie_encryption] Buffer underflow tentative detected in cookie encryption handling in %s/crypt_session_corrupted_session.php on line %s

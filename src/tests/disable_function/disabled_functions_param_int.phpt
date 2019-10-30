@@ -19,4 +19,4 @@ foobar("10");
 --EXPECTF--
 1
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'foobar', because its argument '$id' content (42) matched a rule in %a/disabled_functions_param_int.php on line 3
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'foobar', because its argument '$id' content (42) matched a rule in %a/disabled_functions_param_int.php on line 3

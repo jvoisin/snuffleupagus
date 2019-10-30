@@ -12,4 +12,4 @@ function my_super_function() {
 my_super_function();
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'my_super_function' in %a/disabled_user_functions.php on line 3
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'my_super_function' in %a/disabled_user_functions.php on line 3

@@ -8,9 +8,9 @@ sp.configuration_file={PWD}/config/broken_conf_nonexisting_script.ini
 echo 1;
 ?>
 --EXPECTF--
-PHP Fatal error:  [snuffleupagus][config] The `script` (./non_existing_script.sh) doesn't exist on line 1 in Unknown on line 0
+PHP Fatal error:  [snuffleupagus][0.0.0.0][config] The `script` (./non_existing_script.sh) doesn't exist on line 1 in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] The `script` (./non_existing_script.sh) doesn't exist on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config] The `script` (./non_existing_script.sh) doesn't exist on line 1 in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config] Invalid configuration file in Unknown on line 0
 Could not startup.
