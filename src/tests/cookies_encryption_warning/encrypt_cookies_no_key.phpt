@@ -16,6 +16,6 @@ EOF;
 --FILE--
 <?php echo "1"; ?>
 --EXPECT--
-Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][127.0.0.1][config] Invalid configuration file in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] You're trying to use the cookie encryption featureon line 2 without having set the `.encryption_key` option in`sp.global`: please set it first in Unknown on line 0
+Fatal error: [snuffleupagus][127.0.0.1][config] You're trying to use the cookie encryption featureon line 2 without having set the `.encryption_key` option in`sp.global`: please set it first in Unknown on line 0

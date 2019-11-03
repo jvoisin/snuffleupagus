@@ -12,4 +12,4 @@ function my_super_function() {
 array_map('my_super_function', [1,2,3,4]);
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'my_super_function' in %a/disabled_user_functions_indirect.php on line 3
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'my_super_function' in %a/disabled_user_functions_indirect.php on line 3

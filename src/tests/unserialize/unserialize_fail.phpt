@@ -12,4 +12,4 @@ var_dump(unserialize('s:1:"a";dslfjklfjfkjfdjffjfjads'));
 var_dump(unserialize(1,2,3,4));
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][unserialize] The serialized object is too small. in %a/unserialize_fail.php on line 2
+Fatal error: [snuffleupagus][0.0.0.0][unserialize] The serialized object is too small. in %a/unserialize_fail.php on line 2

@@ -54,4 +54,4 @@ test();
 Valeur: valeur de a
 Valeur: valeur de apres
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_4.php on line 36
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_4.php on line 36

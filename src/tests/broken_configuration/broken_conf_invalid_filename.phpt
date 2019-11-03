@@ -6,9 +6,9 @@ Broken configuration filename without absolute path
 sp.configuration_file={PWD}/config/broken_conf_invalid_filename.ini
 --FILE--
 --EXPECTF--
-PHP Fatal error:  [snuffleupagus][config] Invalid configuration line: 'sp.disabled_functions.function("sprintf").filename("wrong file name").drop();':'.filename' must be an absolute path or a phar archive on line 1 in Unknown on line 0
+PHP Fatal error:  [snuffleupagus][0.0.0.0][config] Invalid configuration line: 'sp.disabled_functions.function("sprintf").filename("wrong file name").drop();':'.filename' must be an absolute path or a phar archive on line 1 in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] Invalid configuration line: 'sp.disabled_functions.function("sprintf").filename("wrong file name").drop();':'.filename' must be an absolute path or a phar archive on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config] Invalid configuration line: 'sp.disabled_functions.function("sprintf").filename("wrong file name").drop();':'.filename' must be an absolute path or a phar archive on line 1 in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config] Invalid configuration file in Unknown on line 0
 Could not startup.

@@ -15,8 +15,8 @@ EOF;
 --FILE--
 <?php var_dump($_COOKIE); ?>
 --EXPECT--
-Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][127.0.0.1][config] Invalid configuration file in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] Failed to compile '^super_co[a-z+$': missing terminating ] for character class on line 2. in Unknown on line 0
+Fatal error: [snuffleupagus][127.0.0.1][config] Failed to compile '^super_co[a-z+$': missing terminating ] for character class on line 2. in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] '.name_r()' is expecting a valid regexp, and not '"^super_co[a-z+$"' on line 2 in Unknown on line 0
+Fatal error: [snuffleupagus][127.0.0.1][config] '.name_r()' is expecting a valid regexp, and not '"^super_co[a-z+$"' on line 2 in Unknown on line 0

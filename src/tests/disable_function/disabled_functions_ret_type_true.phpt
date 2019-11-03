@@ -14,4 +14,4 @@ echo is_numeric("1234") . "\n";
 bool(false)
 1337
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on return of the function 'is_numeric', because the function returned 'TRUE', which matched the rule 'Return value is a true' in %a/disabled_functions_ret_type_true.php on line 4
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on return of the function 'is_numeric', because the function returned 'TRUE', which matched the rule 'Return value is a true' in %a/disabled_functions_ret_type_true.php on line 4

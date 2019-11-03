@@ -6,9 +6,9 @@ Borken configuration - encrypted cookie with no name
 sp.configuration_file={PWD}/config/config_encrypted_cookies_noname.ini
 --FILE--
 --EXPECT--
-PHP Fatal error:  [snuffleupagus][config] You must specify a cookie name/regexp on line 2 in Unknown on line 0
+PHP Fatal error:  [snuffleupagus][0.0.0.0][config] You must specify a cookie name/regexp on line 2 in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] You must specify a cookie name/regexp on line 2 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config] You must specify a cookie name/regexp on line 2 in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config] Invalid configuration file in Unknown on line 0
 Could not startup.
