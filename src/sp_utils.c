@@ -15,7 +15,7 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
   vspprintf(&msg, 0, fmt, args);
   va_end(args);
 
-  char *client_ip = getenv("REMOTE_ADDR");
+  const char *client_ip = getenv("REMOTE_ADDR");
   if (!client_ip) {
     client_ip = "0.0.0.0";
   }
