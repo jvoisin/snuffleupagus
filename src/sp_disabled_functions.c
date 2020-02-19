@@ -352,7 +352,12 @@ static void should_disable(zend_execute_data* execute_data,
     if (config_node->param || config_node->r_param ||
         (config_node->pos != -1)) {
       if (!builtin_param &&
-          execute_data->func->op_array.arg_info->is_variadic) {
+#if PHP_VERSION_ID >= 80000
+          ZEND_ARG_IS_VARIADIC(execute_data->func->op_array.arg_info)
+#else
+          execute_data->func->op_array.arg_info->is_variadic
+#endif
+						){
         sp_log_warn(
             "disable_function",
             "Snuffleupagus doesn't support variadic functions yet, sorry. "
