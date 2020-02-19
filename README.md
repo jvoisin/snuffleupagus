@@ -1,7 +1,7 @@
 <h1 align="center">
   <br>
   <a href="https://snuffleupagus.readthedocs.io/">
-    <img src="https://github.com/nbs-system/snuffleupagus/raw/master/doc/source/_static/sp.png" alt="Snuffleupagus' logo" width="200"></a>
+    <img src="https://github.com/jvoisin/snuffleupagus/raw/master/doc/source/_static/sp.png" alt="Snuffleupagus' logo" width="200"></a>
   <br>
   Snuffleupagus
   <br>
@@ -10,8 +10,8 @@
 <h4 align="center">Security module for php7 - Killing bugclasses and virtual-patching the rest!</h4>
 
 <p align="center">
-  <a href="https://travis-ci.org/nbs-system/snuffleupagus">
-    <img src="https://travis-ci.org/nbs-system/snuffleupagus.svg?branch=master"
+  <a href="https://travis-ci.org/jvoisin/snuffleupagus">
+    <img src="https://travis-ci.org/jvoisin/snuffleupagus.svg?branch=master"
          alt="Travis-ci">
   </a>
   <a href="https://gitlab.com/jvoisin/snuffleupagus/commits/master">
@@ -30,8 +30,8 @@
     <img src="https://readthedocs.org/projects/snuffleupagus/badge/?version=latest"
          alt="readthedocs.org">
   </a>
-  <a href="https://coveralls.io/github/nbs-system/snuffleupagus?branch=master">
-    <img src="https://coveralls.io/repos/github/nbs-system/snuffleupagus/badge.svg?branch=master"
+  <a href="https://coveralls.io/github/jvoisin/snuffleupagus?branch=master">
+    <img src="https://coveralls.io/repos/github/jvoisin/snuffleupagus/badge.svg?branch=master"
          alt="coveralls">
   </a>
   <a href="https://twitter.com/sp_php">
@@ -45,7 +45,7 @@
   <a href="#download">Download</a> •
   <a href="#examples">Examples</a> •
   <a href="https://snuffleupagus.readthedocs.io/">Documentation</a> •
-  <a href="https://github.com/nbs-system/snuffleupagus/blob/master/LICENSE">License</a> •
+  <a href="https://github.com/jvoisin/snuffleupagus/blob/master/LICENSE">License</a> •
   <a href="#thanks">Thanks</a>
 </p>
 
@@ -76,7 +76,7 @@ without having to touch the PHP code.
   * Enforcing TLS certificate validation when using [curl](https://secure.php.net/manual/en/book.curl.php)
   * Request dumping capability
 * A relatively sane code base:
-  * A [comprehensive](https://coveralls.io/github/nbs-system/snuffleupagus?branch=master) test suite close to 100% coverage
+  * A [comprehensive](https://coveralls.io/github/jvoisin/snuffleupagus?branch=master) test suite close to 100% coverage
   * Every commit is tested on [several distributions](https://gitlab.com/jvoisin/snuffleupagus/pipelines)
   * An `clang-format`-enforced code style
   * A [comprehensive documentation](https://snuffleupagus.rtfd.io)
@@ -87,11 +87,11 @@ without having to touch the PHP code.
 We've got a [download
 page](https://snuffleupagus.readthedocs.io/download.html), where you can find
 packages for your distribution, but you can of course just `git clone` this
-repo, or check the releases on [github](https://github.com/nbs-system/snuffleupagus/releases).
+repo, or check the releases on [github](https://github.com/jvoisin/snuffleupagus/releases).
 
 ## Examples
 
-We're providing [various example rules](https://github.com/nbs-system/snuffleupagus/tree/master/config),
+We're providing [various example rules](https://github.com/jvoisin/snuffleupagus/tree/master/config),
 that are looking like this:
 
 ```python
@@ -112,10 +112,10 @@ Upon violation of a rule, you should see lines like this in your logs:
 
 We've got a [comprehensive website](https://snuffleupagus.readthedocs.io/) with
 all the documentation that you could possibly wish for. You can of course
-[build it yourself](https://github.com/nbs-system/snuffleupagus/tree/master/doc).
+[build it yourself](https://github.com/jvoisin/snuffleupagus/tree/master/doc).
 
 ## Thanks
 
 Many thanks to the [Suhosin project](https://suhosin.org) for being a __huge__
 source of inspiration, and to all [our
-contributors](https://github.com/nbs-system/snuffleupagus/graphs/contributors).
+contributors](https://github.com/jvoisin/snuffleupagus/graphs/contributors).
