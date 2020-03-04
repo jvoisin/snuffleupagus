@@ -15,7 +15,7 @@ int sp_rfc1867_callback_win(unsigned int event, void *event_data,
                             void **extra) {
   sp_log_msg("upload_validation", SP_LOG_SIMULATION,
              "The upload validation doesn't work for now on Windows yet, "
-             "see https://github.com/nbs-system/snuffleupagus/issues/248 for "
+             "see https://github.com/jvoisin/snuffleupagus/issues/248 for "
              "details.");
   return SUCCESS;
 }

@@ -18,7 +18,7 @@ We're using `php qa <https://qa.php.net/>`__ tests format for our testsuite,
 it is automatically run when you're building snuffleupagus.
 
 If it happens to have unexpected failures (Since we're using `TDD <https://en.wikipedia.org/wiki/Test-driven_development>`__ as much
-as we can, we do have some expected failures), please do `open an issue <https://github.com/nbs-system/snuffleupagus/issues/new>`__
+as we can, we do have some expected failures), please do `open an issue <https://github.com/jvoisin/snuffleupagus/issues/new>`__
 on our bugtracker, and attach the generated ``.diff`` and ``.out`` files to it,
 so we can see what's happening.
 
@@ -27,7 +27,7 @@ Snuffleupagus is crashing
 
 While we do our very best to make snuffleupagus solid as possible, we're humans,
 and computers are hard, so crashes can happen. If you're encountering one in production,
-please try to launch the `testsuite <https://github.com/nbs-system/snuffleupagus/blob/master/CONTRIBUTING.md#3-get-the-test-suite-running>`__
+please try to launch the `testsuite <https://github.com/jvoisin/snuffleupagus/blob/master/CONTRIBUTING.md#3-get-the-test-suite-running>`__
 to see if it's failing. If it does, please :ref:`tell us <testsuite_fail>`.
 
 If the testsuite is passing, odds are that you're encountering an issue tied to your php code,

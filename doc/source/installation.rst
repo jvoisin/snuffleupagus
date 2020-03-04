@@ -1,7 +1,7 @@
 Installation
 ============
 
-Snuffleupagus is tested against `various PHP 7+ versions <https://travis-ci.org/nbs-system/snuffleupagus/>`_.
+Snuffleupagus is tested against `various PHP 7+ versions <https://travis-ci.org/jvoisin/snuffleupagus/>`_.
 
 Manual installation
 -------------------
@@ -21,7 +21,7 @@ Quickstart
 
 ::
 
-    git clone https://github.com/nbs-system/snuffleupagus
+    git clone https://github.com/jvoisin/snuffleupagus
     cd snuffleupagus/src
     phpize
     ./configure --enable-snuffleupagus

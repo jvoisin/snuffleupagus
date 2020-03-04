@@ -1,4 +1,4 @@
-# Maintainer NBS System Security Team <secu@nbs-system.com>
+# Maintained by Julien (jvoisin) Voisin <julien.voisin+snuffleupagus@dustri.org>
 pkgname="snuffleupagus"
 pkgver=r169.424845a
 pkgrel=1
@@ -8,7 +8,7 @@ arch=('i686' 'x86_64')
 license=('LGPL3')
 depends=('php' 'php-fpm')
 checkdepends=()
-source=("${pkgname}::git+https://github.com/nbs-system/${pkgname}.git")
+source=("${pkgname}::git+https://github.com/jvoisin/${pkgname}.git")
 md5sums=('SKIP')
 
 pkgver() {

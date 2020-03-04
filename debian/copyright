@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Snuffleupagus
-Upstream-Contact: NBS System <snuffleupagus@nbs-system.com>
-Source: https://github.com/nbs-system/snuffleupagus
+Upstream-Contact: Julien (jvoisin) Voisin <julien.voisin+snuffleupagus@dustri.org>
+Source: https://github.com/jvoisin/snuffleupagus
 
 Files: *
 Copyright: 2017 NBS System

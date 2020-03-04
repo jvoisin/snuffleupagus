@@ -46,6 +46,8 @@ with a strong focus on security. We do have several layers of hardening
 `IDS <https://en.wikipedia.org/wiki/Intrusion_detection_system>`_, etc),
 but we had nothing for PHP7.
 
+Nowadays, Snuffleupagus is maintained by Julien (jvoisin) Voisin.
+
 
 Why not Suhosin?
 """"""""""""""""
@@ -70,7 +72,8 @@ What license is Snuffleupagus released under and why?
 """""""""""""""""""""""""""""""""""""""""""""""""""""
 
 Snuffleupagus is licensed under the `LGPL <https://www.gnu.org/copyleft/lesser.html>`_
-and is developed by the fine people from `NBS System <https://nbs-system.com/>`__.
+was developed by the fine people from `NBS System <https://nbs-system.com/>`__,
+and is maintained by Julien (jvoisin) Voisin.
 
 We chose the LGPL because we don't care that much how you're using Snuffleupagus,
 but we'd like to force people to make their improvements/contributions
@@ -171,7 +174,7 @@ By checking the logs; Snuffleupagus systematically prefix them with ``[snuffleup
 
 Does Snuffleupagus run on Windows?
 """"""""""""""""""""""""""""""""""
-No idea, feel free to `try <https://github.com/nbs-system/snuffleupagus/issues/2>`_.
+No idea, feel free to `try <https://github.com/jvoisin/snuffleupagus/issues/2>`_.
 
 
 Does Snuggleupagus run on `HHVM <http://hhvm.com/>`_?
@@ -204,46 +207,13 @@ discuss potential impact of the vulnerability,
 reference applicable patches or workarounds,
 and credit the discoverer.
 
-Please send it us a mail to the ``security`` user,
-on ``nbs-system.com``, using the gpg key
-``498C46FF087EDC36E7EAF9D445414A82A9B22D78``:
+Please do send a mail to [Julien (jvoisin) Voisin](https://dustri.org) should
+you find a security issue.
 
-::
-
-    -----BEGIN PGP PUBLIC KEY BLOCK-----
-
-    mQENBFnKHhoBCADaOa0MKEqRy0h2ohIzczblzkMQCbU9oD1HwJ1VkYnn7TGW2iKi
-    NISxisExIXpy2Bn/pA27GiV0V/Do3NL6D9r0oOCrGR27muGM0N/dk9UMv7MWw8zv
-    K8cO+Sa28s0cAv7r2ogUJj5YOo8D4wHEpE8424TE89V9+Qg/SaFCxKoELFP0c7wu
-    mtsm0PnL65piZ1EB7lQo2gxg+8AV45MD1Y2rREMKUoZE23X+nXKsmEh9BFEPaU5M
-    7WQp0NasqeMNoGhwfw9ttVAeLhkEkaTjW1PkNRIb7vrtV9KVb5uKucflfbOnDlzu
-    tQ9U3tYto0mcSCRchAClfEmoSi/0mKyb5N6ZABEBAAG0NVNlY3VyaXR5IHRlYW0g
-    b2YgTkJTIFN5c3RlbSA8c2VjdXJpdHlAbmJzLXN5c3RlbS5jb20+iQE3BBMBCAAh
-    BQJZyh4aAhsDBQsJCAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEEVBSoKpsi14jy0H
-    /1/XB9THhvmG0ow81sld2Zx8qhnNed8VvYDS6mEjpDWNVPxENwDbnakEjisq1Hrb
-    2UQPYCyQ5dekPNFVwQHIGXkX0eb1Ank+4esBJuEpQ2985tgNhJy5ZX+Imb5C8nZC
-    90uYSN1UUg559nUsFeElOXSEH6tIXK/TvjsvMYoi2Ukl6lb7PbIU2fjLY9Iqv3QY
-    32p8/Bl1fVKWbXOk0HDgJ6zA3Kr56QhZOLBkxjOa2XAnnIE76jZxUJ9qPCwWd1vW
-    GFxtx1Y+eZriqHiC9CPe6aBWcIHaTXSu1WBbXrFu8/eCWw243Rxm8l9wgA/a7VWq
-    WBfO45IhJUwh95naRpw8/4a5AQ0EWcoeGgEIAJtzSyyzfn2RX+BsyoRFANUpIgrV
-    /9eohYQVNqK3AFthmq7Kjmt4+hszF5+0wCFmWwYqGnqk1/dsWmqpkXsJldEn6oPJ
-    Bng+Dc67Yki2dR3TroAf95UmI08fhyM7TMXp8m46BPRRMzPNwalEeEm49Oclmfxb
-    JsWWCChWVLWGz2xgPEAv3fPHqus7Rwz/WIl53l/qy1Wf0ewmjRpVEfnEMKBExtBK
-    4kRxQ40LzUZ1SfpyGc3nMbswhevT7/klqrdJdCnlu67Y/IfRGxGZuNj1n1Dib3Hx
-    zTBHo3Y2R3BB93Ix8dkbLaxLqFbOYVdijCgJklqUWhx7btpQ2xnZyzyCMuUAEQEA
-    AYkBHwQYAQgACQUCWcoeGgIbDAAKCRBFQUqCqbIteFRvB/9u3Mae8n8ELrJKOn+P
-    PEbWjutObIuTplvY4QcbnNb9dsgsKryamp4CFJsA5XuitPpC31GDMXBZO5/LLOuH
-    HoMaXFJdic0NToL/3REhu+aZkNIU6S/iaPRNVhkSV4lwQsvncz+nBaiDUJjyfJm2
-    kEjVcRTM8yqzcNo/9Gn0ts+XCUqRj7+S1M4Bj3NySoO/w2n+7OLbIAj+wQZcj3Gf
-    5QhBYaY4YaFxrJE0IZxyXGHw8xhKR6AN+u4TO7LRCW+cWV/sHWir1MXieJoEG8+R
-    W/BhrB0Rz5uxOXMoGCCD2TUiHq7zpuHGnYFVmAnHQZaaQxXve4VrcmznxgpV8lpW
-    mZug
-    =+eIv
-    -----END PGP PUBLIC KEY BLOCK-----
 
 I found a bug. How can I report it?
 """""""""""""""""""""""""""""""""""
-We do have an issue tracker on `Github <https://github.com/nbs-system/snuffleupagus/issues>`_.
+We do have an issue tracker on `Github <https://github.com/jvoisin/snuffleupagus/issues>`_.
 Please make sure to include as much information as possible when reporting your issue,
 such as your operating system, your version of PHP 7, your version of Snuffleupagus,
 your logs, the problematic php code, the request, a brief description, … long story short,
@@ -255,12 +225,9 @@ it's not that hard.
 Where can I find even more help?
 """"""""""""""""""""""""""""""""
 The :doc:`configuration page <config>` might be what you're looking for.
-If you're adventurous, you can also check the `issue tracker <https://github.com/nbs-system/snuffleupagus/issues/?q=is%3Aissue>`_
-(make sure to check the `closed issues <https://github.com/nbs-system/snuffleupagus/issues?q=is%3Aissue+is%3Aclosed>`_ too).
+If you're adventurous, you can also check the `issue tracker <https://github.com/jvoisin/snuffleupagus/issues/?q=is%3Aissue>`_
+(make sure to check the `closed issues <https://github.com/jvoisin/snuffleupagus/issues?q=is%3Aissue+is%3Aclosed>`_ too).
 
-I need professional support for my company.
-"""""""""""""""""""""""""""""""""""""""""""
-Contact `NBS System <https://nbs-system.com>`_.
 
 Unimplemented mitigations and abandoned ideas
 ---------------------------------------------

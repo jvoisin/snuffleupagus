@@ -199,8 +199,8 @@ argument and various information about it in the environment:
 
 This feature can be used, for example, to check if an uploaded file contains php
 code, using `vld <https://derickrethans.nl/projects.html#vld>`_,
-via `a python script <https://github.com/nbs-system/snuffleupagus/tree/master/scripts/upload_validation.py>`__,
-or `a php one <https://github.com/nbs-system/snuffleupagus/tree/master/scripts/upload_validation.php>`__.
+via `a python script <https://github.com/jvoisin/snuffleupagus/tree/master/scripts/upload_validation.py>`__,
+or `a php one <https://github.com/jvoisin/snuffleupagus/tree/master/scripts/upload_validation.php>`__.
 
 The upload will be **allowed** if the script returns the value ``0``. Every other
 value will prevent the file from being uploaded.
@@ -342,7 +342,7 @@ For clarity, the presence of the ``allow`` or ``drop`` action is **mandatory**.
   because it'll match the deny first.
 
 If you're paranoid, we're providing a `php script
-<https://github.com/nbs-system/snuffleupagus/blob/master/scripts/generate_rules.php>`__
+<https://github.com/jvoisin/snuffleupagus/blob/master/scripts/generate_rules.php>`__
 to automatically generate hash of files containing dangerous functions, and
 blacklisting them everywhere else.
 
@@ -358,7 +358,7 @@ It's currently not possible to:
   things like this, odds are that you're doing something wrong anyway.
 - Hooks on ``echo`` and on ``print`` are equivalent: there is no way to hook one
   without hooking the other, at least
-  `for now <https://github.com/nbs-system/snuffleupagus/issues/190>`__).
+  `for now <https://github.com/jvoisin/snuffleupagus/issues/190>`__).
   This is why hooked ``print`` will be displayed as ``echo`` in the logs.
 - Hook `strlen`, since in latest PHP versions, this function is usually
   optimized away by the compiled.

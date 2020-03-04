@@ -4,7 +4,7 @@
 #define PHP_SNUFFLEUPAGUS_VERSION "0.5.0"
 #define PHP_SNUFFLEUPAGUS_EXTNAME "snuffleupagus"
 #define PHP_SNUFFLEUPAGUS_AUTHOR "NBS System"
-#define PHP_SNUFFLEUPAGUS_URL "https://github.com/nbs-system/snuffleupagus"
+#define PHP_SNUFFLEUPAGUS_URL "https://github.com/jvoisin/snuffleupagus"
 #define PHP_SNUFFLEUPAGUS_COPYRIGHT "LGPLv2"
 
 #include <errno.h>

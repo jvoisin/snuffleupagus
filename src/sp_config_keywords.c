@@ -44,7 +44,7 @@ int parse_session(char *line) {
       "You're trying to use the session cookie encryption feature "
       "on line %zu without having session support statically built into PHP. "
       "This isn't supported, see "
-      "https://github.com/nbs-system/snuffleupagus/issues/278 for details.",
+      "https://github.com/jvoisin/snuffleupagus/issues/278 for details.",
       sp_line_no);
   pefree(session, 0);
   return -1;

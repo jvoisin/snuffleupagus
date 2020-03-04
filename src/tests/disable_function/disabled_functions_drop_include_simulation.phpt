@@ -1,5 +1,5 @@
 --TEST--
-Disable function, bug : https://github.com/nbs-system/snuffleupagus/issues/181
+Disable function, bug : https://github.com/jvoisin/snuffleupagus/issues/181
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
 --INI--

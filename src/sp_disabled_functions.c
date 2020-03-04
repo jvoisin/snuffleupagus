@@ -361,7 +361,7 @@ static void should_disable(zend_execute_data* execute_data,
         sp_log_warn(
             "disable_function",
             "Snuffleupagus doesn't support variadic functions yet, sorry. "
-            "Check https://github.com/nbs-system/snuffleupagus/issues/164 for "
+            "Check https://github.com/jvoisin/snuffleupagus/issues/164 for "
             "details.");
       } else if (false == is_param_matching(
                               execute_data, config_node, builtin_param,
