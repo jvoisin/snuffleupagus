@@ -19,6 +19,9 @@ Talks
 - `Pass the Salt <https://2018.pass-the-salt.org/schedule/#snuffleupagus>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/passthesalt_2018.pdf>`__ - `video <https://passthesalt.ubicast.tv/videos/snuffleupagus-killing-bug-classes-and-virtual-patching-the-rest/>`__
 - `44con <https://44con.com/44con/44con-2018/44con-2018-talks/>`__ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/44con_2018.pdf>`__
 
+2020
+""""
+- `Modern PHP security - sec4dev 2020, Vienna - Synacktiv <https://www.synacktiv.com/ressources/modern_php_security_sec4dev.pdf>`__ - `sec4dev 2020 <https://sec4dev.io/2020>`__ 
 
 Mentions
 --------
