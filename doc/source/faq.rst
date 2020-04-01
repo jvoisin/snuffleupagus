@@ -245,3 +245,19 @@ if someone can manage to get better results than us.
 The possibility of having this natively in PHP has
 `been discussed <https://marc.info/?l=php-internals&m=141692988212413&w=2>`_,
 but as 2017, nothing has been merged yet.
+
+Nop'ing function execution
+""""""""""""""""""""""""""
+
+Snuffleupagus can be configured to either *allow* or *drop* the execution of
+particular functions and optionally *log* and *dump* them, but it doesn't
+provide any mechanism to *nop* their execution.
+
+We thought about adding this, but didn't for several reasons:
+
+- What should the return value of a *nop'ed* function be?
+- It would add confusion between ``drop``, ``nop`` and ``log``.
+- Usually, when a specific function is called, either it's a dangerous one
+  and you want to stop the execution immediately, or you want to let it
+  continue and log it. There isn't really any middle-ground, or at least we
+  failed to find any.
