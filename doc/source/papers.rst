@@ -88,3 +88,4 @@ Notable users
 - `Oceanet Technology <https://www.oceanet-technology.com/>`__ - a French hosting company
 - `SwissCenter <https://swisscenter.com>`__ - a Swiss datacenter & web hosting company
 - `Toolslib <https://toolslib.net/>`__ - an `Alexa top 10k <https://www.alexa.com/siteinfo/toolslib.net>`__ website
+- `cPanel <https://cpanel.net/>`__ - one of the most popular web hosting control panel 
