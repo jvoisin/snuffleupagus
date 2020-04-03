@@ -58,6 +58,7 @@ Articles
 - `Behold the Snuffleupagus <https://memze.ro/posts/behold-the-snuffleupagus/>`__ - memze.ro
 - `How to harden AdwCleaner’s web backend using PHP <https://blog.malwarebytes.com/security-world/technology/2017/12/harden-adwcleaner-php-web-backend/>`__ - Malwarebyte's blog
 - `First release of Snuffleupagus <https://dustri.org/b/first-release-of-snuffleupagus.html>`__ - dustri.org
+- `PHP Magazine <http://phpmagazine.net/2017/11/snuffleupagus-experimental-security-module-for-php7.html>`__ - phpmagazine.net
 
 2018
 """"
