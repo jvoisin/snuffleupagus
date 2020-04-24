@@ -21,7 +21,7 @@ testsuite:ubuntu:
   stage: testsuite
   script:
     - apt-get -qqy update
-    - DEBIAN_FRONTEND=noninteractive apt-get -qqy install --no-install-recommends php-dev gcc make
+    - DEBIAN_FRONTEND=noninteractive apt-get -qqy install --no-install-recommends php-dev gcc make libpcre3-dev php-cgi php-curl
     - make debug
 
 testsuite:alpine:
