@@ -42,6 +42,9 @@ sp.disable_function.function("mail").param("additional_parameters").value_r("\\-
 # Since it's now burned, me might as well mitigate it publicly
 sp.disable_function.function("putenv").param("setting").value_r("LD_").drop()
 
+# This one was burned in Nov 2019 - https://gist.github.com/LoadLow/90b60bd5535d6c3927bb24d5f9955b80
+sp.disable_function.function("putenv").param("setting").value_r("GCONV_").drop()
+
 # This is also burned:
 # ini_set('open_basedir','..');chdir('..');…;chdir('..');ini_set('open_basedir','/');echo(file_get_contents('/etc/passwd'));
 # Since we have no way of matching on two parameters at the same time, we're
