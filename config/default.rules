@@ -46,7 +46,8 @@ sp.disable_function.function("putenv").param("setting").value_r("LD_").drop()
 sp.disable_function.function("putenv").param("setting").value_r("GCONV_").drop()
 
 # Since people are stupid enough to use `extract` on things like $_GET or $_POST, we might as well mitigate this vector
-sp.disable_function.function("extract").param("array").value_r("^_").drop()
+sp.disable_function.function("extract").param("var_array").value_r("^_").drop()
+sp.disable_function.function("extract").param("extract_type").value("0").drop()
 
 # This is also burned:
 # ini_set('open_basedir','..');chdir('..');…;chdir('..');ini_set('open_basedir','/');echo(file_get_contents('/etc/passwd'));
