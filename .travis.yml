@@ -43,6 +43,7 @@ script:
   - ./configure --enable-snuffleupagus --enable-coverage
   - make -j 2
   - sed -i "s/\$$ext_params -d display_errors=0 -r/-d display_errors=0 -r/" run-tests.php
+  - cat run-tests.php
   - TEST_PHP_ARGS="-q" REPORT_EXIT_STATUS=1 make test
 
 after_success:
