@@ -2,9 +2,11 @@
 Disable functions - Ensure that server certificates validation can't be disabled via `curl_setopt_array`
 --SKIPIF--
 <?php
-if (!extension_loaded("snuffleupagus")) { die("skip"); }
-if (!extension_loaded("curl")) { die("skip"); }
+if (!extension_loaded("snuffleupagus")) { echo("skip"); }
+if (!extension_loaded("curl")) { echo("skip"); }
 ?>
+--EXTENSIONS--
+curl
 --INI--
 sp.configuration_file={PWD}/config/disabled_function_curl_verify_certs.ini
 --FILE--

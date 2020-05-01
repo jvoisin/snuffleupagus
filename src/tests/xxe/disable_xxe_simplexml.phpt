@@ -5,6 +5,8 @@ Disable XXE
  if (!extension_loaded("snuffleupagus")) echo "skip";
  if (!extension_loaded("simplexml")) echo "skip";
  ?>
+--EXTENSIONS--
+simplexml
 --INI--
 sp.configuration_file={PWD}/config/disable_xxe.ini
 --FILE--
