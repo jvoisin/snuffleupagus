@@ -6,7 +6,7 @@ Disable XXE
  if (!extension_loaded("simplexml")) echo "skip";
  ?>
 --EXTENSIONS--
-simplexml
+xml
 --INI--
 sp.configuration_file={PWD}/config/disable_xxe.ini
 --FILE--
