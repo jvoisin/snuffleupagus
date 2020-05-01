@@ -5,6 +5,8 @@ Disable functions - Ensure that server certificates validation can't be disabled
 if (!extension_loaded("snuffleupagus")) { die("skip"); }
 if (!extension_loaded("curl")) { die("skip"); }
 ?>
+--EXTENSIONS--
+curl
 --INI--
 sp.configuration_file={PWD}/config/disabled_function_curl_verify_certs.ini
 --FILE--

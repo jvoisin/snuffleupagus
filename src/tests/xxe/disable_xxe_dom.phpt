@@ -8,6 +8,8 @@ Disable XXE
 	echo "skip";
 }
  ?>
+--EXTENSIONS--
+dom
 --INI--
 sp.configuration_file={PWD}/config/disable_xxe.ini
 --FILE--
