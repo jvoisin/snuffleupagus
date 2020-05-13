@@ -1,17 +1,11 @@
 --TEST--
 Disable XXE
 --SKIPIF--
-<?php
- if (!extension_loaded("snuffleupagus")) {
-  echo "skip"; 
-} elseif (!extension_loaded("dom")) {
-	echo "skip";
-}
- ?>
---EXTENSIONS--
-dom
+<?php if (!extension_loaded("snuffleupagus") || !extension_loaded("dom")) print("skip"); ?>
 --INI--
 sp.configuration_file={PWD}/config/disable_xxe.ini
+--EXTENSIONS--
+dom
 --FILE--
 <?php 
 $dir = __DIR__;
