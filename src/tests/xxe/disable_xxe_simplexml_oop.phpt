@@ -6,6 +6,7 @@ Disable XXE
 sp.configuration_file={PWD}/config/disable_xxe.ini
 --EXTENSIONS--
 simplexml
+--XFAIL--
 --FILE--
 <?php 
 $dir = __DIR__;
