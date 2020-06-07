@@ -1,7 +1,7 @@
 --TEST--
 Disable XXE
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus") || !extension_loaded("simplexml")) print("skip"); ?>
+<?php if (!extension_loaded("snuffleupagus") || !extension_loaded("simplexml") || getenv('TRAVIS')) print("skip"); ?>
 --INI--
 sp.configuration_file={PWD}/config/disable_xxe.ini
 --EXTENSIONS--
