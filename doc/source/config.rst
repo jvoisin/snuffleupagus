@@ -254,8 +254,11 @@ blacklisted, it'll be allowed.
 Virtual-patching
 ----------------
 
-Snuffleupagus provides virtual-patching via the ``disable_function`` directive, allowing you to stop or control dangerous behaviours.
-In the situation where you have a call to ``system()`` that lacks proper user-input validation, this could cause issues as it would lead to an **RCE**. The virtual-patching would allow this to be prevented.
+Snuffleupagus provides virtual-patching via the ``disable_function`` directive,
+allowing you to stop or control dangerous behaviours.  In the situation where
+you have a call to ``system()`` that lacks proper user-input validation, this
+could cause issues as it would lead to an **RCE**. The virtual-patching would
+allow this to be prevented.
 
 ::
    
@@ -305,8 +308,14 @@ The ``type`` must be one of the following values:
 Actions
 ^^^^^^^
 
+Every rule *must* have one action.
+
 - ``allow()``: **allow** the request if the rule matches
 - ``drop()``: **drop** the request if the rule matches
+
+Modifications
+^^^^^^^^^^^^^
+
 - ``dump(directory)``: dump the request in the ``directory`` if it matches the rule
 - ``simulation()``: enabled the simulation mode
 
