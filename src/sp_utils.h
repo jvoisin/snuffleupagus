@@ -37,7 +37,7 @@
 #define sp_log_err(feature, ...) sp_log_msg(feature, SP_LOG_ERROR, __VA_ARGS__)
 #define sp_log_warn(feature, ...) sp_log_msg(feature, SP_LOG_WARN, __VA_ARGS__)
 #ifdef SP_DEBUG
-#define sp_log_debug(...) sp_log_msg("DEBUG", SP_LOG_DEBUG, __VA_ARGS__)
+#define sp_log_debug(fmt, ...) sp_log_msg("DEBUG", SP_LOG_DEBUG, "%s(): " fmt, __FUNCTION__, ##__VA_ARGS__)
 #else
 #define sp_log_debug(...)
 #endif
