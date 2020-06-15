@@ -101,8 +101,8 @@ static bool is_local_var_matching(
 static bool is_param_matching(zend_execute_data* execute_data,
                               sp_disabled_function const* const config_node,
                               const zend_string* builtin_param,
-                              const char** arg_name,
                               const char* builtin_param_name,
+                              const char** arg_name,
                               const zend_string** arg_value_str) {
   int nb_param = ZEND_CALL_NUM_ARGS(execute_data);
   int i = 0;
@@ -312,11 +312,13 @@ static void should_disable(zend_execute_data* execute_data,
         goto next;
       }
     }
+
     if (config_node->line) {
       if (config_node->line != zend_get_executed_lineno()) {
         goto next;
       }
     }
+
     if (config_node->filename || config_node->r_filename) {
       zend_execute_data* ex =
           is_file_matching(execute_data, config_node, current_filename);
@@ -331,6 +333,7 @@ static void should_disable(zend_execute_data* execute_data,
         goto next;
       }
     }
+
     if (config_node->var) {
       if (false == is_local_var_matching(execute_data, config_node)) {
         goto next;
@@ -349,7 +352,8 @@ static void should_disable(zend_execute_data* execute_data,
 
     /* Check if we filter on parameter value*/
     if (config_node->param || config_node->r_param ||
-        (config_node->pos != -1)) {
+        (config_node->pos != -1)  ||
+        ((config_node->r_value || config_node->value) && !config_node->var)) {
       if (!builtin_param &&
 #if PHP_VERSION_ID >= 80000
           ZEND_ARG_IS_VARIADIC(execute_data->func->op_array.arg_info)
@@ -363,21 +367,9 @@ static void should_disable(zend_execute_data* execute_data,
             "Check https://github.com/jvoisin/snuffleupagus/issues/164 for "
             "details.");
       } else if (false == is_param_matching(
-                              execute_data, config_node, builtin_param,
-                              &arg_name, builtin_param_name, &arg_value_str)) {
+                              execute_data, config_node, builtin_param, builtin_param_name,
+                              &arg_name, &arg_value_str)) {
         goto next;
-      }
-    }
-
-    if (config_node->r_value || config_node->value) {
-      if (check_is_builtin_name(config_node) && !config_node->var &&
-          !config_node->key && !config_node->r_key && !config_node->param &&
-          !config_node->r_param) {
-        if (false == is_param_matching(execute_data, config_node, builtin_param,
-                                       &arg_name, builtin_param_name,
-                                       &arg_value_str)) {
-          goto next;
-        }
       }
     }
 
