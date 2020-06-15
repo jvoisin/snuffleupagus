@@ -356,65 +356,41 @@ int parse_disabled_functions(char *line) {
                "Invalid configuration line: 'sp.disabled_functions%s': " \
                "'.%s' and '.%s' are mutually exclusive on line %zu",     \
                line, STR1, STR2, sp_line_no);                            \
-    return 1;                                                            \
+    return -1;                                                            \
   }
 
-  MUTUALLY_EXCLUSIVE(df->value, df->r_value, "value", "regexp");
-  MUTUALLY_EXCLUSIVE(df->r_function, df->function, "r_function", "function");
-  MUTUALLY_EXCLUSIVE(df->filename, df->r_filename, "r_filename", "filename");
-  MUTUALLY_EXCLUSIVE(df->ret, df->r_ret, "r_ret", "ret");
-  MUTUALLY_EXCLUSIVE(df->key, df->r_key, "r_key", "key");
+  MUTUALLY_EXCLUSIVE(df->value, df->r_value, "value", "value_r");
+  MUTUALLY_EXCLUSIVE(df->r_function, df->function, "function", "function_r");
+  MUTUALLY_EXCLUSIVE(df->filename, df->r_filename, "filename", "filename_r");
+  MUTUALLY_EXCLUSIVE(df->ret, df->r_ret, "ret", "ret_r");
+  MUTUALLY_EXCLUSIVE(df->key, df->r_key, "key", "key_r");
+  MUTUALLY_EXCLUSIVE(pos, param, "pos", "param");
+  MUTUALLY_EXCLUSIVE(pos, df->r_param, "pos", "param_r");
+  MUTUALLY_EXCLUSIVE(param, df->r_param, "param", "param_r");
+  MUTUALLY_EXCLUSIVE((df->r_key || df->key), (df->r_value || df->value), "key", "value");
+  MUTUALLY_EXCLUSIVE((df->r_ret || df->ret || df->ret_type), (df->r_param || param), "ret", "param");
+  MUTUALLY_EXCLUSIVE((df->r_ret || df->ret || df->ret_type), (var), "ret", "var");
+  MUTUALLY_EXCLUSIVE((df->r_ret || df->ret || df->ret_type), (df->value || df->r_value), "ret", "value");
+
 #undef MUTUALLY_EXCLUSIVE
 
-  if (1 <
-      ((df->r_param ? 1 : 0) + (param ? 1 : 0) + ((-1 != df->pos) ? 1 : 0))) {
-    sp_log_err(
-        "config",
-        "Invalid configuration line: 'sp.disabled_functions%s':"
-        "'.r_param', '.param' and '.pos' are mutually exclusive on line %zu",
-        line, sp_line_no);
-    return -1;
-  } else if ((df->r_key || df->key) && (df->r_value || df->value)) {
-    sp_log_err("config",
-               "Invalid configuration line: 'sp.disabled_functions%s':"
-               "`key` and `value` are mutually exclusive on line %zu",
-               line, sp_line_no);
-    return -1;
-  } else if ((df->r_ret || df->ret || df->ret_type) && (df->r_param || param)) {
-    sp_log_err("config",
-               "Invalid configuration line: 'sp.disabled_functions%s':"
-               "`ret` and `param` are mutually exclusive on line %zu",
-               line, sp_line_no);
-    return -1;
-  } else if ((df->r_ret || df->ret || df->ret_type) && (var)) {
-    sp_log_err("config",
-               "Invalid configuration line: 'sp.disabled_functions%s':"
-               "`ret` and `var` are mutually exclusive on line %zu",
-               line, sp_line_no);
-    return -1;
-  } else if ((df->r_ret || df->ret || df->ret_type) &&
-             (df->value || df->r_value)) {
-    sp_log_err("config",
-               "Invalid configuration line: 'sp.disabled_functions%s':"
-               "`ret` and `value` are mutually exclusive on line %zu",
-               line, sp_line_no);
-    return -1;
-  } else if (!(df->r_function || df->function)) {
+  if (!(df->r_function || df->function)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s':"
                " must take a function name on line %zu",
                line, sp_line_no);
     return -1;
-  } else if (df->filename && (*ZSTR_VAL(df->filename) != '/') &&
-             (0 !=
-              strncmp(ZSTR_VAL(df->filename), "phar://", strlen("phar://")))) {
+  }
+  if (df->filename && (*ZSTR_VAL(df->filename) != '/') &&
+             (0 != strncmp(ZSTR_VAL(df->filename), "phar://", strlen("phar://")))) {
     sp_log_err(
         "config",
         "Invalid configuration line: 'sp.disabled_functions%s':"
         "'.filename' must be an absolute path or a phar archive on line %zu",
         line, sp_line_no);
     return -1;
-  } else if (!(allow ^ drop)) {
+  }
+  if (!(allow ^ drop)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s': The "
                "rule must either be a `drop` or `allow` one on line %zu",
