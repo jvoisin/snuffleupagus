@@ -4,7 +4,7 @@
 #define PHP_SNUFFLEUPAGUS_VERSION "0.5.0"
 #define PHP_SNUFFLEUPAGUS_EXTNAME "snuffleupagus"
 #define PHP_SNUFFLEUPAGUS_AUTHOR "NBS System"
-#define PHP_SNUFFLEUPAGUS_URL "https://github.com/nbs-system/snuffleupagus"
+#define PHP_SNUFFLEUPAGUS_URL "https://github.com/jvoisin/snuffleupagus"
 #define PHP_SNUFFLEUPAGUS_COPYRIGHT "LGPLv2"
 
 #ifdef HAVE_CONFIG_H
@@ -26,6 +26,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/syslog.h>
 
 #include "SAPI.h"
 #include "ext/session/php_session.h"
@@ -55,6 +56,10 @@
 #endif
 #if PHP_VERSION_ID < 70200
 typedef void (*zif_handler)(INTERNAL_FUNCTION_PARAMETERS);
+#endif
+#if PHP_VERSION_ID >= 80000
+#define TSRMLS_FETCH()
+#define TSRMLS_C
 #endif
 
 #include "sp_pcre_compat.h"

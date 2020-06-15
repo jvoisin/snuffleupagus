@@ -1,4 +1,4 @@
-# Maintainer: <secu@nbs-system.com>
+# Maintained by Julien (jvoisin) Voisin <julien.voisin+snuffleupagus@dustri.org>
 pkgname="php7-snuffleupagus"
 _pkgname="snuffleupagus"
 pkgver=0.1
@@ -10,7 +10,7 @@ license="LGPL3"
 depends="php7-dev php7-fpm"
 source=""
 
-_giturl="https://github.com/nbs-system/snuffleupagus.git"
+_giturl="https://github.com/jvoisin/snuffleupagus.git"
 
 prepare() {
   default_prepare

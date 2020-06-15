@@ -12,5 +12,5 @@ Content-Disposition: form-data; name="test"; filename="test.php"
 --FILE--
 <?php echo 1337; ?>
 --EXPECTF--
-Warning: [snuffleupagus][upload_validation] The upload of test.php on ? was rejected. in Unknown on line 0
+Warning: [snuffleupagus][0.0.0.0][upload_validation] The upload of test.php on ? was rejected. in Unknown on line 0
 1337

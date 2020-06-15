@@ -1,11 +1,11 @@
 Source: snuffleupagus
 Priority: optional
-Maintainer: NBS System <snuffleupagus@nbs-system.com>
-Build-Depends: debhelper (>= 9), php7.0-dev | php7.1-dev | php7.2-dev
+Maintainer: Julien (jvoisin) Voisin <julien.voisin+snuffleupagus@dustri.org>
+Build-Depends: debhelper (>= 9), php7.0-dev | php7.1-dev | php7.2-dev | php7.3-dev | php7.4-dev
 Standards-Version: 4.1.3
-Homepage: https://snuffleupagus.fr
+Homepage: https://github.com/jvoisin/snuffleupagus
 Section: php
-Vcs-Git: https://github.com/nbs-system/snuffleupagus
+Vcs-Git: https://github.com/jvoisin/snuffleupagus
 
 Package: snuffleupagus
 Architecture: any

@@ -27,4 +27,4 @@ unlink($dir . '/test.bla');
 Outside of eval: 0.54030230586814
 After allowed eval: 0.28366218546323
 
-Fatal error: [snuffleupagus][Eval_whitelist] The function 'sin' isn't in the eval whitelist, dropping its call. in %a/test.bla on line 1
+Fatal error: [snuffleupagus][0.0.0.0][Eval_whitelist] The function 'sin' isn't in the eval whitelist, dropping its call. in %a/test.bla on line 1

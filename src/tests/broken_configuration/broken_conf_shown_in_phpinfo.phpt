@@ -17,12 +17,12 @@ if (strstr($info, 'Valid config => no') !== FALSE) {
 }
 ?>
 --EXPECTF--
-PHP Fatal error:  [snuffleupagus][config] Failed to compile '*.': %s on line 1. in Unknown on line 0
-PHP Fatal error:  [snuffleupagus][config] '.filename_r()' is expecting a valid regexp, and not '"*."' on line 1 in Unknown on line 0
+PHP Fatal error:  [snuffleupagus][0.0.0.0][config] Failed to compile '*.': %s on line 1. in Unknown on line 0
+PHP Fatal error:  [snuffleupagus][0.0.0.0][config] '.filename_r()' is expecting a valid regexp, and not '"*."' on line 1 in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] Failed to compile '*.': %s on line 1. in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config] Failed to compile '*.': %s on line 1. in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] '.filename_r()' is expecting a valid regexp, and not '"*."' on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config] '.filename_r()' is expecting a valid regexp, and not '"*."' on line 1 in Unknown on line 0
 
-Fatal error: [snuffleupagus][config] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config] Invalid configuration file in Unknown on line 0
 Could not startup.

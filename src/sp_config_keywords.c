@@ -44,7 +44,7 @@ int parse_session(char *line) {
       "You're trying to use the session cookie encryption feature "
       "on line %zu without having session support statically built into PHP. "
       "This isn't supported, see "
-      "https://github.com/nbs-system/snuffleupagus/issues/278 for details.",
+      "https://github.com/jvoisin/snuffleupagus/issues/278 for details.",
       sp_line_no);
   pefree(session, 0);
   return -1;
@@ -81,6 +81,25 @@ int parse_session(char *line) {
 int parse_random(char *line) {
   return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_random->enable),
                       NULL);
+}
+
+int parse_log_media(char *line) {
+  size_t consumed = 0;
+  zend_string *value =
+      get_param(&consumed, line, SP_TYPE_STR, SP_TOKEN_LOG_MEDIA);
+
+  if (value) {
+    if (!strcmp(ZSTR_VAL(value), "php")) {
+      SNUFFLEUPAGUS_G(config).log_media = SP_ZEND;
+      return 0;
+    } else if (!strcmp(ZSTR_VAL(value), "syslog")) {
+      SNUFFLEUPAGUS_G(config).log_media = SP_SYSLOG;
+      return 0;
+    }
+  }
+  sp_log_err("config", "%s) only supports 'syslog' or 'php', on line %zu",
+             SP_TOKEN_LOG_MEDIA, sp_line_no);
+  return -1;
 }
 
 int parse_sloppy_comparison(char *line) {

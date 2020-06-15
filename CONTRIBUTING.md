@@ -6,9 +6,9 @@ First off, thank you for considering contributing to snuffleupagus.
 
 If you've noticed a bug or have a question,
 look at the [faq](https://snuffleupagus.readthedocs.io/faq.html) and
-[search the issue tracker](https://github.com/nbs-system/snuffleupagus/issues)
+[search the issue tracker](https://github.com/jvoisin/snuffleupagus/issues)
 to see if someone else has already created a ticket. If not, go ahead and
-[make one](https://github.com/nbs-system/snuffleupagus/issues/new)!
+[make one](https://github.com/jvoisin/snuffleupagus/issues/new)!
 
 ### 2. Fork & create a branch
 
@@ -28,7 +28,7 @@ Just type `make coverage` or `make debug`, the testsuite should be run
 automatically.
 
 Please add tests if you're fixing a bug or adding a new feature: we do have a
-[high coverage](https://coveralls.io/github/nbs-system/snuffleupagus?branch=master)
+[high coverage](https://coveralls.io/github/jvoisin/snuffleupagus?branch=master)
 (functions, lines and branches), and intend to keep it that way.
 
 #### 3.3 Debugging failures in the test suite
@@ -45,9 +45,9 @@ launching it, in order to run the failing test inside GDB.
 ### 4. Did you find a bug?
 
 * **Ensure the bug was not already reported** by
-  [searching all issues](https://github.com/nbs-system/snuffleupagus/issues?q=).
+  [searching all issues](https://github.com/jvoisin/snuffleupagus/issues?q=).
 * If you're unable to find an open issue addressing the problem,
-  [open a new one](https://github.com/nbs-system/snuffleupagus/issues/new).
+  [open a new one](https://github.com/jvoisin/snuffleupagus/issues/new).
   Be sure to include a **title and clear description**,
   as much relevant information as possible, and a **code sample**
   or an **executable test case** demonstrating the expected behavior that is not
@@ -67,7 +67,7 @@ At this point, you should switch back to your master branch and make sure it's
 up to date with our upstream master branch:
 
 ```sh
-git remote add upstream git@github.com:nbs-system/snuffleupagus.git
+git remote add upstream git@github.com:jvoisin/snuffleupagus.git
 git checkout master
 git pull upstream master
 ```
@@ -82,7 +82,7 @@ git push --set-upstream origin 325-kill-sql-injections
 
 Finally, go to GitHub and [make a Pull Request](https://help.github.com/articles/creating-a-pull-request) :D
 
-Travis CI will [run our test suite](https://travis-ci.org/nbs-system/snuffleupagus)
+Travis CI will [run our test suite](https://travis-ci.org/jvoisin/snuffleupagus)
 against all supported PHP versions. We care about quality, so your PR won't be
 merged until all tests pass. It's unlikely, but it's possible that your changes
 pass tests in one PHP version but fail in another. In that case, you'll have to
@@ -121,7 +121,7 @@ Maintainers need to do the following to push out a release:
 
 1. Make sure that all pending and mergeable pull requests are in
 2. Close the corresponding
-	 [milestone](https://github.com/nbs-system/snuffleupagus/milestones)
+	 [milestone](https://github.com/jvoisin/snuffleupagus/milestones)
 2. Run `valgrind` (by adding a `-m` after the `-q` in the Makefile) and check that everything is ok.
    Don't mind the python-related issues.
 3. Update the `src/php_snuffleupagus.h` according to [semantic versioning](https://semver.org/)
@@ -132,15 +132,13 @@ Maintainers need to do the following to push out a release:
 8. Create a tag for the release:
 
   ```sh
-  git config user.signingkey 498C46FF087EDC36E7EAF9D445414A82A9B22D78
-  git config user.email security@nbs-system.com
   git tag -s v$MAJOR.$MINOR.$PATCH -m "v$MAJOR.$MINOR.$PATCH"
   git push --tags
 	git push origin master
   ```
 
 9. Build the debian package with `make debian`
-10. Create the [release on github](https://github.com/nbs-system/snuffleupagus/releases)
+10. Create the [release on github](https://github.com/jvoisin/snuffleupagus/releases)
 11. Add the freshly built Debian package to the release
 12. Publish a [tweet](https://twitter.com/sp_php)
 13. Do the *secret release dance*

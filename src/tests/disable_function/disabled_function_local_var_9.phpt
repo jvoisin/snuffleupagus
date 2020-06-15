@@ -18,4 +18,4 @@ namespace asd {
 --EXPECTF--
 Valeur: asdfgh
 
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_9.php on line 8
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_9.php on line 8

@@ -41,10 +41,10 @@ unlink("$dir/non_writable_file.txt");
 unlink("$dir/writable_file.txt");
 ?>
 --EXPECTF--
-Warning: [snuffleupagus][readonly_exec] Attempted execution of a writable file (%a/deny_writable_execution_simulation.php). in %a/deny_writable_execution_simulation.php on line 2
+Warning: [snuffleupagus][0.0.0.0][readonly_exec] Attempted execution of a writable file (%a/deny_writable_execution_simulation.php). in %a/deny_writable_execution_simulation.php on line 2
 
-Warning: [snuffleupagus][readonly_exec] Attempted execution of a writable file (%a/writable_file.txt). in %a/deny_writable_execution_simulation.php on line 12
+Warning: [snuffleupagus][0.0.0.0][readonly_exec] Attempted execution of a writable file (%a/writable_file.txt). in %a/deny_writable_execution_simulation.php on line 12
 
-Warning: [snuffleupagus][readonly_exec] Attempted execution of a writable file (%a/writable_file.txt). in %a/writable_file.txt on line 1
+Warning: [snuffleupagus][0.0.0.0][readonly_exec] Attempted execution of a writable file (%a/writable_file.txt). in %a/writable_file.txt on line 1
 Code execution within a writable file.
 Code execution within a non-writable file.

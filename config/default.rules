@@ -42,6 +42,13 @@ sp.disable_function.function("mail").param("additional_parameters").value_r("\\-
 # Since it's now burned, me might as well mitigate it publicly
 sp.disable_function.function("putenv").param("setting").value_r("LD_").drop()
 
+# This one was burned in Nov 2019 - https://gist.github.com/LoadLow/90b60bd5535d6c3927bb24d5f9955b80
+sp.disable_function.function("putenv").param("setting").value_r("GCONV_").drop()
+
+# Since people are stupid enough to use `extract` on things like $_GET or $_POST, we might as well mitigate this vector
+sp.disable_function.function("extract").param("var_array").value_r("^_").drop()
+sp.disable_function.function("extract").param("extract_type").value("0").drop()
+
 # This is also burned:
 # ini_set('open_basedir','..');chdir('..');…;chdir('..');ini_set('open_basedir','/');echo(file_get_contents('/etc/passwd'));
 # Since we have no way of matching on two parameters at the same time, we're
@@ -66,16 +73,16 @@ sp.disable_function.function("exec").param("command").value_r("[$|;&`\\n\\(\\)\\
 sp.disable_function.function("proc_open").param("command").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
 
 # Prevent runtime modification of interesting things
-sp.disable_function.function("ini_set").param("var_name").value("assert.active").drop();
-sp.disable_function.function("ini_set").param("var_name").value("zend.assertions").drop();
-sp.disable_function.function("ini_set").param("var_name").value("memory_limit").drop();
-sp.disable_function.function("ini_set").param("var_name").value("include_path").drop();
-sp.disable_function.function("ini_set").param("var_name").value("open_basedir").drop();
+sp.disable_function.function("ini_set").param("varname").value("assert.active").drop();
+sp.disable_function.function("ini_set").param("varname").value("zend.assertions").drop();
+sp.disable_function.function("ini_set").param("varname").value("memory_limit").drop();
+sp.disable_function.function("ini_set").param("varname").value("include_path").drop();
+sp.disable_function.function("ini_set").param("varname").value("open_basedir").drop();
 
 # Detect some backdoors via environnement recon
-sp.disable_function.function("ini_get").param("var_name").value("allow_url_fopen").drop();
-sp.disable_function.function("ini_get").param("var_name").value("open_basedir").drop();
-sp.disable_function.function("ini_get").param("var_name").value_r("suhosin").drop();
+sp.disable_function.function("ini_get").param("varname").value("allow_url_fopen").drop();
+sp.disable_function.function("ini_get").param("varname").value("open_basedir").drop();
+sp.disable_function.function("ini_get").param("varname").value_r("suhosin").drop();
 sp.disable_function.function("function_exists").param("function_name").value("eval").drop();
 sp.disable_function.function("function_exists").param("function_name").value("exec").drop();
 sp.disable_function.function("function_exists").param("function_name").value("system").drop();
@@ -131,3 +138,8 @@ sp.disable_function.function("curl_setopt").param("option").value("81").drop().a
 #File upload
 sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ph").drop();
 sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ht").drop();
+
+# Logging lockdown
+sp.disable_function.function("ini_set").param("varname").value_r("error_log").drop()
+sp.disable_function.function("ini_set").param("varname").value_r("error_reporting").drop()
+sp.disable_function.function("ini_set").param("varname").value_r("display_errors").drop()

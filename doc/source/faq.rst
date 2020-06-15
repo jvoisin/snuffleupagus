@@ -41,20 +41,20 @@ Who are you and why did you write Snuffleupagus?
 
 We're working for `NBS System <https://nbs-system.com/en/>`__,
 a web hosting company (meaning that we're dealing with PHP code all day long),
-with a strong focus on security. We do have hardening
+with a strong focus on security. We do have several layers of hardening
 (`kernel <https://grsecurity.net/>`_, `WAF <https://naxsi.org>`_,
-`IDS <https://en.wikipedia.org/wiki/Intrusion_detection_system>`_, etc)
-below the web stack, but most of the time, when a website is compromised,
-it can be to send ads, spam, deface it, steal data etc.
-This is why we need to harden the website itself too, but we can't touch its
-source code.
+`IDS <https://en.wikipedia.org/wiki/Intrusion_detection_system>`_, etc),
+but we had nothing for PHP7.
+
+Nowadays, Snuffleupagus is maintained by Julien (jvoisin) Voisin.
+
 
 Why not Suhosin?
 """"""""""""""""
 
 We're huge fans of `Suhosin <https://suhosin.org>`_, unfortunately:
 
-- it doesn't work very well on PHP 7
+- it doesn't work very well on PHP7
 - it has some oudated features and misses new ones
 - it doesn't cope very well with our various industrialization needs
 - it has some shortcomings by design
@@ -65,17 +65,31 @@ the `system <https://secure.php.net/manual/en/function.system.php#refsect1-funct
 function to perform various mandatory maintenance tasks).
 
 This is why we decided to write our own hardening module, in the spirit of Suhosin,
-via virtual-patching support, and other cool new features.
+with virtual-patching support, as well as other cool new features.
 
-What license is Snuffleupagus under and why?
-""""""""""""""""""""""""""""""""""""""""""""
+
+What license is Snuffleupagus released under and why?
+"""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 Snuffleupagus is licensed under the `LGPL <https://www.gnu.org/copyleft/lesser.html>`_
-and is developed by the fine people from `NBS System <https://nbs-system.com/>`__.
+was developed by the fine people from `NBS System <https://nbs-system.com/>`__,
+and is maintained by Julien (jvoisin) Voisin.
 
 We chose the LGPL because we don't care that much how you're using Snuffleupagus,
 but we'd like to force people to make their improvements/contributions
 available to everyone.
+
+
+What is the different between SNuffleupaugs and a (WAF) like ModSecurity?
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+`ModSecurity <https://modsecurity.org/>`__ and the other `Web Application
+Firewall (WAF) <https://en.wikipedia.org/wiki/Web_application_firewall>`__ are
+working by inspecting the http traffic. Snuffleupagus being a PHP module, is
+operating directly inside your website's code, with a lesser overhead, as well
+as a better understanding of what is currently happening inside your
+application.
+
 
 Should I use Snuffleupagus?
 """""""""""""""""""""""""""
@@ -113,6 +127,18 @@ is still a security issue, and should be treated as such.
 We don't have the pretension to state that Snuffleupagus will magically solve
 all your security issues, but we believe that it might definitely help.
 
+
+Sounds great, but is it working?
+""""""""""""""""""""""""""""""""
+
+We've been using it in production since a couple of years, and it thwarted
+numerous known and unknown attacks. If you want some evidences, one of the
+developer published in June 2019 a `blogpost
+<https://dustri.org/b/snuffleupagus-versus-recent-high-profile-vulnerabilities.html>`__
+showcasing how efficient Snuffleupagus was versus *major* web
+vulnerabilities from 2018/2019.
+
+
 Why should I send you bugs, security issues and patches?
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Snuffleupagus is an open-source security software, by reporting (or fixing)
@@ -148,7 +174,7 @@ By checking the logs; Snuffleupagus systematically prefix them with ``[snuffleup
 
 Does Snuffleupagus run on Windows?
 """"""""""""""""""""""""""""""""""
-No idea, feel free to `try <https://github.com/nbs-system/snuffleupagus/issues/2>`_.
+No idea, feel free to `try <https://github.com/jvoisin/snuffleupagus/issues/2>`_.
 
 
 Does Snuggleupagus run on `HHVM <http://hhvm.com/>`_?
@@ -181,46 +207,13 @@ discuss potential impact of the vulnerability,
 reference applicable patches or workarounds,
 and credit the discoverer.
 
-Please send it us a mail to the ``security`` user,
-on ``nbs-system.com``, using the gpg key
-``498C46FF087EDC36E7EAF9D445414A82A9B22D78``:
+Please do send a mail to [Julien (jvoisin) Voisin](https://dustri.org) should
+you find a security issue.
 
-::
-
-    -----BEGIN PGP PUBLIC KEY BLOCK-----
-
-    mQENBFnKHhoBCADaOa0MKEqRy0h2ohIzczblzkMQCbU9oD1HwJ1VkYnn7TGW2iKi
-    NISxisExIXpy2Bn/pA27GiV0V/Do3NL6D9r0oOCrGR27muGM0N/dk9UMv7MWw8zv
-    K8cO+Sa28s0cAv7r2ogUJj5YOo8D4wHEpE8424TE89V9+Qg/SaFCxKoELFP0c7wu
-    mtsm0PnL65piZ1EB7lQo2gxg+8AV45MD1Y2rREMKUoZE23X+nXKsmEh9BFEPaU5M
-    7WQp0NasqeMNoGhwfw9ttVAeLhkEkaTjW1PkNRIb7vrtV9KVb5uKucflfbOnDlzu
-    tQ9U3tYto0mcSCRchAClfEmoSi/0mKyb5N6ZABEBAAG0NVNlY3VyaXR5IHRlYW0g
-    b2YgTkJTIFN5c3RlbSA8c2VjdXJpdHlAbmJzLXN5c3RlbS5jb20+iQE3BBMBCAAh
-    BQJZyh4aAhsDBQsJCAcCBhUICQoLAgQWAgMBAh4BAheAAAoJEEVBSoKpsi14jy0H
-    /1/XB9THhvmG0ow81sld2Zx8qhnNed8VvYDS6mEjpDWNVPxENwDbnakEjisq1Hrb
-    2UQPYCyQ5dekPNFVwQHIGXkX0eb1Ank+4esBJuEpQ2985tgNhJy5ZX+Imb5C8nZC
-    90uYSN1UUg559nUsFeElOXSEH6tIXK/TvjsvMYoi2Ukl6lb7PbIU2fjLY9Iqv3QY
-    32p8/Bl1fVKWbXOk0HDgJ6zA3Kr56QhZOLBkxjOa2XAnnIE76jZxUJ9qPCwWd1vW
-    GFxtx1Y+eZriqHiC9CPe6aBWcIHaTXSu1WBbXrFu8/eCWw243Rxm8l9wgA/a7VWq
-    WBfO45IhJUwh95naRpw8/4a5AQ0EWcoeGgEIAJtzSyyzfn2RX+BsyoRFANUpIgrV
-    /9eohYQVNqK3AFthmq7Kjmt4+hszF5+0wCFmWwYqGnqk1/dsWmqpkXsJldEn6oPJ
-    Bng+Dc67Yki2dR3TroAf95UmI08fhyM7TMXp8m46BPRRMzPNwalEeEm49Oclmfxb
-    JsWWCChWVLWGz2xgPEAv3fPHqus7Rwz/WIl53l/qy1Wf0ewmjRpVEfnEMKBExtBK
-    4kRxQ40LzUZ1SfpyGc3nMbswhevT7/klqrdJdCnlu67Y/IfRGxGZuNj1n1Dib3Hx
-    zTBHo3Y2R3BB93Ix8dkbLaxLqFbOYVdijCgJklqUWhx7btpQ2xnZyzyCMuUAEQEA
-    AYkBHwQYAQgACQUCWcoeGgIbDAAKCRBFQUqCqbIteFRvB/9u3Mae8n8ELrJKOn+P
-    PEbWjutObIuTplvY4QcbnNb9dsgsKryamp4CFJsA5XuitPpC31GDMXBZO5/LLOuH
-    HoMaXFJdic0NToL/3REhu+aZkNIU6S/iaPRNVhkSV4lwQsvncz+nBaiDUJjyfJm2
-    kEjVcRTM8yqzcNo/9Gn0ts+XCUqRj7+S1M4Bj3NySoO/w2n+7OLbIAj+wQZcj3Gf
-    5QhBYaY4YaFxrJE0IZxyXGHw8xhKR6AN+u4TO7LRCW+cWV/sHWir1MXieJoEG8+R
-    W/BhrB0Rz5uxOXMoGCCD2TUiHq7zpuHGnYFVmAnHQZaaQxXve4VrcmznxgpV8lpW
-    mZug
-    =+eIv
-    -----END PGP PUBLIC KEY BLOCK-----
 
 I found a bug. How can I report it?
 """""""""""""""""""""""""""""""""""
-We do have an issue tracker on `Github <https://github.com/nbs-system/snuffleupagus/issues>`_.
+We do have an issue tracker on `Github <https://github.com/jvoisin/snuffleupagus/issues>`_.
 Please make sure to include as much information as possible when reporting your issue,
 such as your operating system, your version of PHP 7, your version of Snuffleupagus,
 your logs, the problematic php code, the request, a brief description, … long story short,
@@ -232,12 +225,9 @@ it's not that hard.
 Where can I find even more help?
 """"""""""""""""""""""""""""""""
 The :doc:`configuration page <config>` might be what you're looking for.
-If you're adventurous, you can also check the `issue tracker <https://github.com/nbs-system/snuffleupagus/issues/?q=is%3Aissue>`_
-(make sure to check the `closed issues <https://github.com/nbs-system/snuffleupagus/issues?q=is%3Aissue+is%3Aclosed>`_ too).
+If you're adventurous, you can also check the `issue tracker <https://github.com/jvoisin/snuffleupagus/issues/?q=is%3Aissue>`_
+(make sure to check the `closed issues <https://github.com/jvoisin/snuffleupagus/issues?q=is%3Aissue+is%3Aclosed>`_ too).
 
-I need professional support for my company.
-"""""""""""""""""""""""""""""""""""""""""""
-Contact `NBS System <https://nbs-system.com>`_.
 
 Unimplemented mitigations and abandoned ideas
 ---------------------------------------------
@@ -255,3 +245,19 @@ if someone can manage to get better results than us.
 The possibility of having this natively in PHP has
 `been discussed <https://marc.info/?l=php-internals&m=141692988212413&w=2>`_,
 but as 2017, nothing has been merged yet.
+
+Nop'ing function execution
+""""""""""""""""""""""""""
+
+Snuffleupagus can be configured to either *allow* or *drop* the execution of
+particular functions and optionally *log* and *dump* them, but it doesn't
+provide any mechanism to *nop* their execution.
+
+We thought about adding this, but didn't for several reasons:
+
+- What should the return value of a *nop'ed* function be?
+- It would add confusion between ``drop``, ``nop`` and ``log``.
+- Usually, when a specific function is called, either it's a dangerous one
+  and you want to stop the execution immediately, or you want to let it
+  continue and log it. There isn't really any middle-ground, or at least we
+  failed to find any.

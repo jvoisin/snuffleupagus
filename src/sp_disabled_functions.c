@@ -356,11 +356,16 @@ static void should_disable(zend_execute_data* execute_data,
         (config_node->pos != -1)  ||
         ((config_node->r_value || config_node->value) && !config_node->var)) {
       if (!builtin_param &&
-          execute_data->func->op_array.arg_info->is_variadic) {
+#if PHP_VERSION_ID >= 80000
+          ZEND_ARG_IS_VARIADIC(execute_data->func->op_array.arg_info)
+#else
+          execute_data->func->op_array.arg_info->is_variadic
+#endif
+						){
         sp_log_warn(
             "disable_function",
             "Snuffleupagus doesn't support variadic functions yet, sorry. "
-            "Check https://github.com/nbs-system/snuffleupagus/issues/164 for "
+            "Check https://github.com/jvoisin/snuffleupagus/issues/164 for "
             "details.");
       } else if (false == is_param_matching(
                               execute_data, config_node, builtin_param, builtin_param_name,

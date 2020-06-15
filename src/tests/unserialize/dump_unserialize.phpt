@@ -36,4 +36,4 @@ if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
 --EXPECTF--
 1
 
-Fatal error: [snuffleupagus][unserialize] Invalid HMAC for s:1:"a";alyualskdufyhalkdjsfh in %a/dump_unserialize.php on line 8
+Fatal error: [snuffleupagus][0.0.0.0][unserialize] Invalid HMAC for s:1:"a";alyualskdufyhalkdjsfh in %a/dump_unserialize.php on line 8

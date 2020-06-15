@@ -17,5 +17,6 @@ int parse_eval_whitelist(char *line);
 int parse_session(char *line);
 int parse_sloppy_comparison(char *line);
 int parse_wrapper_whitelist(char *line);
+int parse_log_media(char *line);
 
 #endif  // __SP_CONFIG_KEYWORDS_H

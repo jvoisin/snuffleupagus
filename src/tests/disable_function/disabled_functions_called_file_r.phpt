@@ -31,4 +31,4 @@ $dir = __DIR__;
 @unlink("$dir/myfunc.php");
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][disabled_function] Aborted execution on call of the function 'test' in %a/myfunc.php on line 3
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'test' in %a/myfunc.php on line 3

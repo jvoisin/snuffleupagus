@@ -8,6 +8,8 @@ Disable XXE in xml_parse
   echo "skip because the `xml` extension isn't loaded";
 }
  ?>
+--EXTENSIONS--
+xml
 --INI--
 sp.configuration_file={PWD}/config/disable_xxe.ini
 --FILE--
