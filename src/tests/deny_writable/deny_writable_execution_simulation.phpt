@@ -2,7 +2,8 @@
 Readonly execution attempt (simulation mode)
 --SKIPIF--
 <?php
-if (!extension_loaded("snuffleupagus")) print "skip";
+if (!extension_loaded("snuffleupagus")) { print "skip" };
+if ("ubuntu" == getenv("CI_JOB_IMAGE")) { print "skip"; }
 
 // root has write privileges on any file
 if (TRUE == function_exists("posix_getuid")) {

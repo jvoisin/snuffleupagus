@@ -3,6 +3,7 @@ Dump request - nonwriteable folder.
 --SKIPIF--
 <?php
 if (!extension_loaded("snuffleupagus")) { print "skip"; } 
+if ("ubuntu" == getenv("CI_JOB_IMAGE")) { print "skip"; }
 
 // root has write privileges "any" folders
 if (TRUE == function_exists("posix_getuid")) {
