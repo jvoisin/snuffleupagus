@@ -1,6 +1,23 @@
 Changelog
 =========
 
+0.5.1 - `Order of the Elephant <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.5.1>`__ 2020/06/20
+--------------------------------------------------------------------------------------------------------------
+
+New features
+^^^^^^^^^^^^
+* Add support for syslog
+
+
+Improvements
+^^^^^^^^^^^^
+* Improve OSX support
+* Improve marginally of php8+ compatibility
+* Improve php7.4 compatibility
+* Improve the default ruleset
+* Improve the documentation
+* Improve the gitlab CI
+
 
 0.5.0 - `Elephant Flats <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.5.0>`__ 2019/06/12
 --------------------------------------------------------------------------------------------------------------

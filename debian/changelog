@@ -1,3 +1,17 @@
+snuffleupagus (0.5.1) UNRELEASED; urgency=medium
+
+  [ jvoisin ]
+  * Add support for syslog
+  * Improve OSX support
+  * Improve marginally of php8+ compatibility
+  * Improve php7.4 compatibility
+  * Improve the default ruleset
+  * Improve the documentation
+  * Improve the gitlab CI
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Sat, 20 Jun 2020 12:30:00 +0200
+
+
 snuffleupagus (0.5.0) UNRELEASED; urgency=medium
 
   [ kkadosh ]
