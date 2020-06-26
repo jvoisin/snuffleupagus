@@ -73,6 +73,13 @@ Articles
 - `What the f*ck is a Snuffleupagus?  <https://medium.com/@live_the_dream/what-the-f-ck-is-a-snuffleupagus-f838fb64f857>`__ - Living The Dream
 - `Snuffleupagus: Open source security tool hardens PHP sites against cyber-attacks <https://portswigger.net/daily-swig/snuffleupagus-open-source-security-tool-hardens-php-sites-against-cyber-attacks>`__ - The Daily Swig
 
+2020
+""""
+
+- `Snuffleupagus, un excelente módulo para bloquear vulnerabilidades en aplicaciones PHP <https://www.linuxadictos.com/snuffleupagus-un-excelente-modulo-para-bloquear-vulnerabilidades-en-aplicaciones-php.html>`__ (es) - linuxadictos.com
+- `Выпуск Snuffleupagus 0.5.1, модуля для блокирования уязвимостей в PHP-приложениях
+ <https://rebeltech.ru/vypusk-snuffleupagus-0-5-1-modulja-dlja-blokirovanija-ujazvimostej-v-php-prilozhenijah/>`__ (ru) - rebeltech.ru
+
 
 Papers
 ------
