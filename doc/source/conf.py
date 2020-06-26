@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Snuffleupagus'
-copyright = u'%d, NBS System' % datetime.now().year
+copyright = u'2017-2018 NBS System, 2019-%d Julien (jvoisin) Voisin' % datetime.now().year
 author = u'Sebastien Blot & Julien Voisin'
 
 # The version info for the project you're documenting, acts as replacement for
