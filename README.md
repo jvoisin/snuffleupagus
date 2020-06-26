@@ -18,7 +18,7 @@
     <img src="https://gitlab.com/jvoisin/snuffleupagus/badges/master/pipeline.svg"
          alt="gitlab pipeline testing _all_ distributions" />
   </a>
-  <a href="https://scan.coverity.com/projects/nbs-system-snuffleupagus">
+  <a href="https://scan.coverity.com/projects/jvoisin-snuffleupagus">
     <img src="https://scan.coverity.com/projects/13821/badge.svg?flat=1"
          alt="Coverity">
   </a>
@@ -80,7 +80,7 @@ without having to touch the PHP code.
   * Every commit is tested on [several distributions](https://gitlab.com/jvoisin/snuffleupagus/pipelines)
   * An `clang-format`-enforced code style
   * A [comprehensive documentation](https://snuffleupagus.rtfd.io)
-  * Usage of [coverity](https://scan.coverity.com/projects/nbs-system-snuffleupagus)
+  * Usage of [coverity](https://scan.coverity.com/projects/jvoisin-snuffleupagus)
 
 ## Download
 
