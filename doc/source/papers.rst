@@ -72,6 +72,7 @@ Articles
 - `Проект Snuffleupagus развивает PHP-модуль для блокирования уязвимостей <https://www.opennet.ru/opennews/art.shtml?num=51031>`__ (ru) - opennet.ru
 - `What the f*ck is a Snuffleupagus?  <https://medium.com/@live_the_dream/what-the-f-ck-is-a-snuffleupagus-f838fb64f857>`__ - Living The Dream
 - `Snuffleupagus: Open source security tool hardens PHP sites against cyber-attacks <https://portswigger.net/daily-swig/snuffleupagus-open-source-security-tool-hardens-php-sites-against-cyber-attacks>`__ - The Daily Swig
+- `Snuffleupagus versus recent high-profile vulnerabilities <https://dustri.org/b/snuffleupagus-versus-recent-high-profile-vulnerabilities.html>`__ - dustri.org
 
 2020
 """"
@@ -79,6 +80,7 @@ Articles
 - `Snuffleupagus, un excelente módulo para bloquear vulnerabilidades en aplicaciones PHP <https://www.linuxadictos.com/snuffleupagus-un-excelente-modulo-para-bloquear-vulnerabilidades-en-aplicaciones-php.html>`__ (es) - linuxadictos.com
 - `Выпуск Snuffleupagus 0.5.1, модуля для блокирования уязвимостей в PHP-приложениях
  <https://rebeltech.ru/vypusk-snuffleupagus-0-5-1-modulja-dlja-blokirovanija-ujazvimostej-v-php-prilozhenijah/>`__ (ru) - rebeltech.ru
+- `Snuffleupagus versus recent high-profile vulnerabilities, again! <https://dustri.org/b/snuffleupagus-versus-recent-high-profile-vulnerabilities-again.html>`__ - dustri.org
 
 
 Papers
