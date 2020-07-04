@@ -7,6 +7,21 @@ bool sp_zend_string_equals(const zend_string* s1, const zend_string* s2) {
          !memcmp(ZSTR_VAL(s1), ZSTR_VAL(s2), ZSTR_LEN(s1));
 }
 
+static const char* default_ipaddr = "0.0.0.0";
+const char* get_ipaddr() {
+  const char* client_ip = getenv("REMOTE_ADDR");
+  if (client_ip) {
+    return client_ip;
+  }
+
+  const char* fwd_ip = getenv("HTTP_X_FORWARDED_FOR");
+  if (fwd_ip) {
+    return fwd_ip;
+  }
+
+  return default_ipaddr;
+}
+
 void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
   char* msg;
   va_list args;
@@ -15,10 +30,7 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
   vspprintf(&msg, 0, fmt, args);
   va_end(args);
 
-  const char *client_ip = getenv("REMOTE_ADDR");
-  if (!client_ip) {
-    client_ip = "0.0.0.0";
-  }
+  const char* client_ip = get_ipaddr();
   switch (SNUFFLEUPAGUS_G(config).log_media) {
     case SP_SYSLOG:
       openlog(PHP_SNUFFLEUPAGUS_EXTNAME, LOG_PID, LOG_AUTH);

@@ -327,7 +327,7 @@ static void should_disable(zend_execute_data* execute_data,
     }
 
     if (config_node->cidr) {
-      char* client_ip = getenv("REMOTE_ADDR");
+      const char* client_ip = get_ipaddr();
       if (client_ip && false == cidr_match(client_ip, config_node->cidr)) {
         goto next;
       }

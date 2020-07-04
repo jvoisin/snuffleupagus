@@ -44,6 +44,7 @@
 
 #define GET_SUFFIX(x) (x == 1) ? "st" : ((x == 2) ? "nd" : "th")
 
+const char* get_ipaddr();
 void sp_log_msg(char const *feature, int type, const char *fmt, ...);
 int compute_hash(const char *const filename, char *file_hash);
 const zend_string *sp_zval_to_zend_string(const zval *);
