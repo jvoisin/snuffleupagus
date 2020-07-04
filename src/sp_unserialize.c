@@ -1,6 +1,5 @@
 #include "php_snuffleupagus.h"
 
-
 PHP_FUNCTION(sp_serialize) {
   zif_handler orig_handler;
 

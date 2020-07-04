@@ -3,8 +3,8 @@
 ZEND_API zend_op_array* (*orig_zend_compile_file)(zend_file_handle* file_handle,
                                                   int type) = NULL;
 #if PHP_VERSION_ID >= 80000
-ZEND_API zend_op_array* (*orig_zend_compile_string)(zval* source_string,
-                                                    const char* filename) = NULL;
+ZEND_API zend_op_array* (*orig_zend_compile_string)(
+    zval* source_string, const char* filename) = NULL;
 #else
 ZEND_API zend_op_array* (*orig_zend_compile_string)(zval* source_string,
                                                     char* filename) = NULL;

@@ -37,8 +37,8 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
       const char* error_filename = zend_get_executed_filename();
       int syslog_level = (type == SP_LOG_DROP) ? LOG_ERR : LOG_INFO;
       int error_lineno = zend_get_executed_lineno(TSRMLS_C);
-      syslog(syslog_level, "[snuffleupagus][%s][%s] %s in %s on line %d", client_ip, feature, msg,
-             error_filename, error_lineno);
+      syslog(syslog_level, "[snuffleupagus][%s][%s] %s in %s on line %d",
+             client_ip, feature, msg, error_filename, error_lineno);
       closelog();
       if (type == SP_LOG_DROP) {
         zend_bailout();

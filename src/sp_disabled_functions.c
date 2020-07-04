@@ -357,7 +357,7 @@ static void should_disable(zend_execute_data* execute_data,
 #else
           execute_data->func->op_array.arg_info->is_variadic
 #endif
-						){
+      ) {
         sp_log_warn(
             "disable_function",
             "Snuffleupagus doesn't support variadic functions yet, sorry. "
