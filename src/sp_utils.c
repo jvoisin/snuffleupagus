@@ -419,7 +419,7 @@ bool check_is_in_eval_whitelist(const zend_string* const function_name) {
   }
 
   /* yes, we could use a HashTable instead, but since the list is pretty
-   * small, it doesn't maka a difference in practise. */
+   * small, it doesn't make a difference in practise. */
   while (it && it->data) {
     if (sp_zend_string_equals(function_name, (const zend_string*)(it->data))) {
       /* We've got a match, the function is whiteslited. */
