@@ -32,11 +32,11 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
 
   const char* client_ip = get_ipaddr();
   switch (SNUFFLEUPAGUS_G(config).log_media) {
-    case SP_SYSLOG:
-      openlog(PHP_SNUFFLEUPAGUS_EXTNAME, LOG_PID, LOG_AUTH);
+    case SP_SYSLOG: {
       const char* error_filename = zend_get_executed_filename();
       int syslog_level = (type == SP_LOG_DROP) ? LOG_ERR : LOG_INFO;
       int error_lineno = zend_get_executed_lineno(TSRMLS_C);
+      openlog(PHP_SNUFFLEUPAGUS_EXTNAME, LOG_PID, LOG_AUTH);
       syslog(syslog_level, "[snuffleupagus][%s][%s] %s in %s on line %d",
              client_ip, feature, msg, error_filename, error_lineno);
       closelog();
@@ -44,6 +44,7 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
         zend_bailout();
       }
       break;
+    }
     case SP_ZEND:
     default:
       zend_error(type, "[snuffleupagus][%s][%s] %s", client_ip, feature, msg);
