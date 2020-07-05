@@ -73,6 +73,76 @@ solvable via:
   make
 
 
+Heroku installation
+-------------------
+
+Heroku official `buildpack <https://github.com/heroku/heroku-buildpack-php/>`_ uses ``Composer`` to install all dependencies required by your PHP application.
+If you're using `manual installation <installation.html#manual-installation>`__ and `default rules <https://github.com/jvoisin/snuffleupagus/blob/master/config/default.rules>`__, you might crash the deployment and encounter the following error:
+
+::
+
+  app[api]: Release v666 created by user kulisu@github.com
+  heroku[web.1]: Starting process with command `vendor/bin/heroku-php-apache2 -F fpm_custom.conf public/`
+  heroku[web.1]: Stopping all processes with SIGTERM
+  app[web.1]: Stopping httpd...
+  app[web.1]: SIGTERM received, attempting graceful shutdown...
+  app[web.1]: Stopping php-fpm...
+  app[web.1]: Shutdown complete.
+  heroku[web.1]: Process exited with status 143
+  app[web.1]: [heroku-exec] Starting
+  app[web.1]: Unable to determine Composer vendor-dir setting; is 'composer' executable on path or 'composer.phar' in current working directory?
+  heroku[web.1]: Process exited with status 1
+  heroku[web.1]: State changed from starting to crashed
+
+Requirements
+^^^^^^^^^^^^
+
+According to the `document <https://devcenter.heroku.com/articles/php-support#custom-compile-step>`_ you can install custom PHP extensions during compilation.
+All you need to do is updaing ``composer.json`` to install Snuffleupagus, and updating ``Procfile`` to load additional PHP-FPM configuration.
+
+Composer
+^^^^^^^^^^
+
+::
+
+    {
+        "require": {
+            "php": "~7.4.6"
+        },
+        "config": {
+            "platform": {
+                "php": "7.4.6"
+            }
+        },
+        "scripts": {
+            "compile": [
+                "git clone https://github.com/jvoisin/snuffleupagus /tmp/snuffleupagus",
+                "cd /tmp/snuffleupagus/src && phpize && ./configure --enable-snuffleupagus && make && make install",
+                "echo 'extension=snuffleupagus.so\nsp.allow_broken_configuration=on\nsp.configuration_file=/dev/null' > /app/.heroku/php/etc/php/conf.d/999-ext-snuffleupagus.ini"
+            ]
+        }
+    }
+
+This step will compile Snuffleupagus to shared library, install it to proper path and specify an empty configuration in ``sp.configuration_file`` to ensure all Heroku console scripts against restrictions.
+
+PHP-FPM
+^^^^^^^^^^
+
+::
+
+    ; ext-snuffleupagus
+    php_admin_flag[sp.allow_broken_configuration] = off
+    php_admin_value[sp.configuration_file]        = /app/default.rules
+
+The final step is setting ``sp.configuration_file`` in an additional `PHP-FPM configuration <https://devcenter.heroku.com/articles/custom-php-settings#php-fpm-configuration-include>`_, and specifying it to load with Apache or Nginx. That's it. Now your PHP application is hardening by Snuffleupagus.
+
+::
+
+  app[web.1]: [05-Jul-2020 07:45:22 UTC] PHP Fatal error:  [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'exec', because its argument '$command' content (id;whoami) matched a rule in /app/public/test2.php on line 1
+  app[web.1]: 10.9.226.141 - - [05/Jul/2020:07:45:22 +0000] "GET /test2.php?cmd=id;whoami HTTP/1.1" 500 - "-" "curl/7.68.0
+  heroku[router]: at=info method=GET path="/test2.php?cmd=id;whoami" host=heroku-x-snuffleupagus.herokuapp.com request_id=012345678-9012-3456-7890-123456789012 fwd="1.2.3.4" dyno=web.1 connect=0ms service=7ms status=500 bytes=169 protocol=http
+
+
 Upgrading
 ---------
 
