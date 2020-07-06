@@ -76,12 +76,14 @@ solvable via:
 Heroku installation
 -------------------
 
-Heroku official `buildpack <https://github.com/heroku/heroku-buildpack-php/>`_ uses ``Composer`` to install all dependencies required by your PHP application.
-If you're using `manual installation <installation.html#manual-installation>`__ and `default rules <https://github.com/jvoisin/snuffleupagus/blob/master/config/default.rules>`__, you might crash the deployment and encounter the following error:
+Heroku's official `buildpack <https://github.com/heroku/heroku-buildpack-php/>`_
+uses ``Composer`` to install all dependencies required by your PHP application.
+Careful with the `default set of rules
+<https://github.com/jvoisin/snuffleupagus/blob/master/config/default.rules>`__,
+since it might block the composer deployment, leading to the following errors:
 
 ::
 
-  app[api]: Release v666 created by user kulisu@github.com
   heroku[web.1]: Starting process with command `vendor/bin/heroku-php-apache2 -F fpm_custom.conf public/`
   heroku[web.1]: Stopping all processes with SIGTERM
   app[web.1]: Stopping httpd...
@@ -97,11 +99,11 @@ If you're using `manual installation <installation.html#manual-installation>`__ 
 Requirements
 ^^^^^^^^^^^^
 
-According to the `document <https://devcenter.heroku.com/articles/php-support#custom-compile-step>`_ you can install custom PHP extensions during compilation.
-All you need to do is updaing ``composer.json`` to install Snuffleupagus, and updating ``Procfile`` to load additional PHP-FPM configuration.
+To install snuffleupagus on heroku, simply follow the `documentation <https://devcenter.heroku.com/articles/php-support#custom-compile-step>`_,
+and edit the ``composer.json`` file, as well as the ``Procfile`` to load the additional PHP-FPM configuration.
 
-Composer
-^^^^^^^^^^
+composer.json
+"""""""""""""
 
 ::
 
@@ -123,10 +125,12 @@ Composer
         }
     }
 
-This step will compile Snuffleupagus to shared library, install it to proper path and specify an empty configuration in ``sp.configuration_file`` to ensure all Heroku console scripts against restrictions.
+This configuration will compile Snuffleupagus to shared library, install it to the proper
+location and specify an empty configuration in ``sp.configuration_file`` to ensure
+that the ``composer`` deployment phase won't get killed by some rules.
 
 PHP-FPM
-^^^^^^^^^^
+"""""""
 
 ::
 
@@ -134,7 +138,11 @@ PHP-FPM
     php_admin_flag[sp.allow_broken_configuration] = off
     php_admin_value[sp.configuration_file]        = /app/default.rules
 
-The final step is setting ``sp.configuration_file`` in an additional `PHP-FPM configuration <https://devcenter.heroku.com/articles/custom-php-settings#php-fpm-configuration-include>`_, and specifying it to load with Apache or Nginx. That's it. Now your PHP application is hardening by Snuffleupagus.
+The final step is to point ``sp.configuration_file`` to a rule set by setting
+the preference in an additional `PHP-FPM
+configuration <https://devcenter.heroku.com/articles/custom-php-settings#php-fpm-configuration-include>`_.
+
+You should now be running Snuffleupagus in PHP on heroku:
 
 ::
 
@@ -146,4 +154,4 @@ The final step is setting ``sp.configuration_file`` in an additional `PHP-FPM co
 Upgrading
 ---------
 
-Upgrading the Snuffleupagus is as simple as recompiling it (or using a binary), replacing the file and restarting your webserver.
+Upgrading Snuffleupagus is as simple as recompiling it (or using a binary), replacing the file and restarting your webserver.
