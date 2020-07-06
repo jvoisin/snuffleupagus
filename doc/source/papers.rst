@@ -78,8 +78,7 @@ Articles
 """"
 
 - `Snuffleupagus, un excelente módulo para bloquear vulnerabilidades en aplicaciones PHP <https://www.linuxadictos.com/snuffleupagus-un-excelente-modulo-para-bloquear-vulnerabilidades-en-aplicaciones-php.html>`__ (es) - linuxadictos.com
-- `Выпуск Snuffleupagus 0.5.1, модуля для блокирования уязвимостей в PHP-приложениях
- <https://rebeltech.ru/vypusk-snuffleupagus-0-5-1-modulja-dlja-blokirovanija-ujazvimostej-v-php-prilozhenijah/>`__ (ru) - rebeltech.ru
+- `Выпуск Snuffleupagus 0.5.1, модуля для блокирования уязвимостей в PHP-приложениях <https://rebeltech.ru/vypusk-snuffleupagus-0-5-1-modulja-dlja-blokirovanija-ujazvimostej-v-php-prilozhenijah/>`__ (ru) - rebeltech.ru
 - `Snuffleupagus versus recent high-profile vulnerabilities, again! <https://dustri.org/b/snuffleupagus-versus-recent-high-profile-vulnerabilities-again.html>`__ - dustri.org
 
 
