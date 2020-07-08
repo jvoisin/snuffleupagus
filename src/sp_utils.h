@@ -44,9 +44,10 @@
 
 #define GET_SUFFIX(x) (x == 1) ? "st" : ((x == 2) ? "nd" : "th")
 
-const char* get_ipaddr();
-void sp_log_msg(char const *feature, int type, const char *fmt, ...);
-int compute_hash(const char *const filename, char *file_hash);
+const char *get_ipaddr();
+void sp_log_msg(char const *restrict feature, int type,
+                const char *restrict fmt, ...);
+int compute_hash(const char *const restrict filename, char *restrict file_hash);
 const zend_string *sp_zval_to_zend_string(const zval *);
 bool sp_match_value(const zend_string *, const zend_string *, const sp_pcre *);
 bool sp_match_array_key(const zval *, const zend_string *, const sp_pcre *);
@@ -58,8 +59,8 @@ void sp_log_disable_ret(const char *restrict, const zend_string *restrict,
 int hook_function(const char *, HashTable *, zif_handler);
 int hook_regexp(const sp_pcre *, HashTable *, zif_handler);
 bool check_is_in_eval_whitelist(const zend_string *const function_name);
-int sp_log_request(const zend_string *folder, const zend_string *text_repr,
-                   char *from);
+int sp_log_request(const zend_string *restrict folder,
+                   const zend_string *restrict text_repr, char *from);
 bool sp_zend_string_equals(const zend_string *s1, const zend_string *s2);
 
 #endif /* SP_UTILS_H */

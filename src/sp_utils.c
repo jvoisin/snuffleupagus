@@ -22,7 +22,8 @@ const char* get_ipaddr() {
   return default_ipaddr;
 }
 
-void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
+void sp_log_msg(char const* restrict feature, int type,
+                const char* restrict fmt, ...) {
   char* msg;
   va_list args;
 
@@ -52,7 +53,8 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
   }
 }
 
-int compute_hash(const char* const filename, char* file_hash) {
+int compute_hash(const char* const restrict filename,
+                 char* restrict file_hash) {
   unsigned char buf[1024];
   unsigned char digest[SHA256_SIZE];
   PHP_SHA256_CTX context;
@@ -78,8 +80,9 @@ int compute_hash(const char* const filename, char* file_hash) {
   return SUCCESS;
 }
 
-static int construct_filename(char* filename, const zend_string* folder,
-                              const zend_string* textual) {
+static int construct_filename(char* filename,
+                              const zend_string* restrict folder,
+                              const zend_string* restrict textual) {
   PHP_SHA256_CTX context;
   unsigned char digest[SHA256_SIZE] = {0};
   char strhash[65] = {0};
@@ -103,8 +106,8 @@ static int construct_filename(char* filename, const zend_string* folder,
   return 0;
 }
 
-int sp_log_request(const zend_string* folder, const zend_string* text_repr,
-                   char* from) {
+int sp_log_request(const zend_string* restrict folder,
+                   const zend_string* restrict text_repr, char* from) {
   FILE* file;
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);
