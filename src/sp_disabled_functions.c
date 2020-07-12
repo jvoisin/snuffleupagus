@@ -87,7 +87,8 @@ static bool is_local_var_matching(
         return true;
       }
     } else {
-      const zend_string* var_value_str = sp_zval_to_zend_string(var_value);
+      zend_string const* const var_value_str =
+          sp_zval_to_zend_string(var_value);
       bool match = sp_match_value(var_value_str, config_node->value,
                                   config_node->r_value);
 
