@@ -131,7 +131,7 @@ int sp_log_request(const zend_string* restrict folder,
   const int current_line = zend_get_executed_lineno(TSRMLS_C);
   char filename[PATH_MAX] = {0};
   const struct {
-    const char* str;
+    char const* const str;
     const int key;
   } zones[] = {{"GET", TRACK_VARS_GET},       {"POST", TRACK_VARS_POST},
                {"COOKIE", TRACK_VARS_COOKIE}, {"SERVER", TRACK_VARS_SERVER},
