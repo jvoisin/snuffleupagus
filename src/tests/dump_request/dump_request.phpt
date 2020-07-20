@@ -40,5 +40,5 @@ if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
 --EXPECTF--
 1
 
-Warning: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'system' in %a/dump_request.php on line 7
+Warning: [snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'system' in %a/dump_request.php on line 7
 1337

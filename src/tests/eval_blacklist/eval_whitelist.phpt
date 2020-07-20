@@ -25,4 +25,4 @@ echo "After eval: $a\n";
 Outside of eval: my_fun: 1337 1337 1337
 After allowed eval: my_fun: 1234
 
-Fatal error: [snuffleupagus][0.0.0.0][Eval_whitelist] The function 'my_other_fun' isn't in the eval whitelist, dropping its call. in %a/eval_whitelist.php on line 7
+Fatal error: [snuffleupagus][0.0.0.0][Eval_whitelist][drop] The function 'my_other_fun' isn't in the eval whitelist, dropping its call. in %a/eval_whitelist.php on line 7
