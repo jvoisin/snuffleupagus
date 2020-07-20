@@ -50,15 +50,22 @@ void sp_log_msg(char const* restrict feature, int type,
   va_end(args);
 
   const char* client_ip = get_ipaddr();
-  const char* str_type = type == SP_LOG_SIMULATION ? "simul" : (type == SP_LOG_DROP ? "drop" : "log");
+  const char* logtype = "";
+  if (type == SP_LOG_SIMULATION) {
+    logtype = "[simulation]";
+    type = E_WARNING;
+  } else if (type == SP_LOG_DROP) {
+    logtype = "[drop]";
+    type = E_ERROR;
+  }
   switch (SNUFFLEUPAGUS_G(config).log_media) {
     case SP_SYSLOG: {
       const char* error_filename = zend_get_executed_filename();
       int syslog_level = (type == SP_LOG_DROP) ? LOG_ERR : LOG_INFO;
       int error_lineno = zend_get_executed_lineno(TSRMLS_C);
       openlog(PHP_SNUFFLEUPAGUS_EXTNAME, LOG_PID, LOG_AUTH);
-      syslog(syslog_level, "[snuffleupagus][%s][%s][%s] %s in %s on line %d",
-             client_ip, feature, str_type, msg, error_filename, error_lineno);
+      syslog(syslog_level, "[snuffleupagus][%s][%s]%s %s in %s on line %d",
+             client_ip, feature, logtype, msg, error_filename, error_lineno);
       closelog();
       if (type == SP_LOG_DROP) {
         zend_bailout();
@@ -67,7 +74,7 @@ void sp_log_msg(char const* restrict feature, int type,
     }
     case SP_ZEND:
     default:
-      zend_error(type, "[snuffleupagus][%s][%s][%s] %s", client_ip, feature, str_type, msg);
+      zend_error(type, "[snuffleupagus][%s][%s]%s %s", client_ip, feature, logtype, msg);
       break;
   }
 }

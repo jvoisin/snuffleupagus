@@ -28,8 +28,8 @@
 #define HOOK_FUNCTION_BY_REGEXP(regexp, hook_table, new_function) \
   hook_regexp(regexp, SNUFFLEUPAGUS_G(hook_table), new_function)
 
-#define SP_LOG_SIMULATION E_WARNING
-#define SP_LOG_DROP E_ERROR
+#define SP_LOG_SIMULATION 0x100000
+#define SP_LOG_DROP 0x200000
 #define SP_LOG_DEBUG E_NOTICE
 #define SP_LOG_ERROR E_ERROR
 #define SP_LOG_WARN E_WARNING
