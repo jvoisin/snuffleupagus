@@ -15,4 +15,4 @@ eval('$a = my_func();');
 echo '$a = ' . $a . "\n";
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'my_func' in %a/disabled_functions_eval_user.php on line 3
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'my_func' in %a/disabled_functions_eval_user.php on line 3

@@ -29,4 +29,4 @@ class test_object {
 --EXPECTF--
 Valeur: no good
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_6.php on line 4
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_6.php on line 4

@@ -42,4 +42,4 @@ array(2) {
   }
 }
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_10.php on line 7
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_10.php on line 7

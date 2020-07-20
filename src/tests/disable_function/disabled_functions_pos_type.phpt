@@ -13,4 +13,4 @@ Warning: [snuffleupagus][0.0.0.0][config] It seems that you wrote a rule filteri
 
 Warning: [snuffleupagus][0.0.0.0][config] It seems that you wrote a rule filtering on the 1st argument of the function 'system', but it takes only 1 arguments. Matching on _all_ arguments instead. in %a/disabled_functions_pos_type.php on line %d
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'system', because its argument 'command' content (?) matched the rule '1' in %a/disabled_functions_pos_type.php on line %d
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'system', because its argument 'command' content (?) matched the rule '1' in %a/disabled_functions_pos_type.php on line %d

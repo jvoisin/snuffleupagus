@@ -24,4 +24,4 @@ echo "I'm after the call to outer\n";
 I'm before the call to outer
 I'm in the outer function, before the call!
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'outer>inner' in %a/disabled_functions_chain.php on line 5
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'outer>inner' in %a/disabled_functions_chain.php on line 5

@@ -11,9 +11,9 @@ echo strcmp("1", "2") . "\n";
 print("After") . "\n";
 ?>
 --EXPECTF--
-Warning: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_functions_regexp_multiple.php on line 2
+Warning: [snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'strtoupper' in %a/disabled_functions_regexp_multiple.php on line 2
 ID
 
-Warning: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'strcmp' in %a/disabled_functions_regexp_multiple.php on line 3
+Warning: [snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'strcmp' in %a/disabled_functions_regexp_multiple.php on line 3
 -1
 After

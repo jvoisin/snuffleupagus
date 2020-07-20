@@ -15,4 +15,4 @@ echo foo(5, 4, 3, 2, 1);
 --EXPECTF--
 Warning: [snuffleupagus][0.0.0.0][disable_function] Snuffleupagus doesn't support variadic functions yet, sorry. Check https://github.com/jvoisin/snuffleupagus/issues/164 for details. in %a/disabled_functions_variadic.php on line %d
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'foo' in %a/disabled_functions_variadic.php on line %d
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'foo' in %a/disabled_functions_variadic.php on line %d

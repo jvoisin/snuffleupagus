@@ -18,4 +18,4 @@ curl_setopt_array($ch, $options);
 echo "1337";
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'curl_setopt_array', because its argument '$options' content (0) matched the rule 'Please don't turn CURLOPT_SSL_VERIFYPEER off.' in %s/disabled_function_ensure_client_valid_certs_curl_setopt_array.php on line 5
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'curl_setopt_array', because its argument '$options' content (0) matched the rule 'Please don't turn CURLOPT_SSL_VERIFYPEER off.' in %s/disabled_function_ensure_client_valid_certs_curl_setopt_array.php on line 5
