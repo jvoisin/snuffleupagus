@@ -17,4 +17,4 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, '0');
 echo "1337";
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'curl_setopt', because its argument '$option' content (81) matched the rule 'Please don't turn CURLOPT_SSL_VERIFYHOST off.' in %s/disabled_function_ensure_server_valid_certs.php on line %d
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'curl_setopt', because its argument '$option' content (81) matched the rule 'Please don't turn CURLOPT_SSL_VERIFYHOST off.' in %s/disabled_function_ensure_server_valid_certs.php on line %d

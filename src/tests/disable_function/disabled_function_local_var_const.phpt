@@ -11,4 +11,4 @@ define("MY_CONST", $a);
 strtoupper("test");
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_const.php on line 4
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_const.php on line 4

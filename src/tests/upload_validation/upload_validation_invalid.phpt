@@ -13,9 +13,9 @@ Content-Disposition: form-data; name="test"; filename="test.php"
 echo 1;
 ?>
 --EXPECTF--
-Warning: [snuffleupagus][0.0.0.0][upload_validation] Could not call './tests/data/upload_invalid.sh' : Exec format error in Unknown on line 0
+Warning: [snuffleupagus][0.0.0.0][upload_validation][log] Could not call './tests/data/upload_invalid.sh' : Exec format error in Unknown on line 0
 X-Powered-By: PHP/%a
 Content-type: text/html; charset=UTF-8%a
 %a
 
-Fatal error: [snuffleupagus][0.0.0.0][upload_validation] The upload of test.php on ? was rejected. in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][upload_validation][drop] The upload of test.php on ? was rejected. in Unknown on line 0

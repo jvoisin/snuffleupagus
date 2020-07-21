@@ -9,4 +9,4 @@ sp.configuration_file={PWD}/config/disabled_functions_ret_type_double.ini
 echo cos(0.5) . "\n";
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on return of the function 'cos', because the function returned '0.877583', which matched the rule 'Return value is a double' in %a/disabled_functions_ret_type_double.php on line 2
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'cos', because the function returned '0.877583', which matched the rule 'Return value is a double' in %a/disabled_functions_ret_type_double.php on line 2

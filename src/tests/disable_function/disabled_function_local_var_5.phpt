@@ -31,4 +31,4 @@ object(stdClass)#1 (1) {
   string(16) "not a good value"
 }
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_5.php on line 3
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_5.php on line 3

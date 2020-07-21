@@ -16,4 +16,4 @@ test("oops");
 --CLEAN--
 --EXPECTF--
 qwerty
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'echo' in %a/disabled_function_echo.php on line 3
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'echo' in %a/disabled_function_echo.php on line 3
