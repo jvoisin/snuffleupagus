@@ -13,7 +13,7 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra);
 
 int sp_rfc1867_callback_win(unsigned int event, void *event_data,
                             void **extra) {
-  sp_log_msg("upload_validation", SP_LOG_SIMULATION,
+  sp_log_simulation("upload_validation",
              "The upload validation doesn't work for now on Windows yet, "
              "see https://github.com/jvoisin/snuffleupagus/issues/248 for "
              "details.");
@@ -90,9 +90,9 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
       if (WEXITSTATUS(waitstatus) != 0) {  // Nope
         char *uri = getenv("REQUEST_URI");
         int sim = config_upload->simulation;
-        sp_log_msg("upload_validation", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                   "The upload of %s on %s was rejected.", filename,
-                   uri ? uri : "?");
+        sp_log_auto("upload_validation", sim,
+            "The upload of %s on %s was rejected.",
+            filename, uri ? uri : "?");
       }
     }
     ZEND_HASH_FOREACH_END();

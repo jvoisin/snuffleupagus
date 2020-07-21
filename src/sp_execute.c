@@ -18,10 +18,10 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
                      SP_TOKEN_READONLY_EXEC);
     }
     if (true == config_ro_exec->simulation) {
-      sp_log_msg("readonly_exec", SP_LOG_SIMULATION,
+      sp_log_simulation("readonly_exec",
                  "Attempted execution of a writable file (%s).", filename);
     } else {
-      sp_log_msg("readonly_exec", SP_LOG_DROP,
+      sp_log_drop("readonly_exec",
                  "Attempted execution of a writable file (%s).", filename);
       zend_bailout();
     }
@@ -79,14 +79,14 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
                        SP_TOKEN_EVAL_WHITELIST);
       }
       if (config_eval->simulation) {
-        sp_log_msg(
-            "Eval_whitelist", SP_LOG_SIMULATION,
+        sp_log_simulation(
+            "Eval_whitelist",
             "The function '%s' isn't in the eval whitelist, logging its call.",
             ZSTR_VAL(current_function));
         return;
       } else {
-        sp_log_msg(
-            "Eval_whitelist", SP_LOG_DROP,
+        sp_log_drop(
+            "Eval_whitelist",
             "The function '%s' isn't in the eval whitelist, dropping its call.",
             ZSTR_VAL(current_function));
       }
