@@ -51,6 +51,7 @@ void sp_log_msg(char const* restrict feature, int type,
 
   const char* client_ip = get_ipaddr();
   const char* logtype = NULL;
+  int bailout = type == SP_LOG_DROP;
   switch(type) {
     case SP_LOG_SIMULATION:
       logtype = "simulation";
@@ -74,7 +75,7 @@ void sp_log_msg(char const* restrict feature, int type,
       syslog(syslog_level, "[snuffleupagus][%s][%s][%s] %s in %s on line %d",
              client_ip, feature, logtype, msg, error_filename, error_lineno);
       closelog();
-      if (type == SP_LOG_DROP) {
+      if (bailout) {
         zend_bailout();
       }
       break;
