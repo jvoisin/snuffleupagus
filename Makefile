@@ -27,6 +27,7 @@ coverage:  ## compile snuffleugpaus, and run the testsuite with coverage
 ifeq ($(CC),clang)
 	cd src; CFLAGS="-fprofile-instr-generate -fcoverage-mapping" ./configure --enable-snuffleupagus
 	make -C src
+	sed -i "s/\$$ext_params -d display_errors=0 -r/-d display_errors=0 -r/" src/run-tests.php
 	LLVM_PROFILE_FILE="sp_%p_%m.profraw" TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test
 	llvm-profdata-4.0 merge ./src/*.profraw -o ./src/sp.profdata
 	llvm-cov report -instr-profile=./src/sp.profdata ./src/modules/snuffleupagus.so
@@ -34,6 +35,7 @@ else
 	cd src; ./configure --enable-snuffleupagus --enable-coverage
 	make -C src
 	rm -Rf src/COV.html
+	sed -i "s/\$$ext_params -d display_errors=0 -r/-d display_errors=0 -r/" src/run-tests.php
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test
 	lcov --base-directory ./src --directory ./src -c -o ./src/COV.info --rc lcov_branch_coverage=1 
 	lcov --remove src/COV.info '/usr/*' --remove src/COV.info '*tweetnacl.c' -o src/COV.info --rc lcov_branch_coverage=1
