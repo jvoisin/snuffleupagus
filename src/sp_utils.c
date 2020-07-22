@@ -40,7 +40,7 @@ const char* get_ipaddr() {
   return default_ipaddr;
 }
 
-void sp_log_msg(char const* restrict feature, int type,
+void sp_log_msgf(char const* restrict feature, int level, int type,
                 const char* restrict fmt, ...) {
   char* msg;
   va_list args;
@@ -51,16 +51,14 @@ void sp_log_msg(char const* restrict feature, int type,
 
   const char* client_ip = get_ipaddr();
   const char* logtype = NULL;
-  int bailout = type == SP_LOG_DROP;
   switch(type) {
-    case SP_LOG_SIMULATION:
+    case SP_TYPE_SIMULATION:
       logtype = "simulation";
-      type = E_WARNING;
       break;
-    case SP_LOG_DROP:
+    case SP_TYPE_DROP:
       logtype = "drop";
-      type = E_ERROR;
       break;
+    case SP_TYPE_LOG:
     default:
       logtype = "log";
       break;
@@ -69,20 +67,20 @@ void sp_log_msg(char const* restrict feature, int type,
   switch (SNUFFLEUPAGUS_G(config).log_media) {
     case SP_SYSLOG: {
       const char* error_filename = zend_get_executed_filename();
-      int syslog_level = (type == E_ERROR) ? LOG_ERR : LOG_INFO;
+      int syslog_level = (level == E_ERROR) ? LOG_ERR : LOG_INFO;
       int error_lineno = zend_get_executed_lineno(TSRMLS_C);
       openlog(PHP_SNUFFLEUPAGUS_EXTNAME, LOG_PID, LOG_AUTH);
       syslog(syslog_level, "[snuffleupagus][%s][%s][%s] %s in %s on line %d",
              client_ip, feature, logtype, msg, error_filename, error_lineno);
       closelog();
-      if (bailout) {
+      if (type == SP_TYPE_DROP) {
         zend_bailout();
       }
       break;
     }
     case SP_ZEND:
     default:
-      zend_error(type, "[snuffleupagus][%s][%s][%s] %s", client_ip, feature, logtype, msg);
+      zend_error(level, "[snuffleupagus][%s][%s][%s] %s", client_ip, feature, logtype, msg);
       break;
   }
 }
@@ -282,12 +280,12 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
       char_repr = zend_string_to_char(arg_value);
     }
     if (alias) {
-      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
+      sp_log_auto("disabled_function", sim,
                  "Aborted execution on call of the function '%s', "
                  "because its argument '%s' content (%s) matched the rule '%s'",
                  path, arg_name, char_repr ? char_repr : "?", ZSTR_VAL(alias));
     } else {
-      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
+      sp_log_auto("disabled_function", sim,
                  "Aborted execution on call of the function '%s', "
                  "because its argument '%s' content (%s) matched a rule",
                  path, arg_name, char_repr ? char_repr : "?");
@@ -295,12 +293,12 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
     efree(char_repr);
   } else {
     if (alias) {
-      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
+      sp_log_auto("disabled_function", sim,
                  "Aborted execution on call of the function '%s', "
                  "because of the the rule '%s'",
                  path, ZSTR_VAL(alias));
     } else {
-      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
+      sp_log_auto("disabled_function", sim,
                  "Aborted execution on call of the function '%s'", path);
     }
   }
@@ -322,13 +320,13 @@ void sp_log_disable_ret(const char* restrict path,
     char_repr = zend_string_to_char(ret_value);
   }
   if (alias) {
-    sp_log_msg(
-        "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
+    sp_log_auto(
+        "disabled_function", sim,
         "Aborted execution on return of the function '%s', "
         "because the function returned '%s', which matched the rule '%s'",
         path, char_repr ? char_repr : "?", ZSTR_VAL(alias));
   } else {
-    sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
+    sp_log_auto("disabled_function", sim,
                "Aborted execution on return of the function '%s', "
                "because the function returned '%s', which matched a rule",
                path, char_repr ? char_repr : "?");

@@ -574,11 +574,11 @@ ZEND_FUNCTION(eval_blacklist_callback) {
                      SP_TOKEN_EVAL_BLACKLIST);
     }
     if (config_eval->simulation) {
-      sp_log_msg("eval", SP_LOG_SIMULATION,
+      sp_log_simulation("eval",
                  "A call to %s was tried in eval, in %s:%d, logging it.",
                  current_function_name, ZSTR_VAL(filename), line_number);
     } else {
-      sp_log_msg("eval", SP_LOG_DROP,
+      sp_log_drop("eval",
                  "A call to %s was tried in eval, in %s:%d, dropping it.",
                  current_function_name, ZSTR_VAL(filename), line_number);
     }
