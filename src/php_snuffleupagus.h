@@ -7,6 +7,10 @@
 #define PHP_SNUFFLEUPAGUS_URL "https://github.com/jvoisin/snuffleupagus"
 #define PHP_SNUFFLEUPAGUS_COPYRIGHT "LGPLv2"
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>

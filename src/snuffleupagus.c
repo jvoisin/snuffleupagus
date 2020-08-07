@@ -4,10 +4,6 @@
 #include <glob.h>
 #endif
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "php_snuffleupagus.h"
 
 #ifndef ZEND_EXT_API
