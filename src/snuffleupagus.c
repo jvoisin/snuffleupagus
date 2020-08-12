@@ -68,6 +68,7 @@ ZEND_DLEXPORT zend_extension zend_extension_entry = {
     STANDARD_ZEND_EXTENSION_PROPERTIES};
 
 PHP_GINIT_FUNCTION(snuffleupagus) {
+  snuffleupagus_globals->is_config_valid = SP_CONFIG_NONE;
   snuffleupagus_globals->in_eval = 0;
 
 #define SP_INIT_HT(F) snuffleupagus_globals->F = \
@@ -186,8 +187,12 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
   ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
-  if (!SNUFFLEUPAGUS_G(allow_broken_configuration) && !SNUFFLEUPAGUS_G(is_config_valid)) {
-    sp_log_err("config", "Invalid configuration file");
+  if (!SNUFFLEUPAGUS_G(allow_broken_configuration)) {
+    if (SNUFFLEUPAGUS_G(is_config_valid) == SP_CONFIG_INVALID ) {
+      sp_log_err("config", "Invalid configuration file");
+    } else if (SNUFFLEUPAGUS_G(is_config_valid) == SP_CONFIG_NONE) {
+      sp_log_warn("config", "No configuration specificed via sp.configuration_file");
+    }
   }
 
   // We need to disable wrappers loaded by extensions loaded after SNUFFLEUPAGUS.
@@ -209,12 +214,23 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
 PHP_RSHUTDOWN_FUNCTION(snuffleupagus) { return SUCCESS; }
 
 PHP_MINFO_FUNCTION(snuffleupagus) {
+  const char *valid_config;
+  switch(SNUFFLEUPAGUS_G(is_config_valid)) {
+    case SP_CONFIG_VALID:
+      valid_config = "yes";
+      break;
+    case SP_CONFIG_INVALID:
+      valid_config = "invalid";
+      break;
+		case SP_CONFIG_NONE:
+    default:
+      valid_config = "no";
+  }
   php_info_print_table_start();
-  php_info_print_table_row(2, "snuffleupagus support", "enabled");
+  php_info_print_table_row(2, "snuffleupagus support",
+      SNUFFLEUPAGUS_G(is_config_valid)?"enabled":"disabled");
   php_info_print_table_row(2, "Version", PHP_SNUFFLEUPAGUS_VERSION);
-  php_info_print_table_row(
-      2, "Valid config",
-      (SNUFFLEUPAGUS_G(is_config_valid) == true) ? "yes" : "no");
+  php_info_print_table_row( 2, "Valid config", valid_config);
   php_info_print_table_end();
   DISPLAY_INI_ENTRIES();
 }
@@ -234,14 +250,14 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     int ret = glob(config_file, GLOB_NOCHECK, NULL, &globbuf);
 
     if (ret != 0) {
-      SNUFFLEUPAGUS_G(is_config_valid) = false;
+      SNUFFLEUPAGUS_G(is_config_valid) = SP_CONFIG_INVALID;
       globfree(&globbuf);
       return FAILURE;
     }
 
     for (size_t i = 0; globbuf.gl_pathv[i]; i++) {
       if (sp_parse_config(globbuf.gl_pathv[i]) != SUCCESS) {
-        SNUFFLEUPAGUS_G(is_config_valid) = false;
+        SNUFFLEUPAGUS_G(is_config_valid) = SP_CONFIG_INVALID;
         globfree(&globbuf);
         return FAILURE;
       }
@@ -249,7 +265,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     globfree(&globbuf);
   }
 
-  SNUFFLEUPAGUS_G(is_config_valid) = true;
+  SNUFFLEUPAGUS_G(is_config_valid) = SP_CONFIG_VALID;
 
   if ((SNUFFLEUPAGUS_G(config).config_sloppy->enable)) {
     hook_sloppy();

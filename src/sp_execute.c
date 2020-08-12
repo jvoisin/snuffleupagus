@@ -19,10 +19,11 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
     }
     if (true == config_ro_exec->simulation) {
       sp_log_simulation("readonly_exec",
-                 "Attempted execution of a writable file (%s).", filename);
+                        "Attempted execution of a writable file (%s).",
+                        filename);
     } else {
       sp_log_drop("readonly_exec",
-                 "Attempted execution of a writable file (%s).", filename);
+                  "Attempted execution of a writable file (%s).", filename);
       zend_bailout();
     }
   } else {

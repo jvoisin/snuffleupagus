@@ -62,6 +62,10 @@ typedef void (*zif_handler)(INTERNAL_FUNCTION_PARAMETERS);
 #define TSRMLS_C
 #endif
 
+#define SP_CONFIG_VALID 1
+#define SP_CONFIG_INVALID 0
+#define SP_CONFIG_NONE -1
+
 #include "sp_pcre_compat.h"
 #include "sp_list.h"
 #include "sp_tree.h"
@@ -101,7 +105,7 @@ extern zend_module_entry snuffleupagus_module_entry;
 ZEND_BEGIN_MODULE_GLOBALS(snuffleupagus)
 size_t in_eval;
 sp_config config;
-bool is_config_valid;
+int is_config_valid;  // 1 = valid, 0 = invalid, -1 = none
 bool allow_broken_configuration;
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;

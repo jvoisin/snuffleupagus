@@ -41,7 +41,7 @@ const char* get_ipaddr() {
 }
 
 void sp_log_msgf(char const* restrict feature, int level, int type,
-                const char* restrict fmt, ...) {
+                 const char* restrict fmt, ...) {
   char* msg;
   va_list args;
 
@@ -51,7 +51,7 @@ void sp_log_msgf(char const* restrict feature, int level, int type,
 
   const char* client_ip = get_ipaddr();
   const char* logtype = NULL;
-  switch(type) {
+  switch (type) {
     case SP_TYPE_SIMULATION:
       logtype = "simulation";
       break;
@@ -80,7 +80,8 @@ void sp_log_msgf(char const* restrict feature, int level, int type,
     }
     case SP_ZEND:
     default:
-      zend_error(level, "[snuffleupagus][%s][%s][%s] %s", client_ip, feature, logtype, msg);
+      zend_error(level, "[snuffleupagus][%s][%s][%s] %s", client_ip, feature,
+                 logtype, msg);
       break;
   }
 }
@@ -280,26 +281,27 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
       char_repr = zend_string_to_char(arg_value);
     }
     if (alias) {
-      sp_log_auto("disabled_function", sim,
-                 "Aborted execution on call of the function '%s', "
-                 "because its argument '%s' content (%s) matched the rule '%s'",
-                 path, arg_name, char_repr ? char_repr : "?", ZSTR_VAL(alias));
+      sp_log_auto(
+          "disabled_function", sim,
+          "Aborted execution on call of the function '%s', "
+          "because its argument '%s' content (%s) matched the rule '%s'",
+          path, arg_name, char_repr ? char_repr : "?", ZSTR_VAL(alias));
     } else {
       sp_log_auto("disabled_function", sim,
-                 "Aborted execution on call of the function '%s', "
-                 "because its argument '%s' content (%s) matched a rule",
-                 path, arg_name, char_repr ? char_repr : "?");
+                  "Aborted execution on call of the function '%s', "
+                  "because its argument '%s' content (%s) matched a rule",
+                  path, arg_name, char_repr ? char_repr : "?");
     }
     efree(char_repr);
   } else {
     if (alias) {
       sp_log_auto("disabled_function", sim,
-                 "Aborted execution on call of the function '%s', "
-                 "because of the the rule '%s'",
-                 path, ZSTR_VAL(alias));
+                  "Aborted execution on call of the function '%s', "
+                  "because of the the rule '%s'",
+                  path, ZSTR_VAL(alias));
     } else {
       sp_log_auto("disabled_function", sim,
-                 "Aborted execution on call of the function '%s'", path);
+                  "Aborted execution on call of the function '%s'", path);
     }
   }
 }
@@ -327,9 +329,9 @@ void sp_log_disable_ret(const char* restrict path,
         path, char_repr ? char_repr : "?", ZSTR_VAL(alias));
   } else {
     sp_log_auto("disabled_function", sim,
-               "Aborted execution on return of the function '%s', "
-               "because the function returned '%s', which matched a rule",
-               path, char_repr ? char_repr : "?");
+                "Aborted execution on return of the function '%s', "
+                "because the function returned '%s', which matched a rule",
+                path, char_repr ? char_repr : "?");
   }
   efree(char_repr);
 }
