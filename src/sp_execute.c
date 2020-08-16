@@ -24,7 +24,6 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
     } else {
       sp_log_drop("readonly_exec",
                   "Attempted execution of a writable file (%s).", filename);
-      zend_bailout();
     }
   } else {
     if (EACCES != errno) {
