@@ -17,7 +17,8 @@
 #include "ext/pcre/pcrelib/pcre.h"
 #endif
 #else
-#include "pcre.h"
+#include "pcre2.h"
+#define SP_HAS_PCRE2
 #endif
 
 #ifdef SP_HAS_PCRE2
