@@ -10,8 +10,8 @@ so you can build a package yourself.
 Alpine Linux
 ------------
 
-We're providing a `APKBUILD <https://github.com/jvoisin/snuffleupagus/blob/master/APKBUILD>`__,
-so you can build a package yourself.
+We're maintaining the `package in Alpine <https://github.com/alpinelinux/aports/blob/master/testing/php7-snuffleupagus/APKBUILD>`__:
+you can simply ``apk add`` it.
 
 Debian and Ubuntu
 -----------------
@@ -23,14 +23,14 @@ or build your own package by cloning the source code and typing ``make debian``.
 Fedora
 ------
 
-Thanks to [Rémo Collet](https://twitter.com/RemiCollet), Snuffleupagus is
-[packaged](https://pkgs.org/download/php-snuffleupagus) in Fedora!
+Thanks to `Rémo Collet <https://twitter.com/RemiCollet>`__, Snuffleupagus is
+`packaged <https://pkgs.org/download/php-snuffleupagus>`__ in Fedora!
 
 FreeBSD
 -------
 
-Thanks to [Franco Fichtner](https://twitter.com/fitchitis), Snuffleupagus is
-[packaged](https://www.freshports.org/security/snuffleupagus/) in FreeBSD!
+Thanks to `Franco Fichtner <https://twitter.com/fitchitis>`__, Snuffleupagus is
+`packaged <https://www.freshports.org/security/snuffleupagus/>`__ in FreeBSD!
 
 Source code
 -----------
