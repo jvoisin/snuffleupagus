@@ -9,15 +9,15 @@ Talks
 2017
 """"
 
-- `BerlinSide0x08 <https://berlinsides.org/?page_id=2168>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/berlinsides_2017.pdf>`__
-- `Hack.lu 2017 <https://2017.hack.lu/talks/>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/hacklu_2017.pdf>`__ - `video <https://www.youtube.com/watch?v=RzaRiuJ6MkI>`__
-- `BlackAlps <https://blackalps.ch/2017program.php>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/blackalps_2017.pdf>`__ - `video <https://www.youtube.com/watch?v=2GeUnOzDGxc>`__
+- `BerlinSide0x08 <https://berlinsides.org/?page_id=2168>`_ - `slides <https://github.com/jvoisin/snuffleupagus/blob/master/slides/berlinsides_2017.pdf>`__
+- `Hack.lu 2017 <https://2017.hack.lu/talks/>`_ - `slides <https://github.com/jvoisin/snuffleupagus/blob/master/slides/hacklu_2017.pdf>`__ - `video <https://www.youtube.com/watch?v=RzaRiuJ6MkI>`__
+- `BlackAlps <https://blackalps.ch/2017program.php>`_ - `slides <https://github.com/jvoisin/snuffleupagus/blob/master/slides/blackalps_2017.pdf>`__ - `video <https://www.youtube.com/watch?v=2GeUnOzDGxc>`__
 
 2018
 """"
 
-- `Pass the Salt <https://2018.pass-the-salt.org/schedule/#snuffleupagus>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/passthesalt_2018.pdf>`__ - `video <https://passthesalt.ubicast.tv/videos/snuffleupagus-killing-bug-classes-and-virtual-patching-the-rest/>`__
-- `44con <https://44con.com/44con/44con-2018/44con-2018-talks/>`__ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/44con_2018.pdf>`__
+- `Pass the Salt <https://2018.pass-the-salt.org/schedule/#snuffleupagus>`_ - `slides <https://github.com/jvoisin/snuffleupagus/blob/master/slides/passthesalt_2018.pdf>`__ - `video <https://passthesalt.ubicast.tv/videos/snuffleupagus-killing-bug-classes-and-virtual-patching-the-rest/>`__
+- `44con <https://44con.com/44con/44con-2018/44con-2018-talks/>`__ - `slides <https://github.com/jvoisin/snuffleupagus/blob/master/slides/44con_2018.pdf>`__
 
 2020
 """"
