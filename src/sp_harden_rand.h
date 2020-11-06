@@ -5,6 +5,6 @@
 #include "ext/standard/php_random.h"
 #include "zend_exceptions.h"
 
-int hook_rand();
+int hook_rand(void);
 
 #endif /* __SP_HARDEN_RAND_H */

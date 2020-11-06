@@ -53,7 +53,7 @@
 
 #define GET_SUFFIX(x) (x == 1) ? "st" : ((x == 2) ? "nd" : "th")
 
-const char *get_ipaddr();
+const char *get_ipaddr(void);
 void sp_log_msgf(char const *restrict feature, int level, int type,
                 const char *restrict fmt, ...);
 int compute_hash(const char *const restrict filename, char *restrict file_hash);

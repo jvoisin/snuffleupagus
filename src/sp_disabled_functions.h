@@ -3,7 +3,7 @@
 
 extern zend_write_func_t zend_write_default;
 
-int hook_disabled_functions();
+int hook_disabled_functions(void);
 int hook_echo(const char *, size_t);
 void should_disable_ht(zend_execute_data *, const char *, const zend_string *,
                        const char *, const sp_list_node *, const HashTable *);
