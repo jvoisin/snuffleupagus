@@ -85,7 +85,8 @@ static int create_var(sp_tree *tree, const char *restrict value,
   return 0;
 }
 
-int cmp_tokens(sp_list_node *list1, sp_list_node *list2) {
+int cmp_tokens(sp_list_node const *const list1,
+               sp_list_node const *const list2) {
   return (((sp_conf_token *)list1->data)->pos -
           ((sp_conf_token *)list2->data)->pos);
 }

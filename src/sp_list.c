@@ -10,7 +10,8 @@ void sp_list_free(sp_list_node *node) {
 
 // Thanks to https://en.wikipedia.org/wiki/Insertion_sort :>
 sp_list_node *sp_list_sort(sp_list_node *pList,
-                           int (*cmp_func)(sp_list_node *, sp_list_node *)) {
+                           int (*cmp_func)(sp_list_node const *const,
+                                           sp_list_node const *const)) {
   sp_list_node *head = NULL;
 
   if (pList == NULL || pList->next == NULL) {
