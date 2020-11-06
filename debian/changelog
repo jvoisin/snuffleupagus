@@ -1,3 +1,18 @@
+snuffleupagus (0.6.0) UNRELEASED; urgency=medium
+
+  [ jvoisin ]
+  * More constification
+  * Snuffleupagus should now be able to get client's ip addresses in more cases
+  * Documented compatibility with Heroku
+  * Improved logging
+  * Added a couple of tests
+
+  [ wargio ]
+  * allow empty configurations
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Fri, 06 Nov 2020 17:45:00 +0200
+
+
 snuffleupagus (0.5.1) UNRELEASED; urgency=medium
 
   [ jvoisin ]
@@ -10,7 +25,6 @@ snuffleupagus (0.5.1) UNRELEASED; urgency=medium
   * Improve the gitlab CI
 
  -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Sat, 20 Jun 2020 12:30:00 +0200
-
 
 snuffleupagus (0.5.0) UNRELEASED; urgency=medium
 
@@ -37,7 +51,7 @@ snuffleupagus (0.4.1) UNRELEASED; urgency=medium
   * Improve and clarify the documentation
   * Add support for PHP7.3
   * Improve the coverage, we have now reached 99% of coverage
-  * Improve the `mb_string` hooking logic 
+  * Improve the `mb_string` hooking logic
   * The script that check uploaded file is now available in PHP
   * Fix segfault on 32-bit for PHP7.3
   * Fix segfault when using `sloppy_comparison` feature with array
@@ -67,11 +81,11 @@ snuffleupagus (0.3.1) UNRELEASED; urgency=medium
 
   * Disable XXE and harden PRNG by default
   * Use SameSite on PHP's session cookie in the default rules
-  * Relax a bit what files can be included in the default rules  
+  * Relax a bit what files can be included in the default rules
   * Add the possibility to ignore files hashes when generating rules
-  * The filename filter is now accepting phar paths  
+  * The filename filter is now accepting phar paths
   * The harden rand_feature is not ignoring parameters anymore in function calls
-  * Fix possible crashes/hangs when using php-fpm's pools  
+  * Fix possible crashes/hangs when using php-fpm's pools
   * Fix an infinite loop on echo hook
   * Fix an issue with filename filter
   * Fix some documentation issues

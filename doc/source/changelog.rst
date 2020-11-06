@@ -1,8 +1,25 @@
 Changelog
 =========
 
-0.5.1 - `Order of the Elephant <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.5.1>`__ 2020/06/20
---------------------------------------------------------------------------------------------------------------
+0.6.0 - `Elephant in the room <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.6.0>`__ 2020/11/06
+----------------------------------------------------------------------------------------------------------
+
+New features
+^^^^^^^^^^^^
+* Allow empty configurations
+
+Improvements
+^^^^^^^^^^^^
+
+* More constification
+* Snuffleupagus should now be able to get client's ip addresses in more cases
+* Documented compatibility with Heroku
+* Improved logging
+* Added a couple of tests
+
+
+0.5.1 - `Order of the Elephant <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.5.1>`__ 2020/06/20
+-----------------------------------------------------------------------------------------------------------
 
 New features
 ^^^^^^^^^^^^
@@ -19,8 +36,8 @@ Improvements
 * Improve the gitlab CI
 
 
-0.5.0 - `Elephant Flats <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.5.0>`__ 2019/06/12
---------------------------------------------------------------------------------------------------------------
+0.5.0 - `Elephant Flats <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.5.0>`__ 2019/06/12
+----------------------------------------------------------------------------------------------------
 
 Improvements
 ^^^^^^^^^^^^
@@ -45,8 +62,8 @@ Bug fixes
 
 
 
-0.4.1 - `Loxodonta <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.4.1>`__ 2018/12/21
---------------------------------------------------------------------------------------------------------------
+0.4.1 - `Loxodonta <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.4.1>`__ 2018/12/21
+-----------------------------------------------------------------------------------------------
 
 Improvements
 ^^^^^^^^^^^^
@@ -66,8 +83,8 @@ Bug fixes
 
 
 
-0.4.0 - `Oliphant Chuckerbutty <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.4.0>`__ 2018/08/31
---------------------------------------------------------------------------------------------------------------
+0.4.0 - `Oliphant Chuckerbutty <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.4.0>`__ 2018/08/31
+-----------------------------------------------------------------------------------------------------------
 
 New features
 ^^^^^^^^^^^^
@@ -105,8 +122,8 @@ Bug fixes
 
 
 
-0.3.1 - `Elephant Arch <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.3.1>`__ 2018/08/20
-------------------------------------------------------------------------------------------------------
+0.3.1 - `Elephant Arch <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.3.1>`__ 2018/08/20
+---------------------------------------------------------------------------------------------------
 
 Improvements
 ^^^^^^^^^^^^
@@ -128,21 +145,21 @@ Bug fixes
 - Fix the Arch Linux's PKGBUILD
 
 
-0.3.0 - `Dentalium elephantinum <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.3.0>`__ 2018/07/17
----------------------------------------------------------------------------------------------------------------
+0.3.0 - `Dentalium elephantinum <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.3.0>`__ 2018/07/17
+------------------------------------------------------------------------------------------------------------
 
 New features
 ^^^^^^^^^^^^
 
-- Session cookies can now be `encrypted <https://github.com/nbs-system/snuffleupagus/pull/178>`__
-- Some occurrences of `type juggling <https://github.com/nbs-system/snuffleupagus/pull/186>`__ can now be eradicated
-- It's  `now possible <https://github.com/nbs-system/snuffleupagus/pull/187>`__ to hook `echo` and `print`
+- Session cookies can now be `encrypted <https://github.com/jvoisin/snuffleupagus/pull/178>`__
+- Some occurrences of `type juggling <https://github.com/jvoisin/snuffleupagus/pull/186>`__ can now be eradicated
+- It's  `now possible <https://github.com/jvoisin/snuffleupagus/pull/187>`__ to hook `echo` and `print`
 
 Improvements
 ^^^^^^^^^^^^
 
-- The `.filename()` filter is `now matching <https://github.com/nbs-system/snuffleupagus/pull/167>`__ on the file where the function is called instead on the one where it's defined.
-- Vastly `optimize <https://github.com/nbs-system/snuffleupagus/issues/166>`__ the way we hook native functions
+- The `.filename()` filter is `now matching <https://github.com/jvoisin/snuffleupagus/pull/167>`__ on the file where the function is called instead on the one where it's defined.
+- Vastly `optimize <https://github.com/jvoisin/snuffleupagus/issues/166>`__ the way we hook native functions
 - The format of the logs has been streamlined to ease their processing
 
 
@@ -151,11 +168,11 @@ Bug fixes
 
 - Better handling of filters for built-in functions
 - Fix various possible integer overflows
-- Fix an `annoying memory leak <https://github.com/nbs-system/snuffleupagus/issues/192#issuecomment-404538124>`__ impacting mostly `mod_php`  
+- Fix an `annoying memory leak <https://github.com/jvoisin/snuffleupagus/issues/192#issuecomment-404538124>`__ impacting mostly `mod_php`  
 
 
-0.2.2 - `Elephant Moraine <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.2.2>`__ 2018/04/12
----------------------------------------------------------------------------------------------------------
+0.2.2 - `Elephant Moraine <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.2.2>`__ 2018/04/12
+------------------------------------------------------------------------------------------------------
 
 New features
 ^^^^^^^^^^^^
@@ -177,8 +194,8 @@ Bug fixes
 - Fix a crash related to variadic functions
 
 
-0.2.1 - `Elephant Point <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.2.1>`__ 2018/02/07
--------------------------------------------------------------------------------------------------------
+0.2.1 - `Elephant Point <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.2.1>`__ 2018/02/07
+----------------------------------------------------------------------------------------------------
 
 Bug fixes
 ^^^^^^^^^
@@ -194,8 +211,8 @@ Improvements
 - Improve a bit the portability of the code
 - Minor code simplification
 
-0.2.0 - `Elephant Rally <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.2.0>`__ - 2018/01/18
----------------------------------------------------------------------------------------------------------
+0.2.0 - `Elephant Rally <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.2.0>`__ - 2018/01/18
+------------------------------------------------------------------------------------------------------
 
 New features
 ^^^^^^^^^^^^
@@ -226,7 +243,7 @@ External contributions
 
 - Simplification and clean up of our linked-list implementation by `smagnin <https://github.com/smagnin>`__
 
-0.1.0 - `Mighty Mammoth <https://github.com/nbs-system/snuffleupagus/releases/tag/v0.1.0>`__ - 2017/12/21
----------------------------------------------------------------------------------------------------------
+0.1.0 - `Mighty Mammoth <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.1.0>`__ - 2017/12/21
+------------------------------------------------------------------------------------------------------
 
 - Initial release

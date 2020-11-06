@@ -1,9 +1,9 @@
 #ifndef PHP_SNUFFLEUPAGUS_H
 #define PHP_SNUFFLEUPAGUS_H
 
-#define PHP_SNUFFLEUPAGUS_VERSION "0.5.1"
+#define PHP_SNUFFLEUPAGUS_VERSION "0.6.0"
 #define PHP_SNUFFLEUPAGUS_EXTNAME "snuffleupagus"
-#define PHP_SNUFFLEUPAGUS_AUTHOR "NBS System"
+#define PHP_SNUFFLEUPAGUS_AUTHOR "NBS System & Julien (jvoisin) Voisin"
 #define PHP_SNUFFLEUPAGUS_URL "https://github.com/jvoisin/snuffleupagus"
 #define PHP_SNUFFLEUPAGUS_COPYRIGHT "LGPLv2"
 
