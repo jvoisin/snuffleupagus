@@ -36,17 +36,24 @@
 #define SP_LOG_ERROR E_ERROR
 #define SP_LOG_WARN E_WARNING
 
-#define sp_log_msg(feature, level, ...) sp_log_msgf(feature, level, SP_TYPE_LOG, __VA_ARGS__)
-#define sp_log_drop(feature, ...) sp_log_msgf(feature, SP_LOG_ERROR, SP_TYPE_DROP, __VA_ARGS__)
-#define sp_log_simulation(feature, ...) sp_log_msgf(feature, SP_LOG_WARN, SP_TYPE_SIMULATION, __VA_ARGS__)
-#define sp_log_auto(feature, is_simulation, ...) sp_log_msgf(feature, \
-  (is_simulation ? SP_LOG_WARN : SP_LOG_ERROR), \
-  (is_simulation ? SP_TYPE_SIMULATION : SP_TYPE_DROP), __VA_ARGS__)
+#define sp_log_msg(feature, level, ...) \
+  sp_log_msgf(feature, level, SP_TYPE_LOG, __VA_ARGS__)
+#define sp_log_drop(feature, ...) \
+  sp_log_msgf(feature, SP_LOG_ERROR, SP_TYPE_DROP, __VA_ARGS__)
+#define sp_log_simulation(feature, ...) \
+  sp_log_msgf(feature, SP_LOG_WARN, SP_TYPE_SIMULATION, __VA_ARGS__)
+#define sp_log_auto(feature, is_simulation, ...)                     \
+  sp_log_msgf(feature, (is_simulation ? SP_LOG_WARN : SP_LOG_ERROR), \
+              (is_simulation ? SP_TYPE_SIMULATION : SP_TYPE_DROP),   \
+              __VA_ARGS__)
 
-#define sp_log_err(feature, ...) sp_log_msgf(feature, SP_LOG_ERROR, SP_TYPE_LOG, __VA_ARGS__)
-#define sp_log_warn(feature, ...) sp_log_msgf(feature, SP_LOG_WARN, SP_TYPE_LOG, __VA_ARGS__)
+#define sp_log_err(feature, ...) \
+  sp_log_msgf(feature, SP_LOG_ERROR, SP_TYPE_LOG, __VA_ARGS__)
+#define sp_log_warn(feature, ...) \
+  sp_log_msgf(feature, SP_LOG_WARN, SP_TYPE_LOG, __VA_ARGS__)
 #ifdef SP_DEBUG
-#define sp_log_debug(...) sp_log_msgf("DEBUG", SP_LOG_DEBUG, SP_TYPE_LOG, __VA_ARGS__)
+#define sp_log_debug(...) \
+  sp_log_msgf("DEBUG", SP_LOG_DEBUG, SP_TYPE_LOG, __VA_ARGS__)
 #else
 #define sp_log_debug(...)
 #endif
@@ -55,7 +62,7 @@
 
 const char *get_ipaddr(void);
 void sp_log_msgf(char const *restrict feature, int level, int type,
-                const char *restrict fmt, ...);
+                 const char *restrict fmt, ...);
 int compute_hash(const char *const restrict filename, char *restrict file_hash);
 const zend_string *sp_zval_to_zend_string(const zval *);
 bool sp_match_value(const zend_string *, const zend_string *, const sp_pcre *);
