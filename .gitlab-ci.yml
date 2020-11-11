@@ -7,14 +7,14 @@ testsuite:debian:
   script:
     - apt-get -qqy update
     - apt-get -qqy install --no-install-recommends php-dev gcc make libpcre3-dev
-    - make debug
+    - make tests
 
 testsuite:fedora:
   image: fedora
   stage: testsuite
   script:
     - dnf install -y php-devel gcc make pcre-devel
-    - make debug
+    - make tests
 
 testsuite:ubuntu:
   image: ubuntu
@@ -22,7 +22,7 @@ testsuite:ubuntu:
   script:
     - apt-get -qqy update
     - DEBIAN_FRONTEND=noninteractive apt-get -qqy install --no-install-recommends php-dev gcc make libpcre3-dev php-cgi php-curl php-xml
-    - make debug
+    - make tests
 
 testsuite:alpine:
   image: alpine

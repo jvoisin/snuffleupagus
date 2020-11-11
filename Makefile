@@ -18,8 +18,7 @@ compile_debug:  ## compile a debug build
 	export CFLAGS="-g3 -ggdb -O1 -g"; cd src; ./configure --enable-snuffleupagus --enable-debug
 	make -C src
 
-debug: compile_debug ## compile and run a debug build
-	sed -i "s/\$$ext_params -d display_errors=0 -r/-d display_errors=0 -r/" src/run-tests.php
+tests: release
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test
 
 coverage:  ## compile snuffleugpaus, and run the testsuite with coverage
