@@ -14,7 +14,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
-#include <pcre.h>
+#include "sp_pcre_compat.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,7 +34,6 @@
 #include "ext/standard/info.h"
 #include "ext/standard/url.h"
 #include "ext/standard/php_var.h"
-#include "ext/pcre/php_pcre.h"
 #include "ext/session/php_session.h"
 #include "php.h"
 #include "php_ini.h"

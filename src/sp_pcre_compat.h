@@ -7,17 +7,19 @@
 #undef pcre_exec
 #undef pcre_compile
 
-/* We're not supporting pcre2 when it's not bundled with php7,
+/* We're not supporting pcre when it's not bundled with php7,
  * yet. Pull-requests are welcome. */
 #if HAVE_BUNDLED_PCRE
 #if PHP_VERSION_ID >= 70300
 #define SP_HAS_PCRE2
-#include "ext/pcre/pcre2lib/pcre2.h"
+#include "ext/pcre/php_pcre.h"
 #else
 #include "ext/pcre/pcrelib/pcre.h"
 #endif
 #else
-#include "pcre.h"
+#define SP_HAS_PCRE2
+#define PCRE2_CODE_UNIT_WIDTH 8
+#include "pcre2.h"
 #endif
 
 #ifdef SP_HAS_PCRE2
