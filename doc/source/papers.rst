@@ -31,13 +31,14 @@ Mentions
 
 - `Habr - PHP-Дайджест № 118 – свежие новости, материалы и инструменты <https://habr.com/en/company/zfort/blog/339630/>`__ (ru) - Habr
 - `Intrinsec's blog - Hack.lu 2017 <https://securite.intrinsec.com/2017/10/20/hack-lu-2017/>`__ (fr) - Intrinsec's blog
-- `Paragon Initiative Enterprises Blog - The 2018 Guide to Building Secure PHP Software <https://paragonie.com/blog/2017/12/2018-guide-building-secure-php-software>`__ - 2017-12-12
+- `Paragon Initiative Enterprises Blog - The 2018 Guide to Building Secure PHP Software <https://paragonie.com/blog/2017/12/2018-guide-building-secure-php-software>`__
 
 2018
 """"
 
 - `Habr - PHP-Дайджест № 138 <https://habr.com/en/company/zfort/blog/422069/>`__ (ru) - Habr
 - `PhpStorm's blog - PHP Annotated Monthly <https://blog.jetbrains.com/phpstorm/2018/08/php-annotated-monthly-august-2018/>`__ - PhpStorm's blog
+- `PHP Weekly <http://www.phpweekly.com/archive/2018-02-08.html>`__
 
 2019
 """"
