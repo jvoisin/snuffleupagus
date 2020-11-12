@@ -375,7 +375,7 @@ int parse_disabled_functions(char *line) {
                "Invalid configuration line: 'sp.disabled_functions%s': " \
                "'.%s' and '.%s' are mutually exclusive on line %zu",     \
                line, STR1, STR2, sp_line_no);                            \
-    return 1;                                                            \
+    return -1;                                                           \
   }
 
   MUTUALLY_EXCLUSIVE(df->r_value, df->value, "r_value", "value");
