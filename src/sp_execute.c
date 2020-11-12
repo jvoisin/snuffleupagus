@@ -156,6 +156,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
       return;
     }
 
+    // If we're at an internal function
     if (!execute_data->prev_execute_data ||
         !execute_data->prev_execute_data->func ||
         !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
@@ -163,17 +164,18 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
       should_disable_ht(execute_data, function_name, NULL, NULL,
                         config_disabled_functions_reg,
                         config_disabled_functions);
-    } else if ((execute_data->prev_execute_data->opline->opcode ==
-                    ZEND_DO_FCALL ||
-                execute_data->prev_execute_data->opline->opcode ==
-                    ZEND_DO_UCALL ||
-                execute_data->prev_execute_data->opline->opcode ==
-                    ZEND_DO_ICALL ||
-                execute_data->prev_execute_data->opline->opcode ==
-                    ZEND_DO_FCALL_BY_NAME)) {
-      should_disable_ht(execute_data, function_name, NULL, NULL,
-                        config_disabled_functions_reg,
-                        config_disabled_functions);
+    } else {  // If we're at a userland function call
+      switch (execute_data->prev_execute_data->opline->opcode) {
+        case ZEND_DO_FCALL:
+        case ZEND_DO_FCALL_BY_NAME:
+        case ZEND_DO_ICALL:
+        case ZEND_DO_UCALL:
+          should_disable_ht(execute_data, function_name, NULL, NULL,
+                            config_disabled_functions_reg,
+                            config_disabled_functions);
+        default:
+          break;
+      }
     }
 
     // When a function's return value isn't used, php doesn't store it in the
