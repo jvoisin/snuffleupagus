@@ -13,6 +13,13 @@ Alpine Linux
 We're maintaining the `package in Alpine <https://github.com/alpinelinux/aports/blob/master/testing/php7-snuffleupagus/APKBUILD>`__:
 you can simply ``apk add`` it.
 
+CloudLinux
+----------
+
+Snuffleupagus is packaged there `since 2019 <https://www.cloudlinux.com/cloudlinux-os-blog/entry/alt-php-updated-1-98`__:
+you can ``yum install alt-php*-snuffleupagus`` it.
+
+
 Debian and Ubuntu
 -----------------
 
