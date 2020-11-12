@@ -378,11 +378,11 @@ int parse_disabled_functions(char *line) {
     return 1;                                                            \
   }
 
-  MUTUALLY_EXCLUSIVE(df->value, df->r_value, "value", "regexp");
+  MUTUALLY_EXCLUSIVE(df->r_value, df->value, "r_value", "value");
   MUTUALLY_EXCLUSIVE(df->r_function, df->function, "r_function", "function");
-  MUTUALLY_EXCLUSIVE(df->filename, df->r_filename, "r_filename", "filename");
-  MUTUALLY_EXCLUSIVE(df->ret, df->r_ret, "r_ret", "ret");
-  MUTUALLY_EXCLUSIVE(df->key, df->r_key, "r_key", "key");
+  MUTUALLY_EXCLUSIVE(df->r_filename, df->filename, "r_filename", "filename");
+  MUTUALLY_EXCLUSIVE(df->r_ret, df->ret, "r_ret", "ret");
+  MUTUALLY_EXCLUSIVE(df->r_key, df->key, "r_key", "key");
 #undef MUTUALLY_EXCLUSIVE
 
   if (1 <
