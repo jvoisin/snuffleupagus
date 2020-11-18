@@ -22,10 +22,13 @@ ZEND_DLEXPORT int sp_zend_startup(zend_extension *extension) {
 // LCOV_EXCL_END
 
 static inline void sp_op_array_handler(zend_op_array *op) {
-  if (NULL == op->filename) {
+  // We need a filename, and strict mode not already enabled on this op
+  if (NULL == op->filename || op->fn_flags & ZEND_ACC_STRICT_TYPES) {
     return;
   } else {
-    op->fn_flags |= ZEND_ACC_STRICT_TYPES;
+    if (true == SNUFFLEUPAGUS_G(config).config_global_strict->enable) {
+      op->fn_flags |= ZEND_ACC_STRICT_TYPES;
+    }
   }
 }
 
@@ -59,7 +62,7 @@ ZEND_DLEXPORT zend_extension zend_extension_entry = {
     NULL,                 /* activate_func_t */
     NULL,                 /* deactivate_func_t */
     NULL,                 /* message_handler_func_t */
-    sp_op_array_handler,  // zend_global_strict, /* op_array_handler_func_t */
+    sp_op_array_handler,  /* op_array_handler_func_t */
     NULL,                 /* statement_handler_func_t */
     NULL,                 /* fcall_begin_handler_func_t */
     NULL,                 /* fcall_end_handler_func_t */
@@ -222,7 +225,7 @@ PHP_MINFO_FUNCTION(snuffleupagus) {
     case SP_CONFIG_INVALID:
       valid_config = "invalid";
       break;
-		case SP_CONFIG_NONE:
+    case SP_CONFIG_NONE:
     default:
       valid_config = "no";
   }
