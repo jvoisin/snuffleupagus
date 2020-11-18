@@ -41,7 +41,7 @@ foreach($objects as $name => $object){
 	}
 
 	foreach(token_get_all($file_content) as $token) {
-		if ($token[0] != 319) {
+		if ($token[0] !== T_STRING) {
 			continue;
 		}
 
