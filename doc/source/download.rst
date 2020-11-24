@@ -4,8 +4,12 @@ Download
 Arch Linux
 ----------
 
-We're providing a `PKGBUILD <https://github.com/jvoisin/snuffleupagus/blob/master/PKGBUILD>`__,
-so you can build a package yourself.
+Thanks to `kpcyrd <https://github.com/kpcyrd>`__, Snuffleupagus is
+`available <https://www.archlinux.org/packages/community/x86_64/php-snuffleupagus/>`__
+in Archlinux' community repository.
+
+We're also providing a `PKGBUILD <https://github.com/jvoisin/snuffleupagus/blob/master/PKGBUILD>`__
+if you want to build the package yourself.
 
 Alpine Linux
 ------------
@@ -16,7 +20,7 @@ you can simply ``apk add`` it.
 CloudLinux
 ----------
 
-Snuffleupagus is packaged there `since 2019 <https://www.cloudlinux.com/cloudlinux-os-blog/entry/alt-php-updated-1-98`__:
+Snuffleupagus is packaged there `since 2019 <https://www.cloudlinux.com/cloudlinux-os-blog/entry/alt-php-updated-1-98>`__:
 you can ``yum install alt-php*-snuffleupagus`` it.
 
 
