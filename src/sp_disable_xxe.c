@@ -3,10 +3,6 @@
 PHP_FUNCTION(sp_libxml_disable_entity_loader) { RETURN_TRUE; }
 
 int hook_libxml_disable_entity_loader() {
-  zval func_name;
-  zval hmac;
-  zval params[1];
-
   TSRMLS_FETCH();
 
 // External entities are disabled by default in PHP8+
@@ -14,6 +10,10 @@ int hook_libxml_disable_entity_loader() {
   /* Call the php function here instead of re-implementing it is a bit
    * ugly, but we do not want to introduce compile-time dependencies against
    * libxml. */
+  zval func_name;
+  zval hmac;
+  zval params[1];
+
   ZVAL_STRING(&func_name, "libxml_disable_entity_loader");
   ZVAL_STRING(&params[0], "true");
   call_user_function(CG(function_table), NULL, &func_name, &hmac, 1, params);
