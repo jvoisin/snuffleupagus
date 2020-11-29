@@ -327,7 +327,10 @@ The ``function`` filter is able to do various dereferencing:
 - ``function("AwesomeClass::my_method")`` will match the method ``my_method`` in the class ``AwesomeClass``
 - ``function("AwesomeNamespace\\my_function")`` will match the function ``my_function`` in the namespace ``AwesomeNamespace``
 
-The ``param`` filter is also able to do some dereferencing:
+It's also able to have calltrace constrains: ``function(func1>func2)`` will
+match only if ``func2`` is called **inside** of ``func1``.
+
+The ``param`` filter is able to do some dereferencing as well:
 
 - ``param($foo[bar])`` will get a match on the value corresponding to the ``bar`` key in the hashtable ``foo``.
   Remember that in PHP, almost every data structure is a hashtable. You can of course nest this like
