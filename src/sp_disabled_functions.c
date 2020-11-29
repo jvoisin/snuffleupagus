@@ -626,7 +626,11 @@ int hook_disabled_functions(void) {
 
 zend_write_func_t zend_write_default = NULL;
 
+#if PHP_VERSION_ID >= 80000
+size_t hook_echo(const char* str, size_t str_length) {
+#else
 int hook_echo(const char* str, size_t str_length) {
+#endif
   zend_string* zs = zend_string_init(str, str_length, 0);
 
   should_disable_ht(
