@@ -328,7 +328,8 @@ The ``function`` filter is able to do various dereferencing:
 - ``function("AwesomeNamespace\\my_function")`` will match the function ``my_function`` in the namespace ``AwesomeNamespace``
 
 It's also able to have calltrace constrains: ``function(func1>func2)`` will
-match only if ``func2`` is called **inside** of ``func1``.
+match only if ``func2`` is called **inside** of ``func1``. Do note that their
+might be other functions called between them.
 
 The ``param`` filter is able to do some dereferencing as well:
 
