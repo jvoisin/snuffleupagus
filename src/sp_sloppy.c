@@ -4,7 +4,7 @@ ZEND_API zend_op_array* (*orig_zend_compile_file)(zend_file_handle* file_handle,
                                                   int type) = NULL;
 #if PHP_VERSION_ID >= 80000
 ZEND_API zend_op_array* (*orig_zend_compile_string)(
-    zval* source_string, const char* filename) = NULL;
+    zend_string* source_string, const char* filename) = NULL;
 #else
 ZEND_API zend_op_array* (*orig_zend_compile_string)(zval* source_string,
                                                     char* filename) = NULL;
@@ -25,7 +25,11 @@ static void modify_opcode(zend_op_array* opline) {
   }
 }
 
+#if PHP_VERSION_ID >= 80000
+ZEND_API zend_op_array* sp_compile_string(zend_string* source_string, char* filename) {
+#else
 ZEND_API zend_op_array* sp_compile_string(zval* source_string, char* filename) {
+#endif
   zend_op_array* opline = orig_zend_compile_string(source_string, filename);
   modify_opcode(opline);
   return opline;
