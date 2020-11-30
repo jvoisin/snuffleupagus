@@ -1,7 +1,7 @@
 --TEST--
 Disable functions by matching the calltrace, with a superfluous function in between
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_chain_call_skip.ini
 --FILE--

@@ -1,7 +1,7 @@
 --TEST--
 Disable functions - match on a specific line - broken configuration
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_functions_broken_line.ini
 --FILE--

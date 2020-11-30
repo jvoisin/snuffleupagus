@@ -1,7 +1,7 @@
 --TEST--
 Cookie encryption - no environment variable specified
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/encrypt_regexp_cookies_no_env.ini
 display_errors=1

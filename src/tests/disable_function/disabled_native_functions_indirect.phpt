@@ -1,7 +1,7 @@
 --TEST--
 Disabled native functions, called indirectly
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_functions.ini
 --FILE--

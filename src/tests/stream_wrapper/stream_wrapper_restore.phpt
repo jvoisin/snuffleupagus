@@ -2,7 +2,7 @@
 Stream wrapper
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 70300) { die("skip BROKEN with 7.3"); } ?>
+<?php if (PHP_VERSION_ID >= 70300) { print "skip BROKEN with 7.3"; } ?>
 --INI--
 sp.configuration_file={PWD}/config/config_stream_wrapper_register.ini
 --FILE--

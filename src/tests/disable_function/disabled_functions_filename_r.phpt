@@ -1,7 +1,7 @@
 --TEST--
 Disable functions - filename regexp
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_filename_r.ini
 --FILE--

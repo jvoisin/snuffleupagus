@@ -1,7 +1,7 @@
 --TEST--
 Disable functions - matching on an array's variable only
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_param_array.ini
 --FILE--

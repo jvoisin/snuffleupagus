@@ -2,8 +2,8 @@
 Disable functions - Ensure that server certificates validation can't be disabled via `curl_multi_setopt`
 --SKIPIF--
 <?php
-if (!extension_loaded("snuffleupagus")) { die("skip"); }
-if (!extension_loaded("curl")) { die("skip"); }
+if (!extension_loaded("snuffleupagus")) { print("skip"); }
+if (!extension_loaded("curl")) { print("skip"); }
 ?>
 --EXTENSIONS--
 curl

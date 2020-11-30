@@ -2,8 +2,8 @@
 Disable functions - Ensure that client certificates validation can't be disabled via `curl_setopt_array`
 --SKIPIF--
 <?php
-if (!extension_loaded("snuffleupagus")) { die("skip"); }
-if (!extension_loaded("curl")) { die("skip"); }
+if (!extension_loaded("snuffleupagus")) { print("skip"); }
+if (!extension_loaded("curl")) { print("skip"); }
 ?>
 --EXTENSIONS--
 curl

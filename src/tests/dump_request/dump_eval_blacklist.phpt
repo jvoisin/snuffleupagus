@@ -2,7 +2,7 @@
 Dump eval blacklist
 --SKIPIF--
 <?php 
-if (!extension_loaded("snuffleupagus")) die "skip";
+if (!extension_loaded("snuffleupagus")) print "skip";
 ?>
 --POST--
 post_a=data_post_a&post_b=data_post_b

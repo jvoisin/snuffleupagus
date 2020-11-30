@@ -1,7 +1,7 @@
 --TEST--
 Eval whitelist
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/eval_whitelist.ini
 --FILE--

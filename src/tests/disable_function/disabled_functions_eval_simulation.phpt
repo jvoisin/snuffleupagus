@@ -1,7 +1,7 @@
 --TEST--
 Disable functions - eval (simulation)
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_functions_eval_simulation.ini
 --FILE--

@@ -1,7 +1,7 @@
 --TEST--
 Disable functions by matching on the filename_r where the function is called, and not defined
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_called_file_r.ini
 --FILE--

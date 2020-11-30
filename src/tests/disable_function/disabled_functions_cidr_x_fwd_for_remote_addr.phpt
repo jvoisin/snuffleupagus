@@ -1,7 +1,7 @@
 --TEST--
 Disable functions - x-forwarded-for and remote-addr
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --ENV--
 return <<<EOF
 HTTP_X_FORWARDED_FOR=127.0.0.1

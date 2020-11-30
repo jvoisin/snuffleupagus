@@ -1,7 +1,7 @@
 --TEST--
 Cookie encryption
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_encrypted_regexp_cookies.ini
 --COOKIE--
