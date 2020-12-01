@@ -1,7 +1,7 @@
 --TEST--
 Disable functions - match on a super global
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_function_super_global_var.ini
 --GET--

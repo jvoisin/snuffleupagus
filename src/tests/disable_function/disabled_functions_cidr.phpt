@@ -1,7 +1,7 @@
 --TEST--
 Disable functions
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --ENV--
 return <<<EOF
 REMOTE_ADDR=127.0.0.1

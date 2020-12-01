@@ -1,7 +1,7 @@
 --TEST--
 Disable functions check on `ret` with an alias
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_dump_segfault1.ini
 --FILE--

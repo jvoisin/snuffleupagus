@@ -1,7 +1,7 @@
 --TEST--
 Broken conf with wrong type
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/broken_conf_invalid_type.ini
 --FILE--

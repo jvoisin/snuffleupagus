@@ -1,7 +1,7 @@
 --TEST--
 Disable functions ret val - dump
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_functions_retval_dump.ini
 --ENV--

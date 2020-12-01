@@ -1,7 +1,7 @@
 --TEST--
 Broken configuration - unmatching brackets
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_unmatching_brackets.ini
 --FILE--

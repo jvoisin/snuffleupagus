@@ -1,7 +1,7 @@
 --TEST--
 Broken configuration filename without absolute path
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/broken_conf_invalid_filename.ini
 --FILE--

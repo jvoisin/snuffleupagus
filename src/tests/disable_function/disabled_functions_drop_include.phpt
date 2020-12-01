@@ -1,7 +1,7 @@
 --TEST--
 Disable function, bug : https://github.com/jvoisin/snuffleupagus/issues/181
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_functions_drop_include.ini
 --FILE--

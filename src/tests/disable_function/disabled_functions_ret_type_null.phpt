@@ -1,7 +1,7 @@
 --TEST--
 Disable functions check on `ret` by type matching (null).
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_functions_ret_type_null.ini
 --FILE--

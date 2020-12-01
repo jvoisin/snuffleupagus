@@ -1,7 +1,7 @@
 --TEST--
 Echo hooking
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_function_echo.ini
 --FILE--

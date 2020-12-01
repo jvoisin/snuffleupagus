@@ -1,7 +1,7 @@
 --TEST--
 Disable functions - CIDR match on an x-forwarded-for
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --ENV--
 return <<<EOF
 HTTP_X_FORWARDED_FOR=127.0.0.1

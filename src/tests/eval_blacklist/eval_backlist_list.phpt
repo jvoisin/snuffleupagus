@@ -1,7 +1,7 @@
 --TEST--
 Eval blacklist - with a list of functions
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/eval_backlist_list.ini
 --FILE--
