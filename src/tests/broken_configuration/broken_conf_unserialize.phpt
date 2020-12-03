@@ -1,5 +1,7 @@
 --TEST--
 Invalid configuration file for unserialize
+--SKIPIF--
+<?php if (PHP_VERSION_ID >= 80000) print "skip" ?>
 --INI--
 file_uploads=1
 sp.configuration_file={PWD}/config/broken_conf_unserialize.ini

@@ -2,6 +2,7 @@
 Broken configuration - ret and value are mutually exclusive
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip" ?>
 --INI--
 sp.configuration_file={PWD}/config/broken_conf_mutually_exclusive12.ini
 --FILE--
