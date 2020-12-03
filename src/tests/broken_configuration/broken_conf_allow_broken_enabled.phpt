@@ -2,7 +2,7 @@
 Broken configuration with allow broken turned on
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip" ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/broken_conf.ini
 sp.allow_broken_configuration=On

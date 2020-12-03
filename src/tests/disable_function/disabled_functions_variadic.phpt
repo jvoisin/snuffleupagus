@@ -2,7 +2,7 @@
 Disable functions - support for variadic functions
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip" ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_variadic.ini
 --FILE--

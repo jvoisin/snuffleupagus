@@ -2,7 +2,7 @@
 Broken configuration with invalid token for wrapper whitelist
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip" ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/broken_conf_wrapper_whitelist.ini
 sp.allow_broken_configuration=Off

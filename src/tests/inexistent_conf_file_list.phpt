@@ -2,7 +2,7 @@
 Non-existent configuration file in a list
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip" ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/../../config/default.rules,{PWD}/non_existent_configuration_file
 --FILE--

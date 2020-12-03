@@ -5,7 +5,7 @@ Disable functions - Ensure that server certificates validation can't be disabled
 if (!extension_loaded("snuffleupagus")) { echo("skip"); }
 if (!extension_loaded("curl")) { echo("skip"); }
 ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip" ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --EXTENSIONS--
 curl
 --INI--

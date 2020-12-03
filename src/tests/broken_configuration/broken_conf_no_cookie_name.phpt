@@ -2,7 +2,7 @@
 Broken configuration - encrypted cookie with no name
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip" ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_encrypted_cookies_noname.ini
 --FILE--

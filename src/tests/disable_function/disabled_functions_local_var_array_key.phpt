@@ -2,7 +2,7 @@
 Disable functions - match on an array value buried in several levels
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip" ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_local_var_array_key.ini
 --FILE--

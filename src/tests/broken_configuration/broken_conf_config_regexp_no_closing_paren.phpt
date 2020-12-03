@@ -2,7 +2,7 @@
 Broken configuration - regexp without a closing parenthesis
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip" ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/broken_config_regexp_no_closing_paren.ini
 --FILE--

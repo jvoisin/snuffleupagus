@@ -5,7 +5,7 @@ Stream wrapper
 if (!extension_loaded("snuffleupagus")) print "skip snuffleupagus extension missing";
 if (!extension_loaded("openssl")) print "skip openssl extension missing";
 ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip" ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_stream_wrapper.ini
 --FILE--

@@ -2,7 +2,7 @@
 Broken configuration, invalid cidr for ipv6 because there is no `/` in it
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip" ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/broken_conf_invalid_cidr6_no_slash.ini
 --FILE--
