@@ -70,8 +70,8 @@ $parser = create_parser();
 $doc = xml_parse($parser, $xml, true);
 xml_parser_free($parser);
 
---EXPECT--
-	Deprecated: Function libxml_disable_entity_loader() is deprecated in /var/www/html/snuffleupagus/src/tests/xxe/disable_xxe_xml_parse.php on line 41
+--EXPECTF--
+	Deprecated: Function libxml_disable_entity_loader() is deprecated in %s/tests/xxe/disable_xxe_xml_parse.php on line 41
 string(4) "TEST"
 
 array(0) {
@@ -83,7 +83,7 @@ array(0) {
 string(7) "TESTING"
 string(4) "TEST"
 
-Deprecated: Function libxml_disable_entity_loader() is deprecated in /var/www/html/snuffleupagus/src/tests/xxe/disable_xxe_xml_parse.php on line 46
+Deprecated: Function libxml_disable_entity_loader() is deprecated in %s/tests/xxe/disable_xxe_xml_parse.php on line 46
 string(4) "TEST"
 
 array(0) {
