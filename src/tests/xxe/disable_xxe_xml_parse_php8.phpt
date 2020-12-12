@@ -1,5 +1,5 @@
 --TEST--
-Disable XXE in xml_parse
+Disable XXE in xml_parse, in php8
 --SKIPIF--
 <?php
  if (!extension_loaded("snuffleupagus")) {
@@ -7,8 +7,8 @@ Disable XXE in xml_parse
 } elseif (!extension_loaded("xml")) {
   echo "skip because the `xml` extension isn't loaded";
 }
- ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
+?>
+<?php if (PHP_VERSION_ID < 80000) print "skip"; ?>
 --EXTENSIONS--
 xml
 --INI--
@@ -70,7 +70,8 @@ $parser = create_parser();
 $doc = xml_parse($parser, $xml, true);
 xml_parser_free($parser);
 
---EXPECT--
+--EXPECTF--
+	Deprecated: Function libxml_disable_entity_loader() is deprecated in %s/tests/xxe/disable_xxe_xml_parse.php on line 41
 string(4) "TEST"
 
 array(0) {
@@ -81,6 +82,8 @@ array(0) {
 }
 string(7) "TESTING"
 string(4) "TEST"
+
+Deprecated: Function libxml_disable_entity_loader() is deprecated in %s/tests/xxe/disable_xxe_xml_parse.php on line 46
 string(4) "TEST"
 
 array(0) {
@@ -100,10 +103,4 @@ string(7) "TESTING"
 array(0) {
 }
 textfoostring(7) "TESTING"
-string(4) "TEST"
---CLEAN--
-<?php
-$dir = __DIR__;
-unlink($dir . "/content.xml");
-unlink($dir . "/content.txt");
-?>
+

@@ -2,6 +2,7 @@
 Harden rand without any arguments
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/harden_rand.ini
 We should fix this

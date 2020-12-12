@@ -1,8 +1,8 @@
 --TEST--
-Disable XXE
+Disable XXE in php8
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus") || !extension_loaded("dom")) print("skip"); ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
+<?php if (PHP_VERSION_ID < 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disable_xxe_disable.ini
 --EXTENSIONS--
@@ -43,13 +43,18 @@ $dom->loadXML($xml, LIBXML_DTDATTR|LIBXML_DTDLOAD|LIBXML_NOENT);
 printf("without xxe: %s", $dom->getElementsByTagName('testing')->item(0)->nodeValue);
 
 ?>
---EXPECTF-- 
-libxml_disable_entity to true: WARNING, external entity loaded!
-libxml_disable_entity to false: WARNING, external entity loaded!
-without xxe: foo
 --CLEAN--
 <?php
 $dir = __DIR__;
 unlink($dir . "/content.xml");
 unlink($dir . "/content.txt");
 ?>
+--EXPECTF-- 
+Deprecated: Function libxml_disable_entity_loader() is deprecated in %s/tests/xxe/disable_xxe_dom_disabled.php on line %d
+libxml_disable_entity to true: WARNING, external entity loaded!
+
+Deprecated: Function libxml_disable_entity_loader() is deprecated in %s/tests/xxe/disable_xxe_dom_disabled.php on line %d
+libxml_disable_entity to false: WARNING, external entity loaded!
+
+Deprecated: Function libxml_disable_entity_loader() is deprecated in %s/tests/xxe/disable_xxe_dom_disabled.php on line %d
+
