@@ -8,9 +8,9 @@ sp_pcre* sp_pcre_compile(const char* const pattern) {
   PCRE2_SIZE erroroffset;
   sp_pcre* ret = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED,
                       PCRE2_CASELESS, &errornumber, &erroroffset, NULL);
-  pcre2_get_error_message(errornumber, pcre_error, sizeof(pcre_error));
 
   if (NULL == ret) {
+    pcre2_get_error_message(errornumber, pcre_error, sizeof(pcre_error));
     sp_log_err("config", "Failed to compile '%s': %s on line %zu.", pattern,
                pcre_error, sp_line_no);
   }
