@@ -29,7 +29,6 @@
 #include <sys/syslog.h>
 
 #include "SAPI.h"
-#include "ext/session/php_session.h"
 #include "ext/standard/head.h"
 #include "ext/standard/info.h"
 #include "ext/standard/url.h"
