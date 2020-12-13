@@ -34,7 +34,7 @@ matrix:
     php: "7.2"
   - env: TARGET="gcc php7.3" CC="gcc"
     php: "7.3"
-  - env: TARGET="gcc php7.4 novld" CC="gcc"
+  - env: TARGET="gcc php7.4" CC="gcc"
     php: "7.4"
   - env: TARGET="gcc php nightly novld" CC="gcc"
     php: "nightly"
