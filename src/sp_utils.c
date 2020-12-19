@@ -127,7 +127,7 @@ static int construct_filename(char* filename,
   }
 
   /* We're using the sha256 sum of the rule's textual representation
-   * as filename, in order to only have one dump per rule, to migitate
+   * as filename, in order to only have one dump per rule, to mitigate
    * DoS attacks. */
   PHP_SHA256Init(&context);
   PHP_SHA256Update(&context, (const unsigned char*)ZSTR_VAL(textual),
