@@ -38,9 +38,6 @@ matrix:
     php: "7.4"
   - env: TARGET="gcc php nightly novld" CC="gcc"
     php: "nightly"
-  allow_failures:
-  - env: TARGET="gcc php nightly novld" CC="gcc"
-    php: "nightly"
 
 script:
   - if [[ ! "${TARGET}" = *"novld"* ]]; then pecl install vld-beta ; fi

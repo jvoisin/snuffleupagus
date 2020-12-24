@@ -7,18 +7,18 @@
 #undef pcre_exec
 #undef pcre_compile
 
-#if HAVE_BUNDLED_PCRE
-#if PHP_VERSION_ID >= 70300
-#include "ext/pcre/php_pcre.h"
-#else
-#include "ext/pcre/pcrelib/pcre.h"
-#endif
-#else
-#define PCRE2_CODE_UNIT_WIDTH 8
-#include "pcre2.h"
-#endif
 
+#define PCRE2_CODE_UNIT_WIDTH 8
+#if PHP_VERSION_ID >= 70300
+#define SP_HAS_PCRE2
+#endif
+#include "ext/pcre/php_pcre.h"  // PCRE1
+
+#ifdef SP_HAS_PCRE2
 #define sp_pcre pcre2_code
+#else
+#define sp_pcre pcre
+#endif
 
 sp_pcre* sp_pcre_compile(const char* str);
 #define sp_is_regexp_matching_zend(regexp, zstr) \
