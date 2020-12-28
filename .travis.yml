@@ -44,8 +44,9 @@ script:
   - cd src/
   - phpize
   - ./configure --enable-snuffleupagus --enable-coverage
-  - make -j 2
+  - make -j `nproc`
   - sed -i "s/\$ext_params -d display_errors=0 -r/-d display_errors=0 -r/" run-tests.php
+  - if [ "${TARGET}" != "gcc php nightly novld" ] ; then rm -rf ./tests/*php8* ; fi
   - TEST_PHP_ARGS="-q" REPORT_EXIT_STATUS=1 make test
 
 after_success:
