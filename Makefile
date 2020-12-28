@@ -18,7 +18,7 @@ compile_debug:  ## compile a debug build
 	export CFLAGS="-g3 -ggdb -O1 -g"; cd src; ./configure --enable-snuffleupagus --enable-debug
 	make -C src
 
-tests: release
+tests: release  ## compile a release build and run the testsuite
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test
 
 coverage:  ## compile snuffleugpaus, and run the testsuite with coverage
