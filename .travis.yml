@@ -25,18 +25,18 @@ matrix:
         build_command_prepend: "cd src; phpize; ./configure --enable-snuffleupagus; cd -"
         build_command: "make debug -j2"
         branch_pattern: "master"
-  - env: TARGET="gcc php7.0" CC="gcc"
+  - env: TARGET="php7.0"
     php: "7.0"
-  - env: TARGET="gcc php7.1" CC="gcc"
+  - env: TARGET="php7.1"
     php: "7.1"
-  - env: TARGET="gcc php7.2" CC="gcc"
+  - env: TARGET="php7.2"
     before_install: pip install --user cpp-coveralls
     php: "7.2"
-  - env: TARGET="gcc php7.3" CC="gcc"
+  - env: TARGET="php7.3"
     php: "7.3"
-  - env: TARGET="gcc php7.4" CC="gcc"
+  - env: TARGET="php7.4"
     php: "7.4"
-  - env: TARGET="gcc php nightly novld" CC="gcc"
+  - env: TARGET="php nightly novld"
     php: "nightly"
 
 script:
@@ -46,12 +46,12 @@ script:
   - ./configure --enable-snuffleupagus --enable-coverage
   - make -j `nproc`
   - sed -i "s/\$ext_params -d display_errors=0 -r/-d display_errors=0 -r/" run-tests.php
-  - if [ "${TARGET}" != "gcc php nightly novld" ] ; then rm -rf ./tests/*php8* ; fi
+  - if [ "${TARGET}" != "php nightly novld" ] ; then rm -rf ./tests/*php8* ; fi
   - TEST_PHP_ARGS="-q" REPORT_EXIT_STATUS=1 make test
 
 after_success:
   - |
-    if [ "${TARGET}" = "gcc php7.2" ]; then
+    if [ "${TARGET}" = "php7.2" ]; then
       cd ../
       git clone --depth 1 https://github.com/linux-test-project/lcov.git
       rm -rf ./lcov/examples/ ./lcov/test/
