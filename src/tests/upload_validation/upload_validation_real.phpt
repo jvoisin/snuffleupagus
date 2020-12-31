@@ -6,8 +6,8 @@ if (!extension_loaded("snuffleupagus")) {
  	print "skip";
 }
 
-if (PHP_VERSION_ID >= 70300) {
-  print "skip BROKEN with 7.3";
+if (PHP_VERSION_ID >= 80000) {
+  print "vld isn't supported by PHP8";
 }
 
 if (strpos(system(PHP_BINARY . " -d error_log=/dev/null -d extension=vld.so -m 2>/dev/null"), "vld") === FALSE) {
