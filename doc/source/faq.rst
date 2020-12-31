@@ -187,8 +187,8 @@ Will Snuffleupagus run on my old PHP 5?
 """""""""""""""""""""""""""""""""""""""
 No.
 
-Since PHP5 `will be deprecated at the end of 2018 <http://php.net/supported-versions.php>`_,
-you should think about moving to PHP7 anyway. You can (and should) use
+Since PHP5 `is deprecated since the end of 2018 <http://php.net/supported-versions.php>`_,
+you should think about moving to PHP7. You can (and should) use
 `Suhosin <https://suhosin.org>`_ in the meantime.
 
 Help and support
