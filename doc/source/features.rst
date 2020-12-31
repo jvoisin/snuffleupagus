@@ -161,8 +161,10 @@ without the need to invalidate any data.
 
 A nice side-effect of this feature is that it will defeat various memory corruption
 issues related to the complexity of ``unserialize``'s implementation,
-and the amount of control if provides to an attacker, like `CVE-2016-9137, CVE-2016-9138 <https://bugs.php.net/bug.php?id=73147>`_,
-`2016-7124 <https://bugs.php.net/bug.php?id=72663>`_, `CVE-2016-5771 and CVE-2016-5773 <https://www.evonide.com/how-we-broke-php-hacked-pornhub-and-earned-20000-dollar/>`_.
+and the amount of control if provides to an attacker, like `CVE-2016-9137,
+CVE-2016-9138 <https://bugs.php.net/bug.php?id=73147>`_, `2016-7124
+<https://bugs.php.net/bug.php?id=72663>`_, `CVE-2016-5771 and CVE-2016-5773
+<https://www.evonide.com/how-we-broke-php-hacked-pornhub-and-earned-20000-dollar/>`_.
 
 
 Examples of related vulnerabilities
@@ -327,6 +329,8 @@ and various other types mismatch.
 This feature is largely inspired from the
 `autostrict <https://github.com/krakjoe/autostrict>`_ module from `krakjoe <http://krakjoe.ninja>`__.
 
+PHP8 already has [this feature](https://wiki.php.net/rfc/consistent_type_errors) for internal functions.
+
 
 .. _sloppy-comparisons-feature:
 
@@ -348,6 +352,9 @@ but also the `in_array
 <https://secure.php.net/manual/en/function.in-array.php>`__, `array_search
 <https://secure.php.net/manual/en/function.array-search.php>`__ and `array_keys
 <https://secure.php.net/manual/en/function.array-keys.php>`__ functions.
+
+PHP8 is implementing [a subset](https://wiki.php.net/rfc/consistent_type_errors) of this feature.
+
 
 .. _readonly-exec-feature:
 
