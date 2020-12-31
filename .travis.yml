@@ -36,7 +36,9 @@ matrix:
     php: "7.3"
   - env: TARGET="php7.4"
     php: "7.4"
-  - env: TARGET="php nightly novld"
+  - env: TARGET="php8.0 novld"
+    php: "8.0"
+  - env: TARGET="nightly novld"
     php: "nightly"
 
 script:
@@ -46,7 +48,8 @@ script:
   - ./configure --enable-snuffleupagus --enable-coverage
   - make -j `nproc`
   - sed -i "s/\$ext_params -d display_errors=0 -r/-d display_errors=0 -r/" run-tests.php
-  - if [ "${TARGET}" != "php nightly novld" ] ; then rm -rf ./tests/*php8* ; fi
+  - if [ "${TARGET}" != *"nightly"* ] ; then rm -rf ./tests/*php8* ; fi
+  - if [ "${TARGET}" != *"php8"* ] ; then rm -rf ./tests/*php8* ; fi
   - TEST_PHP_ARGS="-q" REPORT_EXIT_STATUS=1 make test
 
 after_success:
