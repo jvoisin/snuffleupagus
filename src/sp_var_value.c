@@ -50,7 +50,7 @@ static zval *get_local_var(zend_execute_data *ed, const char *var_name) {
 
 static zval *get_constant(const char *value) {
   zend_string *name = zend_string_init(value, strlen(value), 0);
-  zval *zvalue = zend_get_constant_ex(name, NULL, 0);
+  zval *zvalue = zend_get_constant_ex(name, NULL, ZEND_FETCH_CLASS_SILENT);
 
   zend_string_release(name);
   return zvalue;
