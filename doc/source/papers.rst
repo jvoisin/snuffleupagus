@@ -39,6 +39,9 @@ Mentions
 - `Habr - PHP-Дайджест № 138 <https://habr.com/en/company/zfort/blog/422069/>`__ (ru) - Habr
 - `PhpStorm's blog - PHP Annotated Monthly <https://blog.jetbrains.com/phpstorm/2018/08/php-annotated-monthly-august-2018/>`__ - PhpStorm's blog
 - `PHP Weekly <http://www.phpweekly.com/archive/2018-02-08.html>`__
+- `New variant in wp-gdpr-compliance vulnerability and fixing it with virtual
+  patching <https://medium.com/alertot/new-variant-in-wp-gdpr-compliance-vulnerability-and-fixing-it-with-virtual-patching-4b72d7496c1c>`__
+  - alertot
 
 2019
 """"
