@@ -30,10 +30,13 @@ This feature is even more effective when used along with :ref:`readonly_exec <re
 Examples of related vulnerabilities
 """""""""""""""""""""""""""""""""""
 
-- `CVE-2017-7981 <https://tuleap.net/plugins/tracker/?aid=10159>`_: Authenticated remote code execution on Tuleap
-- `CVE-2014-4688 <https://www.pfsense.org/security/advisories/pfSense-SA-14_10.webgui.asc>`_: Authenticated remote code execution on pfSense
-- `CVE-2014-1610 <https://www.rapid7.com/db/modules/exploit/multi/http/mediawiki_thumb>`_: Unauthenticated remote code execution on DokuWiki
-- `CVE-2013-3630 <https://www.rapid7.com/db/modules/exploit/multi/http/moodle_cmd_exec>`_: Authenticated remote code execution on Moodle
+- `CVE-2013-3630 <https://www.rapid7.com/db/modules/exploit/multi/http/moodle_cmd_exec>`__: Authenticated remote code execution in Moodle
+- `CVE-2014-1610 <https://www.rapid7.com/db/modules/exploit/multi/http/mediawiki_thumb>`__: Unauthenticated remote code execution in DokuWiki
+- `CVE-2014-4688 <https://www.pfsense.org/security/advisories/pfSense-SA-14_10.webgui.asc>`__: Authenticated remote code execution in pfSense
+- `CVE-2017-7981 <https://tuleap.net/plugins/tracker/?aid=10159>`__: Authenticated remote code execution in Tuleap
+- `CVE-2018-20434 <https://www.exploit-db.com/exploits/47044>`__: Authenticated remote code execution in LibreNMS
+- `CVE-2020-5791 <https://www.tenable.com/security/research/tra-2020-58)>`__: Authenticated remote code execution in Nagios XI
+- `CVE-2020-8813 <https://www.exploit-db.com/exploits/48159>`__: Unauthenticated remote code execution in Cacti
 - Every single `modem/router/switch/IoT/… <https://twitter.com/internetofshit>`_.
 
 
@@ -62,6 +65,7 @@ Examples of related vulnerabilities
 - `CVE-2016-10074 <https://legalhackers.com/advisories/SwiftMailer-Exploit-Remote-Code-Exec-CVE-2016-10074-Vuln.html>`_: remote code execution in SwiftMailer
 - `CVE-2016-10033 <https://legalhackers.com/advisories/PHPMailer-Exploit-Remote-Code-Exec-CVE-2016-10033-Vuln.html>`_: remote code execution in PHPMailer
 - `CVE-2016-9920 <https://www.ripstech.com/blog/2016/roundcube-command-execution-via-email/>`_: Unauthenticated remote code execution in Roundcube
+- `CVE-2019-???? <https://www.exploit-db.com/exploits/46136>`__:  Unauthenticated remote code execution in Horde
 
 .. _cookie-encryption-feature:
 
@@ -115,6 +119,9 @@ Examples of related vulnerabilities
 - `CVE-2017-6090 <https://sysdream.com/news/lab/2017-09-29-cve-2017-6090-phpcollab-2-5-1-arbitrary-file-upload-unauthenticated/>`_: Unauthenticated remote code execution in PhpCollab
 - `EDB-38407 <https://www.exploit-db.com/exploits/38407/>`_: Authenticated remote code execution in GLPI
 - `CVE-2013-5576 <https://developer.joomla.org/security/news/563-20130801-core-unauthorised-uploads>`_: Authenticated remote code execution in Joomla
+- `CVE-2019-15813 <https://www.exploit-db.com/exploits/48955>`__: Authenticated remote code execution in Sentrifugo
+- `CVE-2019-17132 <http://karmainsecurity.com/KIS-2019-02>`__: Authenticated remote code execution in vBulletin
+- `CVE-2020-10682 <http://dev.cmsmadesimple.org/bug/view/12275>`__: Authenticated remote code execution in CMS Made Simple
 - `EDB-19154 <https://www.rapid7.com/db/modules/exploit/multi/http/qdpm_upload_exec>`_: Authenticated remote code execution in qdPM
 
 
@@ -161,14 +168,17 @@ and the amount of control if provides to an attacker, like `CVE-2016-9137, CVE-2
 Examples of related vulnerabilities
 """""""""""""""""""""""""""""""""""
 
-- `CVE-2016-???? <https://www.computest.nl/advisories/CT-2016-1110_Observium.txt>`_: Unauthenticated remote code execution in Observium (leading to remote root)
-- `CVE-2016-5726 <http://seclists.org/oss-sec/2016/q2/521>`_: Unauthenticated remote code execution in Simple Machines Forums
-- `CVE-2016-4010 <http://netanelrub.in/2016/05/17/magento-unauthenticated-remote-code-execution/>`_: Unauthenticated remote code execution in Magento
-- `CVE-2017-2641 <http://netanelrub.in/2017/03/20/moodle-remote-code-execution/>`_: Unauthenticated remote code execution in Moodle
-- `CVE-2015-8562 <https://www.rapid7.com/db/modules/exploit/multi/http/joomla_http_header_rce>`_: Unauthenticated remote code execution in Joomla
-- `CVE-2015-7808 <https://www.rapid7.com/db/modules/exploit/multi/http/vbulletin_unserialize>`_: Unauthenticated remote code execution in vBulletin
-- `CVE-2014-1691 <http://seclists.org/oss-sec/2014/q1/153>`_: Unauthenticated remote code execution in Horde
 - `CVE-2012-5692 <https://www.rapid7.com/db/modules/exploit/unix/webapp/invision_pboard_unserialize_exec>`_: Unauthenticated remote code execution in IP.Board
+- `CVE-2014-1691 <http://seclists.org/oss-sec/2014/q1/153>`_: Unauthenticated remote code execution in Horde
+- `CVE-2015-7808 <https://www.rapid7.com/db/modules/exploit/multi/http/vbulletin_unserialize>`_: Unauthenticated remote code execution in vBulletin
+- `CVE-2015-8562 <https://www.rapid7.com/db/modules/exploit/multi/http/joomla_http_header_rce>`_: Unauthenticated remote code execution in Joomla
+- `CVE-2016-4010 <http://netanelrub.in/2016/05/17/magento-unauthenticated-remote-code-execution/>`_: Unauthenticated remote code execution in Magento
+- `CVE-2016-5726 <http://seclists.org/oss-sec/2016/q2/521>`_: Unauthenticated remote code execution in Simple Machines Forums
+- `CVE-2016-???? <https://www.computest.nl/advisories/CT-2016-1110_Observium.txt>`_: Unauthenticated remote code execution in Observium (leading to remote root)
+- `CVE-2017-2641 <http://netanelrub.in/2017/03/20/moodle-remote-code-execution/>`_: Unauthenticated remote code execution in Moodle
+- `CVE-2018-17057 <https://www.exploit-db.com/exploits/46634>`: Unauthenticated remote code execution in LimeSurvey
+- `CVE-2018-19274 <https://blog.ripstech.com/2018/phpbb3-phar-deserialization-to-remote-code-execution/>`__: Authenticated remote code execution in phpBB
+- `CVE-2019-6340 <https://www.ambionics.io/blog/drupal8-rce>`__:  Unauthenticated remote code execution in Drupal
 
 
 .. _harden-rand-feature:
