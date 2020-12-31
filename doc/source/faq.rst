@@ -39,14 +39,14 @@ we thought that using an elephant as a mascot would be a great idea.
 Who are you and why did you write Snuffleupagus?
 """"""""""""""""""""""""""""""""""""""""""""""""
 
-We're working for `NBS System <https://nbs-system.com/en/>`__,
+The project started at `NBS System <https://nbs-system.com/en/>`__,
 a web hosting company (meaning that we're dealing with PHP code all day long),
 with a strong focus on security. We do have several layers of hardening
 (`kernel <https://grsecurity.net/>`_, `WAF <https://naxsi.org>`_,
 `IDS <https://en.wikipedia.org/wiki/Intrusion_detection_system>`_, etc),
 but we had nothing for PHP7.
 
-Nowadays, Snuffleupagus is maintained by Julien (jvoisin) Voisin.
+Nowadays, Snuffleupagus is maintained by Julien (`jvoisin <https://dustri.org>`__) Voisin.
 
 
 Why not Suhosin?
