@@ -165,7 +165,7 @@ int sp_log_request(const zend_string* restrict folder,
   fprintf(file, "RULE: sp%s%s\n", from, ZSTR_VAL(text_repr));
 
   fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
-  for (size_t i = 0; i < (sizeof(zones) / sizeof(zones[0])) - 1; i++) {
+  for (size_t i = 0; zones[i].str; i++) {
     zval* variable_value;
     zend_string* variable_key;
 
