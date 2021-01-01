@@ -165,6 +165,22 @@ int sp_log_request(const zend_string* restrict folder,
   fprintf(file, "RULE: sp%s%s\n", from, ZSTR_VAL(text_repr));
 
   fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
+
+
+  zend_execute_data *orig_execute_data = EG(current_execute_data);
+	zend_execute_data *current = EG(current_execute_data);
+	while (current) {
+    EG(current_execute_data) = current;
+    char* const complete_path_function = get_complete_function_path(current);
+		if (complete_path_function) {
+			const int current_line = zend_get_executed_lineno(TSRMLS_C);
+			fprintf(file, "STACKTRACE: %s:%d\n", complete_path_function, current_line);
+		}
+    current = current->prev_execute_data;
+	}
+	EG(current_execute_data) = orig_execute_data;
+
+
   for (size_t i = 0; zones[i].str; i++) {
     zval* variable_value;
     zend_string* variable_key;
