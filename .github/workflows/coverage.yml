@@ -1,0 +1,30 @@
+name: Coverage
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['7.4']
+    steps:
+      - uses: actions/checkout@v2
+      - name: make coverage
+        run: |
+          cd src
+          phpize
+          ./configure --enable-snuffleupagus --enable-coverage
+          make -j `nproc`
+          TEST_PHP_ARGS="-q" REPORT_EXIT_STATUS=1 make test
+          cd -
+          git clone --depth 1 https://github.com/linux-test-project/lcov.git
+          ./lcov/bin/lcov -c -o ./src/COV.info --rc lcov_branch_coverage=1 --base-directory ./src/ --directory .
+          ./lcov/bin/lcov --remove ./src/COV.info "/usr/*" --remove ./src/COV.info "./src/*tweetnacl.c" -o ./src/COV.info --rc lcov_branch_coverage=1
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./src/COV.info

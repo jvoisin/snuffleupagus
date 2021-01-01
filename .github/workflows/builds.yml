@@ -1,0 +1,29 @@
+name: Testsuite
+on: ['pull_request', 'push']
+
+jobs:
+  build:
+    # ubuntu-latest doesn't have php7.0
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        include:
+          - php-version: '7.4'
+          - php-version: '8.0'
+          - php-version: '8.1'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install PHP
+        uses: shivammathur/setup-php@verbose
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: vld-beta
+      - name: build
+        run: |
+          cd src
+          phpize
+          ./configure --enable-snuffleupagus
+          make -j `nproc`
+      - name: run tests
+        run: cd src; TEST_PHP_ARGS="-q" REPORT_EXIT_STATUS=1 make test
