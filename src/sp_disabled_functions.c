@@ -40,7 +40,7 @@ static bool is_functions_list_matching(zend_execute_data* execute_data,
                                        sp_list_node* functions_list) {
   zend_execute_data *orig_execute_data, *current;
   orig_execute_data = current = execute_data;
-  sp_list_node const * it = functions_list;
+  sp_list_node const* it = functions_list;
 
   while (current) {
     if (it == NULL) {  // every function in the list matched, we've got a match!
@@ -60,7 +60,7 @@ static bool is_functions_list_matching(zend_execute_data* execute_data,
     if (0 == match) {
       it = it->next;
     }
-		current = current->prev_execute_data;
+    current = current->prev_execute_data;
   }
 
   EG(current_execute_data) = orig_execute_data;

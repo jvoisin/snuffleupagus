@@ -140,7 +140,8 @@ static int construct_filename(char* filename,
 }
 
 int sp_log_request(const zend_string* restrict folder,
-                   const zend_string* restrict text_repr, char* from) {
+                   const zend_string* restrict text_repr,
+                   char const* const from) {
   FILE* file;
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);

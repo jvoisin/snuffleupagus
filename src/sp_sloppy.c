@@ -26,7 +26,8 @@ static void modify_opcode(zend_op_array* opline) {
 }
 
 #if PHP_VERSION_ID >= 80000
-ZEND_API zend_op_array* sp_compile_string(zend_string* source_string, const char* filename) {
+ZEND_API zend_op_array* sp_compile_string(zend_string* source_string,
+                                          const char* filename) {
 #else
 ZEND_API zend_op_array* sp_compile_string(zval* source_string, char* filename) {
 #endif
