@@ -368,10 +368,8 @@ bool sp_match_array_value(const zval* arr, const zend_string* to_match,
 
   ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(arr), value) {
     if (Z_TYPE_P(value) != IS_ARRAY) {
-      const zend_string* value_str = sp_zval_to_zend_string(value);
-      if (sp_match_value(value_str, to_match, rx)) {
+      if (sp_match_value(sp_zval_to_zend_string(value), to_match, rx)) {
         return true;
-      } else {
       }
     } else if (sp_match_array_value(value, to_match, rx)) {
       return true;
