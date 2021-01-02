@@ -10,10 +10,6 @@
 <h4 align="center">Security module for php7 - Killing bugclasses and virtual-patching the rest!</h4>
 
 <p align="center">
-  <a href="https://travis-ci.org/jvoisin/snuffleupagus">
-    <img src="https://travis-ci.org/jvoisin/snuffleupagus.svg?branch=master"
-         alt="Travis-ci">
-  </a>
   <a href="https://gitlab.com/jvoisin/snuffleupagus/commits/master">
     <img src="https://gitlab.com/jvoisin/snuffleupagus/badges/master/pipeline.svg"
          alt="gitlab pipeline testing _all_ distributions" />
