@@ -1,6 +1,27 @@
 Changelog
 =========
 
+0.7.0 - `Los Elefantes <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.7.0>`__ 2021/01/02
+----------------------------------------------------------------------------------------------------------
+
+New features
+^^^^^^^^^^^^
+* PHP8 support
+* Stacktraces in dumps
+* The ``>`` operator now skips over functions
+
+Improvements
+^^^^^^^^^^^^
+* Move the CI from travis to gitlab-ci
+* Some code simplifications and constifications
+* PCRE2 is now used when possible
+* The ``generate_rules.php`` script is now more portable
+
+Bug fixes
+^^^^^^^^^
+* The strict mode is now disableable
+
+
 0.6.0 - `Elephant in the room <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.6.0>`__ 2020/11/06
 ----------------------------------------------------------------------------------------------------------
 

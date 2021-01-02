@@ -1,3 +1,12 @@
+snuffleupagus (0.7.0) UNRELEASED; urgency=medium
+  [ jvoisin ]
+  * PHP8 support
+  * Stacktraces in dumps
+  * The `>` operator skips over functions
+  * PCRE2 is used when possible
+  * The `generate_rules.php` script is now more portable
+  * The strict mode is now disableable
+
 snuffleupagus (0.6.0) UNRELEASED; urgency=medium
 
   [ jvoisin ]
@@ -11,7 +20,6 @@ snuffleupagus (0.6.0) UNRELEASED; urgency=medium
   * allow empty configurations
 
  -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Fri, 06 Nov 2020 17:45:00 +0200
-
 
 snuffleupagus (0.5.1) UNRELEASED; urgency=medium
 
