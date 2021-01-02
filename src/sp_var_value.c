@@ -71,6 +71,11 @@ static zval *get_var_value(zend_execute_data *ed, const char *var_name,
   if (is_param) {
     zval *zvalue = get_param_var(ed, var_name);
     if (!zvalue) {
+      sp_log_warn("config",
+                  "It seems that you are filtering on a parameter "
+                  "that does not exists: \"%s\". "
+                  "Matching on local variables instead.",
+                  var_name);
       return get_local_var(ed, var_name);
     }
     return zvalue;
