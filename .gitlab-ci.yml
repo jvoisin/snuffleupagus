@@ -1,37 +1,44 @@
 stages:
   - testsuite
 
-testsuite:debian:
-  image: debian
+.php7:
   stage: testsuite
   script:
-    - apt-get -qqy update
-    - apt-get -qqy install --no-install-recommends php-dev gcc make libpcre3-dev
+    - pecl install vld-beta
+    - rm -rf src/tests/*php8*/ 
     - make tests
+  after_script:
+    - grep -r . ./src/tests/*/*.out
+    - grep -r . ./src/tests/*/*.diff
 
-testsuite:fedora:
-  image: fedora
+.php8:
   stage: testsuite
   script:
-    - dnf install -y php-devel gcc make pcre-devel
     - make tests
+  after_script:
+    - grep -r . ./src/tests/*/*.out
+    - grep -r . ./src/tests/*/*.diff
 
-testsuite:ubuntu:
-  image: ubuntu
-  stage: testsuite
-  script:
-    - apt-get -qqy update
-    - DEBIAN_FRONTEND=noninteractive apt-get -qqy install --no-install-recommends php-dev gcc make libpcre3-dev php-cgi php-curl php-xml
-    - make tests
+testsuite:php7.0:
+  extends: .php7
+  image: php:7.0
 
-testsuite:alpine:
-  image: alpine
-  stage: testsuite
-  script:
-    - apk update
-    - apk add php7-dev php7-cgi php7-simplexml php7-xml make gcc musl-dev pcre-dev
-    - make compile_debug
-    - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/cookies_encryption tests/deny_writable tests/disable_function"
-    - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/dump_request tests/eval_blacklist tests/global_strict"
-    - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/harden_rand tests/sloppy_comparison"
-    - TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test TESTS="tests/unserialize tests/xx tests/xxee"
+testsuite:php7.1:
+  extends: .php7
+  image: php:7.1
+
+testsuite:php7.2:
+  extends: .php7
+  image: php:7.2
+
+testsuite:php7.3:
+  extends: .php7
+  image: php:7.3
+
+testsuite:php7.4:
+  extends: .php7
+  image: php:7.3
+
+testsuite:php8.0:
+  extends: .php8
+  image: php:8.0
