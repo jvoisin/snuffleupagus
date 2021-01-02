@@ -204,6 +204,7 @@ static bool is_param_matching(zend_execute_data* execute_data,
                   "'%s' of the function '%s', but the parameter does "
                   "not exists.",
                   *arg_name, complete_function_path);
+      efree(complete_function_path);
     }
   }
   return false;
