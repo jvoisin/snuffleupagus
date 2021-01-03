@@ -1,7 +1,8 @@
 Snuffleupagus
 =============
 
-Snuffleupagus is a `PHP7+ <http://php.net/manual/en/migration70.php>`_
+Snuffleupagus is a `PHP7+ <https://php.net/manual/en/migration70.php>`__ and
+`PHP8+ <https://www.php.net/manual/en/migration80.php>`__
 module designed to drastically raise the cost of attacks against websites. This is achieved
 by killing entire bug classes and providing a powerful virtual-patching system,
 allowing the administrator to fix specific vulnerabilities without having to touch the PHP code.
