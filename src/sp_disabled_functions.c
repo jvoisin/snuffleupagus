@@ -197,14 +197,6 @@ static bool is_param_matching(zend_execute_data* execute_data,
                                 config_node->r_value)) {
         return true;
       }
-    } else {
-      char* complete_function_path = get_complete_function_path(execute_data);
-      sp_log_warn("config",
-                  "It seems that you are filtering on a parameter "
-                  "'%s' of the function '%s', but the parameter does "
-                  "not exists.",
-                  *arg_name, complete_function_path);
-      efree(complete_function_path);
     }
   }
   return false;

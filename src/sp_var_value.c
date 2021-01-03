@@ -71,6 +71,13 @@ static zval *get_var_value(zend_execute_data *ed, const char *var_name,
   if (is_param) {
     zval *zvalue = get_param_var(ed, var_name);
     if (!zvalue) {
+      char* complete_function_path = get_complete_function_path(ed);
+      sp_log_warn("config",
+                  "It seems that you are filtering on a parameter "
+                  "'%s' of the function '%s', but the parameter does "
+                  "not exists.",
+                  var_name, complete_function_path);
+      efree(complete_function_path);
       return NULL;
     }
     return zvalue;
