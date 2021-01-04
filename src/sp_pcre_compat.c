@@ -15,7 +15,7 @@ sp_pcre* sp_pcre_compile(const char* const pattern) {
   const char* pcre_error = NULL;
   int erroroffset;
   ret =
-      php_pcre_compile(pattern, PCRE_CASELESS, &pcre_error, &erroroffset, NULL);
+      pcre_compile(pattern, PCRE_CASELESS, &pcre_error, &erroroffset, NULL);
 #endif
 
   if (NULL == ret) {
@@ -38,7 +38,7 @@ bool ZEND_HOT sp_is_regexp_matching_len(const sp_pcre* regexp, const char* str,
   ret = pcre2_match(regexp, (PCRE2_SPTR)str, len, 0, 0, match_data, NULL);
 #else
   int vec[30];
-  ret = php_pcre_exec(regexp, NULL, str, len, 0, 0, vec,
+  ret = pcre_exec(regexp, NULL, str, len, 0, 0, vec,
                       sizeof(vec) / sizeof(int));
 #endif
 
