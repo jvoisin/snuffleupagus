@@ -4,9 +4,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#undef pcre_exec
-#undef pcre_compile
-
 #define PCRE2_CODE_UNIT_WIDTH 8
 #if PHP_VERSION_ID >= 70300
 #define SP_HAS_PCRE2
