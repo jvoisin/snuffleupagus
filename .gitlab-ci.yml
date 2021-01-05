@@ -43,9 +43,11 @@ testsuite:php8.0:
   extends: .php8
   image: php:8.0
 
+## Operating system images
+
 testsuite:debian:
   extends: .php7
   image: debian:stable
   before_script:
     - apt update
-    - apt install -y --no-install-recommends php-dev
+    - apt install -y php-dev
