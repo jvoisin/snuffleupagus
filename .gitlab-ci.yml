@@ -51,3 +51,9 @@ testsuite:debian:
   before_script:
     - apt update
     - apt install -y php-dev
+
+testsuite:fedora:
+  extends: .php7
+  image: fedora:latest
+  before_script:
+    - dnf install -y php-devel php-pear make
