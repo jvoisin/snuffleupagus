@@ -5,7 +5,7 @@ stages:
   stage: testsuite
   script:
     - pecl install vld-beta
-    - rm -rf src/tests/*php8*/ 
+    - rm -rf src/tests/*php8*/
     - make tests
   after_script:
     - grep -r . ./src/tests/*/*.out
@@ -42,3 +42,10 @@ testsuite:php7.4:
 testsuite:php8.0:
   extends: .php8
   image: php:8.0
+
+testsuite:debian:
+  extends: .php7
+  image: debian:stable
+  before_script:
+    - apt update
+    - apt install -y --no-install-recommends php-dev
