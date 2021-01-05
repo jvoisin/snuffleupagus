@@ -50,10 +50,17 @@ testsuite:debian:
   image: debian:stable
   before_script:
     - apt update
-    - apt install -y php-dev
+    - DEBIAN_FRONTEND=noninteractive apt install -y php-dev
 
 testsuite:fedora:
   extends: .php7
   image: fedora:latest
   before_script:
     - dnf install -y php-devel php-pear make
+
+testsuite:ubuntu:
+  extends: .php7
+  image: ubuntu:latest
+  before_script:
+    - apt update
+    - DEBIAN_FRONTEND=noninteractive apt install -y php-dev
