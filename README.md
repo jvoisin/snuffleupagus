@@ -45,7 +45,7 @@
   <a href="#thanks">Thanks</a>
 </p>
 
-Snuffleupagus is a [PHP 7+](https://secure.php.net/) module designed to
+Snuffleupagus is a [PHP 7+ and 8+](https://secure.php.net/) module designed to
 drastically raise the cost of attacks against websites, by killing entire bug
 classes. It also provides a powerful virtual-patching system, allowing
 administrator to fix specific vulnerabilities and audit suspicious behaviours
