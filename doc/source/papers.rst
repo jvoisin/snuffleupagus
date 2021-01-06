@@ -91,6 +91,11 @@ Articles
 - `Snuffleupagus versus recent high-profile vulnerabilities, again! <https://dustri.org/b/snuffleupagus-versus-recent-high-profile-vulnerabilities-again.html>`__ - dustri.org
 - `Snuffleupagus, módulo para bloquear vulnerabilidades en aplicaciones PHP <https://underc0de.org/foro/seguridad-en-servidores/snuffleupagus-modulo-para-bloquear-vulnerabilidades-en-aplicaciones-php/>`__ - (es) - underc0de.org
 
+2021
+""""
+
+- `Sortie de Snuffleupagus 0.7.0 - Los Elefantes <https://linuxfr.org/news/sortie-de-snuffleupagus-0-7-0-los-elefantes>`__ (fr) - linuxfr
+
 
 Papers
 ------
