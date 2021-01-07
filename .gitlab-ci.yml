@@ -72,3 +72,9 @@ testsuite:archlinux:
     - pacman --sync --refresh --noconfirm --quiet php wget autoconf gcc make
     - wget https://pear.php.net/go-pear.phar
     - php go-pear.phar
+
+testsuite:alpine:
+  extends: .php7
+  image: alpine:latest
+  before_script:
+    - apk add php7-dev pcre-dev make build-base
