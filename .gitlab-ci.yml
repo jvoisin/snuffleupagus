@@ -73,8 +73,14 @@ testsuite:archlinux:
     - wget https://pear.php.net/go-pear.phar
     - php go-pear.phar
 
-testsuite:alpine:
+testsuite:alpine7:
   extends: .php7
   image: alpine:latest
   before_script:
-    - apk add php7-dev pcre-dev make build-base
+    - apk add php7-dev pcre-dev make build-base php7-pear
+
+testsuite:alpine8:
+  extends: .php8
+  image: alpine:edge
+  before_script:
+    - apk --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing add php8 php8-dev pcre-dev make build-base php8-pear
