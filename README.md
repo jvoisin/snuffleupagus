@@ -7,7 +7,7 @@
   <br>
 </h1>
 
-<h4 align="center">Security module for php7 - Killing bugclasses and virtual-patching the rest!</h4>
+<h4 align="center">Security module for php7 and php8 - Killing bugclasses and virtual-patching the rest!</h4>
 
 <p align="center">
   <a href="https://gitlab.com/jvoisin/snuffleupagus/commits/master">
