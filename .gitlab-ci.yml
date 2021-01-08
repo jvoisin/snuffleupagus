@@ -77,12 +77,14 @@ testsuite:alpine7:
   extends: .php7
   image: alpine:edge
   before_script:
+    - rm -rf src/tests/*session*/
     - apk add php7-dev php7-cgi php7-simplexml php7-xml pcre-dev make build-base php7-pear php7-openssl
 
 testsuite:alpine8:
   extends: .php8
   image: alpine:edge
   before_script:
+    - rm -rf src/tests/*session*/
     - apk --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing add php8 php8-dev pcre-dev make build-base php8-pear php8-openssl
     - ln -s /usr/bin/php8 /usr/bin/php
     - ln -s /usr/bin/php-config8 /usr/bin/php-config
