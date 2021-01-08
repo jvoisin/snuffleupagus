@@ -79,6 +79,7 @@ testsuite:alpine7:
   before_script:
     - rm -rf src/tests/*session*/
     - rm -rf src/tests/*/*session*/
+    - rm -rf src/tests/*/*/*session*/
     - apk add php7-dev php7-cgi php7-simplexml php7-xml pcre-dev make build-base php7-pear php7-openssl
 
 testsuite:alpine8:
