@@ -75,7 +75,7 @@ testsuite:archlinux:
 
 testsuite:alpine7:
   extends: .php7
-  image: alpine:latest
+  image: alpine:edge
   before_script:
     - apk add php7-dev php7-cgi php7-simplexml php7-xml pcre-dev make build-base php7-pear php7-openssl
 
