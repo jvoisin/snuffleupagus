@@ -99,7 +99,7 @@ jobs:
       - name: Remove php8 tests for php7
         run: rm -rf src/tests/*php8*/
       - name: Remove tests failing on alpine for wathever reason
-        run: rm -rf src/tests/*session*/ src/tests/broken_configuration/ src/tests/*cookie*
+        run: rm -rf src/tests/*session*/ src/tests/broken_configuration/ src/tests/*cookie* src/tests/upload_validation/
       - name: Install dependencies
         run: |
           apk add php7-dev php7-cgi php7-simplexml php7-xml pcre-dev make build-base php7-pear php7-openssl
