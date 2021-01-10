@@ -90,7 +90,7 @@ jobs:
           grep -r . ./src/tests/*/*.out
           grep -r . ./src/tests/*/*.diff
 
-  archlinux:
+  alpine:
     runs-on: ubuntu-latest
     container: alpine:edge
     steps:
