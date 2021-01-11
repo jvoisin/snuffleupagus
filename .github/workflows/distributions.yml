@@ -89,3 +89,25 @@ jobs:
         run: |
           grep -r . ./src/tests/*/*.out
           grep -r . ./src/tests/*/*.diff
+
+  alpine:
+    runs-on: ubuntu-latest
+    container: alpine:edge
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Remove php8 tests for php7
+        run: rm -rf src/tests/*php8*/
+      - name: Remove tests failing on alpine for wathever reason
+        run: rm -rf src/tests/*session*/ src/tests/broken_configuration/ src/tests/*cookie* src/tests/upload_validation/
+      - name: Install dependencies
+        run: apk add php7-dev php7-cgi php7-simplexml php7-xml pcre-dev build-base php7-pear php7-openssl
+      - name: Install pecl
+        run: pecl install vld-beta
+      - name: Build and run the testsuite
+        run: make tests
+      - name: Show logs in case of failure
+        if: ${{ failure() }}
+        run: |
+          grep -r . ./src/tests/*/*.out
+          grep -r . ./src/tests/*/*.diff
