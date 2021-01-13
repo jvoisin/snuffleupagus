@@ -10,9 +10,13 @@
 <h4 align="center">Security module for php7 and php8 - Killing bugclasses and virtual-patching the rest!</h4>
 
 <p align="center">
-  <a href="https://gitlab.com/jvoisin/snuffleupagus/commits/master">
-    <img src="https://gitlab.com/jvoisin/snuffleupagus/badges/master/pipeline.svg"
-         alt="gitlab pipeline testing _all_ distributions" />
+  <a href="https://github.com/jvoisin/snuffleupagus/actions?query=workflow%3A%22CI+for+linux+distributions%22">
+    <img src="https://github.com/jvoisin/snuffleupagus/workflows/CI%20for%20linux%20distributions/badge.svg"
+         alt="github actions testing _all_ distributions" />
+  </a>
+  <a href="https://github.com/jvoisin/snuffleupagus/actions?query=workflow%3A%22CI+for+php+versions%22">
+    <img src="https://github.com/jvoisin/snuffleupagus/workflows/CI%20for%20php%20versions/badge.svg"
+         alt="github actions testing _all_ php versions" />
   </a>
   <a href="https://scan.coverity.com/projects/jvoisin-snuffleupagus">
     <img src="https://scan.coverity.com/projects/13821/badge.svg?flat=1"
