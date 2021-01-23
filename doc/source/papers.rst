@@ -55,6 +55,12 @@ Mentions
 
 - `Modern PHP Security Part 2: Breaching and hardening the PHP engine <https://labs.detectify.com/2020/08/20/modern-php-security-part-2-breaching-and-hardening-the-php-engine/>`__ - Detectify's blog
 
+2021
+""""
+
+- `Habr - PHP Дайджест № 196 <https://habr.com/ru/post/536726/>`__ (ru) - Habr
+
+
 Articles
 --------
 
