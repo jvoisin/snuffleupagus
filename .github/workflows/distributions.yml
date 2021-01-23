@@ -103,11 +103,14 @@ jobs:
       - name: Install dependencies
         run: apk add php7-dev php7-cgi php7-simplexml php7-xml pcre-dev build-base php7-pear php7-openssl
       - name: Install pecl
+        continue-on-error: true
         run: pecl install vld-beta
       - name: Build and run the testsuite
+        continue-on-error: true
         run: make tests
       - name: Show logs in case of failure
         if: ${{ failure() }}
+        continue-on-error: true
         run: |
           grep -r . ./src/tests/*/*.out
           grep -r . ./src/tests/*/*.diff
