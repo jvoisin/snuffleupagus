@@ -124,7 +124,7 @@ static int is_token_valid(sp_list_node *tokens_list, elem_type quote,
       }
       break;
     case ARRAY_END:
-      if (!quote) {
+      if (UNDEFINED == quote) {
         if (array_count < 1) {
           return -1;
         } else if (token_next) {
@@ -138,7 +138,8 @@ static int is_token_valid(sp_list_node *tokens_list, elem_type quote,
       }
       break;
     case OBJECT:
-      if (!quote && -1 == is_next_token_empty(token, token_next, str)) {
+      if (UNDEFINED == quote &&
+          -1 == is_next_token_empty(token, token_next, str)) {
         return -1;
       }
       if (pos == 0 && *str != VARIABLE_TOKEN) {
@@ -146,7 +147,8 @@ static int is_token_valid(sp_list_node *tokens_list, elem_type quote,
       }
       break;
     case CLASS:
-      if (!quote && -1 == is_next_token_empty(token, token_next, str)) {
+      if (UNDEFINED == quote &&
+          -1 == is_next_token_empty(token, token_next, str)) {
         return -1;
       }
       break;
@@ -160,7 +162,7 @@ static sp_tree *parse_tokens(const char *restrict str,
                              sp_list_node *tokens_list) {
   size_t pos = 0;
   int array_count = 0, pos_idx_start = -1;
-  elem_type quote = 0;
+  elem_type quote = UNDEFINED;
   sp_tree *tree = sp_tree_new();
 
   for (; tokens_list && tokens_list->data; tokens_list = tokens_list->next) {
@@ -173,11 +175,15 @@ static sp_tree *parse_tokens(const char *restrict str,
       goto error;
     }
     if (token->type == INTERPRETED_STRING || token->type == LITERAL_STRING) {
-      pos = (!quote && !array_count) ? pos + strlen(token->text_repr) : pos;
-      quote = (!quote) ? token->type : (quote == token->type) ? 0 : quote;
+      pos = (UNDEFINED == quote && !array_count)
+                ? pos + strlen(token->text_repr)
+                : pos;
+      quote = (UNDEFINED == quote)     ? token->type
+              : (quote == token->type) ? 0
+                                       : quote;
       token->type = INTERPRETED_STRING;
     }
-    if (quote == 0) {
+    if (UNDEFINED == quote) {
       if (token->type == ARRAY) {
         pos_idx_start = (array_count)
                             ? pos_idx_start
@@ -210,7 +216,7 @@ static sp_tree *parse_tokens(const char *restrict str,
     sp_log_err("config", "You forgot to close a bracket.");
     goto error;
   }
-  if (quote != 0) {
+  if (quote != UNDEFINED) {
     sp_log_err("config", "Missing a closing quote.");
   error:
     sp_tree_free(tree);
