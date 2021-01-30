@@ -532,13 +532,13 @@ static int hook_functions_regexp(const sp_list_node* config) {
   return SUCCESS;
 }
 
-static int hook_functions(HashTable* to_hook_ht, HashTable* hooked_ht) {
+static void hook_functions(HashTable* to_hook_ht, HashTable* hooked_ht) {
   zend_string* key;
   zval* value;
 
   ZEND_HASH_FOREACH_STR_KEY_VAL(to_hook_ht, key, value) {
-    bool hooked = !HOOK_FUNCTION(ZSTR_VAL(key), disabled_functions_hook,
-                                 PHP_FN(check_disabled_function));
+    bool hooked = HOOK_FUNCTION(ZSTR_VAL(key), disabled_functions_hook,
+                                PHP_FN(check_disabled_function));
     bool is_builtin =
         check_is_builtin_name(((sp_list_node*)Z_PTR_P(value))->data);
     if (hooked || is_builtin) {
@@ -547,7 +547,6 @@ static int hook_functions(HashTable* to_hook_ht, HashTable* hooked_ht) {
     }
   }
   ZEND_HASH_FOREACH_END();
-  return SUCCESS;
 }
 
 ZEND_FUNCTION(eval_blacklist_callback) {
@@ -595,13 +594,11 @@ int hook_disabled_functions(void) {
 
   int ret = SUCCESS;
 
-  ret |=
-      hook_functions(SNUFFLEUPAGUS_G(config).config_disabled_functions,
-                     SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
+  hook_functions(SNUFFLEUPAGUS_G(config).config_disabled_functions,
+                 SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
 
-  ret |= hook_functions(
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked);
+  hook_functions(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
+                 SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked);
 
   ret |= hook_functions_regexp(
       SNUFFLEUPAGUS_G(config)

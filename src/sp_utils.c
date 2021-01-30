@@ -394,10 +394,10 @@ bool sp_match_array_value(const zval* arr, const zend_string* to_match,
   return false;
 }
 
-int hook_function(const char* original_name, HashTable* hook_table,
-                  zif_handler new_function) {
+bool hook_function(const char* original_name, HashTable* hook_table,
+                   zif_handler new_function) {
   zend_internal_function* func;
-  bool ret = FAILURE;
+  bool ret = false;
 
   /* The `mb` module likes to hook functions, like strlen->mb_strlen,
    * so we have to hook both of them. */
@@ -416,7 +416,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
         // LCOV_EXCL_STOP
       }
       func->handler = new_function;
-      ret = SUCCESS;
+      ret = true;
     }
   }
 
