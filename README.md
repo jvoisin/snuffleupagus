@@ -38,6 +38,10 @@
     <img src="https://img.shields.io/badge/twitter-follow-blue.svg"
          alt="twitter">
   </a>
+  <a href="https://repology.org/project/php:snuffleupagus/versions">
+    <img src="https://repology.org/badge/tiny-repos/php:snuffleupagus.svg"
+         alt="Packaging status">
+  </a>
 </p>
 
 <p align="center">
