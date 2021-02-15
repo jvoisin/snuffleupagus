@@ -31,6 +31,9 @@ We're currently not providing a Debian/Ubuntu repository,
 but you can grab the latest release on `github <https://github.com/jvoisin/snuffleupagus/releases>`__,
 or build your own package by cloning the source code and typing ``make debian``.
 
+There is a `bug open <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=894821>`__
+Debian-side to track the inclusion.
+
 Fedora
 ------
 
