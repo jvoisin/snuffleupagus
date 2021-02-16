@@ -1,7 +1,7 @@
 --TEST--
 Disable functions - match on a local variable
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_function_local_var.ini
 --FILE--
@@ -43,4 +43,4 @@ array(2) {
   }
 }
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_3.php on line 3
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strtoupper' in %a/disabled_function_local_var_3.php on line 3

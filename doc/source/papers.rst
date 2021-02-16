@@ -9,15 +9,15 @@ Talks
 2017
 """"
 
-- `BerlinSide0x08 <https://berlinsides.org/?page_id=2168>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/berlinsides_2017.pdf>`__
-- `Hack.lu 2017 <https://2017.hack.lu/talks/>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/hacklu_2017.pdf>`__ - `video <https://www.youtube.com/watch?v=RzaRiuJ6MkI>`__
-- `BlackAlps <https://blackalps.ch/2017program.php>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/blackalps_2017.pdf>`__ - `video <https://www.youtube.com/watch?v=2GeUnOzDGxc>`__
+- `BerlinSide0x08 <https://berlinsides.org/?page_id=2168>`_ - `slides <https://github.com/jvoisin/snuffleupagus/blob/master/slides/berlinsides_2017.pdf>`__
+- `Hack.lu 2017 <https://2017.hack.lu/talks/>`_ - `slides <https://github.com/jvoisin/snuffleupagus/blob/master/slides/hacklu_2017.pdf>`__ - `video <https://www.youtube.com/watch?v=RzaRiuJ6MkI>`__
+- `BlackAlps <https://blackalps.ch/2017program.php>`_ - `slides <https://github.com/jvoisin/snuffleupagus/blob/master/slides/blackalps_2017.pdf>`__ - `video <https://www.youtube.com/watch?v=2GeUnOzDGxc>`__
 
 2018
 """"
 
-- `Pass the Salt <https://2018.pass-the-salt.org/schedule/#snuffleupagus>`_ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/passthesalt_2018.pdf>`__ - `video <https://passthesalt.ubicast.tv/videos/snuffleupagus-killing-bug-classes-and-virtual-patching-the-rest/>`__
-- `44con <https://44con.com/44con/44con-2018/44con-2018-talks/>`__ - `slides <https://github.com/nbs-system/snuffleupagus/blob/master/slides/44con_2018.pdf>`__
+- `Pass the Salt <https://2018.pass-the-salt.org/schedule/#snuffleupagus>`_ - `slides <https://github.com/jvoisin/snuffleupagus/blob/master/slides/passthesalt_2018.pdf>`__ - `video <https://passthesalt.ubicast.tv/videos/snuffleupagus-killing-bug-classes-and-virtual-patching-the-rest/>`__
+- `44con <https://44con.com/44con/44con-2018/44con-2018-talks/>`__ - `slides <https://github.com/jvoisin/snuffleupagus/blob/master/slides/44con_2018.pdf>`__
 
 2020
 """"
@@ -31,19 +31,34 @@ Mentions
 
 - `Habr - PHP-Дайджест № 118 – свежие новости, материалы и инструменты <https://habr.com/en/company/zfort/blog/339630/>`__ (ru) - Habr
 - `Intrinsec's blog - Hack.lu 2017 <https://securite.intrinsec.com/2017/10/20/hack-lu-2017/>`__ (fr) - Intrinsec's blog
-- `Paragon Initiative Enterprises Blog - The 2018 Guide to Building Secure PHP Software <https://paragonie.com/blog/2017/12/2018-guide-building-secure-php-software>`__ - 2017-12-12
+- `Paragon Initiative Enterprises Blog - The 2018 Guide to Building Secure PHP Software <https://paragonie.com/blog/2017/12/2018-guide-building-secure-php-software>`__
 
 2018
 """"
 
 - `Habr - PHP-Дайджест № 138 <https://habr.com/en/company/zfort/blog/422069/>`__ (ru) - Habr
 - `PhpStorm's blog - PHP Annotated Monthly <https://blog.jetbrains.com/phpstorm/2018/08/php-annotated-monthly-august-2018/>`__ - PhpStorm's blog
+- `PHP Weekly <http://www.phpweekly.com/archive/2018-02-08.html>`__
+- `New variant in wp-gdpr-compliance vulnerability and fixing it with virtual
+  patching <https://medium.com/alertot/new-variant-in-wp-gdpr-compliance-vulnerability-and-fixing-it-with-virtual-patching-4b72d7496c1c>`__
+  - alertot
 
 2019
 """"
 
 - `PhpStorm's blog - PHP Annotated <https://blog.jetbrains.com/phpstorm/2019/07/php-annotated-july-2019/>`__ - PhpStorm's blog
 - `Habr - PHP-Дайджест № 160 <https://habr.com/ru/post/460022/>`__ (ru) - Habr
+
+
+2020
+""""
+
+- `Modern PHP Security Part 2: Breaching and hardening the PHP engine <https://labs.detectify.com/2020/08/20/modern-php-security-part-2-breaching-and-hardening-the-php-engine/>`__ - Detectify's blog
+
+2021
+""""
+
+- `Habr - PHP Дайджест № 196 <https://habr.com/ru/post/536726/>`__ (ru) - Habr
 
 
 Articles
@@ -72,6 +87,20 @@ Articles
 - `Проект Snuffleupagus развивает PHP-модуль для блокирования уязвимостей <https://www.opennet.ru/opennews/art.shtml?num=51031>`__ (ru) - opennet.ru
 - `What the f*ck is a Snuffleupagus?  <https://medium.com/@live_the_dream/what-the-f-ck-is-a-snuffleupagus-f838fb64f857>`__ - Living The Dream
 - `Snuffleupagus: Open source security tool hardens PHP sites against cyber-attacks <https://portswigger.net/daily-swig/snuffleupagus-open-source-security-tool-hardens-php-sites-against-cyber-attacks>`__ - The Daily Swig
+- `Snuffleupagus versus recent high-profile vulnerabilities <https://dustri.org/b/snuffleupagus-versus-recent-high-profile-vulnerabilities.html>`__ - dustri.org
+
+2020
+""""
+
+- `Snuffleupagus, un excelente módulo para bloquear vulnerabilidades en aplicaciones PHP <https://www.linuxadictos.com/snuffleupagus-un-excelente-modulo-para-bloquear-vulnerabilidades-en-aplicaciones-php.html>`__ (es) - linuxadictos.com
+- `Выпуск Snuffleupagus 0.5.1, модуля для блокирования уязвимостей в PHP-приложениях <https://www.opennet.ru/opennews/art.shtml?num=53211>`__ (ru) - opennet.ru
+- `Snuffleupagus versus recent high-profile vulnerabilities, again! <https://dustri.org/b/snuffleupagus-versus-recent-high-profile-vulnerabilities-again.html>`__ - dustri.org
+- `Snuffleupagus, módulo para bloquear vulnerabilidades en aplicaciones PHP <https://underc0de.org/foro/seguridad-en-servidores/snuffleupagus-modulo-para-bloquear-vulnerabilidades-en-aplicaciones-php/>`__ - (es) - underc0de.org
+
+2021
+""""
+
+- `Sortie de Snuffleupagus 0.7.0 - Los Elefantes <https://linuxfr.org/news/sortie-de-snuffleupagus-0-7-0-los-elefantes>`__ (fr) - linuxfr
 
 
 Papers

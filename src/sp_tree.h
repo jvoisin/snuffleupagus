@@ -21,7 +21,7 @@ typedef struct parser_s {
   struct parser_s *next;
 } sp_tree;
 
-sp_tree *sp_tree_new();
+sp_tree *sp_tree_new(void);
 void sp_tree_free(sp_tree *);
 
 #endif

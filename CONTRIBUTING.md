@@ -124,6 +124,8 @@ Maintainers need to do the following to push out a release:
 	 [milestone](https://github.com/jvoisin/snuffleupagus/milestones)
 2. Run `valgrind` (by adding a `-m` after the `-q` in the Makefile) and check that everything is ok.
    Don't mind the python-related issues.
+2. Run `cd src; phpize; ./configure --enable-snuffleupagus --enable-debug; scan-build make`
+   and fix the possible issues.
 3. Update the `src/php_snuffleupagus.h` according to [semantic versioning](https://semver.org/)
 4. Update the changelog page in the documentation
 5. Update the Debian changelog in `./debian/changelog` with `cd debian; dch`

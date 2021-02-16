@@ -1,7 +1,7 @@
 --TEST--
 Cookie encryption - invalid decryption in simulation mode with a short cookie
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_encrypted_cookies_simulation.ini
 display_errors=1
@@ -16,7 +16,7 @@ EOF;
 --FILE--
 <?php var_dump($_COOKIE); ?>
 --EXPECT--
-Warning: [snuffleupagus][127.0.0.1][cookie_encryption] Buffer underflow tentative detected in cookie encryption handling for super_cookie. Using the cookie 'as it' instead of decrypting it in Unknown on line 0
+Warning: [snuffleupagus][127.0.0.1][cookie_encryption][simulation] Buffer underflow tentative detected in cookie encryption handling for super_cookie. Using the cookie 'as it' instead of decrypting it in Unknown on line 0
 array(2) {
   ["super_cookie"]=>
   string(3) "AAA"

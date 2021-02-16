@@ -1,7 +1,7 @@
 --TEST--
 Disable functions check on `ret` by type matching (false)
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_functions_ret_type.ini
 --FILE--
@@ -14,4 +14,4 @@ echo strpos("pouet", "123");
 int(0)
 1337
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on return of the function 'strpos', because the function returned 'FALSE', which matched the rule 'Return value is FALSE' in %a/disabled_functions_ret_type.php on line 4
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on return of the function 'strpos', because the function returned 'FALSE', which matched the rule 'Return value is FALSE' in %a/disabled_functions_ret_type.php on line 4

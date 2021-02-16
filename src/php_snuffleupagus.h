@@ -1,9 +1,9 @@
 #ifndef PHP_SNUFFLEUPAGUS_H
 #define PHP_SNUFFLEUPAGUS_H
 
-#define PHP_SNUFFLEUPAGUS_VERSION "0.5.0"
+#define PHP_SNUFFLEUPAGUS_VERSION "0.7.0"
 #define PHP_SNUFFLEUPAGUS_EXTNAME "snuffleupagus"
-#define PHP_SNUFFLEUPAGUS_AUTHOR "NBS System"
+#define PHP_SNUFFLEUPAGUS_AUTHOR "NBS System & Julien (jvoisin) Voisin"
 #define PHP_SNUFFLEUPAGUS_URL "https://github.com/jvoisin/snuffleupagus"
 #define PHP_SNUFFLEUPAGUS_COPYRIGHT "LGPLv2"
 
@@ -14,7 +14,6 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
-#include <pcre.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,12 +28,11 @@
 #include <sys/syslog.h>
 
 #include "SAPI.h"
-#include "ext/session/php_session.h"
+#include "ext/pcre/php_pcre.h"
 #include "ext/standard/head.h"
 #include "ext/standard/info.h"
 #include "ext/standard/url.h"
 #include "ext/standard/php_var.h"
-#include "ext/pcre/php_pcre.h"
 #include "ext/session/php_session.h"
 #include "php.h"
 #include "php_ini.h"
@@ -47,9 +45,6 @@
 #include "zend_vm.h"
 
 /* Compatibility */
-#if ( !HAVE_PCRE && !HAVE_BUNDLED_PCRE )
-#error Snuffleupagus requires PHP7+ with PCRE support
-#endif
 #if PHP_VERSION_ID < 70000
 #error Snuffleupagus only works with PHP7+. You shouldn't use PHP5 anyway, \
   since it's not supported anymore: https://secure.php.net/supported-versions.php
@@ -60,7 +55,15 @@ typedef void (*zif_handler)(INTERNAL_FUNCTION_PARAMETERS);
 #if PHP_VERSION_ID >= 80000
 #define TSRMLS_FETCH()
 #define TSRMLS_C
+#else
+#if ( !HAVE_PCRE && !HAVE_BUNDLED_PCRE )
+#error Snuffleupagus requires PHP7+ with PCRE support
 #endif
+#endif
+
+#define SP_CONFIG_VALID 1
+#define SP_CONFIG_INVALID 0
+#define SP_CONFIG_NONE -1
 
 #include "sp_pcre_compat.h"
 #include "sp_list.h"
@@ -101,7 +104,7 @@ extern zend_module_entry snuffleupagus_module_entry;
 ZEND_BEGIN_MODULE_GLOBALS(snuffleupagus)
 size_t in_eval;
 sp_config config;
-bool is_config_valid;
+int is_config_valid;  // 1 = valid, 0 = invalid, -1 = none
 bool allow_broken_configuration;
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;

@@ -2,7 +2,7 @@
 Cookie samesite
 --SKIPIF--
 <?php
-if (!extension_loaded("snuffleupagus")) die("skip");
+if (!extension_loaded("snuffleupagus")) print("skip");
 ?>
 --INI--
 sp.configuration_file={PWD}/config/config_samesite_cookies.ini

@@ -2,7 +2,7 @@
 Dump eval whitelist
 --SKIPIF--
 <?php
-if (!extension_loaded("snuffleupagus")) die "skip";
+if (!extension_loaded("snuffleupagus")) print "skip";
 ?>
 --POST--
 post_a=data_post_a&post_b=data_post_b
@@ -35,12 +35,12 @@ eval('$a = my_other_fun("1234");');
 echo "After eval: $a\n";
 $filename = glob('/tmp/dump_result/sp_dump.*')[0];
 $res = file($filename);
-if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
-    echo "1\n";
-} elseif ($res[3] != "POST:post_a='data_post_a' post_b='data_post_b' \n") {
-    echo "2\n";
-} elseif ($res[4] != "COOKIE:cookie_a='data_cookie_a&cookie_b=data_cookie_b' \n") {
-    echo "3\n";
+if ($res[3] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
+    echo "Invalid GETn";
+} elseif ($res[4] != "POST:post_a='data_post_a' post_b='data_post_b' \n") {
+    echo "Invalid POST\n";
+} elseif ($res[5] != "COOKIE:cookie_a='data_cookie_a&cookie_b=data_cookie_b' \n") {
+    echo "Invalid COOKIE\n";
 }
 
 ?>
@@ -48,5 +48,5 @@ if ($res[2] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
 Outside of eval: my_fun: 1337 1337 1337
 After allowed eval: my_fun: 1234
 
-Warning: [snuffleupagus][0.0.0.0][Eval_whitelist] The function 'my_other_fun' isn't in the eval whitelist, logging its call. in %a/dump_eval_whitelist.php on line 12
+Warning: [snuffleupagus][0.0.0.0][Eval_whitelist][simulation] The function 'my_other_fun' isn't in the eval whitelist, logging its call. in %a/dump_eval_whitelist.php on line 12
 After eval: my_other_fun: 1234

@@ -1,7 +1,7 @@
 --TEST--
 Disable functions - require_once
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_require.ini
 --FILE--
@@ -21,4 +21,4 @@ unlink($dir . '/test.meh');
 ?>
 --EXPECTF--
 BLA
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'require_once', because its argument 'inclusion path' content (%a/test.meh) matched a rule in %a/disabled_functions_require_once.php on line 6
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'require_once', because its argument 'inclusion path' content (%a/test.meh) matched a rule in %a/disabled_functions_require_once.php on line 6

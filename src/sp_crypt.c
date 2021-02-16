@@ -49,16 +49,16 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
 
   if (ZSTR_LEN(debase64) < crypto_secretbox_NONCEBYTES) {
     if (true == simulation) {
-      sp_log_msg(
-          "cookie_encryption", SP_LOG_SIMULATION,
+      sp_log_simulation(
+          "cookie_encryption",
           "Buffer underflow tentative detected in cookie encryption handling "
           "for %s. Using the cookie 'as it' instead of decrypting it",
           hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       return ZEND_HASH_APPLY_KEEP;
     } else {
       // LCOV_EXCL_START
-      sp_log_msg(
-          "cookie_encryption", SP_LOG_DROP,
+      sp_log_drop(
+          "cookie_encryption",
           "Buffer underflow tentative detected in cookie encryption handling");
       return ZEND_HASH_APPLY_REMOVE;
       // LCOV_EXCL_STOP
@@ -69,15 +69,15 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
   if (ZSTR_LEN(debase64) + (size_t)crypto_secretbox_ZEROBYTES <
       ZSTR_LEN(debase64)) {
     if (true == simulation) {
-      sp_log_msg(
-          "cookie_encryption", SP_LOG_SIMULATION,
+      sp_log_simulation(
+          "cookie_encryption",
           "Integer overflow tentative detected in cookie encryption handling "
           "for %s. Using the cookie 'as it' instead of decrypting it.",
           hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       return ZEND_HASH_APPLY_KEEP;
     } else {
-      sp_log_msg(
-          "cookie_encryption", SP_LOG_DROP,
+      sp_log_drop(
+          "cookie_encryption",
           "Integer overflow tentative detected in cookie encryption handling.");
       return ZEND_HASH_APPLY_REMOVE;
     }
@@ -98,8 +98,8 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
 
   if (-1 == ret) {
     if (true == simulation) {
-      sp_log_msg(
-          "cookie_encryption", SP_LOG_SIMULATION,
+      sp_log_simulation(
+          "cookie_encryption",
           "Something went wrong with the decryption of %s. Using the cookie "
           "'as it' instead of decrypting it",
           hash_key ? ZSTR_VAL(hash_key->key) : "the session");
@@ -107,9 +107,9 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
       efree(backup);
       return ZEND_HASH_APPLY_KEEP;
     } else {
-      sp_log_msg("cookie_encryption", SP_LOG_WARN,
-                 "Something went wrong with the decryption of %s",
-                 hash_key ? ZSTR_VAL(hash_key->key) : "the session");
+      sp_log_warn("cookie_encryption",
+                  "Something went wrong with the decryption of %s",
+                  hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       efree(backup);
       return ZEND_HASH_APPLY_REMOVE;
     }

@@ -1,7 +1,7 @@
 --TEST--
 Set a custom session handler
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_crypt_session.ini
 session.save_path = "/tmp"
@@ -27,4 +27,4 @@ session_start();
 var_dump($_SESSION);
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][127.0.0.1][cookie_encryption] Buffer underflow tentative detected in cookie encryption handling in %s/crypt_session_corrupted_session.php on line %s
+Fatal error: [snuffleupagus][127.0.0.1][cookie_encryption][drop] Buffer underflow tentative detected in cookie encryption handling in %s/crypt_session_corrupted_session.php on line %s

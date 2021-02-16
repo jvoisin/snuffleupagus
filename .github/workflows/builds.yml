@@ -1,0 +1,32 @@
+name: CI for php versions
+on: ['pull_request', 'push']
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          container:
+            - php:7.0
+            - php:7.1
+            - php:7.2
+            - php:7.3
+            - php:7.4
+            - php:8.0
+    container: ${{ matrix.container }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install pecl
+        if: startsWith(matrix.container, 'php:7')
+        run: pecl install vld-beta
+      - name: Remove php8 tests on php7
+        if: startsWith(matrix.container, 'php:7')
+        run: rm -rf src/tests/*php8*/
+      - name: Build and run the testsuite
+        run: make tests
+      - name: Show logs in case of failure
+        if: ${{ failure() }}
+        run: |
+          grep -r . ./src/tests/*/*.out
+          grep -r . ./src/tests/*/*.diff

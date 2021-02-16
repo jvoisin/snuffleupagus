@@ -6,8 +6,8 @@ if (!extension_loaded("snuffleupagus")) {
  	print "skip";
 }
 
-if (PHP_VERSION_ID >= 70300) {
-  die("skip BROKEN with 7.3");
+if (PHP_VERSION_ID >= 80000) {
+  print "skip";
 }
 
 if (strpos(system(PHP_BINARY . " -d error_log=/dev/null -d extension=vld.so -m 2>/dev/null"), "vld") === FALSE) {
@@ -41,4 +41,4 @@ Some random text again
 echo 1;
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][upload_validation] The upload of test.php on ? was rejected. in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][upload_validation][drop] The upload of test.php on ? was rejected. in Unknown on line 0

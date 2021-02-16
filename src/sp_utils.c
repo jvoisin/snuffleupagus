@@ -7,7 +7,41 @@ bool sp_zend_string_equals(const zend_string* s1, const zend_string* s2) {
          !memcmp(ZSTR_VAL(s1), ZSTR_VAL(s2), ZSTR_LEN(s1));
 }
 
-void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
+static const char* default_ipaddr = "0.0.0.0";
+const char* get_ipaddr() {
+  const char* client_ip = getenv("REMOTE_ADDR");
+  if (client_ip) {
+    return client_ip;
+  }
+
+  const char* fwd_ip = getenv("HTTP_X_FORWARDED_FOR");
+  if (fwd_ip) {
+    return fwd_ip;
+  }
+
+  /* Some hosters (like heroku, see
+   * https://github.com/jvoisin/snuffleupagus/issues/336) are clearing the
+   * environment variables, so we don't have access to them, hence why we're
+   * resorting to $_SERVER['REMOTE_ADDR'].
+   */
+  if (!Z_ISUNDEF(PG(http_globals)[TRACK_VARS_SERVER])) {
+    const zval* const globals_client_ip =
+        zend_hash_str_find(Z_ARRVAL(PG(http_globals)[TRACK_VARS_SERVER]),
+                           "REMOTE_ADDR", sizeof("REMOTE_ADDR") - 1);
+    if (globals_client_ip) {
+      if (Z_TYPE_P(globals_client_ip) == IS_STRING) {
+        if (Z_STRLEN_P(globals_client_ip) != 0) {
+          return estrdup(Z_STRVAL_P(globals_client_ip));
+        }
+      }
+    }
+  }
+
+  return default_ipaddr;
+}
+
+void sp_log_msgf(char const* restrict feature, int level, int type,
+                 const char* restrict fmt, ...) {
   char* msg;
   va_list args;
 
@@ -15,31 +49,45 @@ void sp_log_msg(char const* feature, int type, const char* fmt, ...) {
   vspprintf(&msg, 0, fmt, args);
   va_end(args);
 
-  const char *client_ip = getenv("REMOTE_ADDR");
-  if (!client_ip) {
-    client_ip = "0.0.0.0";
+  const char* client_ip = get_ipaddr();
+  const char* logtype = NULL;
+  switch (type) {
+    case SP_TYPE_SIMULATION:
+      logtype = "simulation";
+      break;
+    case SP_TYPE_DROP:
+      logtype = "drop";
+      break;
+    case SP_TYPE_LOG:
+    default:
+      logtype = "log";
+      break;
   }
+
   switch (SNUFFLEUPAGUS_G(config).log_media) {
-    case SP_SYSLOG:
-      openlog(PHP_SNUFFLEUPAGUS_EXTNAME, LOG_PID, LOG_AUTH);
+    case SP_SYSLOG: {
       const char* error_filename = zend_get_executed_filename();
-      int syslog_level = SP_LOG_DROP ? LOG_ERR : LOG_INFO;
+      int syslog_level = (level == E_ERROR) ? LOG_ERR : LOG_INFO;
       int error_lineno = zend_get_executed_lineno(TSRMLS_C);
-      syslog(syslog_level, "[snuffleupagus][%s][%s] %s in %s on line %d", client_ip, feature, msg,
-             error_filename, error_lineno);
+      openlog(PHP_SNUFFLEUPAGUS_EXTNAME, LOG_PID, LOG_AUTH);
+      syslog(syslog_level, "[snuffleupagus][%s][%s][%s] %s in %s on line %d",
+             client_ip, feature, logtype, msg, error_filename, error_lineno);
       closelog();
-      if (type == SP_LOG_DROP) {
+      if (type == SP_TYPE_DROP) {
         zend_bailout();
       }
       break;
+    }
     case SP_ZEND:
     default:
-      zend_error(type, "[snuffleupagus][%s][%s] %s", client_ip, feature, msg);
+      zend_error(level, "[snuffleupagus][%s][%s][%s] %s", client_ip, feature,
+                 logtype, msg);
       break;
   }
 }
 
-int compute_hash(const char* const filename, char* file_hash) {
+int compute_hash(const char* const restrict filename,
+                 char* restrict file_hash) {
   unsigned char buf[1024];
   unsigned char digest[SHA256_SIZE];
   PHP_SHA256_CTX context;
@@ -65,8 +113,9 @@ int compute_hash(const char* const filename, char* file_hash) {
   return SUCCESS;
 }
 
-static int construct_filename(char* filename, const zend_string* folder,
-                              const zend_string* textual) {
+static int construct_filename(char* filename,
+                              const zend_string* restrict folder,
+                              const zend_string* restrict textual) {
   PHP_SHA256_CTX context;
   unsigned char digest[SHA256_SIZE] = {0};
   char strhash[65] = {0};
@@ -78,7 +127,7 @@ static int construct_filename(char* filename, const zend_string* folder,
   }
 
   /* We're using the sha256 sum of the rule's textual representation
-   * as filename, in order to only have one dump per rule, to migitate
+   * as filename, in order to only have one dump per rule, to mitigate
    * DoS attacks. */
   PHP_SHA256Init(&context);
   PHP_SHA256Update(&context, (const unsigned char*)ZSTR_VAL(textual),
@@ -90,14 +139,15 @@ static int construct_filename(char* filename, const zend_string* folder,
   return 0;
 }
 
-int sp_log_request(const zend_string* folder, const zend_string* text_repr,
-                   char* from) {
+int sp_log_request(const zend_string* restrict folder,
+                   const zend_string* restrict text_repr,
+                   char const* const from) {
   FILE* file;
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);
   char filename[PATH_MAX] = {0};
   const struct {
-    const char* str;
+    char const* const str;
     const int key;
   } zones[] = {{"GET", TRACK_VARS_GET},       {"POST", TRACK_VARS_POST},
                {"COOKIE", TRACK_VARS_COOKIE}, {"SERVER", TRACK_VARS_SERVER},
@@ -115,7 +165,22 @@ int sp_log_request(const zend_string* folder, const zend_string* text_repr,
   fprintf(file, "RULE: sp%s%s\n", from, ZSTR_VAL(text_repr));
 
   fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
-  for (size_t i = 0; i < (sizeof(zones) / sizeof(zones[0])) - 1; i++) {
+
+  zend_execute_data* orig_execute_data = EG(current_execute_data);
+  zend_execute_data* current = EG(current_execute_data);
+  while (current) {
+    EG(current_execute_data) = current;
+    char* const complete_path_function = get_complete_function_path(current);
+    if (complete_path_function) {
+      const int current_line = zend_get_executed_lineno(TSRMLS_C);
+      fprintf(file, "STACKTRACE: %s:%d\n", complete_path_function,
+              current_line);
+    }
+    current = current->prev_execute_data;
+  }
+  EG(current_execute_data) = orig_execute_data;
+
+  for (size_t i = 0; zones[i].str; i++) {
     zval* variable_value;
     zend_string* variable_key;
 
@@ -232,26 +297,27 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
       char_repr = zend_string_to_char(arg_value);
     }
     if (alias) {
-      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                 "Aborted execution on call of the function '%s', "
-                 "because its argument '%s' content (%s) matched the rule '%s'",
-                 path, arg_name, char_repr ? char_repr : "?", ZSTR_VAL(alias));
+      sp_log_auto(
+          "disabled_function", sim,
+          "Aborted execution on call of the function '%s', "
+          "because its argument '%s' content (%s) matched the rule '%s'",
+          path, arg_name, char_repr ? char_repr : "?", ZSTR_VAL(alias));
     } else {
-      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                 "Aborted execution on call of the function '%s', "
-                 "because its argument '%s' content (%s) matched a rule",
-                 path, arg_name, char_repr ? char_repr : "?");
+      sp_log_auto("disabled_function", sim,
+                  "Aborted execution on call of the function '%s', "
+                  "because its argument '%s' content (%s) matched a rule",
+                  path, arg_name, char_repr ? char_repr : "?");
     }
     efree(char_repr);
   } else {
     if (alias) {
-      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                 "Aborted execution on call of the function '%s', "
-                 "because of the the rule '%s'",
-                 path, ZSTR_VAL(alias));
+      sp_log_auto("disabled_function", sim,
+                  "Aborted execution on call of the function '%s', "
+                  "because of the the rule '%s'",
+                  path, ZSTR_VAL(alias));
     } else {
-      sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-                 "Aborted execution on call of the function '%s'", path);
+      sp_log_auto("disabled_function", sim,
+                  "Aborted execution on call of the function '%s'", path);
     }
   }
 }
@@ -272,16 +338,16 @@ void sp_log_disable_ret(const char* restrict path,
     char_repr = zend_string_to_char(ret_value);
   }
   if (alias) {
-    sp_log_msg(
-        "disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
+    sp_log_auto(
+        "disabled_function", sim,
         "Aborted execution on return of the function '%s', "
         "because the function returned '%s', which matched the rule '%s'",
         path, char_repr ? char_repr : "?", ZSTR_VAL(alias));
   } else {
-    sp_log_msg("disabled_function", sim ? SP_LOG_SIMULATION : SP_LOG_DROP,
-               "Aborted execution on return of the function '%s', "
-               "because the function returned '%s', which matched a rule",
-               path, char_repr ? char_repr : "?");
+    sp_log_auto("disabled_function", sim,
+                "Aborted execution on return of the function '%s', "
+                "because the function returned '%s', which matched a rule",
+                path, char_repr ? char_repr : "?");
   }
   efree(char_repr);
 }
@@ -317,10 +383,8 @@ bool sp_match_array_value(const zval* arr, const zend_string* to_match,
 
   ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(arr), value) {
     if (Z_TYPE_P(value) != IS_ARRAY) {
-      const zend_string* value_str = sp_zval_to_zend_string(value);
-      if (sp_match_value(value_str, to_match, rx)) {
+      if (sp_match_value(sp_zval_to_zend_string(value), to_match, rx)) {
         return true;
-      } else {
       }
     } else if (sp_match_array_value(value, to_match, rx)) {
       return true;
@@ -330,10 +394,10 @@ bool sp_match_array_value(const zval* arr, const zend_string* to_match,
   return false;
 }
 
-int hook_function(const char* original_name, HashTable* hook_table,
-                  zif_handler new_function) {
+bool hook_function(const char* original_name, HashTable* hook_table,
+                   zif_handler new_function) {
   zend_internal_function* func;
-  bool ret = FAILURE;
+  bool ret = false;
 
   /* The `mb` module likes to hook functions, like strlen->mb_strlen,
    * so we have to hook both of them. */
@@ -352,7 +416,7 @@ int hook_function(const char* original_name, HashTable* hook_table,
         // LCOV_EXCL_STOP
       }
       func->handler = new_function;
-      ret = SUCCESS;
+      ret = true;
     }
   }
 
@@ -406,7 +470,7 @@ bool check_is_in_eval_whitelist(const zend_string* const function_name) {
   }
 
   /* yes, we could use a HashTable instead, but since the list is pretty
-   * small, it doesn't maka a difference in practise. */
+   * small, it doesn't make a difference in practise. */
   while (it && it->data) {
     if (sp_zend_string_equals(function_name, (const zend_string*)(it->data))) {
       /* We've got a match, the function is whiteslited. */

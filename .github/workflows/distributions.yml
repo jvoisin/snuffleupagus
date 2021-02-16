@@ -1,0 +1,120 @@
+name: CI for linux distributions
+on: ['pull_request', 'push']
+
+jobs:
+  debian:
+    runs-on: ubuntu-latest
+    container: debian:stable
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Remove php8 tests for php7
+        run: rm -rf src/tests/*php8*/
+      - name: Install dependencies
+        run: |
+          apt update
+          DEBIAN_FRONTEND=noninteractive apt install -y php-dev php-pear
+      - name: Install pecl
+        run: pecl install vld-beta
+      - name: Build and run the testsuite
+        run: make tests
+      - name: Show logs in case of failure
+        if: ${{ failure() }}
+        run: |
+          grep -r . ./src/tests/*/*.out
+          grep -r . ./src/tests/*/*.diff
+
+  fedora:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Remove php8 tests for php7
+        run: rm -rf src/tests/*php8*/
+      - name: Install dependencies
+        run: |
+          dnf install -y php-devel php-pear make
+      - name: Install pecl
+        run: pecl install vld-beta
+      - name: Build and run the testsuite
+        run: make tests
+      - name: Show logs in case of failure
+        if: ${{ failure() }}
+        run: |
+          grep -r . ./src/tests/*/*.out
+          grep -r . ./src/tests/*/*.diff
+
+  ubuntu:
+    runs-on: ubuntu-latest
+    container: ubuntu:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Remove php8 tests for php7
+        run: rm -rf src/tests/*php8*/
+      - name: Install dependencies
+        run: |
+          apt update
+          DEBIAN_FRONTEND=noninteractive apt install -y php-dev
+      - name: Install pecl
+        run: pecl install vld-beta
+      - name: Build and run the testsuite
+        run: make tests
+      - name: Show logs in case of failure
+        if: ${{ failure() }}
+        run: |
+          grep -r . ./src/tests/*/*.out
+          grep -r . ./src/tests/*/*.diff
+
+  archlinux:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Remove php8 tests for php7
+        run: rm -rf src/tests/*php8*/
+      - name: Install dependencies
+        continue-on-error: true
+        run: |
+          pacman --sync --refresh --noconfirm --quiet php wget autoconf gcc make
+          wget https://pear.php.net/go-pear.phar
+          php go-pear.phar
+      - name: Install pecl
+        continue-on-error: true
+        run: pecl install vld-beta
+      - name: Build and run the testsuite
+        continue-on-error: true
+        run: make tests
+      - name: Show logs in case of failure
+        continue-on-error: true
+        if: ${{ failure() }}
+        run: |
+          grep -r . ./src/tests/*/*.out
+          grep -r . ./src/tests/*/*.diff
+
+  alpine:
+    runs-on: ubuntu-latest
+    container: alpine:edge
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Remove php8 tests for php7
+        run: rm -rf src/tests/*php8*/
+      - name: Remove tests failing on alpine for wathever reason
+        run: rm -rf src/tests/*session*/ src/tests/broken_configuration/ src/tests/*cookie* src/tests/upload_validation/
+      - name: Install dependencies
+        run: apk add php7-dev php7-cgi php7-simplexml php7-xml pcre-dev build-base php7-pear php7-openssl
+      - name: Install pecl
+        continue-on-error: true
+        run: pecl install vld-beta
+      - name: Build and run the testsuite
+        continue-on-error: true
+        run: make tests
+      - name: Show logs in case of failure
+        if: ${{ failure() }}
+        continue-on-error: true
+        run: |
+          grep -r . ./src/tests/*/*.out
+          grep -r . ./src/tests/*/*.diff

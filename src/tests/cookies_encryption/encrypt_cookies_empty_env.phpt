@@ -1,7 +1,7 @@
 --TEST--
 Cookie encryption - empty environment variable specified
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_encrypted_cookies_empty_env.ini
 display_errors=1
@@ -12,7 +12,7 @@ super_cookie=cGFkZGluZ3BhZGRpbmdwYWRkaW5ncGFkZGluZ3BhZGRpbmdwYWRkaW5ncGFkZGluZ3B
 --FILE--
 <?php echo "1\n\n\n\n\n"; ?>
 --EXPECT--
-Warning: [snuffleupagus][0.0.0.0][cookie_encryption] The environment variable 'SUPER_ENV_VAR' is empty, cookies are weakly encrypted in Unknown on line 0
+Warning: [snuffleupagus][0.0.0.0][cookie_encryption][log] The environment variable 'SUPER_ENV_VAR' is empty, cookies are weakly encrypted in Unknown on line 0
 
-Warning: [snuffleupagus][0.0.0.0][cookie_encryption] Something went wrong with the decryption of super_cookie in Unknown on line 0
+Warning: [snuffleupagus][0.0.0.0][cookie_encryption][log] Something went wrong with the decryption of super_cookie in Unknown on line 0
 1

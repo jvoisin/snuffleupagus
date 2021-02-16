@@ -1,7 +1,7 @@
 --TEST--
 Disable functions
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_param_array.ini
 --FILE--
@@ -22,4 +22,4 @@ foo($a);
 test1
 abcde
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'foo', because its argument '$arr' content (abcd) matched the rule '1' in %a/disabled_functions_param_array.php on line 3
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'foo', because its argument '$arr' content (abcd) matched the rule '1' in %a/disabled_functions_param_array.php on line 3

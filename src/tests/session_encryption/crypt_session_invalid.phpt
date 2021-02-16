@@ -1,7 +1,7 @@
 --TEST--
 SESSION crypt and bad decrypt
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_crypt_session.ini
 --ENV--
@@ -21,4 +21,4 @@ session_start(); 			// Re start the session, It will read and decrypt the non em
 var_dump($_SESSION); 		// Dump the session
 ?>
 --EXPECTF--
-Warning: [snuffleupagus][127.0.0.2][cookie_encryption] Something went wrong with the decryption of the session in %s/crypt_session_invalid.php on line %d
+Warning: [snuffleupagus][127.0.0.2][cookie_encryption][log] Something went wrong with the decryption of the session in %s/crypt_session_invalid.php on line %d

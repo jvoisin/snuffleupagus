@@ -18,12 +18,12 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
                      SP_TOKEN_READONLY_EXEC);
     }
     if (true == config_ro_exec->simulation) {
-      sp_log_msg("readonly_exec", SP_LOG_SIMULATION,
-                 "Attempted execution of a writable file (%s).", filename);
+      sp_log_simulation("readonly_exec",
+                        "Attempted execution of a writable file (%s).",
+                        filename);
     } else {
-      sp_log_msg("readonly_exec", SP_LOG_DROP,
-                 "Attempted execution of a writable file (%s).", filename);
-      zend_bailout();
+      sp_log_drop("readonly_exec",
+                  "Attempted execution of a writable file (%s).", filename);
     }
   } else {
     if (EACCES != errno) {
@@ -79,14 +79,14 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
                        SP_TOKEN_EVAL_WHITELIST);
       }
       if (config_eval->simulation) {
-        sp_log_msg(
-            "Eval_whitelist", SP_LOG_SIMULATION,
+        sp_log_simulation(
+            "Eval_whitelist",
             "The function '%s' isn't in the eval whitelist, logging its call.",
             ZSTR_VAL(current_function));
         return;
       } else {
-        sp_log_msg(
-            "Eval_whitelist", SP_LOG_DROP,
+        sp_log_drop(
+            "Eval_whitelist",
             "The function '%s' isn't in the eval whitelist, dropping its call.",
             ZSTR_VAL(current_function));
       }
@@ -156,6 +156,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
       return;
     }
 
+    // If we're at an internal function
     if (!execute_data->prev_execute_data ||
         !execute_data->prev_execute_data->func ||
         !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
@@ -163,17 +164,18 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
       should_disable_ht(execute_data, function_name, NULL, NULL,
                         config_disabled_functions_reg,
                         config_disabled_functions);
-    } else if ((execute_data->prev_execute_data->opline->opcode ==
-                    ZEND_DO_FCALL ||
-                execute_data->prev_execute_data->opline->opcode ==
-                    ZEND_DO_UCALL ||
-                execute_data->prev_execute_data->opline->opcode ==
-                    ZEND_DO_ICALL ||
-                execute_data->prev_execute_data->opline->opcode ==
-                    ZEND_DO_FCALL_BY_NAME)) {
-      should_disable_ht(execute_data, function_name, NULL, NULL,
-                        config_disabled_functions_reg,
-                        config_disabled_functions);
+    } else {  // If we're at a userland function call
+      switch (execute_data->prev_execute_data->opline->opcode) {
+        case ZEND_DO_FCALL:
+        case ZEND_DO_FCALL_BY_NAME:
+        case ZEND_DO_ICALL:
+        case ZEND_DO_UCALL:
+          should_disable_ht(execute_data, function_name, NULL, NULL,
+                            config_disabled_functions_reg,
+                            config_disabled_functions);
+        default:
+          break;
+      }
     }
 
     // When a function's return value isn't used, php doesn't store it in the

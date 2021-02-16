@@ -1,6 +1,5 @@
 #include "php_snuffleupagus.h"
 
-
 PHP_FUNCTION(sp_serialize) {
   zif_handler orig_handler;
 
@@ -62,8 +61,7 @@ PHP_FUNCTION(sp_unserialize) {
 
   /* 64 is the length of HMAC-256 */
   if (buf_len < 64) {
-    sp_log_msg("unserialize", SP_LOG_DROP,
-               "The serialized object is too small.");
+    sp_log_drop("unserialize", "The serialized object is too small.");
   }
 
   hmac = buf + buf_len - 64;
@@ -100,16 +98,14 @@ PHP_FUNCTION(sp_unserialize) {
                      SP_TOKEN_UNSERIALIZE_HMAC);
     }
     if (true == config_unserialize->simulation) {
-      sp_log_msg("unserialize", SP_LOG_SIMULATION, "Invalid HMAC for %s",
-                 serialized_str);
+      sp_log_simulation("unserialize", "Invalid HMAC for %s", serialized_str);
       if ((orig_handler = zend_hash_str_find_ptr(
                SNUFFLEUPAGUS_G(sp_internal_functions_hook), "unserialize",
                sizeof("unserialize") - 1))) {
         orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
       }
     } else {
-      sp_log_msg("unserialize", SP_LOG_DROP, "Invalid HMAC for %s",
-                 serialized_str);
+      sp_log_drop("unserialize", "Invalid HMAC for %s", serialized_str);
     }
   }
   efree(serialized_str);

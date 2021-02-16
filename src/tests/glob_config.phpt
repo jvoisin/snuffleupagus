@@ -1,7 +1,7 @@
 --TEST--
 Multiple configuration files
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_multi*.ini
 --FILE--
@@ -16,8 +16,8 @@ foo();
 bla();
 ?>
 --EXPECTF--
-Warning: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'foo' in %a/glob_config.php on line 3
+Warning: [snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'foo' in %a/glob_config.php on line 3
 1
 
-Warning: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'bla' in %a/glob_config.php on line 6
+Warning: [snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'bla' in %a/glob_config.php on line 6
 2

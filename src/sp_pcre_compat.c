@@ -1,6 +1,8 @@
 #include "php_snuffleupagus.h"
 
 sp_pcre* sp_pcre_compile(const char* const pattern) {
+  assert(NULL != pattern);
+
   sp_pcre* ret = NULL;
 #ifdef SP_HAS_PCRE2
   unsigned char pcre_error[128] = {0};

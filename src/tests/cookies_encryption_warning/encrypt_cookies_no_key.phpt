@@ -1,7 +1,7 @@
 --TEST--
 Cookie encryption - no encryption key specified
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/encrypt_cookies_no_key.ini
 display_errors=1
@@ -16,6 +16,6 @@ EOF;
 --FILE--
 <?php echo "1"; ?>
 --EXPECT--
-Fatal error: [snuffleupagus][127.0.0.1][config] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][127.0.0.1][config][log] Invalid configuration file in Unknown on line 0
 
-Fatal error: [snuffleupagus][127.0.0.1][config] You're trying to use the cookie encryption featureon line 2 without having set the `.encryption_key` option in`sp.global`: please set it first in Unknown on line 0
+Fatal error: [snuffleupagus][127.0.0.1][config][log] You're trying to use the cookie encryption featureon line 2 without having set the `.encryption_key` option in`sp.global`: please set it first in Unknown on line 0

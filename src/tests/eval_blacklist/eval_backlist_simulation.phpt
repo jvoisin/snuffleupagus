@@ -1,7 +1,7 @@
 --TEST--
 Eval blacklist simulation
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/eval_backlist_simulation.ini
 --FILE--
@@ -14,5 +14,5 @@ echo "After eval: $a\n";
 --EXPECTF--
 Outside of eval: 1337 1337 1337
 
-Warning: [snuffleupagus][0.0.0.0][eval] A call to strtoupper was tried in eval, in %a/eval_backlist_simulation.php:1, logging it. in %a/eval_backlist_simulation.php(4) : eval()'d code on line 1
+Warning: [snuffleupagus][0.0.0.0][eval][simulation] A call to strtoupper was tried in eval, in %a/eval_backlist_simulation.php:1, logging it. in %a/eval_backlist_simulation.php(4) : eval()'d code on line 1
 After eval: 1234

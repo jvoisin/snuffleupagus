@@ -1,7 +1,7 @@
 --TEST--
 Cookie encryption - invalid decryption
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_encrypted_cookies.ini
 display_errors=1
@@ -18,7 +18,7 @@ EOF;
 echo "1337\n";
 var_dump($_COOKIE); ?>
 --EXPECT--
-Warning: [snuffleupagus][127.0.0.1][cookie_encryption] Something went wrong with the decryption of super_cookie in Unknown on line 0
+Warning: [snuffleupagus][127.0.0.1][cookie_encryption][log] Something went wrong with the decryption of super_cookie in Unknown on line 0
 1337
 array(1) {
   ["awfulcookie"]=>

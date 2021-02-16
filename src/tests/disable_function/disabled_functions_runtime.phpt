@@ -1,7 +1,7 @@
 --TEST--
 Disable functions - runtime inclusion
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_param_runtime.ini
 --FILE--
@@ -29,4 +29,4 @@ unlink("file_to_include2.php");
 --EXPECTF--
 1338
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'test', because its argument '$param' content (1337) matched a rule in %a/src/file_to_include%d.php on line 1
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'test', because its argument '$param' content (1337) matched a rule in %a/src/file_to_include%d.php on line 1

@@ -50,8 +50,7 @@ static zval *get_local_var(zend_execute_data *ed, const char *var_name) {
 
 static zval *get_constant(const char *value) {
   zend_string *name = zend_string_init(value, strlen(value), 0);
-  zval *zvalue = zend_get_constant_ex(name, NULL, 0);
-
+  zval *zvalue = zend_get_constant_ex(name, NULL, ZEND_FETCH_CLASS_SILENT);
   zend_string_release(name);
   return zvalue;
 }
@@ -71,12 +70,19 @@ static zval *get_var_value(zend_execute_data *ed, const char *var_name,
   if (is_param) {
     zval *zvalue = get_param_var(ed, var_name);
     if (!zvalue) {
-      return get_local_var(ed, var_name);
+      char *complete_function_path = get_complete_function_path(ed);
+      sp_log_warn("config",
+                  "It seems that you are filtering on a parameter "
+                  "'%s' of the function '%s', but the parameter does "
+                  "not exists.",
+                  var_name, complete_function_path);
+      efree(complete_function_path);
+      return NULL;
     }
     return zvalue;
+  } else {
+    return get_local_var(ed, var_name);
   }
-
-  return get_local_var(ed, var_name);
 }
 
 static void *get_entry_hashtable(const HashTable *ht, const char *entry,

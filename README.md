@@ -7,18 +7,18 @@
   <br>
 </h1>
 
-<h4 align="center">Security module for php7 - Killing bugclasses and virtual-patching the rest!</h4>
+<h4 align="center">Security module for php7 and php8 - Killing bugclasses and virtual-patching the rest!</h4>
 
 <p align="center">
-  <a href="https://travis-ci.org/jvoisin/snuffleupagus">
-    <img src="https://travis-ci.org/jvoisin/snuffleupagus.svg?branch=master"
-         alt="Travis-ci">
+  <a href="https://github.com/jvoisin/snuffleupagus/actions?query=workflow%3A%22CI+for+linux+distributions%22">
+    <img src="https://github.com/jvoisin/snuffleupagus/workflows/CI%20for%20linux%20distributions/badge.svg"
+         alt="github actions testing _all_ distributions" />
   </a>
-  <a href="https://gitlab.com/jvoisin/snuffleupagus/commits/master">
-    <img src="https://gitlab.com/jvoisin/snuffleupagus/badges/master/pipeline.svg"
-         alt="gitlab pipeline testing _all_ distributions" />
+  <a href="https://github.com/jvoisin/snuffleupagus/actions?query=workflow%3A%22CI+for+php+versions%22">
+    <img src="https://github.com/jvoisin/snuffleupagus/workflows/CI%20for%20php%20versions/badge.svg"
+         alt="github actions testing _all_ php versions" />
   </a>
-  <a href="https://scan.coverity.com/projects/nbs-system-snuffleupagus">
+  <a href="https://scan.coverity.com/projects/jvoisin-snuffleupagus">
     <img src="https://scan.coverity.com/projects/13821/badge.svg?flat=1"
          alt="Coverity">
   </a>
@@ -38,6 +38,10 @@
     <img src="https://img.shields.io/badge/twitter-follow-blue.svg"
          alt="twitter">
   </a>
+  <a href="https://repology.org/project/php:snuffleupagus/versions">
+    <img src="https://repology.org/badge/tiny-repos/php:snuffleupagus.svg"
+         alt="Packaging status">
+  </a>
 </p>
 
 <p align="center">
@@ -49,7 +53,7 @@
   <a href="#thanks">Thanks</a>
 </p>
 
-Snuffleupagus is a [PHP 7+](https://secure.php.net/) module designed to
+Snuffleupagus is a [PHP 7+ and 8+](https://secure.php.net/) module designed to
 drastically raise the cost of attacks against websites, by killing entire bug
 classes. It also provides a powerful virtual-patching system, allowing
 administrator to fix specific vulnerabilities and audit suspicious behaviours
@@ -80,7 +84,7 @@ without having to touch the PHP code.
   * Every commit is tested on [several distributions](https://gitlab.com/jvoisin/snuffleupagus/pipelines)
   * An `clang-format`-enforced code style
   * A [comprehensive documentation](https://snuffleupagus.rtfd.io)
-  * Usage of [coverity](https://scan.coverity.com/projects/nbs-system-snuffleupagus)
+  * Usage of [coverity](https://scan.coverity.com/projects/jvoisin-snuffleupagus)
 
 ## Download
 

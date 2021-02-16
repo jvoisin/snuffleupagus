@@ -1,7 +1,7 @@
 --TEST--
 Cookie encryption - empty environment variable specified
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_encrypted_regexp_cookies_empty_env.ini
 display_errors=1
@@ -16,4 +16,4 @@ EOF;
 --FILE--
 <?php echo "1\n\n\n\n\n"; ?>
 --EXPECT--
-Fatal error: [snuffleupagus][0.0.0.0][cookie_encryption] Buffer underflow tentative detected in cookie encryption handling in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][cookie_encryption][drop] Buffer underflow tentative detected in cookie encryption handling in Unknown on line 0

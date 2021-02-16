@@ -3,6 +3,7 @@ Dump request - nonwriteable folder.
 --SKIPIF--
 <?php
 if (!extension_loaded("snuffleupagus")) { print "skip"; } 
+if ("ubuntu" == getenv("CI_JOB_IMAGE")) { print "skip"; }
 
 // root has write privileges "any" folders
 if (TRUE == function_exists("posix_getuid")) {
@@ -33,6 +34,6 @@ echo "2\n";
 --EXPECTF--
 1
 
-Warning: [snuffleupagus][0.0.0.0][request_logging] Unable to open %a: Permission denied in %a/dump_request_nonwriteable_folder.php on line %d
+Warning: [snuffleupagus][0.0.0.0][request_logging][log] Unable to open %a: Permission denied in %a/dump_request_nonwriteable_folder.php on line %d
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'system' in %a/dump_request_nonwriteable_folder.php on line 3
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'system' in %a/dump_request_nonwriteable_folder.php on line 3

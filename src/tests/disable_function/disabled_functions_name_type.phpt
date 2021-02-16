@@ -1,7 +1,8 @@
 --TEST--
 Disable functions
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_name_type.ini
 --FILE--
@@ -12,4 +13,4 @@ echo strcmp([1,23], "pouet") . "\n";
 --EXPECTF--
 0
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'strcmp', because its argument '$str1' content (ARRAY) matched a rule in %a/disabled_functions_name_type.php on line 3
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strcmp', because its argument '$str1' content (ARRAY) matched a rule in %a/disabled_functions_name_type.php on line 3

@@ -1,7 +1,7 @@
 --TEST--
 Disable functions
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_method.ini
 --FILE--
@@ -24,4 +24,4 @@ $c->method2("paf");
 $c->method3("pouet");
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'AwesomeClass::method1' in %a/disabled_functions_method.php on line 4
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'AwesomeClass::method1' in %a/disabled_functions_method.php on line 4

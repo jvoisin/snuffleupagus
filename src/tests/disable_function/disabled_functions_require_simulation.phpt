@@ -1,7 +1,7 @@
 --TEST--
 Disable functions - Require (simulation)
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_require.ini
 --FILE--
@@ -22,6 +22,6 @@ unlink($dir . '/test.sim');
 --EXPECTF--
 BLA
 
-Warning: [snuffleupagus][0.0.0.0][disabled_function] Aborted execution on call of the function 'require', because its argument 'inclusion path' content (%a/test.sim) matched a rule in %a/disabled_functions_require_simulation.php on line 6
+Warning: [snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'require', because its argument 'inclusion path' content (%a/test.sim) matched a rule in %a/disabled_functions_require_simulation.php on line 6
 MEH
 1337

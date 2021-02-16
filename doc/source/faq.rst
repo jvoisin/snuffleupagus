@@ -39,14 +39,14 @@ we thought that using an elephant as a mascot would be a great idea.
 Who are you and why did you write Snuffleupagus?
 """"""""""""""""""""""""""""""""""""""""""""""""
 
-We're working for `NBS System <https://nbs-system.com/en/>`__,
+The project started at `NBS System <https://nbs-system.com/en/>`__,
 a web hosting company (meaning that we're dealing with PHP code all day long),
 with a strong focus on security. We do have several layers of hardening
 (`kernel <https://grsecurity.net/>`_, `WAF <https://naxsi.org>`_,
 `IDS <https://en.wikipedia.org/wiki/Intrusion_detection_system>`_, etc),
 but we had nothing for PHP7.
 
-Nowadays, Snuffleupagus is maintained by Julien (jvoisin) Voisin.
+Nowadays, Snuffleupagus is maintained by Julien (`jvoisin <https://dustri.org>`__) Voisin.
 
 
 Why not Suhosin?
@@ -107,8 +107,8 @@ How mature is this project?
 """""""""""""""""""""""""""
 
 This project has been floating around since early 2016 and we did the first commit
-the 28ᵗʰ of December of the same year. We're currently in an beta phase,
-finding and fixing as many bugs as possible before declaring it stable.
+the 28ᵗʰ of December of the same year. It's currently stable,
+and is usable and used in production.
 
 Are you saying that PHP isn't secure?
 """""""""""""""""""""""""""""""""""""
@@ -187,8 +187,8 @@ Will Snuffleupagus run on my old PHP 5?
 """""""""""""""""""""""""""""""""""""""
 No.
 
-Since PHP5 `will be deprecated at the end of 2018 <http://php.net/supported-versions.php>`_,
-you should think about moving to PHP7 anyway. You can (and should) use
+Since PHP5 `is deprecated since the end of 2018 <http://php.net/supported-versions.php>`_,
+you should think about moving to PHP7. You can (and should) use
 `Suhosin <https://suhosin.org>`_ in the meantime.
 
 Help and support

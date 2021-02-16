@@ -1,7 +1,7 @@
 --TEST--
 Eval whitelist/blacklist, on builtin functions
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/eval_whitelist_blacklist.ini
 --FILE--
@@ -21,4 +21,4 @@ echo "After eval: $a\n";
 Outside of eval: 1.5574077246549
 After allowed eval: 1.5574077246549
 
-Fatal error: [snuffleupagus][0.0.0.0][Eval_whitelist] The function 'cos' isn't in the eval whitelist, dropping its call. in %a/eval_backlist_whitelist_builtin.php(10) : eval()'d code on line 1
+Fatal error: [snuffleupagus][0.0.0.0][Eval_whitelist][drop] The function 'cos' isn't in the eval whitelist, dropping its call. in %a/eval_backlist_whitelist_builtin.php(10) : eval()'d code on line 1

@@ -1,7 +1,7 @@
 --TEST--
 Eval whitelist simulation
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus")) die "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/eval_whitelist_simulation.ini
 --FILE--
@@ -25,5 +25,5 @@ echo "After eval: $a\n";
 Outside of eval: my_fun: 1337 1337 1337
 After allowed eval: my_fun: 1234
 
-Warning: [snuffleupagus][0.0.0.0][Eval_whitelist] The function 'my_other_fun' isn't in the eval whitelist, logging its call. in %a/eval_whitelist_simulation.php on line 7
+Warning: [snuffleupagus][0.0.0.0][Eval_whitelist][simulation] The function 'my_other_fun' isn't in the eval whitelist, logging its call. in %a/eval_whitelist_simulation.php on line 7
 After eval: my_other_fun: 1234

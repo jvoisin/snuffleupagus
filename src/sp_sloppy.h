@@ -3,6 +3,6 @@
 #include "php_snuffleupagus.h"
 #include "zend_vm.h"
 
-void hook_sloppy();
+void hook_sloppy(void);
 
 #endif

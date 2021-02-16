@@ -40,7 +40,7 @@ static bool is_functions_list_matching(zend_execute_data* execute_data,
                                        sp_list_node* functions_list) {
   zend_execute_data *orig_execute_data, *current;
   orig_execute_data = current = execute_data;
-  sp_list_node* it = functions_list;
+  sp_list_node const* it = functions_list;
 
   while (current) {
     if (it == NULL) {  // every function in the list matched, we've got a match!
@@ -50,7 +50,7 @@ static bool is_functions_list_matching(zend_execute_data* execute_data,
 
     EG(current_execute_data) = current;
 
-    char* complete_path_function = get_complete_function_path(current);
+    char* const complete_path_function = get_complete_function_path(current);
     if (!complete_path_function) {
       break;
     }
@@ -59,10 +59,8 @@ static bool is_functions_list_matching(zend_execute_data* execute_data,
 
     if (0 == match) {
       it = it->next;
-      current = current->prev_execute_data;
-    } else {
-      break;
     }
+    current = current->prev_execute_data;
   }
 
   EG(current_execute_data) = orig_execute_data;
@@ -87,7 +85,8 @@ static bool is_local_var_matching(
         return true;
       }
     } else {
-      const zend_string* var_value_str = sp_zval_to_zend_string(var_value);
+      zend_string const* const var_value_str =
+          sp_zval_to_zend_string(var_value);
       bool match = sp_match_value(var_value_str, config_node->value,
                                   config_node->r_value);
 
@@ -329,7 +328,7 @@ static void should_disable(zend_execute_data* execute_data,
     }
 
     if (config_node->cidr) {
-      char* client_ip = getenv("REMOTE_ADDR");
+      const char* client_ip = get_ipaddr();
       if (client_ip && false == cidr_match(client_ip, config_node->cidr)) {
         goto next;
       }
@@ -361,7 +360,7 @@ static void should_disable(zend_execute_data* execute_data,
 #else
           execute_data->func->op_array.arg_info->is_variadic
 #endif
-						){
+      ) {
         sp_log_warn(
             "disable_function",
             "Snuffleupagus doesn't support variadic functions yet, sorry. "
@@ -525,13 +524,13 @@ static int hook_functions_regexp(const sp_list_node* config) {
   return SUCCESS;
 }
 
-static int hook_functions(HashTable* to_hook_ht, HashTable* hooked_ht) {
+static void hook_functions(HashTable* to_hook_ht, HashTable* hooked_ht) {
   zend_string* key;
   zval* value;
 
   ZEND_HASH_FOREACH_STR_KEY_VAL(to_hook_ht, key, value) {
-    bool hooked = !HOOK_FUNCTION(ZSTR_VAL(key), disabled_functions_hook,
-                                 PHP_FN(check_disabled_function));
+    bool hooked = HOOK_FUNCTION(ZSTR_VAL(key), disabled_functions_hook,
+                                PHP_FN(check_disabled_function));
     bool is_builtin =
         check_is_builtin_name(((sp_list_node*)Z_PTR_P(value))->data);
     if (hooked || is_builtin) {
@@ -540,7 +539,6 @@ static int hook_functions(HashTable* to_hook_ht, HashTable* hooked_ht) {
     }
   }
   ZEND_HASH_FOREACH_END();
-  return SUCCESS;
 }
 
 ZEND_FUNCTION(eval_blacklist_callback) {
@@ -565,13 +563,13 @@ ZEND_FUNCTION(eval_blacklist_callback) {
                      SP_TOKEN_EVAL_BLACKLIST);
     }
     if (config_eval->simulation) {
-      sp_log_msg("eval", SP_LOG_SIMULATION,
-                 "A call to %s was tried in eval, in %s:%d, logging it.",
-                 current_function_name, ZSTR_VAL(filename), line_number);
+      sp_log_simulation("eval",
+                        "A call to %s was tried in eval, in %s:%d, logging it.",
+                        current_function_name, ZSTR_VAL(filename), line_number);
     } else {
-      sp_log_msg("eval", SP_LOG_DROP,
-                 "A call to %s was tried in eval, in %s:%d, dropping it.",
-                 current_function_name, ZSTR_VAL(filename), line_number);
+      sp_log_drop("eval",
+                  "A call to %s was tried in eval, in %s:%d, dropping it.",
+                  current_function_name, ZSTR_VAL(filename), line_number);
     }
     efree(filename);
   }
@@ -588,13 +586,11 @@ int hook_disabled_functions(void) {
 
   int ret = SUCCESS;
 
-  ret |=
-      hook_functions(SNUFFLEUPAGUS_G(config).config_disabled_functions,
-                     SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
+  hook_functions(SNUFFLEUPAGUS_G(config).config_disabled_functions,
+                 SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
 
-  ret |= hook_functions(
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked);
+  hook_functions(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
+                 SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked);
 
   ret |= hook_functions_regexp(
       SNUFFLEUPAGUS_G(config)
@@ -619,7 +615,11 @@ int hook_disabled_functions(void) {
 
 zend_write_func_t zend_write_default = NULL;
 
+#if PHP_VERSION_ID >= 80000
+size_t hook_echo(const char* str, size_t str_length) {
+#else
 int hook_echo(const char* str, size_t str_length) {
+#endif
   zend_string* zs = zend_string_init(str, str_length, 0);
 
   should_disable_ht(
