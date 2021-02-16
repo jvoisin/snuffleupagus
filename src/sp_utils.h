@@ -52,7 +52,7 @@
 #define sp_log_warn(feature, ...) \
   sp_log_msgf(feature, SP_LOG_WARN, SP_TYPE_LOG, __VA_ARGS__)
 #ifdef SP_DEBUG
-#define sp_log_debug(...) \
+#define sp_log_debug(fmt, ...) \
   sp_log_msgf("DEBUG", SP_LOG_DEBUG, SP_TYPE_LOG, "%s(): " fmt, __FUNCTION__, ##__VA_ARGS__)
 #else
 #define sp_log_debug(...)
