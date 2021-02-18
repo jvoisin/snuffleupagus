@@ -33,6 +33,8 @@ char* get_complete_function_path(zend_execute_data const* const execute_data) {
   } else {
     complete_path_function = estrdup(function_name);
   }
+  sp_log_debug("%s", complete_path_function);
+
   return complete_path_function;
 }
 
@@ -98,107 +100,105 @@ static bool is_local_var_matching(
   return false;
 }
 
+static inline const char* get_fn_arg_name(zend_function *fn, uint32_t i) {
+  if (fn->type == ZEND_USER_FUNCTION || (fn->common.fn_flags & ZEND_ACC_USER_ARG_INFO)) {
+    return ZSTR_VAL(fn->op_array.arg_info[i].name);
+  } else {
+    return fn->internal_function.arg_info[i].name;
+  }
+}
+
 static bool is_param_matching(zend_execute_data* execute_data,
                               sp_disabled_function const* const config_node,
                               const zend_string* builtin_param,
                               const char* builtin_param_name,
                               const char** arg_name,
                               const zend_string** arg_value_str) {
-  int nb_param = ZEND_CALL_NUM_ARGS(execute_data);
-  int i = 0;
-  zval* arg_value;
-
-  if (config_node->pos != -1) {
-    if (config_node->pos > nb_param - 1) {
-      char* complete_function_path = get_complete_function_path(execute_data);
-      sp_log_warn("config",
-                  "It seems that you wrote a rule filtering on the "
-                  "%d%s argument of the function '%s', but it takes only %d "
-                  "arguments. "
-                  "Matching on _all_ arguments instead.",
-                  config_node->pos, GET_SUFFIX(config_node->pos),
-                  complete_function_path, nb_param);
-      efree(complete_function_path);
-    } else {
-      i = config_node->pos;
-      nb_param = (config_node->pos) + 1;
-    }
-  }
-
+  // builtin functions
   if (builtin_param) {
     /* We're matching on a language construct (here named "builtin"),
-     * and they can only take a single argument, but PHP considers them
-     * differently than functions arguments. */
+    * and they can only take a single argument, but PHP considers them
+    * differently than functions arguments. */
     *arg_name = builtin_param_name;
     *arg_value_str = builtin_param;
     return sp_match_value(builtin_param, config_node->value,
                           config_node->r_value);
-  } else if (config_node->r_param || config_node->pos != -1) {
-    // We're matching on a function (and not a language construct)
-    for (; i < nb_param; i++) {
-      if (ZEND_USER_CODE(execute_data->func->type)) {  // yay consistency
-        *arg_name = ZSTR_VAL(execute_data->func->common.arg_info[i].name);
-      } else {
-        *arg_name = execute_data->func->internal_function.arg_info[i].name;
-      }
-      const bool pcre_matching =
-          config_node->r_param &&
-          (true == sp_is_regexp_matching(config_node->r_param, *arg_name));
+  }
 
-      /* This is the parameter name we're looking for. */
-      if (true == pcre_matching || config_node->pos != -1) {
-        arg_value = ZEND_CALL_ARG(execute_data, i + 1);
+  // safeguards
+  if (!execute_data || !execute_data->func) {
+    sp_log_debug("no execute data -> silently ignore parameter matching");
+    return false;
+  }
 
-        if (config_node->param_type) {  // Are we matching on the `type`?
-          if (config_node->param_type == Z_TYPE_P(arg_value)) {
-            return true;
-          }
-        } else if (Z_TYPE_P(arg_value) == IS_ARRAY) {
-          *arg_value_str = sp_zval_to_zend_string(arg_value);
-          if (config_node->key || config_node->r_key) {
-            if (sp_match_array_key(arg_value, config_node->key,
-                                   config_node->r_key)) {
-              return true;
-            }
-          } else if (sp_match_array_value(arg_value, config_node->value,
-                                          config_node->r_value)) {
-            return true;
-          }
-        } else {
-          *arg_value_str = sp_zval_to_zend_string(arg_value);
-          if (sp_match_value(*arg_value_str, config_node->value,
-                             config_node->r_value)) {
-            return true;
-          }
-        }
-      }
+  *arg_name = NULL;
+  int call_num_args = EX_NUM_ARGS();
+  zend_function *fn = execute_data->func;
+  int fn_num_args = fn->common.num_args;
+
+  if (!call_num_args) {
+    sp_log_debug("no call arguments -> return");
+    return false; // no arguments to check
+  }
+
+  if (config_node->pos > call_num_args - 1 || config_node->pos > fn_num_args) {
+    // trying to match argument beyond last given argument OR beyond last declared argument.
+    // this is perfectly normal for functions with
+    //   (a) optional arguments
+    //   (b) excess arguments
+    //   (c) variadic arguments which are not supported
+    return false;
+  }
+
+  zval* arg_value = NULL;
+
+  if (config_node->pos > -1) {
+    if (config_node->pos < fn_num_args) {
+      *arg_name = get_fn_arg_name(fn, config_node->pos);
     }
+    arg_value = ZEND_CALL_ARG(execute_data, config_node->pos + 1);
   } else if (config_node->param) {
     *arg_name = config_node->param->value;
     arg_value = sp_get_var_value(execute_data, config_node->param, true);
-
-    if (arg_value) {
-      *arg_value_str = sp_zval_to_zend_string(arg_value);
-      if (config_node->param_type) {  // Are we matching on the `type`?
-        if (config_node->param_type == Z_TYPE_P(arg_value)) {
-          return true;
-        }
-      } else if (Z_TYPE_P(arg_value) == IS_ARRAY) {
-        if (config_node->key || config_node->r_key) {
-          if (sp_match_array_key(arg_value, config_node->key,
-                                 config_node->r_key)) {
-            return true;
-          }
-        } else if (sp_match_array_value(arg_value, config_node->value,
-                                        config_node->r_value)) {
-          return true;
-        }
-      } else if (sp_match_value(*arg_value_str, config_node->value,
-                                config_node->r_value)) {
-        return true;
+  } else if (config_node->r_param) {
+    for (int i = 0; i < call_num_args; i++) {
+      *arg_name = get_fn_arg_name(fn, i);
+      if (true == sp_is_regexp_matching(config_node->r_param, *arg_name)) {
+        arg_value = ZEND_CALL_ARG(execute_data, i + 1);
       }
     }
   }
+  
+  if (!arg_value) {
+    sp_log_debug("no argument match -> return");
+    return false;
+  }
+
+  if (config_node->param_type) {
+    if (config_node->param_type == Z_TYPE_P(arg_value)) {
+      if (!(config_node->key || config_node->r_key || config_node->value || config_node->r_value)) { // Are we matching on the `type` only?
+        sp_log_debug("arg type match only.");
+        return true;
+      }
+    } else {
+      sp_log_debug("arg type mismatch -> return");
+      return false;
+    }
+  }
+
+  *arg_value_str = sp_zval_to_zend_string(arg_value);
+  if (Z_TYPE_P(arg_value) == IS_ARRAY) {
+    if (config_node->key || config_node->r_key) {
+      if (sp_match_array_key(arg_value, config_node->key, config_node->r_key)) {
+        return true;
+      }
+    } else if (sp_match_array_value(arg_value, config_node->value, config_node->r_value)) {
+        return true;
+    }
+  } else if (sp_match_value(*arg_value_str, config_node->value, config_node->r_value)) {
+    return true;
+  }
+
   return false;
 }
 
@@ -287,6 +287,7 @@ static void should_disable(zend_execute_data* execute_data,
                            const sp_list_node* config,
                            const zend_string* current_filename) {
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
+  // sp_log_debug("%s %s %s",  complete_function_path, builtin_param, builtin_param_name);
 
   while (config) {
     sp_disabled_function const* const config_node =
