@@ -6,6 +6,7 @@ Broken configuration - encrypted session without env var
 --INI--
 sp.configuration_file={PWD}/config/broken_conf_session_encryption_without_env_var.ini
 --FILE--
+--XFAIL--
 --EXPECT--
 
 Fatal error: [snuffleupagus][0.0.0.0][config][log] You're trying to use the session cookie encryption feature on line 2 without having set the `.cookie_env_var` option in`sp.global`: please set it first in Unknown on line 0
