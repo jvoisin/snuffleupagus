@@ -1,6 +1,7 @@
 #include "php_snuffleupagus.h"
 
-static zval *get_param_var(zend_execute_data *ed, const char *var_name) {
+static zval *get_param_var(zend_execute_data *ed, const char *var_name,
+                           bool print) {
   unsigned int nb_param = ed->func->common.num_args;
 
   for (unsigned int i = 0; i < nb_param; i++) {
@@ -12,6 +13,9 @@ static zval *get_param_var(zend_execute_data *ed, const char *var_name) {
     }
     if (0 == strcmp(arg_name, var_name)) {
       return ZEND_CALL_VAR_NUM(ed, i);
+    }
+    if (print == true) {
+      sp_log_warn("config", "  - %d parameter's name: '%s'", i, arg_name);
     }
   }
   return NULL;
@@ -68,7 +72,7 @@ static zval *get_var_value(zend_execute_data *ed, const char *var_name,
   }
 
   if (is_param) {
-    zval *zvalue = get_param_var(ed, var_name);
+    zval *zvalue = get_param_var(ed, var_name, false);
     if (!zvalue) {
       char *complete_function_path = get_complete_function_path(ed);
       sp_log_warn("config",
@@ -76,6 +80,7 @@ static zval *get_var_value(zend_execute_data *ed, const char *var_name,
                   "'%s' of the function '%s', but the parameter does "
                   "not exists.",
                   var_name, complete_function_path);
+      get_param_var(ed, var_name, true);
       efree(complete_function_path);
       return NULL;
     }
