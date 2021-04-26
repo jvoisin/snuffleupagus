@@ -13,4 +13,10 @@ function foo($blah, $x = null, $y = null) {
 foo("qwe");
 --EXPECTF--
 Warning: [snuffleupagus][0.0.0.0][config][log] It seems that you are filtering on a parameter 'qwe' of the function 'foo', but the parameter does not exists. in %s/tests/broken_configuration/broken_conf_config_invalid_param.php on line %d
+
+Warning: [snuffleupagus][0.0.0.0][config][log]   - 0 parameter's name: 'blah' in %s/tests/broken_configuration/broken_conf_config_invalid_param.php on line %d
+
+Warning: [snuffleupagus][0.0.0.0][config][log]   - 1 parameter's name: 'x' in %s/tests/broken_configuration/broken_conf_config_invalid_param.php on line %d
+
+Warning: [snuffleupagus][0.0.0.0][config][log]   - 2 parameter's name: 'y' in %s/tests/broken_configuration/broken_conf_config_invalid_param.php on line %d
 ok
