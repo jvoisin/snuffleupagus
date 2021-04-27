@@ -3,7 +3,7 @@ Readonly execution attempt (simulation mode)
 --SKIPIF--
 <?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 <?php
-if (!extension_loaded("snuffleupagus")) { print "skip" };
+if (!extension_loaded("snuffleupagus")) { print "skip"; };
 
 // root has write privileges on any file
 if (TRUE == function_exists("posix_getuid")) {
