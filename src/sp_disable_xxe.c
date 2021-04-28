@@ -1,12 +1,15 @@
 #include "php_snuffleupagus.h"
 
 PHP_FUNCTION(sp_libxml_disable_entity_loader) {
-  sp_log_warn( "xxe", "A call to libxml_disable_entity_loader was tried and nopped");
+  sp_log_warn("xxe",
+              "A call to libxml_disable_entity_loader was tried and nopped");
   RETURN_TRUE;
 }
 
 PHP_FUNCTION(sp_libxml_set_external_entity_loader) {
-  sp_log_warn("xxe", "A call to libxml_set_external_entity_loader was tried and nopped");
+  sp_log_warn(
+      "xxe",
+      "A call to libxml_set_external_entity_loader was tried and nopped");
   RETURN_TRUE;
 }
 

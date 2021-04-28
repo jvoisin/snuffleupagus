@@ -19,7 +19,7 @@ const char* get_ipaddr() {
     return fwd_ip;
   }
 
-	return default_ipaddr;
+  return default_ipaddr;
 }
 
 void sp_log_msgf(char const* restrict feature, int level, int type,
