@@ -101,6 +101,7 @@ Articles
 """"
 
 - `Sortie de Snuffleupagus 0.7.0 - Los Elefantes <https://linuxfr.org/news/sortie-de-snuffleupagus-0-7-0-los-elefantes>`__ (fr) - linuxfr
+- `Virtual patching CVE-2021-29447 with Snuffleupagus <https://dustri.org/b/virtual-patching-cve-2021-29447-with-snuffleupagus.html>`__ - dustri.org
 
 
 Papers
