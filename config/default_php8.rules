@@ -97,34 +97,7 @@ sp.disable_function.function("is_callable").param("value").value("shell_exec").d
 sp.disable_function.function("is_callable").param("value").value("proc_open").drop();
 sp.disable_function.function("is_callable").param("value").value("passthru").drop();
 
-# Commenting sqli related stuff to improve performance.
-# TODO figure out why these functions can't be hooked at startup
-# Ghetto sqli hardening
-# sp.disable_function.function("mysql_query").param("query").value_r("/\\*").drop();
-# sp.disable_function.function("mysql_query").param("query").value_r("--").drop();
-# sp.disable_function.function("mysql_query").param("query").value_r("#").drop();
-# sp.disable_function.function("mysql_query").param("query").value_r(";.*;").drop();
-# sp.disable_function.function("mysql_query").param("query").value_r("benchmark").drop();
-# sp.disable_function.function("mysql_query").param("query").value_r("sleep").drop();
-# sp.disable_function.function("mysql_query").param("query").value_r("information_schema").drop();
-
-# sp.disable_function.function("mysqli_query").param("query").value_r("/\\*").drop();
-# sp.disable_function.function("mysqli_query").param("query").value_r("--").drop();
-# sp.disable_function.function("mysqli_query").param("query").value_r("#").drop();
-# sp.disable_function.function("mysqli_query").param("query").value_r(";.*;").drop();
-# sp.disable_function.function("mysqli_query").param("query").value_r("benchmark").drop();
-# sp.disable_function.function("mysqli_query").param("query").value_r("sleep").drop();
-# sp.disable_function.function("mysqli_query").param("query").value_r("information_schema").drop();
-
-# sp.disable_function.function("PDO::query").param("query").value_r("/\\*").drop();
-# sp.disable_function.function("PDO::query").param("query").value_r("--").drop();
-# sp.disable_function.function("PDO::query").param("query").value_r("#").drop();
-# sp.disable_function.function("PDO::query").param("query").value_r(";.*;").drop();
-# sp.disable_function.function("PDO::query").param("query").value_r("benchmark\\s*\\(").drop();
-# sp.disable_function.function("PDO::query").param("query").value_r("sleep\\s*\\(").drop();
-# sp.disable_function.function("PDO::query").param("query").value_r("information_schema").drop();
-
-# Ghetto sqli detection
+# Ghetto error-based sqli detection
 # sp.disable_function.function("mysql_query").ret("FALSE").drop();
 # sp.disable_function.function("mysqli_query").ret("FALSE").drop();
 # sp.disable_function.function("PDO::query").ret("FALSE").drop();
