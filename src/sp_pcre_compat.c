@@ -34,6 +34,9 @@ bool ZEND_HOT sp_is_regexp_matching_len(const sp_pcre* regexp, const char* str,
 #ifdef SP_HAS_PCRE2
   pcre2_match_data* match_data =
       pcre2_match_data_create_from_pattern(regexp, NULL);
+  if (NULL == match_data) {
+    sp_log_err("regexp", "Unable to get memory for a regxp.");
+  }
   ret = pcre2_match(regexp, (PCRE2_SPTR)str, len, 0, 0, match_data, NULL);
 #else
   int vec[30];
