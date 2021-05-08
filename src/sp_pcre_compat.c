@@ -1,5 +1,10 @@
 #include "php_snuffleupagus.h"
 
+inline void sp_pcre_free(sp_pcre* regexp) {
+  pcre2_code_free(regexp);
+  regexp = NULL;
+}
+
 sp_pcre* sp_pcre_compile(const char* const pattern) {
   assert(NULL != pattern);
 

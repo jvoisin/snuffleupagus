@@ -154,8 +154,11 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_LST_DISABLE(config_disabled_functions_reg_ret->disabled_functions);
 #undef FREE_LST_DISABLE
 
+  sp_list_node *_n = SNUFFLEUPAGUS_G(config).config_cookie->cookies;
+  sp_cookie_list_free(_n);
+  sp_list_free(_n);
+
 #define FREE_LST(L) sp_list_free(SNUFFLEUPAGUS_G(config).L);
-  FREE_LST(config_cookie->cookies);
   FREE_LST(config_eval->blacklist);
   FREE_LST(config_eval->whitelist);
   FREE_LST(config_wrapper->whitelist);

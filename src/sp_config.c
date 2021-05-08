@@ -216,10 +216,31 @@ void sp_disabled_function_list_free(sp_list_node *list) {
   sp_list_node *cursor = list;
   while (cursor) {
     sp_disabled_function *df = cursor->data;
-    if (df && df->functions_list) sp_list_free(df->functions_list);
     if (df) {
+      sp_list_free(df->functions_list);
+      sp_list_free(df->param_array_keys);
+      sp_list_free(df->var_array_keys);
+
+      sp_pcre_free(df->r_filename);
+      sp_pcre_free(df->r_function);
+      sp_pcre_free(df->r_param);
+      sp_pcre_free(df->r_ret);
+      sp_pcre_free(df->r_value);
+      sp_pcre_free(df->r_key);
+
       sp_tree_free(df->param);
       sp_tree_free(df->var);
+    }
+    cursor = cursor->next;
+  }
+}
+
+void sp_cookie_list_free(sp_list_node *list) {
+  sp_list_node *cursor = list;
+  while (cursor) {
+    sp_cookie *c = cursor->data;
+    if (c) {
+      sp_pcre_free(c->name_r);
     }
     cursor = cursor->next;
   }
