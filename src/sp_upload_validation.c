@@ -103,6 +103,10 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
 #endif
 
 void hook_upload() {
+  if (php_rfc1867_callback == sp_rfc1867_callback) {
+    return;
+  }
+
   if (NULL == sp_rfc1867_orig_callback) {
     sp_rfc1867_orig_callback = php_rfc1867_callback;
     php_rfc1867_callback = sp_rfc1867_callback;

@@ -325,7 +325,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
        zend_hash_str_find(
            SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked, "echo",
            sizeof("echo") - 1)) &&
-      NULL == zend_write_default) {
+      NULL == zend_write_default && zend_write != hook_echo) {
     zend_write_default = zend_write;
     zend_write = hook_echo;
   }
