@@ -1,7 +1,9 @@
 #include "php_snuffleupagus.h"
 
 inline void sp_pcre_free(sp_pcre* regexp) {
+#ifdef SP_HAS_PCRE2
   pcre2_code_free(regexp);
+#endif
   regexp = NULL;
 }
 
