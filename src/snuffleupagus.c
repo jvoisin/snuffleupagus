@@ -250,14 +250,15 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     return FAILURE;
   }
 
-  glob_t globbuf;
-  char *config_file;
-  char *rest = new_value->val;
+  char *str = new_value->val;
 
-  while ((config_file = strtok_r(rest, ",", &rest))) {
-    int ret = glob(config_file, GLOB_NOCHECK, NULL, &globbuf);
+  while (1) {
+    // We don't care about overwriting new_value->val
+    char *config_file = strsep(&str, ",");
+    if (config_file == NULL) break;
 
-    if (ret != 0) {
+    glob_t globbuf;
+    if (0 != glob(config_file, GLOB_NOCHECK, NULL, &globbuf)) {
       SNUFFLEUPAGUS_G(is_config_valid) = SP_CONFIG_INVALID;
       globfree(&globbuf);
       return FAILURE;
