@@ -10,5 +10,5 @@ $gs = exec( 'foo' );
 echo "YES";
 ?>
 --EXPECTF--
-%sfoo: not found
+%snot found
 YES
