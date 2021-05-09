@@ -33,8 +33,9 @@ sp.disable_xxe.enable();
 # https://snuffleupagus.readthedocs.io/features.html#protection-against-cross-site-request-forgery
 sp.cookie.name("PHPSESSID").samesite("lax");
 
-# Harden the `chmod` function
-sp.disable_function.function("chmod").param("mode").value_r("^[0-9]{2}[67]$").drop();
+# Harden the `chmod` function (0777 (oct = 511, 0666 = 438)
+sp.disable_function.function("chmod").param("mode").value("438").drop();
+sp.disable_function.function("chmod").param("mode").value("511").drop();
 
 # Prevent various `mail`-related vulnerabilities
 sp.disable_function.function("mail").param("additional_parameters").value_r("\\-").drop();
