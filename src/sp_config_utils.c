@@ -104,18 +104,16 @@ err:
 zend_always_inline sp_list_node *parse_functions_list(char *value) {
   static const char *sep = ">";
 
-  if (NULL == strchr(value, sep[0])) {
-    return NULL;
-  }
-
   sp_list_node *list = NULL;
-  char *tmp = strdup(value);
+  char *tmp = value;
   char *function_name;
-  char *next_token = tmp;
-  while ((function_name = strtok_r(NULL, sep, &next_token))) {
+
+  strsep(&tmp, sep);
+  while (1) {
+    function_name = strsep(&tmp, sep);
+    if (function_name == NULL) break;
     list = sp_list_prepend(list, strdup(function_name));
   }
-  free(tmp);
 
   return list;
 }
