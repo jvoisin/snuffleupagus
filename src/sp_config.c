@@ -73,7 +73,9 @@ int parse_list(char *restrict line, char *restrict keyword, void *list_ptr) {
   }
 
   tmp = ZSTR_VAL(value);
-  while ((token = strtok_r(tmp, ",", &tmp))) {
+  while (1) {
+    token = strsep(&tmp, ",");
+    if (token == NULL) break;
     *list = sp_list_insert(*list, zend_string_init(token, strlen(token), 1));
   }
 
