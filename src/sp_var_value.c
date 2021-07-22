@@ -1,7 +1,7 @@
 #include "php_snuffleupagus.h"
 
-static zval *get_param_var(zend_execute_data *ed, const char *var_name,
-                           bool print) {
+static zval *get_param_var(const zend_execute_data *const ed,
+                           const char *const var_name, bool print) {
   unsigned int nb_param = ed->func->common.num_args;
 
   for (unsigned int i = 0; i < nb_param; i++) {
@@ -21,7 +21,7 @@ static zval *get_param_var(zend_execute_data *ed, const char *var_name,
   return NULL;
 }
 
-static zval *get_local_var(zend_execute_data *ed, const char *var_name) {
+static zval *get_local_var(zend_execute_data *ed, const char *const var_name) {
   zend_execute_data *orig_execute_data = ed;
   zend_execute_data *current = ed;
 
@@ -52,7 +52,7 @@ static zval *get_local_var(zend_execute_data *ed, const char *var_name) {
   return NULL;
 }
 
-static zval *get_constant(const char *value) {
+static zval *get_constant(const char *const value) {
   zend_string *name = zend_string_init(value, strlen(value), 0);
   zval *zvalue = zend_get_constant_ex(name, NULL, ZEND_FETCH_CLASS_SILENT);
   zend_string_release(name);
@@ -90,8 +90,8 @@ static zval *get_var_value(zend_execute_data *ed, const char *var_name,
   }
 }
 
-static void *get_entry_hashtable(const HashTable *ht, const char *entry,
-                                 size_t entry_len) {
+static void *get_entry_hashtable(const HashTable *const ht,
+                                 const char *const entry, size_t entry_len) {
   zval *zvalue = zend_hash_str_find(ht, entry, entry_len);
 
   if (!zvalue) {
@@ -109,8 +109,8 @@ static void *get_entry_hashtable(const HashTable *ht, const char *entry,
   return zvalue;
 }
 
-static zval *get_array_value(zend_execute_data *ed, zval *zvalue,
-                             const sp_tree *tree) {
+static zval *get_array_value(zend_execute_data *ed, const zval *const zvalue,
+                             const sp_tree *const tree) {
   zval *idx_value = sp_get_var_value(ed, tree->idx, false);
 
   if (!zvalue || !idx_value) {
@@ -118,7 +118,7 @@ static zval *get_array_value(zend_execute_data *ed, zval *zvalue,
   }
 
   if (Z_TYPE_P(zvalue) == IS_ARRAY) {
-    const zend_string *idx = sp_zval_to_zend_string(idx_value);
+    const zend_string *const idx = sp_zval_to_zend_string(idx_value);
     return get_entry_hashtable(Z_ARRVAL_P(zvalue), ZSTR_VAL(idx),
                                ZSTR_LEN(idx));
   }
@@ -128,10 +128,10 @@ static zval *get_array_value(zend_execute_data *ed, zval *zvalue,
 
 static zval *get_object_property(zend_execute_data *ed, zval *object,
                                  const char *property, bool is_param) {
-  char *class_name = object->value.obj->ce->name->val;
+  const char *const class_name = object->value.obj->ce->name->val;
   HashTable *array = Z_OBJPROP_P(object);
   zval *zvalue = NULL;
-  zval *property_val = get_var_value(ed, property, is_param);
+  const zval *property_val = get_var_value(ed, property, is_param);
   size_t len;
 
   if (property_val) {
@@ -161,7 +161,7 @@ static zval *get_object_property(zend_execute_data *ed, zval *object,
   return zvalue;
 }
 
-static zend_class_entry *get_class(const char *value) {
+static zend_class_entry *get_class(const char *const value) {
   zend_string *name = zend_string_init(value, strlen(value), 0);
   zend_class_entry *ce = zend_lookup_class(name);
   zend_string_release(name);
@@ -170,7 +170,7 @@ static zend_class_entry *get_class(const char *value) {
 
 static zval *get_unknown_type(const char *restrict value, zval *zvalue,
                               zend_class_entry *ce, zend_execute_data *ed,
-                              const sp_tree *tree, bool is_param) {
+                              const sp_tree *const tree, bool is_param) {
   if (ce) {
     zvalue = get_entry_hashtable(&ce->constants_table, value, strlen(value));
     ce = NULL;

@@ -20,7 +20,7 @@ static sp_list_node *parse_str_tokens(const char *str,
   return tokens_list;
 }
 
-static bool is_var_name_valid(const char *name) {
+static bool is_var_name_valid(const char *const name) {
   static sp_pcre *regexp_const = NULL;
   static sp_pcre *regexp_var = NULL;
 
