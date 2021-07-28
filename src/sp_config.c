@@ -6,7 +6,7 @@
 
 size_t sp_line_no;
 
-sp_config_tokens const sp_func[] = {
+static sp_config_tokens const sp_func[] = {
     {.func = parse_unserialize, .token = SP_TOKEN_UNSERIALIZE_HMAC},
     {.func = parse_random, .token = SP_TOKEN_HARDEN_RANDOM},
     {.func = parse_log_media, .token = SP_TOKEN_LOG_MEDIA},

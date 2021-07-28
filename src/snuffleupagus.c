@@ -21,7 +21,7 @@ ZEND_DLEXPORT int sp_zend_startup(zend_extension *extension) {
 }
 // LCOV_EXCL_END
 
-static inline void sp_op_array_handler(zend_op_array *op) {
+static inline void sp_op_array_handler(zend_op_array *const op) {
   // We need a filename, and strict mode not already enabled on this op
   if (NULL == op->filename || op->fn_flags & ZEND_ACC_STRICT_TYPES) {
     return;
@@ -121,7 +121,7 @@ PHP_MINIT_FUNCTION(snuffleupagus) {
   return SUCCESS;
 }
 
-static void free_disabled_functions_hashtable(HashTable *ht) {
+static void free_disabled_functions_hashtable(HashTable *const ht) {
   void *ptr = NULL;
   ZEND_HASH_FOREACH_PTR(ht, ptr) { sp_list_free(ptr); }
   ZEND_HASH_FOREACH_END();
@@ -186,7 +186,7 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
 }
 
 PHP_RINIT_FUNCTION(snuffleupagus) {
-  const sp_config_wrapper *config_wrapper =
+  const sp_config_wrapper *const config_wrapper =
       SNUFFLEUPAGUS_G(config).config_wrapper;
 #if defined(COMPILE_DL_SNUFFLEUPAGUS) && defined(ZTS)
   ZEND_TSRMLS_CACHE_UPDATE();
@@ -254,7 +254,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
   while (1) {
     // We don't care about overwriting new_value->val
-    char *config_file = strsep(&str, ",");
+    const char *config_file = strsep(&str, ",");
     if (config_file == NULL) break;
 
     glob_t globbuf;
