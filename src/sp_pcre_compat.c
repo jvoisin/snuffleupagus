@@ -3,8 +3,9 @@
 inline void sp_pcre_free(sp_pcre* regexp) {
 #ifdef SP_HAS_PCRE2
   pcre2_code_free(regexp);
+#else
+  (void)regexp;
 #endif
-  regexp = NULL;
 }
 
 sp_pcre* sp_pcre_compile(const char* const pattern) {
