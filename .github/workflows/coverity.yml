@@ -1,0 +1,43 @@
+name: Coverity scan
+on:
+  schedule:
+    - cron: '0 18 * * 1' # Weekly at 18:00 UTC on Mondays
+
+jobs:
+  latest:
+    runs-on: ubuntu-latest
+    container: debian:stable
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          apt update
+          DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends php-dev curl ca-certificates make gcc
+      - name: Remove php8 tests on php7
+        run: rm -rf src/tests/*php8*/
+      - name: Download Coverity Build Tool
+        run: |
+          curl https://scan.coverity.com/download/linux64 --form token=$TOKEN --form project=jvoisin/snuffleupagus -o cov-analysis-linux64.tar.gz
+          mkdir cov-analysis-linux64
+          tar xzf cov-analysis-linux64.tar.gz --strip-components=1 -C cov-analysis-linux64
+        env:
+          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+      - name: Configure
+        run: cd src; phpize; ./configure --enable-snuffleupagus; cd -
+      - name: Build with cov-build
+        run: ./cov-analysis-linux64/bin/cov-build --dir cov-int make compile_debug
+      - name: Submit the result to Coverity Scan
+        run: |
+          tar czf snuffleupagus.tgz cov-int
+          curl \
+            --form project=jvoisin/snuffleupagus \
+            --form token=$TOKEN \
+            --form file=@snuffleupagus.tgz \
+            --form version=master \
+            --form email=julien.voisin+coverity@dustri.org \
+            --form description=master \
+            https://scan.coverity.com/builds?project=jvoisin/snuffleupagus
+        env:
+          TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
+

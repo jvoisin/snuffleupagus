@@ -274,17 +274,23 @@ int hook_execute(void) {
   TSRMLS_FETCH();
 
   if (NULL == orig_execute_ex && NULL == orig_zend_stream_open) {
-    /* zend_execute_ex is used for "user" function calls */
-    orig_execute_ex = zend_execute_ex;
-    zend_execute_ex = sp_execute_ex;
+    if (zend_execute_ex != sp_execute_ex) {
+      /* zend_execute_ex is used for "user" function calls */
+      orig_execute_ex = zend_execute_ex;
+      zend_execute_ex = sp_execute_ex;
+    }
 
-    /* zend_execute_internal is used for "builtin" functions calls */
-    orig_zend_execute_internal = zend_execute_internal;
-    zend_execute_internal = sp_zend_execute_internal;
+    if (zend_execute_internal != sp_zend_execute_internal) {
+      /* zend_execute_internal is used for "builtin" functions calls */
+      orig_zend_execute_internal = zend_execute_internal;
+      zend_execute_internal = sp_zend_execute_internal;
+    }
 
-    /* zend_stream_open_function is used for include-related stuff */
-    orig_zend_stream_open = zend_stream_open_function;
-    zend_stream_open_function = sp_stream_open;
+    if (zend_stream_open_function != sp_stream_open) {
+      /* zend_stream_open_function is used for include-related stuff */
+      orig_zend_stream_open = zend_stream_open_function;
+      zend_stream_open_function = sp_stream_open;
+    }
   }
 
   return SUCCESS;

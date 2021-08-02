@@ -17,6 +17,7 @@
 #endif
 
 sp_pcre* sp_pcre_compile(const char* str);
+void sp_pcre_free(sp_pcre* regexp);
 #define sp_is_regexp_matching_zend(regexp, zstr) \
   sp_is_regexp_matching_len(regexp, ZSTR_VAL(zstr), ZSTR_LEN(zstr))
 #define sp_is_regexp_matching(regexp, str) \

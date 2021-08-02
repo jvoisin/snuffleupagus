@@ -480,15 +480,9 @@ to see that people are disabling it on production too.
 We're detecting/preventing this by not allowing the ``CURLOPT_SSL_VERIFYPEER`` and
 ``CURLOPT_SSL_VERIFYHOST`` options from being set to ``0``.
 
-*Cheap* SQL injections detection
-""""""""""""""""""""""""""""""""
+*Cheap* error-based SQL injections detection
+""""""""""""""""""""""""""""""""""""""""""""
 
-In some SQL injections, attackers might need to use comments, a feature that is
-often not used in production system, so it might be a good idea to filter
-queries that contains some. The same filtering idea can be used against
-SQL functions that are frequently used in SQL injections, like ``sleep``, ``benchmark``
-or strings like ``version_info``.
-
-On the topic of SQL injections, if a function performing a query returns ``FALSE``
+If a function performing a SQL query returns ``FALSE``
 (indicating an error), it might be useful to dump the request for further analysis.
 

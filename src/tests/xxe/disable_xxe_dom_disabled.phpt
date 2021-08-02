@@ -44,8 +44,13 @@ printf("without xxe: %s", $dom->getElementsByTagName('testing')->item(0)->nodeVa
 
 ?>
 --EXPECTF-- 
+Warning: [snuffleupagus][0.0.0.0][xxe][log] A call to libxml_disable_entity_loader was tried and nopped in %s/tests/xxe/disable_xxe_dom_disabled.php on line %d
 libxml_disable_entity to true: WARNING, external entity loaded!
+
+Warning: [snuffleupagus][0.0.0.0][xxe][log] A call to libxml_disable_entity_loader was tried and nopped in %s/tests/xxe/disable_xxe_dom_disabled.php on line %d
 libxml_disable_entity to false: WARNING, external entity loaded!
+
+Warning: [snuffleupagus][0.0.0.0][xxe][log] A call to libxml_disable_entity_loader was tried and nopped in %s/tests/xxe/disable_xxe_dom_disabled.php on line %d
 without xxe: foo
 --CLEAN--
 <?php

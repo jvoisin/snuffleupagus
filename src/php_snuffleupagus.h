@@ -56,7 +56,7 @@ typedef void (*zif_handler)(INTERNAL_FUNCTION_PARAMETERS);
 #define TSRMLS_FETCH()
 #define TSRMLS_C
 #else
-#if ( !HAVE_PCRE && !HAVE_BUNDLED_PCRE )
+#if (!HAVE_PCRE && !HAVE_BUNDLED_PCRE)
 #error Snuffleupagus requires PHP7+ with PCRE support
 #endif
 #endif

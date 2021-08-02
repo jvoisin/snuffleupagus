@@ -164,6 +164,12 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
   sp.unserialize_hmac.enable();
   sp.unserialize_hmac.disable();
 
+
+.. warning::
+
+  This feature breaks web applications doing checks on the serialized
+  representation of data on their own, like `WordPress <https://wordpress.com/>`__.
+
 .. _config_cookie-encryption:
 
 Cookies-related mitigations

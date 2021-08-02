@@ -19,24 +19,6 @@ const char* get_ipaddr() {
     return fwd_ip;
   }
 
-  /* Some hosters (like heroku, see
-   * https://github.com/jvoisin/snuffleupagus/issues/336) are clearing the
-   * environment variables, so we don't have access to them, hence why we're
-   * resorting to $_SERVER['REMOTE_ADDR'].
-   */
-  if (!Z_ISUNDEF(PG(http_globals)[TRACK_VARS_SERVER])) {
-    const zval* const globals_client_ip =
-        zend_hash_str_find(Z_ARRVAL(PG(http_globals)[TRACK_VARS_SERVER]),
-                           "REMOTE_ADDR", sizeof("REMOTE_ADDR") - 1);
-    if (globals_client_ip) {
-      if (Z_TYPE_P(globals_client_ip) == IS_STRING) {
-        if (Z_STRLEN_P(globals_client_ip) != 0) {
-          return estrdup(Z_STRVAL_P(globals_client_ip));
-        }
-      }
-    }
-  }
-
   return default_ipaddr;
 }
 

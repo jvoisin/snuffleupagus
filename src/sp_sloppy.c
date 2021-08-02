@@ -99,12 +99,13 @@ PHP_FUNCTION(sp_array_keys) {
 void hook_sloppy() {
   TSRMLS_FETCH();
 
-  if (NULL == orig_zend_compile_file) {
+  if (NULL == orig_zend_compile_file && zend_compile_file != sp_compile_file) {
     orig_zend_compile_file = zend_compile_file;
     zend_compile_file = sp_compile_file;
   }
 
-  if (NULL == orig_zend_compile_string) {
+  if (NULL == orig_zend_compile_string &&
+      zend_compile_string != sp_compile_string) {
     orig_zend_compile_string = zend_compile_string;
     zend_compile_string = sp_compile_string;
   }

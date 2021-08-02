@@ -6,7 +6,7 @@
 
 size_t sp_line_no;
 
-sp_config_tokens const sp_func[] = {
+static sp_config_tokens const sp_func[] = {
     {.func = parse_unserialize, .token = SP_TOKEN_UNSERIALIZE_HMAC},
     {.func = parse_random, .token = SP_TOKEN_HARDEN_RANDOM},
     {.func = parse_log_media, .token = SP_TOKEN_LOG_MEDIA},
@@ -73,7 +73,11 @@ int parse_list(char *restrict line, char *restrict keyword, void *list_ptr) {
   }
 
   tmp = ZSTR_VAL(value);
-  while ((token = strtok_r(tmp, ",", &tmp))) {
+  while (1) {
+    token = strsep(&tmp, ",");
+    if (token == NULL) {
+      break;
+    }
     *list = sp_list_insert(*list, zend_string_init(token, strlen(token), 1));
   }
 
@@ -216,10 +220,31 @@ void sp_disabled_function_list_free(sp_list_node *list) {
   sp_list_node *cursor = list;
   while (cursor) {
     sp_disabled_function *df = cursor->data;
-    if (df && df->functions_list) sp_list_free(df->functions_list);
     if (df) {
+      sp_list_free(df->functions_list);
+      sp_list_free(df->param_array_keys);
+      sp_list_free(df->var_array_keys);
+
+      sp_pcre_free(df->r_filename);
+      sp_pcre_free(df->r_function);
+      sp_pcre_free(df->r_param);
+      sp_pcre_free(df->r_ret);
+      sp_pcre_free(df->r_value);
+      sp_pcre_free(df->r_key);
+
       sp_tree_free(df->param);
       sp_tree_free(df->var);
+    }
+    cursor = cursor->next;
+  }
+}
+
+void sp_cookie_list_free(sp_list_node *list) {
+  sp_list_node *cursor = list;
+  while (cursor) {
+    sp_cookie *c = cursor->data;
+    if (c) {
+      sp_pcre_free(c->name_r);
     }
     cursor = cursor->next;
   }

@@ -282,5 +282,6 @@ int parse_list(char *restrict, char *restrict, void *);
 
 // cleanup
 void sp_disabled_function_list_free(sp_list_node *);
+void sp_cookie_list_free(sp_list_node *);
 
 #endif /* SP_CONFIG_H */

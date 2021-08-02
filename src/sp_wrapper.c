@@ -1,6 +1,6 @@
 #include "php_snuffleupagus.h"
 
-static bool wrapper_is_whitelisted(const zend_string *zs) {
+static bool wrapper_is_whitelisted(const zend_string *const zs) {
   const sp_list_node *list = SNUFFLEUPAGUS_G(config).config_wrapper->whitelist;
 
   if (!zs) {
@@ -18,7 +18,7 @@ static bool wrapper_is_whitelisted(const zend_string *zs) {
 
 void sp_disable_wrapper() {
   HashTable *orig = php_stream_get_url_stream_wrappers_hash();
-  HashTable *orig_complete = pemalloc(sizeof(*orig_complete), 1);
+  HashTable *orig_complete = pemalloc(sizeof(HashTable), 1);
   zval *zv;
   zend_string *zs;
 
