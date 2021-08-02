@@ -1,3 +1,16 @@
+snuffleupagus (0.7.1) UNRELEASED; urgency=low
+  [ jvoisin ]
+  * Fixed possible memory-leaks when hooking via regular expressions               
+  * Modernise the code by removing usage of `strtok`                               
+  * Prevent a possible crash during configuration reloading                        
+  * Fix the default rules to catch dangerous `chmod` calls                         
+  * Improve compatibility with various `libpcre` configurations/versions           
+  * Improve the default rules' compatibility with php8                             
+  * Prevent XXE in php8 as well                                                    
+  * Improve a bit the verbosity of the logs                                        
+  * Add a rules file for php8  
+
+
 snuffleupagus (0.7.0) UNRELEASED; urgency=medium
   [ jvoisin ]
   * PHP8 support

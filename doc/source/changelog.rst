@@ -1,8 +1,22 @@
 Changelog
 =========
 
+0.7.1 - `Proboscidea <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.7.0>`__ 2021/08/02
+-------------------------------------------------------------------------------------------------
+
+* Fixed possible memory-leaks when hooking via regular expressions               
+* Modernise the code by removing usage of `strtok`                               
+* Prevent a possible crash during configuration reloading                        
+* Fix the default rules to catch dangerous `chmod` calls                         
+* Improve compatibility with various `libpcre` configurations/versions           
+* Improve the default rules' compatibility with php8                             
+* Prevent XXE in php8 as well                                                    
+* Improve a bit the verbosity of the logs
+* Add a rules file for php8
+
+
 0.7.0 - `Los Elefantes <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.7.0>`__ 2021/01/02
-----------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 New features
 ^^^^^^^^^^^^
