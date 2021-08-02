@@ -130,8 +130,8 @@ typedef struct {
   zend_string *alias;
   bool param_is_array;
   bool var_is_array;
-  sp_list_node *param_array_keys;
-  sp_list_node *var_array_keys;
+  // sp_list_node *param_array_keys;
+  // sp_list_node *var_array_keys;
 
   bool allow;
 
@@ -281,7 +281,9 @@ int parse_php_type(char *restrict, char *restrict, void *);
 int parse_list(char *restrict, char *restrict, void *);
 
 // cleanup
-void sp_disabled_function_list_free(sp_list_node *);
-void sp_cookie_list_free(sp_list_node *);
+void sp_free_disabled_function(void *data);
+void sp_free_cookie(void *data);
+void sp_free_zstr(void *data);
+
 
 #endif /* SP_CONFIG_H */

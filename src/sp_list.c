@@ -1,8 +1,22 @@
 #include "php_snuffleupagus.h"
 
-void sp_list_free(sp_list_node *node) {
+void sp_list_free(sp_list_node *node, void (*free_data_func)(void *data)) {
   while (node) {
     sp_list_node *tmp = node->next;
+    if (free_data_func && node->data) {
+      free_data_func(node->data);
+    }
+    pefree(node, 1);
+    node = tmp;
+  }
+}
+
+void sp_list_free2(sp_list_node *node) {
+  while (node) {
+    sp_list_node *tmp = node->next;
+    if (node->data) {
+      pefree(node->data, 1);
+    }
     pefree(node, 1);
     node = tmp;
   }

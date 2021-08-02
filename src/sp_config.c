@@ -216,36 +216,52 @@ int sp_parse_config(const char *conf_file) {
   return SUCCESS;
 }
 
-void sp_disabled_function_list_free(sp_list_node *list) {
-  sp_list_node *cursor = list;
-  while (cursor) {
-    sp_disabled_function *df = cursor->data;
-    if (df) {
-      sp_list_free(df->functions_list);
-      sp_list_free(df->param_array_keys);
-      sp_list_free(df->var_array_keys);
+void sp_free_disabled_function(void *data) {
+  sp_disabled_function *df = data;
 
-      sp_pcre_free(df->r_filename);
-      sp_pcre_free(df->r_function);
-      sp_pcre_free(df->r_param);
-      sp_pcre_free(df->r_ret);
-      sp_pcre_free(df->r_value);
-      sp_pcre_free(df->r_key);
+  sp_free_zstr(df->textual_representation);
 
-      sp_tree_free(df->param);
-      sp_tree_free(df->var);
-    }
-    cursor = cursor->next;
-  }
+  sp_free_zstr(df->filename);
+  sp_pcre_free(df->r_filename);
+
+  sp_free_zstr(df->function);
+  sp_pcre_free(df->r_function);
+  sp_list_free(df->functions_list, free);
+
+  sp_free_zstr(df->hash);
+
+  sp_tree_free(df->param);
+  sp_pcre_free(df->r_param);
+
+  sp_pcre_free(df->r_ret);
+  sp_free_zstr(df->ret);
+
+  sp_pcre_free(df->r_value);
+  sp_free_zstr(df->value);
+
+  sp_pcre_free(df->r_key);
+  sp_free_zstr(df->key);
+
+  sp_free_zstr(df->dump);
+  sp_free_zstr(df->alias);
+
+  // sp_list_free(df->param_array_keys);
+  // sp_list_free(df->var_array_keys);
+
+  sp_tree_free(df->var);
+
+  pefree(df->cidr, 1);
 }
 
-void sp_cookie_list_free(sp_list_node *list) {
-  sp_list_node *cursor = list;
-  while (cursor) {
-    sp_cookie *c = cursor->data;
-    if (c) {
-      sp_pcre_free(c->name_r);
-    }
-    cursor = cursor->next;
+void sp_free_cookie(void *data) {
+  sp_cookie *c = data;
+  if (c->name)
+    zend_string_release_ex(c->name, 1);
+  sp_pcre_free(c->name_r);
+}
+
+void sp_free_zstr(void *data) {
+  if (data) {
+    zend_string_release_ex((zend_string*)data, 1);
   }
 }

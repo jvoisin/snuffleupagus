@@ -249,7 +249,7 @@ sp_tree *sp_parse_var(const char *line) {
   }
   tokens_list = sp_list_sort(tokens_list, cmp_tokens);
   tree = parse_tokens(line, tokens_list);
-  sp_list_free(tokens_list);
+  sp_list_free2(tokens_list);
   // Check if tree is empty.
   if (tree && tree->next == NULL && tree->type == UNDEFINED) {
     tree->type = CONSTANT;

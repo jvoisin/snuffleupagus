@@ -11,6 +11,7 @@ sp_list_node *sp_list_sort(sp_list_node *, int (*)(sp_list_node const *const,
                                                    sp_list_node const *const));
 sp_list_node *sp_list_insert(sp_list_node *, void *);
 sp_list_node *sp_list_prepend(sp_list_node *, void *);
-void sp_list_free(sp_list_node *);
+void sp_list_free(sp_list_node *, void (*free_data_func)(void *data));
+void sp_list_free2(sp_list_node *node);
 
 #endif
