@@ -366,7 +366,7 @@ int parse_disabled_functions(char *line) {
   ret = parse_keywords(sp_config_funcs_disabled_functions, line);
 
   if (0 != ret) {
-    return ret;
+    goto out;
   }
 
 #define MUTUALLY_EXCLUSIVE(X, Y, STR1, STR2)                             \
@@ -375,7 +375,7 @@ int parse_disabled_functions(char *line) {
                "Invalid configuration line: 'sp.disabled_functions%s': " \
                "'.%s' and '.%s' are mutually exclusive on line %zu",     \
                line, STR1, STR2, sp_line_no);                            \
-    return -1;                                                            \
+    ret = -1; goto out;                                                  \
   }
 
   MUTUALLY_EXCLUSIVE(df->value, df->r_value, "value", "value_r");
@@ -398,7 +398,7 @@ int parse_disabled_functions(char *line) {
                "Invalid configuration line: 'sp.disabled_functions%s':"
                " must take a function name on line %zu",
                line, sp_line_no);
-    return -1;
+    ret = -1; goto out;
   }
   if (df->filename && (*ZSTR_VAL(df->filename) != '/') &&
              (0 != strncmp(ZSTR_VAL(df->filename), "phar://", strlen("phar://")))) {
@@ -407,14 +407,14 @@ int parse_disabled_functions(char *line) {
         "Invalid configuration line: 'sp.disabled_functions%s':"
         "'.filename' must be an absolute path or a phar archive on line %zu",
         line, sp_line_no);
-    return -1;
+    ret = -1; goto out;
   }
   if (!(allow ^ drop)) {
     sp_log_err("config",
                "Invalid configuration line: 'sp.disabled_functions%s': The "
                "rule must either be a `drop` or `allow` one on line %zu",
                line, sp_line_no);
-    return -1;
+    ret = -1; goto out;
   }
 
   if (pos) {
@@ -424,7 +424,7 @@ int parse_disabled_functions(char *line) {
     if (errno != 0 || endptr == ZSTR_VAL(pos)) {
       sp_log_err("config", "Failed to parse arg '%s' of `pos` on line %zu",
                  ZSTR_VAL(pos), sp_line_no);
-      return -1;
+      ret = -1; goto out;
     }
   }
 
@@ -435,7 +435,7 @@ int parse_disabled_functions(char *line) {
     if (errno != 0 || endptr == ZSTR_VAL(line_number)) {
       sp_log_err("config", "Failed to parse arg '%s' of `line` on line %zu",
                  ZSTR_VAL(line_number), sp_line_no);
-      return -1;
+      ret = -1; goto out;
     }
   }
   df->allow = allow;
@@ -454,14 +454,14 @@ int parse_disabled_functions(char *line) {
       new[0] = '$';
       memcpy(new + 1, ZSTR_VAL(param), ZSTR_LEN(param));
       df->param = sp_parse_var(new);
-      free(new);
+      pefree(new, 1);
     } else {
       df->param = sp_parse_var(ZSTR_VAL(param));
     }
     if (!df->param) {
       sp_log_err("config", "Invalid value '%s' for `param` on line %zu",
                  ZSTR_VAL(param), sp_line_no);
-      return -1;
+      ret = -1; goto out;
     }
   }
 
@@ -471,15 +471,18 @@ int parse_disabled_functions(char *line) {
       if (!df->var) {
         sp_log_err("config", "Invalid value '%s' for `var` on line %zu",
                    ZSTR_VAL(var), sp_line_no);
-        return -1;
+        ret = -1; goto out;
       }
     } else {
       sp_log_err("config", "Empty value in `var` on line %zu", sp_line_no);
-      return -1;
+      ret = -1; goto out;
     }
   }
 
-  if (true == disable) {
+  if (true == disable || 0 != ret) {
+    out:
+    sp_free_disabled_function(df);
+    pefree(df, 1);
     return ret;
   }
 
