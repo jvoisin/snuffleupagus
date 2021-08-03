@@ -30,14 +30,9 @@ PHP_FUNCTION(sp_serialize) {
     zend_bailout();
     // LCOV_EXCL_STOP
   }
-  zend_string *res = zend_string_alloc(len, 0);
-
-  memcpy(ZSTR_VAL(res), Z_STRVAL_P(return_value), Z_STRLEN_P(return_value));
-  memcpy(ZSTR_VAL(res) + Z_STRLEN_P(return_value), Z_STRVAL(hmac),
-         Z_STRLEN(hmac));
 
   /* Append the computed HMAC to the serialized data. */
-  return_value->value.str = res;
+  return_value->value.str = zend_string_concat2(Z_STRVAL_P(return_value), Z_STRLEN_P(return_value), Z_STRVAL(hmac), Z_STRLEN(hmac));
   return;
 }
 
