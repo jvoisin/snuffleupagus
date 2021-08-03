@@ -40,11 +40,10 @@ void generate_key(unsigned char *key) {
 // This function return 0 upon success , non-zero otherwise
 int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
   unsigned char key[crypto_secretbox_KEYBYTES] = {0};
-  unsigned char *decrypted;
-  zend_string *debase64;
+  unsigned char *decrypted = NULL, *backup = NULL;
   int ret = 0;
 
-  debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)),
+  zend_string *debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)),
                                Z_STRLEN_P(pDest));
 
   if (ZSTR_LEN(debase64) < crypto_secretbox_NONCEBYTES) {
@@ -52,15 +51,15 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
       sp_log_simulation(
           "cookie_encryption",
           "Buffer underflow tentative detected in cookie encryption handling "
-          "for %s. Using the cookie 'as it' instead of decrypting it",
+          "for %s. Using the cookie 'as is' instead of decrypting it",
           hash_key ? ZSTR_VAL(hash_key->key) : "the session");
-      return ZEND_HASH_APPLY_KEEP;
+      ret = ZEND_HASH_APPLY_KEEP; goto out;
     } else {
       // LCOV_EXCL_START
       sp_log_drop(
           "cookie_encryption",
-          "Buffer underflow tentative detected in cookie encryption handling");
-      return ZEND_HASH_APPLY_REMOVE;
+          "Buffer underflow (tentative) detected in cookie encryption handling");
+      ret = ZEND_HASH_APPLY_REMOVE; goto out;
       // LCOV_EXCL_STOP
     }
   }
@@ -71,15 +70,15 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
     if (true == simulation) {
       sp_log_simulation(
           "cookie_encryption",
-          "Integer overflow tentative detected in cookie encryption handling "
+          "Integer overflow (tentative) detected in cookie encryption handling "
           "for %s. Using the cookie 'as it' instead of decrypting it.",
           hash_key ? ZSTR_VAL(hash_key->key) : "the session");
-      return ZEND_HASH_APPLY_KEEP;
+      ret = ZEND_HASH_APPLY_KEEP; goto out;
     } else {
       sp_log_drop(
           "cookie_encryption",
-          "Integer overflow tentative detected in cookie encryption handling.");
-      return ZEND_HASH_APPLY_REMOVE;
+          "Integer overflow (tentative) detected in cookie encryption handling.");
+      ret = ZEND_HASH_APPLY_REMOVE; goto out;
     }
   }
   // LCOV_EXCL_STOP
@@ -87,7 +86,7 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
   generate_key(key);
 
   decrypted = ecalloc(ZSTR_LEN(debase64) + crypto_secretbox_ZEROBYTES, 1);
-  char *backup = ecalloc(ZSTR_LEN(debase64), 1);
+  backup = ecalloc(ZSTR_LEN(debase64), 1);
   memcpy(backup, ZSTR_VAL(debase64), ZSTR_LEN(debase64));
 
   ret = crypto_secretbox_open(
@@ -101,28 +100,31 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
       sp_log_simulation(
           "cookie_encryption",
           "Something went wrong with the decryption of %s. Using the cookie "
-          "'as it' instead of decrypting it",
+          "'as is' instead of decrypting it",
           hash_key ? ZSTR_VAL(hash_key->key) : "the session");
       memcpy(ZSTR_VAL(debase64), backup, ZSTR_LEN(debase64));
-      efree(backup);
-      return ZEND_HASH_APPLY_KEEP;
+      ret = ZEND_HASH_APPLY_KEEP; goto out;
     } else {
       sp_log_warn("cookie_encryption",
                   "Something went wrong with the decryption of %s",
                   hash_key ? ZSTR_VAL(hash_key->key) : "the session");
-      efree(backup);
-      return ZEND_HASH_APPLY_REMOVE;
+      ret = ZEND_HASH_APPLY_REMOVE; goto out;
     }
   }
-  efree(backup);
 
   ZVAL_STRINGL(pDest, (char *)(decrypted + crypto_secretbox_ZEROBYTES),
                ZSTR_LEN(debase64) - crypto_secretbox_NONCEBYTES - 1 -
                    crypto_secretbox_ZEROBYTES);
 
-  efree(decrypted);
+  ret = ZEND_HASH_APPLY_KEEP;
 
-  return ZEND_HASH_APPLY_KEEP;
+out:
+
+  if (debase64) { zend_string_efree(debase64); }
+  if (decrypted) { efree(decrypted); }
+  if (backup) { efree(backup); }
+
+  return ret;
 }
 
 /*
@@ -156,10 +158,19 @@ zend_string *encrypt_zval(zend_string *data) {
 
   memcpy(encrypted_data, nonce, crypto_secretbox_NONCEBYTES);
 
-  crypto_secretbox(encrypted_data + crypto_secretbox_NONCEBYTES,
+  int err = crypto_secretbox(encrypted_data + crypto_secretbox_NONCEBYTES,
                    data_to_encrypt, encrypted_msg_len, nonce, key);
 
-  zend_string *z = php_base64_encode(encrypted_data, emsg_and_nonce_len);
+  zend_string *z = NULL;
+  if (err) {
+    sp_log_err("cookie_encryption", "something went wrong during encryption");
+    z = zend_string_init("<sp_encryption_error>", 21, 0);
+  } else {
+    z = php_base64_encode(encrypted_data, emsg_and_nonce_len);
+  }
+
+  efree(data_to_encrypt);
+  efree(encrypted_data);
 
   return z;
 }
