@@ -82,7 +82,6 @@ bool cidr_match(const char *ip, const sp_cidr *cidr) {
 }
 
 int get_ip_and_cidr(char *ip, sp_cidr *cidr) {
-  errno = 0;
   char *mask = strchr(ip, '/');
 
   if (NULL == mask) {
