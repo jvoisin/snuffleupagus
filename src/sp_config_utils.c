@@ -98,6 +98,9 @@ err:
                original_line ? original_line : "NULL", sp_line_no);
   }
   line = NULL;
+  if (ret) {
+    zend_string_release(ret);
+  }
   return NULL;
 }
 
