@@ -437,7 +437,7 @@ bool hook_function(const char* original_name, HashTable* hook_table,
     if (zend_hash_str_find(CG(function_table), VAR_AND_LEN(mb_name))) {
       return hook_function(mb_name, hook_table, new_function);
     }
-    free(mb_name);
+    efree(mb_name);
     // LCOV_EXCL_STOP
   }
 
