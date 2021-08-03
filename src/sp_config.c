@@ -56,12 +56,19 @@ static int parse_line(char *line) {
 }
 
 /* keyword parsing */
+#define CHECK_DUPLICATE_KEYWORD(retval) \
+  if (*(void**)(retval)) { \
+    sp_log_err("config", "duplicate %s) on line %zu near `%s`", keyword, sp_line_no, line); \
+    return -1; }
+
+
 int parse_empty(char *restrict line, char *restrict keyword, void *retval) {
   *(bool *)retval = true;
   return 0;
 }
 
 int parse_list(char *restrict line, char *restrict keyword, void *list_ptr) {
+  CHECK_DUPLICATE_KEYWORD(list_ptr);
   zend_string *value = NULL;
   sp_list_node **list = list_ptr;
   char *token, *tmp;
@@ -86,48 +93,50 @@ int parse_list(char *restrict line, char *restrict keyword, void *list_ptr) {
 }
 
 int parse_php_type(char *restrict line, char *restrict keyword, void *retval) {
+  CHECK_DUPLICATE_KEYWORD(retval);
   size_t consumed = 0;
   zend_string *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
-  if (value) {
-    if (zend_string_equals_literal_ci(value, "undef")) {
-      *(sp_php_type *)retval = SP_PHP_TYPE_UNDEF;
-    } else if (zend_string_equals_literal_ci(value, "null")) {
-      *(sp_php_type *)retval = SP_PHP_TYPE_NULL;
-    } else if (zend_string_equals_literal_ci(value, "true")) {
-      *(sp_php_type *)retval = SP_PHP_TYPE_TRUE;
-    } else if (zend_string_equals_literal_ci(value, "false")) {
-      *(sp_php_type *)retval = SP_PHP_TYPE_FALSE;
-    } else if (zend_string_equals_literal_ci(value, "long")) {
-      *(sp_php_type *)retval = SP_PHP_TYPE_LONG;
-    } else if (zend_string_equals_literal_ci(value, "double")) {
-      *(sp_php_type *)retval = SP_PHP_TYPE_DOUBLE;
-    } else if (zend_string_equals_literal_ci(value, "string")) {
-      *(sp_php_type *)retval = SP_PHP_TYPE_STRING;
-    } else if (zend_string_equals_literal_ci(value, "array")) {
-      *(sp_php_type *)retval = SP_PHP_TYPE_ARRAY;
-    } else if (zend_string_equals_literal_ci(value, "object")) {
-      *(sp_php_type *)retval = SP_PHP_TYPE_OBJECT;
-    } else if (zend_string_equals_literal_ci(value, "resource")) {
-      *(sp_php_type *)retval = SP_PHP_TYPE_RESOURCE;
-    } else if (zend_string_equals_literal_ci(value, "reference")) {
-      *(sp_php_type *)retval = SP_PHP_TYPE_REFERENCE;
-    } else {
-      pefree(value, 1);
-      sp_log_err("error",
-                 "%s) is expecting a valid php type ('false', 'true',"
-                 " 'array'. 'object', 'long', 'double', 'null', 'resource', "
-                 "'reference', 'undef') on line %zu",
-                 keyword, sp_line_no);
-      return -1;
-    }
-    pefree(value, 1);
-    return consumed;
-  } else {
+  if (!value) {
     return -1;
   }
+
+  if (zend_string_equals_literal_ci(value, "undef")) {
+    *(sp_php_type *)retval = SP_PHP_TYPE_UNDEF;
+  } else if (zend_string_equals_literal_ci(value, "null")) {
+    *(sp_php_type *)retval = SP_PHP_TYPE_NULL;
+  } else if (zend_string_equals_literal_ci(value, "true")) {
+    *(sp_php_type *)retval = SP_PHP_TYPE_TRUE;
+  } else if (zend_string_equals_literal_ci(value, "false")) {
+    *(sp_php_type *)retval = SP_PHP_TYPE_FALSE;
+  } else if (zend_string_equals_literal_ci(value, "long")) {
+    *(sp_php_type *)retval = SP_PHP_TYPE_LONG;
+  } else if (zend_string_equals_literal_ci(value, "double")) {
+    *(sp_php_type *)retval = SP_PHP_TYPE_DOUBLE;
+  } else if (zend_string_equals_literal_ci(value, "string")) {
+    *(sp_php_type *)retval = SP_PHP_TYPE_STRING;
+  } else if (zend_string_equals_literal_ci(value, "array")) {
+    *(sp_php_type *)retval = SP_PHP_TYPE_ARRAY;
+  } else if (zend_string_equals_literal_ci(value, "object")) {
+    *(sp_php_type *)retval = SP_PHP_TYPE_OBJECT;
+  } else if (zend_string_equals_literal_ci(value, "resource")) {
+    *(sp_php_type *)retval = SP_PHP_TYPE_RESOURCE;
+  } else if (zend_string_equals_literal_ci(value, "reference")) {
+    *(sp_php_type *)retval = SP_PHP_TYPE_REFERENCE;
+  } else {
+    pefree(value, 1);
+    sp_log_err("error",
+                "%s) is expecting a valid php type ('false', 'true',"
+                " 'array'. 'object', 'long', 'double', 'null', 'resource', "
+                "'reference', 'undef') on line %zu",
+                keyword, sp_line_no);
+    return -1;
+  }
+  pefree(value, 1);
+  return consumed;
 }
 
 int parse_str(char *restrict line, char *restrict keyword, void *retval) {
+  CHECK_DUPLICATE_KEYWORD(retval);
   zend_string *value = NULL;
 
   size_t consumed = 0;
@@ -140,27 +149,34 @@ int parse_str(char *restrict line, char *restrict keyword, void *retval) {
 }
 
 int parse_cidr(char *restrict line, char *restrict keyword, void *retval) {
+  CHECK_DUPLICATE_KEYWORD(retval);
+
   size_t consumed = 0;
   zend_string *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
-  sp_cidr *cidr = pecalloc(sizeof(sp_cidr), 1, 1);
 
-  if (value) {
-    if (-1 == get_ip_and_cidr(ZSTR_VAL(value), cidr)) {
-      return -1;
-    }
-    *(sp_cidr **)retval = cidr;
-    return consumed;
-  } else {
-    sp_log_err("config", "%s doesn't contain a valid cidr on line %zu", line,
-               sp_line_no);
+  if (!value) {
+    sp_log_err("config", "%s doesn't contain a valid cidr on line %zu", line, sp_line_no);
     return -1;
   }
+
+  sp_cidr *cidr = pecalloc(sizeof(sp_cidr), 1, 1);
+
+  if (0 == get_ip_and_cidr(ZSTR_VAL(value), cidr)) {
+    pefree(cidr, 1);
+    *(sp_cidr **)retval = NULL;
+    return -1;
+  }
+
+  *(sp_cidr **)retval = cidr;
+  return consumed;
 }
 
 int parse_regexp(char *restrict line, char *restrict keyword, void *retval) {
   /* TODO: Do we want to use pcre_study?
    * (http://www.pcre.org/original/doc/html/pcre_study.html)
    * maybe not: http://sljit.sourceforge.net/pcre.html*/
+  CHECK_DUPLICATE_KEYWORD(retval);
+
   size_t consumed = 0;
   zend_string *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
 
