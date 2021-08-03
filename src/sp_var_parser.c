@@ -44,13 +44,15 @@ static int create_var(sp_tree *tree, const char *restrict value,
                       size_t value_len, elem_type _type,
                       const char *restrict idx) {
   sp_tree *var_node = NULL;
-
+  bool free_node_on_error = false;
+  int err = 0;
   assert(tree);
 
   if (tree->next == NULL && tree->type == UNDEFINED) {
     var_node = tree;
   } else {
     var_node = pecalloc(sizeof(sp_tree), 1, 1);
+    free_node_on_error = true;
   }
 
   var_node->value = NULL;
@@ -66,14 +68,15 @@ static int create_var(sp_tree *tree, const char *restrict value,
   if (!(var_node->value = pestrndup(value, value_len, 1))) {
     // LCOV_EXCL_START
     sp_log_err("config", "Can't allocate a strndup");
-    return -1;
+    err = -1; goto err;
     // LCOV_EXCL_STOP
   }
   if (var_node->type != INTERPRETED_STRING &&
       !is_var_name_valid(var_node->value)) {
     sp_log_err("config", "Invalid var name: %s.", var_node->value);
-    return -1;
+    err = -1; goto err;
   }
+
   var_node->idx = sp_parse_var(idx);
 
   if (tree != var_node) {
@@ -82,7 +85,19 @@ static int create_var(sp_tree *tree, const char *restrict value,
     }
     tree->next = var_node;
   }
-  return 0;
+
+  if (err) {
+err:
+    if (free_node_on_error) {
+      sp_tree_free(var_node);
+    } else {
+      var_node->next = var_node->idx = NULL;
+      var_node->value = NULL;
+      var_node->type = UNDEFINED;
+    }
+  }
+  
+  return err;
 }
 
 int cmp_tokens(sp_list_node const *const list1,
