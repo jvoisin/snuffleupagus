@@ -117,7 +117,7 @@ static int sp_hook_session_RINIT(INIT_FUNC_ARGS) {
     zend_ini_entry *ini_entry;
     if ((ini_entry = zend_hash_str_find_ptr(
              EG(ini_directives), ZEND_STRL("session.save_handler")))) {
-      if (ini_entry->value) {
+      if (ini_entry && ini_entry->value) {
         sp_OnUpdateSaveHandler(NULL, ini_entry->value, NULL, NULL, NULL, 0);
       }
     }
