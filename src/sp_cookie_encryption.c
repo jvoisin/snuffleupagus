@@ -33,7 +33,7 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
 
 static zend_string *encrypt_data(zend_string *data) {
   zend_string *z = encrypt_zval(data);
-  sp_log_debug("cookie_encryption", "Cookie value:%s:", ZSTR_VAL(z));
+  sp_log_debug("Cookie value:%s:", ZSTR_VAL(z));
   return z;
 }
 
