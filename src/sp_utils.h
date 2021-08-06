@@ -51,9 +51,18 @@
   sp_log_msgf(feature, SP_LOG_ERROR, SP_TYPE_LOG, __VA_ARGS__)
 #define sp_log_warn(feature, ...) \
   sp_log_msgf(feature, SP_LOG_WARN, SP_TYPE_LOG, __VA_ARGS__)
+
 #ifdef SP_DEBUG
+
+#ifdef SP_DEBUG_STDERR
+extern int sp_debug_stderr;
+#define sp_log_debug(fmt, ...) \
+  dprintf(sp_debug_stderr, "[snuffleupagus][DEBUG] %s(): " fmt "\n", __FUNCTION__, ##__VA_ARGS__);
+#else
 #define sp_log_debug(fmt, ...) \
   sp_log_msgf("DEBUG", SP_LOG_DEBUG, SP_TYPE_LOG, "%s(): " fmt, __FUNCTION__, ##__VA_ARGS__)
+#endif
+
 #else
 #define sp_log_debug(...)
 #endif

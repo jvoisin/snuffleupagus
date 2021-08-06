@@ -13,6 +13,10 @@
 static PHP_INI_MH(OnUpdateConfiguration);
 static inline void sp_op_array_handler(zend_op_array *op);
 
+#ifdef SP_DEBUG_STDERR
+int sp_debug_stderr = STDERR_FILENO;
+#endif
+
 ZEND_EXTENSION();
 
 // LCOV_EXCL_START
@@ -70,6 +74,10 @@ ZEND_DLEXPORT zend_extension zend_extension_entry = {
     STANDARD_ZEND_EXTENSION_PROPERTIES};
 
 static PHP_GINIT_FUNCTION(snuffleupagus) {
+#ifdef SP_DEBUG_STDERR
+  sp_debug_stderr = dup(STDERR_FILENO);
+#endif
+  sp_log_debug("(GINIT)");
   snuffleupagus_globals->is_config_valid = SP_CONFIG_NONE;
   snuffleupagus_globals->in_eval = 0;
 
@@ -116,6 +124,7 @@ static PHP_GINIT_FUNCTION(snuffleupagus) {
 }
 
 PHP_MINIT_FUNCTION(snuffleupagus) {
+  sp_log_debug("(MINIT)");
   REGISTER_INI_ENTRIES();
 
   return SUCCESS;
@@ -134,6 +143,7 @@ static inline void free_disabled_functions_hashtable(HashTable *const ht) {
 }
 
 static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
+  sp_log_debug("(GSHUTDOWN)");
 #define FREE_HT(F)                       \
   zend_hash_destroy(snuffleupagus_globals->F); \
   pefree(snuffleupagus_globals->F, 1);
@@ -188,6 +198,11 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_CFG(config_disabled_functions_reg_ret);
 #undef FREE_CFG
 #undef FREE_CFG_ZSTR
+
+#ifdef SP_DEBUG_STDERR
+  close(sp_debug_stderr);
+  sp_debug_stderr = STDERR_FILENO;
+#endif
 }
 
 PHP_RINIT_FUNCTION(snuffleupagus) {
@@ -249,6 +264,8 @@ PHP_MINFO_FUNCTION(snuffleupagus) {
 }
 
 static PHP_INI_MH(OnUpdateConfiguration) {
+  sp_log_debug("(OnUpdateConfiguration)");
+
   TSRMLS_FETCH();
 
   if (!new_value || !new_value->len) {
