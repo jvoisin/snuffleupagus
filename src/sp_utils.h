@@ -82,6 +82,7 @@ void sp_log_disable(const char *restrict, const char *restrict,
 void sp_log_disable_ret(const char *restrict, const zend_string *restrict,
                         const sp_disabled_function *);
 bool hook_function(const char *, HashTable *, zif_handler);
+void unhook_functions(HashTable *ht);
 int hook_regexp(const sp_pcre *, HashTable *, zif_handler);
 bool check_is_in_eval_whitelist(const zend_string *const function_name);
 int sp_log_request(const zend_string *restrict folder,

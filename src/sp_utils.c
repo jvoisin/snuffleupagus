@@ -391,41 +391,43 @@ bool sp_match_array_value(const zval* arr, const zend_string* to_match,
   return false;
 }
 
+bool /* success */ _hook_function(const char* original_name, HashTable* hook_table,
+                   zif_handler new_function) {
+  zend_function* func;
+  if ((func = zend_hash_str_find_ptr(CG(function_table), VAR_AND_LEN(original_name)))) {
+    if (func->type != ZEND_INTERNAL_FUNCTION) {
+      return false;
+    }
+    if (zend_hash_str_add_new_ptr((hook_table), VAR_AND_LEN(original_name),
+                                  func->internal_function.handler) == NULL) {
+      // LCOV_EXCL_START
+      sp_log_err("function_pointer_saving",
+                 "Could not save function pointer for %s", original_name);
+      return false;
+      // LCOV_EXCL_STOP
+    }
+    func->internal_function.handler = new_function;
+    return true;
+  }
+  return false;
+}
+
 bool hook_function(const char* original_name, HashTable* hook_table,
                    zif_handler new_function) {
-  zend_internal_function* func;
-  bool ret = false;
+  zend_function* func;
 
-  /* The `mb` module likes to hook functions, like strlen->mb_strlen,
-   * so we have to hook both of them. */
 
-  if ((func = zend_hash_str_find_ptr(CG(function_table),
-                                     VAR_AND_LEN(original_name)))) {
-    if (func->handler == new_function) {
-      return SUCCESS;  // the function is already hooked
-    } else {
-      if (zend_hash_str_add_new_ptr((hook_table), VAR_AND_LEN(original_name),
-                                    func->handler) == NULL) {
-        // LCOV_EXCL_START
-        sp_log_err("function_pointer_saving",
-                   "Could not save function pointer for %s", original_name);
-        return FAILURE;
-        // LCOV_EXCL_STOP
-      }
-      func->handler = new_function;
-      ret = true;
-    }
-  }
+  bool ret = _hook_function(original_name, hook_table, new_function);
 
 #if PHP_VERSION_ID < 80000
   CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
 #endif
 
-  if (0 == strncmp(original_name, "mb_", 3) && !CG(multibyte)) {
-    if (zend_hash_str_find(CG(function_table),
-                           VAR_AND_LEN(original_name + 3))) {
-      return hook_function(original_name + 3, hook_table, new_function);
-    }
+  /* The `mb` module likes to hook functions, like strlen->mb_strlen,
+  * so we have to hook both of them. */
+
+  if (!CG(multibyte) && 0 == strncmp(original_name, "mb_", 3)) {
+    _hook_function(original_name + 3, hook_table, new_function);
   } else if (CG(multibyte)) {
     // LCOV_EXCL_START
     char* mb_name = ecalloc(strlen(original_name) + 3 + 1, 1);
@@ -434,9 +436,7 @@ bool hook_function(const char* original_name, HashTable* hook_table,
     }
     memcpy(mb_name, "mb_", sizeof("mb_") - 1);
     memcpy(mb_name + 3, VAR_AND_LEN(original_name));
-    if (zend_hash_str_find(CG(function_table), VAR_AND_LEN(mb_name))) {
-      return hook_function(mb_name, hook_table, new_function);
-    }
+    _hook_function(mb_name, hook_table, new_function);
     efree(mb_name);
     // LCOV_EXCL_STOP
   }
@@ -457,6 +457,19 @@ int hook_regexp(const sp_pcre* regexp, HashTable* hook_table,
   ZEND_HASH_FOREACH_END();
 
   return SUCCESS;
+}
+
+void unhook_functions(HashTable *ht) {
+  zend_string *fname;
+  zif_handler orig_handler;
+  zend_ulong idx;
+
+  ZEND_HASH_REVERSE_FOREACH_KEY_PTR(ht, idx, fname, orig_handler)
+    zend_function *func = zend_hash_find_ptr(CG(function_table), fname);
+    if (func && func->type == ZEND_INTERNAL_FUNCTION && orig_handler) {
+      func->internal_function.handler = orig_handler;
+    }
+  ZEND_HASH_FOREACH_END_DEL();
 }
 
 bool check_is_in_eval_whitelist(const zend_string* const function_name) {
