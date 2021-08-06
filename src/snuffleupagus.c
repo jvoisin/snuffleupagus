@@ -81,18 +81,6 @@ static PHP_GINIT_FUNCTION(snuffleupagus) {
   snuffleupagus_globals->is_config_valid = SP_CONFIG_NONE;
   snuffleupagus_globals->in_eval = 0;
 
-#define SP_INIT_HT(F)                                                          \
-  snuffleupagus_globals->F = pemalloc(sizeof(*(snuffleupagus_globals->F)), 1); \
-  zend_hash_init(snuffleupagus_globals->F, 10, NULL, NULL, 1);
-  SP_INIT_HT(disabled_functions_hook);
-  SP_INIT_HT(sp_internal_functions_hook);
-  SP_INIT_HT(sp_eval_blacklist_functions_hook);
-  SP_INIT_HT(config.config_disabled_functions);
-  SP_INIT_HT(config.config_disabled_functions_hooked);
-  SP_INIT_HT(config.config_disabled_functions_ret);
-  SP_INIT_HT(config.config_disabled_functions_ret_hooked);
-#undef SP_INIT_HT
-
 #define SP_INIT(F)                  \
   snuffleupagus_globals->config.F = \
       pecalloc(sizeof(*(snuffleupagus_globals->config.F)), 1, 1);
@@ -109,9 +97,23 @@ static PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT(config_eval);
   SP_INIT(config_wrapper);
   SP_INIT(config_session);
+  SP_INIT(config_ini);
   SP_INIT(config_disabled_functions_reg);
   SP_INIT(config_disabled_functions_reg_ret);
 #undef SP_INIT
+
+#define SP_INIT_HT(F)                                                          \
+  snuffleupagus_globals->F = pemalloc(sizeof(*(snuffleupagus_globals->F)), 1); \
+  zend_hash_init(snuffleupagus_globals->F, 10, NULL, NULL, 1);
+  SP_INIT_HT(disabled_functions_hook);
+  SP_INIT_HT(sp_internal_functions_hook);
+  SP_INIT_HT(sp_eval_blacklist_functions_hook);
+  SP_INIT_HT(config.config_disabled_functions);
+  SP_INIT_HT(config.config_disabled_functions_hooked);
+  SP_INIT_HT(config.config_disabled_functions_ret);
+  SP_INIT_HT(config.config_disabled_functions_ret_hooked);
+  SP_INIT_HT(config.config_ini->entries);
+#undef SP_INIT_HT
 
 #define SP_INIT_NULL(F) snuffleupagus_globals->config.F = NULL;
   SP_INIT_NULL(config_disabled_functions_reg->disabled_functions);
@@ -131,6 +133,11 @@ PHP_MINIT_FUNCTION(snuffleupagus) {
 }
 
 PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
+  sp_log_debug("(MSHUTDOWN)");
+  unhook_functions(SNUFFLEUPAGUS_G(sp_internal_functions_hook));
+  unhook_functions(SNUFFLEUPAGUS_G(disabled_functions_hook));
+  unhook_functions(SNUFFLEUPAGUS_G(sp_eval_blacklist_functions_hook));
+  if (SNUFFLEUPAGUS_G(config).config_ini->enable) { sp_unhook_ini(); }
   UNREGISTER_INI_ENTRIES();
 
   return SUCCESS;
@@ -139,6 +146,12 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
 static inline void free_disabled_functions_hashtable(HashTable *const ht) {
   void *ptr = NULL;
   ZEND_HASH_FOREACH_PTR(ht, ptr) { sp_list_free(ptr, sp_free_disabled_function); }
+  ZEND_HASH_FOREACH_END();
+}
+
+static inline void free_config_ini_entries(HashTable *const ht) {
+  void *ptr = NULL;
+  ZEND_HASH_FOREACH_PTR(ht, ptr) { sp_free_ini_entry(ptr); pefree(ptr, 1); }
   ZEND_HASH_FOREACH_END();
 }
 
@@ -158,6 +171,9 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_HT_LIST(config_disabled_functions_ret);
   FREE_HT_LIST(config_disabled_functions_ret_hooked);
 #undef FREE_HT_LIST
+
+  free_config_ini_entries(snuffleupagus_globals->config.config_ini->entries);
+  FREE_HT(config.config_ini->entries);
 #undef FREE_HT
 
 #define FREE_LST_DISABLE(L)                       \
@@ -173,6 +189,7 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_LST(config_eval->whitelist);
   FREE_LST(config_wrapper->whitelist);
 #undef FREE_LST
+
 
 #define FREE_CFG(C) pefree(snuffleupagus_globals->config.C, 1);
 #define FREE_CFG_ZSTR(C) sp_free_zstr(snuffleupagus_globals->config.C);
@@ -194,6 +211,7 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_CFG(config_eval);
   FREE_CFG(config_wrapper);
   FREE_CFG(config_session);
+  FREE_CFG(config_ini);
   FREE_CFG(config_disabled_functions_reg);
   FREE_CFG(config_disabled_functions_reg_ret);
 #undef FREE_CFG
@@ -331,6 +349,10 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   hook_disabled_functions();
   hook_execute();
   hook_cookies();
+
+  if (SNUFFLEUPAGUS_G(config).config_ini->enable) {
+    sp_hook_ini();
+  }
 
   if (true == SNUFFLEUPAGUS_G(config).config_global_strict->enable) {
     if (!zend_get_extension(PHP_SNUFFLEUPAGUS_EXTNAME)) {

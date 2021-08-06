@@ -23,6 +23,8 @@ static sp_config_tokens const sp_func[] = {
     {.func = parse_session, .token = SP_TOKEN_SESSION_ENCRYPTION},
     {.func = parse_sloppy_comparison, .token = SP_TOKEN_SLOPPY_COMPARISON},
     {.func = parse_wrapper_whitelist, .token = SP_TOKEN_ALLOW_WRAPPERS},
+    {.func = parse_ini_protection, .token = ".ini_protection"},
+    {.func = parse_ini_entry, .token = ".ini"},
     {NULL, NULL}};
 
 /* Top level keyword parsing */
@@ -280,4 +282,15 @@ void sp_free_zstr(void *data) {
   if (data) {
     zend_string_release_ex((zend_string*)data, 1);
   }
+}
+
+void sp_free_ini_entry(void *data) {
+  sp_ini_entry *entry = data;
+
+  sp_free_zstr(entry->key);
+  sp_free_zstr(entry->min);
+  sp_free_zstr(entry->max);
+  sp_pcre_free(entry->regexp);
+  sp_free_zstr(entry->msg);
+  sp_free_zstr(entry->set);
 }

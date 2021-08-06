@@ -30,6 +30,8 @@ typedef enum {
 
 typedef enum { SP_ZEND = 0, SP_SYSLOG = 1 } sp_log_media;
 
+typedef enum { SP_UNSET = 0, SP_READONLY = 1, SP_READWRITE = -1 } sp_ini_permission;
+
 typedef struct {
   int ip_version;
   union {
@@ -163,6 +165,26 @@ typedef struct {
 } sp_config_upload_validation;
 
 typedef struct {
+  zend_string *key;
+  sp_ini_permission access;
+  zend_string *min;
+  zend_string *max;
+  sp_pcre *regexp;
+  bool simulation;
+  zend_string *msg;
+  zend_string *set;
+  PHP_INI_MH((*orig_onmodify));
+} sp_ini_entry;
+
+typedef struct {
+  bool enable;
+  bool simulation;
+  // sp_ini_permission access_policy;
+  bool policy_readonly;
+  HashTable *entries;  // ht of sp_ini_entry
+} sp_config_ini;
+
+typedef struct {
   sp_config_random *config_random;
   sp_config_sloppy *config_sloppy;
   sp_config_unserialize *config_unserialize;
@@ -176,6 +198,7 @@ typedef struct {
   sp_config_eval *config_eval;
   sp_config_wrapper *config_wrapper;
   sp_config_session *config_session;
+  sp_config_ini *config_ini;
   bool hook_execute;
   char log_media;
 
@@ -215,6 +238,7 @@ typedef struct {
 #define SP_TOKEN_EVAL_WHITELIST ".eval_whitelist"
 #define SP_TOKEN_SLOPPY_COMPARISON ".sloppy_comparison"
 #define SP_TOKEN_ALLOW_WRAPPERS ".wrappers_whitelist"
+#define SP_TOKEN_INI ".ini"
 
 // common tokens
 #define SP_TOKEN_ENABLE ".enable("
@@ -284,6 +308,6 @@ int parse_list(char *restrict, char *restrict, void *);
 void sp_free_disabled_function(void *data);
 void sp_free_cookie(void *data);
 void sp_free_zstr(void *data);
-
+void sp_free_ini_entry(void *data);
 
 #endif /* SP_CONFIG_H */

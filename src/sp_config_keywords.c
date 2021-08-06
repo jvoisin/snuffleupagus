@@ -562,3 +562,80 @@ int parse_upload_validation(char *line) {
 
   return ret;
 }
+
+int parse_ini_protection(char *line) {
+  bool disable = false, enable = false;
+  bool rw = false, ro = false; // rw is ignored, but declaring .policy_rw is valid for readability
+  sp_config_functions sp_config_ini_protection[] = {
+    {parse_empty, SP_TOKEN_ENABLE, &(enable)},
+    {parse_empty, SP_TOKEN_DISABLE, &(disable)},
+    {parse_empty, SP_TOKEN_SIMULATION, &(SNUFFLEUPAGUS_G(config).config_ini->simulation)},
+    {parse_empty, ".policy_readonly(", &ro},
+    {parse_empty, ".policy_ro(", &ro},
+    {parse_empty, ".policy_readwrite(", &rw},
+    {parse_empty, ".policy_rw(", &rw},
+    {0, 0, 0}};
+
+  int ret = parse_keywords(sp_config_ini_protection, line);
+  if (ret) { return ret; }
+
+  if (enable && disable) {
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu",
+               sp_line_no);
+    return -1;
+  }
+  if (enable || disable) {
+    SNUFFLEUPAGUS_G(config).config_ini->enable = (enable || !disable);
+  }
+
+  if (ro && rw) {
+    sp_log_err("config", "rule cannot be both read-write and read-only on line %zu", sp_line_no);
+    return -1;
+  }
+  SNUFFLEUPAGUS_G(config).config_ini->policy_readonly = ro;
+
+  return ret;
+}
+
+int parse_ini_entry(char *line) {
+  sp_ini_entry *entry = pecalloc(sizeof(sp_ini_entry), 1, 1);
+  bool rw = false, ro = false;
+
+  sp_config_functions sp_config_ini_protection[] = {
+    {parse_empty, SP_TOKEN_SIMULATION, &entry->simulation},
+    {parse_str, ".key(", &entry->key},
+    {parse_str, ".msg(", &entry->msg},
+    {parse_str, ".set(", &entry->set},
+    {parse_str, ".min(", &entry->min},
+    {parse_str, ".max(", &entry->max},
+    {parse_regexp, ".regexp(", &entry->regexp},
+    {parse_empty, ".readonly(", &ro},
+    {parse_empty, ".ro(", &ro},
+    {parse_empty, ".readwrite()", &rw},
+    {parse_empty, ".rw()", &rw},
+    {0, 0, 0}};
+
+  int ret = parse_keywords(sp_config_ini_protection, line);
+  if (ret) { goto err; }
+
+  if (!entry->key) {
+    sp_log_err("config", "A .key() must be provided on line %zu", sp_line_no);
+    ret = -1; goto err;
+  }
+
+  if (ro && rw) {
+    sp_log_err("config", "rule cannot be both read-write and read-only on line %zu", sp_line_no);
+    ret = -1; goto err;
+  }
+  entry->access = ro - rw;
+
+  zend_hash_add_ptr(SNUFFLEUPAGUS_G(config).config_ini->entries, entry->key, entry);
+  return ret;
+
+err:
+  if (entry) {
+    sp_free_ini_entry(entry);
+    pefree(entry, 1);
+  }
+  return ret;
+}

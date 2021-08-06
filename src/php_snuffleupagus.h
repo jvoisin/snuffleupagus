@@ -85,6 +85,7 @@ typedef void (*zif_handler)(INTERNAL_FUNCTION_PARAMETERS);
 #include "sp_session.h"
 #include "sp_sloppy.h"
 #include "sp_wrapper.h"
+#include "sp_ini.h"
 
 extern zend_module_entry snuffleupagus_module_entry;
 #define phpext_snuffleupagus_ptr &snuffleupagus_module_entry
