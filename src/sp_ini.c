@@ -3,6 +3,15 @@
 #define SP_INI_HAS_CHECKS_COND(entry) (entry->min || entry->max || entry->regexp)
 #define SP_INI_ACCESS_READONLY_COND(entry, cfg) (entry->access == SP_READONLY || (!entry->access && cfg->policy_readonly))
 
+#define sp_log_auto2(feature, is_simulation, drop, ...) \
+  sp_log_msgf(feature, ((is_simulation || !drop) ? SP_LOG_WARN : SP_LOG_ERROR), \
+            (is_simulation ? SP_TYPE_SIMULATION : (drop ? SP_TYPE_DROP : SP_TYPE_LOG)),   \
+            __VA_ARGS__)
+#define sp_log_ini_check_violation(...) if (simulation || cfg->policy_drop || (entry && entry->drop) || !cfg->policy_silent_fail) { \
+    sp_log_auto2("ini_protection", simulation, (cfg->policy_drop || (entry && entry->drop)), __VA_ARGS__); \
+  }
+
+
 static bool /* success */ sp_ini_check(zend_string *varname, zend_string *new_value, sp_ini_entry **sp_entry_p) {
   if (!varname || ZSTR_LEN(varname) == 0) {
     return false;
@@ -17,40 +26,49 @@ static bool /* success */ sp_ini_check(zend_string *varname, zend_string *new_va
 
   if (!entry) {
     if (cfg->policy_readonly) {
-      sp_log_auto("ini_protection", simulation, "INI setting is read-only");
-      if (simulation) { return true; }
-      return false;
+      if (!cfg->policy_silent_ro) {
+        sp_log_ini_check_violation("INI setting is read-only");
+      }
+      return simulation;
     }
     return true;
   }
 
+  // we have an entry.
+
   if (SP_INI_ACCESS_READONLY_COND(entry, cfg)) {
-    sp_log_auto("ini_protection", simulation, "%s", (entry->msg ? ZSTR_VAL(entry->msg) : "INI setting is read-only"));
-    if (simulation) { return true; }
-    return false;
+    if (!cfg->policy_silent_ro) {
+      sp_log_ini_check_violation("%s", (entry->msg ? ZSTR_VAL(entry->msg) : "INI setting is read-only"));
+    }
+    return simulation;
   }
 
-  if (!new_value && SP_INI_HAS_CHECKS_COND(entry)) {
-    sp_log_auto("ini_protection", simulation, "new INI value must not be NULL");
-    if (simulation) { return true; }
-    return false;
+  if (!new_value || ZSTR_LEN(new_value) == 0) {
+    if (entry->allow_null) {
+      return true; // allow NULL value and skip other tests
+    }
+    if (SP_INI_HAS_CHECKS_COND(entry)) {
+      sp_log_ini_check_violation("new INI value must not be NULL or empty");
+      return simulation;
+    }
+    return true; // no new_value, but no checks to perform
   }
+
+  // we have a new_value.
 
   if (entry->min || entry->max) {
     zend_long lvalue = zend_atol(ZSTR_VAL(new_value), ZSTR_LEN(new_value));
     if ((entry->min && zend_atol(ZSTR_VAL(entry->min), ZSTR_LEN(entry->min)) > lvalue) ||
         (entry->max && zend_atol(ZSTR_VAL(entry->max), ZSTR_LEN(entry->max)) < lvalue)) {
-      sp_log_auto("ini_protection", simulation, "%s", (entry->msg ? ZSTR_VAL(entry->msg) : "INI value out of range"));
-      if (simulation) { return true; }
-      return false;
+      sp_log_ini_check_violation("%s", (entry->msg ? ZSTR_VAL(entry->msg) : "INI value out of range"));
+      return simulation;
     }
   }
 
   if (entry->regexp) {
     if (!sp_is_regexp_matching_len(entry->regexp, ZSTR_VAL(new_value), ZSTR_LEN(new_value))) {
-      sp_log_auto("ini_protection", simulation, "%s", (entry->msg ? ZSTR_VAL(entry->msg) : "INI value does not match regex"));
-      if (simulation) { return true; }
-      return false;
+      sp_log_ini_check_violation("%s", (entry->msg ? ZSTR_VAL(entry->msg) : "INI value does not match regex"));
+      return simulation;
     }
   }
 
@@ -83,7 +101,7 @@ void sp_hook_ini() {
       sp_log_warn("ini_protection", "Cannot hook INI var `%s`. Maybe a typo or the PHP extension providing this var is not loaded yet.", ZSTR_VAL(sp_entry->key));
       continue;
     }
-    if (SP_INI_ACCESS_READONLY_COND(sp_entry, cfg)) {
+    if (SP_INI_ACCESS_READONLY_COND(sp_entry, cfg) && (cfg->policy_silent_ro || cfg->policy_silent_fail) && !sp_entry->drop && !(sp_entry->simulation || cfg->simulation)) {
       ini_entry->modifiable = ini_entry->orig_modifiable = 0;
     }
     PHP_INI_MH((*orig_onmodify)) = ini_entry->on_modify;

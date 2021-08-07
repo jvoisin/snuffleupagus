@@ -566,14 +566,19 @@ int parse_upload_validation(char *line) {
 int parse_ini_protection(char *line) {
   bool disable = false, enable = false;
   bool rw = false, ro = false; // rw is ignored, but declaring .policy_rw is valid for readability
+  sp_config_ini *cfg = SNUFFLEUPAGUS_G(config).config_ini;
   sp_config_functions sp_config_ini_protection[] = {
     {parse_empty, SP_TOKEN_ENABLE, &(enable)},
     {parse_empty, SP_TOKEN_DISABLE, &(disable)},
-    {parse_empty, SP_TOKEN_SIMULATION, &(SNUFFLEUPAGUS_G(config).config_ini->simulation)},
+    {parse_empty, SP_TOKEN_SIMULATION, &cfg->simulation},
     {parse_empty, ".policy_readonly(", &ro},
     {parse_empty, ".policy_ro(", &ro},
     {parse_empty, ".policy_readwrite(", &rw},
     {parse_empty, ".policy_rw(", &rw},
+    {parse_empty, ".policy_silent_ro(", &cfg->policy_silent_ro},
+    {parse_empty, ".policy_silent_fail(", &cfg->policy_silent_fail},
+    {parse_empty, ".policy_no_log(", &cfg->policy_silent_fail},
+    {parse_empty, ".policy_drop(", &cfg->policy_drop},
     {0, 0, 0}};
 
   int ret = parse_keywords(sp_config_ini_protection, line);
@@ -585,15 +590,19 @@ int parse_ini_protection(char *line) {
     return -1;
   }
   if (enable || disable) {
-    SNUFFLEUPAGUS_G(config).config_ini->enable = (enable || !disable);
+    cfg->enable = (enable || !disable);
   }
 
   if (ro && rw) {
     sp_log_err("config", "rule cannot be both read-write and read-only on line %zu", sp_line_no);
     return -1;
   }
-  SNUFFLEUPAGUS_G(config).config_ini->policy_readonly = ro;
+  cfg->policy_readonly = ro;
 
+  if (cfg->policy_silent_fail && cfg->policy_drop) {
+    sp_log_err("config", "policy cannot be drop and silent at the same time on line %zu", sp_line_no);
+    return -1;
+  }
   return ret;
 }
 
@@ -611,8 +620,10 @@ int parse_ini_entry(char *line) {
     {parse_regexp, ".regexp(", &entry->regexp},
     {parse_empty, ".readonly(", &ro},
     {parse_empty, ".ro(", &ro},
-    {parse_empty, ".readwrite()", &rw},
-    {parse_empty, ".rw()", &rw},
+    {parse_empty, ".readwrite(", &rw},
+    {parse_empty, ".rw(", &rw},
+    {parse_empty, ".drop(", &entry->drop},
+    {parse_empty, ".allow_null(", &entry->allow_null},
     {0, 0, 0}};
 
   int ret = parse_keywords(sp_config_ini_protection, line);

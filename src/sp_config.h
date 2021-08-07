@@ -170,17 +170,21 @@ typedef struct {
   zend_string *min;
   zend_string *max;
   sp_pcre *regexp;
-  bool simulation;
   zend_string *msg;
   zend_string *set;
+  bool allow_null;
+  bool simulation;
+  bool drop;
   PHP_INI_MH((*orig_onmodify));
 } sp_ini_entry;
 
 typedef struct {
   bool enable;
   bool simulation;
-  // sp_ini_permission access_policy;
   bool policy_readonly;
+  bool policy_silent_ro;
+  bool policy_silent_fail;
+  bool policy_drop;
   HashTable *entries;  // ht of sp_ini_entry
 } sp_config_ini;
 
