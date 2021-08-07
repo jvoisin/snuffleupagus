@@ -75,7 +75,11 @@ ZEND_DLEXPORT zend_extension zend_extension_entry = {
 
 static PHP_GINIT_FUNCTION(snuffleupagus) {
 #ifdef SP_DEBUG_STDERR
-  sp_debug_stderr = dup(STDERR_FILENO);
+  if (getenv("SP_NODEBUG")) {
+    sp_debug_stderr = -1;
+  } else {
+    sp_debug_stderr = dup(STDERR_FILENO);
+  }
 #endif
   sp_log_debug("(GINIT)");
   snuffleupagus_globals->is_config_valid = SP_CONFIG_NONE;
@@ -218,8 +222,10 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
 #undef FREE_CFG_ZSTR
 
 #ifdef SP_DEBUG_STDERR
-  close(sp_debug_stderr);
-  sp_debug_stderr = STDERR_FILENO;
+  if (sp_debug_stderr >= 0) {
+    close(sp_debug_stderr);
+    sp_debug_stderr = STDERR_FILENO;
+  }
 #endif
 }
 
