@@ -95,7 +95,6 @@ int parse_list(char *restrict line, char *restrict keyword, void *list_ptr) {
 }
 
 int parse_php_type(char *restrict line, char *restrict keyword, void *retval) {
-  CHECK_DUPLICATE_KEYWORD(retval);
   size_t consumed = 0;
   zend_string *value = get_param(&consumed, line, SP_TYPE_STR, keyword);
   if (!value) {
