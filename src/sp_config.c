@@ -163,7 +163,7 @@ int parse_cidr(char *restrict line, char *restrict keyword, void *retval) {
 
   sp_cidr *cidr = pecalloc(sizeof(sp_cidr), 1, 1);
 
-  if (0 == get_ip_and_cidr(ZSTR_VAL(value), cidr)) {
+  if (0 != get_ip_and_cidr(ZSTR_VAL(value), cidr)) {
     pefree(cidr, 1);
     *(sp_cidr **)retval = NULL;
     return -1;

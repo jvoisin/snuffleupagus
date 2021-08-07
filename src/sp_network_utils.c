@@ -91,10 +91,13 @@ int get_ip_and_cidr(char *ip, sp_cidr *cidr) {
     return -1;
   }
 
-  if (sscanf(mask + 1, "%hhu", &(cidr->mask)) != 1) {
+  int masklen = strlen(mask+1);
+  int imask = atoi(mask+1);
+  if (masklen < 1 || masklen > 3 || !isdigit(*(mask+1)) || (masklen >= 2 && !isdigit(*(mask+2)))  || (masklen == 3 && !isdigit(*(mask+3))) || imask < 0 || imask > 128) {
     sp_log_err("config", "'%s' isn't a valid network mask.", mask + 1);
     return -1;
   }
+  cidr->mask = (uint8_t)imask;
 
   ip[mask - ip] = '\0';  // NULL the '/' char
 
@@ -113,5 +116,10 @@ int get_ip_and_cidr(char *ip, sp_cidr *cidr) {
   }
 
   ip[mask - ip] = '/';
+  if (cidr->ip_version < 0) {
+    sp_log_err("cidr_match", "Weird ip (%s) family", ip);
+    return -1;
+  }
+
   return 0;
 }
