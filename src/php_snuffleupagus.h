@@ -65,6 +65,7 @@ typedef void (*zif_handler)(INTERNAL_FUNCTION_PARAMETERS);
 #define SP_CONFIG_INVALID 0
 #define SP_CONFIG_NONE -1
 
+#include "sp_php_compat.h"
 #include "sp_pcre_compat.h"
 #include "sp_list.h"
 #include "sp_tree.h"
