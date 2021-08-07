@@ -398,6 +398,9 @@ bool /* success */ _hook_function(const char* original_name, HashTable* hook_tab
     if (func->type != ZEND_INTERNAL_FUNCTION) {
       return false;
     }
+    if (func->internal_function.handler == new_function) {
+      return true;
+    }
     if (zend_hash_str_add_new_ptr((hook_table), VAR_AND_LEN(original_name),
                                   func->internal_function.handler) == NULL) {
       // LCOV_EXCL_START
