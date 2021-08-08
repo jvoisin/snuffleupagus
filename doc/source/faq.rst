@@ -83,7 +83,7 @@ The complete license text is shipped with the sources and can be found under ``L
 
 For compatibility with older PHP versions, some original PHP source code was copied or ported back to older versions.
 This source code resides in ``src/sp_php_compat.c`` and ``src/sp_php_compat.h`` and retains its original license
-`The PHP License, version 3.01 <https://www.php.net/license/3_01.txt>`, also included with the sources as ``PHP_LICENSE``.
+`The PHP License, version 3.01 <https://www.php.net/license/3_01.txt>`_, also included with the sources as ``PHP_LICENSE``.
 
 
 What is the different between SNuffleupaugs and a (WAF) like ModSecurity?
