@@ -2,8 +2,7 @@
 
 #if PHP_VERSION_ID < 80000
 
-// zend_string_concat2 taken from PHP 8.0.9 zend_string.c
-// TODO: license clarification
+// copied from PHP 8.0.9 sources
 
 ZEND_API zend_string *zend_string_concat2(
 		const char *str1, size_t str1_len,
