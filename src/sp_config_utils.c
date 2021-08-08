@@ -104,7 +104,7 @@ err:
   return NULL;
 }
 
-zend_always_inline sp_list_node *parse_functions_list(char *value) {
+sp_list_node *parse_functions_list(char *value) {
   static const char *sep = ">";
 
   if (NULL == strchr(value, sep[0])) {
