@@ -15,4 +15,4 @@ echo 1;
 --EXPECTF--
 Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in Unknown on line 0
 
-Fatal error: [snuffleupagus][0.0.0.0][config][log] A rule can't be enabled and disabled on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] The `script` (tests/upload_ko.sh) doesn't exist on line 1 in Unknown on line 0

@@ -1,5 +1,14 @@
 #include "php_snuffleupagus.h"
 
+#define SP_SET_ENABLE_DISABLE(enable, disable, varname) \
+  if (enable && disable) { \
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu", sp_line_no); \
+    return -1; \
+  } \
+  if (enable || disable) { \
+    (varname) = (enable || !disable); \
+  }
+
 static int parse_enable(char *line, bool *restrict retval,
                         bool *restrict simulation) {
   bool enable = false, disable = false;
@@ -15,13 +24,7 @@ static int parse_enable(char *line, bool *restrict retval,
     return ret;
   }
 
-  if (!(enable ^ disable)) {
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu",
-               sp_line_no);
-    return -1;
-  }
-
-  *retval = enable;
+  SP_SET_ENABLE_DISABLE(enable, disable, *retval);
 
   return ret;
 }
@@ -141,13 +144,7 @@ int parse_unserialize(char *line) {
     return ret;
   }
 
-  if (!(enable ^ disable)) {
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu",
-               sp_line_no);
-    return -1;
-  }
-
-  SNUFFLEUPAGUS_G(config).config_unserialize->enable = enable;
+  SP_SET_ENABLE_DISABLE(enable, disable, SNUFFLEUPAGUS_G(config).config_unserialize->enable);
 
   return ret;
 }
@@ -172,13 +169,7 @@ int parse_readonly_exec(char *line) {
     return ret;
   }
 
-  if (!(enable ^ disable)) {
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu",
-               sp_line_no);
-    return -1;
-  }
-
-  SNUFFLEUPAGUS_G(config).config_readonly_exec->enable = enable;
+  SP_SET_ENABLE_DISABLE(enable, disable, SNUFFLEUPAGUS_G(config).config_readonly_exec->enable);
 
   return ret;
 }
@@ -535,12 +526,7 @@ int parse_upload_validation(char *line) {
     return ret;
   }
 
-  if (!(enable ^ disable)) {
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu",
-               sp_line_no);
-    return -1;
-  }
-  SNUFFLEUPAGUS_G(config).config_upload_validation->enable = enable;
+  SP_SET_ENABLE_DISABLE(enable, disable, SNUFFLEUPAGUS_G(config).config_upload_validation->enable);
 
   zend_string const *script =
       SNUFFLEUPAGUS_G(config).config_upload_validation->script;
@@ -584,14 +570,7 @@ int parse_ini_protection(char *line) {
   int ret = parse_keywords(sp_config_ini_protection, line);
   if (ret) { return ret; }
 
-  if (enable && disable) {
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu",
-               sp_line_no);
-    return -1;
-  }
-  if (enable || disable) {
-    cfg->enable = (enable || !disable);
-  }
+  SP_SET_ENABLE_DISABLE(enable, disable, cfg->enable);
 
   if (ro && rw) {
     sp_log_err("config", "rule cannot be both read-write and read-only on line %zu", sp_line_no);
