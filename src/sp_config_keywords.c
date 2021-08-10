@@ -1,7 +1,7 @@
 #include "php_snuffleupagus.h"
 
 #define SP_SET_ENABLE_DISABLE(enable, disable, varname) \
-  if (enable && disable) { \
+  if (((varname) || enable) && disable) { \
     sp_log_err("config", "A rule can't be enabled and disabled on line %zu", sp_line_no); \
     return -1; \
   } \
