@@ -4,7 +4,7 @@ Global strict mode
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 <?php if (PHP_VERSION_ID < 80000) print "skip"; ?>
 --INI--
-sp.configuration_file={PWD}/config/borken_conf_enable_disable.ini
+sp.configuration_file={PWD}/../broken_configuration/config/broken_conf_enable_disable.ini
 --FILE--
 --EXPECTF--
 
