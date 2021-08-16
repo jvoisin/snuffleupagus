@@ -33,7 +33,6 @@ char* get_complete_function_path(zend_execute_data const* const execute_data) {
   } else {
     complete_path_function = estrdup(function_name);
   }
-  sp_log_debug("%s", complete_path_function);
 
   return complete_path_function;
 }

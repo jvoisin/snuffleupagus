@@ -67,15 +67,24 @@ zend_string *sp_get_textual_representation(sp_parsed_keyword *parsed_rule) {
   return ret;
 }
 
+static void str_dtor(zval *zv) {
+  zend_string_release_ex(Z_STR_P(zv), 1);
+}
+
 zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_keyword*))
 {
   const char *YYCURSOR = data;
   const char *YYMARKER, *t1, *t2, *t3, *t4;
   /*!stags:re2c format = 'const char *@@;\n'; */
 
+  int ret = FAILURE;
+
   const int max_keywords = 16;
   sp_parsed_keyword parsed_rule[max_keywords+1];
   int kw_i = 0;
+
+  HashTable vars;
+  zend_hash_init(&vars, 10, NULL, str_dtor, 1);
 
   int cond = yycinit;
   long lineno = 1;
@@ -92,30 +101,52 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
     end = "\x00";
     nl = "\r"?"\n";
     ws = [ \t];
+    wsnl = [ \t\r\n];
     keyword = [a-zA-Z_][a-zA-Z0-9_]*;
     string = "\"" ("\\\"" | [^"\r\n])* "\"";
 
-    <init> *       { cs_error_log("Parser error on line %d", lineno); return FAILURE; }
+    <init> *       { cs_error_log("Parser error on line %d", lineno); goto out; }
     <init> ws+     { goto yyc_init; }
     <init> [;#] .* { goto yyc_init; }
     <init> nl      { lineno++; goto yyc_init; }
     <init> "sp"    { kw_i = 0;  goto yyc_rule; }
-    <init> end     { return SUCCESS; }
+    <init> end     { ret = SUCCESS; goto out; }
+    <init> "set" wsnl+ @t1 keyword @t2 wsnl+ @t3 string @t4 ";"? {
+      char *key = (char*)t1;
+      int keylen = t2-t1;
+      zend_string *tmp = zend_hash_str_find_ptr(&vars, key, keylen);
+      if (tmp) {
+        zend_hash_str_del(&vars, key, keylen);
+      }
+      tmp = zend_string_init(t3+1, t4-t3-2, 1);
+      zend_hash_str_add_ptr(&vars, key, keylen, tmp);
+      goto yyc_init;
+    }
+
 
     <rule> ws+     {  goto yyc_rule; }
     <rule> nl / ( nl | ws )* "." {  lineno++; goto yyc_rule; }
-    <rule> "." @t1 keyword @t2 ( "(" @t3 string? @t4 ")" )?  {
+    <rule> "." @t1 keyword @t2 ( "(" @t3 ( string? | keyword ) @t4 ")" )?  {
       if (kw_i == max_keywords) {
         cs_error_log("Too many keywords in rule (more than %d) on line %d", max_keywords, lineno);
-        return FAILURE;
+        goto out;
       }
       sp_parsed_keyword kw = {.kw = (char*)t1, .kwlen = t2-t1, .arg = (char*)t3, .arglen = t4-t3, .argtype = SP_ARGTYPE_UNKNOWN, .lineno = lineno};
       if (t3 && t4) {
         if (t3 == t4) {
           kw.argtype = SP_ARGTYPE_EMPTY;
-        } else if (t4-t2 >= 2) {
+        } else if (t4-t3 >= 2 && *t3 == '"') {
           kw.arg = (char*)t3 + 1;
           kw.arglen = t4 - t3 - 2;
+          kw.argtype = SP_ARGTYPE_STR;
+        } else {
+          zend_string *tmp = zend_hash_str_find_ptr(&vars, t3, t4-t3);
+          if (!tmp) {
+            cs_error_log("unknown variable on line %d", lineno);
+            goto out;
+          }
+          kw.arg = ZSTR_VAL(tmp);
+          kw.arglen = ZSTR_LEN(tmp);
           kw.argtype = SP_ARGTYPE_STR;
         }
       } else {
@@ -128,12 +159,14 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
       end_of_rule:
       parsed_rule[kw_i++] = (sp_parsed_keyword){0, 0, 0, 0, 0, 0};
       if (process_rule && process_rule(parsed_rule) != SUCCESS) {
-        return FAILURE;
+        goto out;
       }
       goto yyc_init;
     }
     <rule> *       { goto end_of_rule; }
 
   */
-  return FAILURE;
+out:
+  zend_hash_destroy(&vars);
+  return ret;
 }
