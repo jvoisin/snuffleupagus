@@ -23,14 +23,14 @@ sp.disable_xxe.enable();
 # Only allow execution of read-only files. This is a low-hanging fruit that you should enable.
 # sp.readonly_exec.enable();
 
-# Php has a lot of wrappers, most of them aren't usually useful, you should
+# PHP has a lot of wrappers, most of them aren't usually useful, you should
 # only enable the ones you're using.
 # sp.wrappers_whitelist.list("file,php,phar");
 
 # Prevent sloppy comparisons.
 # sp.sloppy_comparison.enable();
 
-# use SameSite on session cookie
+# Use SameSite on session cookie
 # https://snuffleupagus.readthedocs.io/features.html#protection-against-cross-site-request-forgery
 sp.cookie.name("PHPSESSID").samesite("lax");
 
@@ -58,7 +58,7 @@ sp.disable_function.function("extract").param("flags").value("0").drop()
 # Moreover, there are non-public bypasses that are also using this vector ;)
 sp.disable_function.function("ini_set").param("option").value_r("open_basedir").drop()
 
-##Prevent various `include`-related vulnerabilities
+# Prevent various `include`-related vulnerabilities
 sp.disable_function.function("require_once").value_r("\.(inc|phtml|php)$").allow();
 sp.disable_function.function("include_once").value_r("\.(inc|phtml|php)$").allow();
 sp.disable_function.function("require").value_r("\.(inc|phtml|php)$").allow();
