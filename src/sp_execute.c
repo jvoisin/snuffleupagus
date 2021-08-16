@@ -14,8 +14,7 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   if (0 == access(filename, W_OK)) {
     if (config_ro_exec->dump) {
       sp_log_request(config_ro_exec->dump,
-                     config_ro_exec->textual_representation,
-                     SP_TOKEN_READONLY_EXEC);
+                     config_ro_exec->textual_representation);
     }
     if (true == config_ro_exec->simulation) {
       sp_log_simulation("readonly_exec",
@@ -75,8 +74,7 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
   if (EXPECTED(NULL != current_function)) {
     if (UNEXPECTED(false == check_is_in_eval_whitelist(current_function))) {
       if (config_eval->dump) {
-        sp_log_request(config_eval->dump, config_eval->textual_representation,
-                       SP_TOKEN_EVAL_WHITELIST);
+        sp_log_request(config_eval->dump, config_eval->textual_representation);
       }
       if (config_eval->simulation) {
         sp_log_simulation(

@@ -7,7 +7,7 @@ sources="$sources sp_disabled_functions.c sp_execute.c sp_upload_validation.c"
 sources="$sources sp_cookie_encryption.c sp_network_utils.c tweetnacl.c"
 sources="$sources sp_config_keywords.c sp_var_parser.c sp_var_value.c sp_tree.c"
 sources="$sources sp_pcre_compat.c sp_crypt.c sp_session.c sp_sloppy.c sp_wrapper.c"
-sources="$sources sp_ini.c sp_php_compat.c"
+sources="$sources sp_ini.c sp_php_compat.c sp_config_scanner.c"
 
 PHP_ARG_ENABLE(snuffleupagus, whether to enable snuffleupagus support,
 [  --enable-snuffleupagus           Enable snuffleupagus support])
@@ -40,3 +40,6 @@ if test "$PHP_SNUFFLEUPAGUS" = "yes"; then
    fi
    PHP_NEW_EXTENSION(snuffleupagus, $sources, $ext_shared,-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi
+
+PHP_PROG_RE2C()
+PHP_ADD_MAKEFILE_FRAGMENT()

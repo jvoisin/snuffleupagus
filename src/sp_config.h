@@ -5,15 +5,6 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-extern size_t sp_line_no;
-
-typedef enum {
-  SP_TYPE_STR = 0,
-  SP_TYPE_REGEXP,
-  SP_TYPE_INT,
-  SP_TYPE_EMPTY
-} sp_type;
-
 typedef enum {
   SP_PHP_TYPE_UNDEF = IS_UNDEF,
   SP_PHP_TYPE_NULL = IS_NULL,
@@ -214,99 +205,115 @@ typedef struct {
   sp_config_disabled_functions *config_disabled_functions_reg_ret;
 } sp_config;
 
+#define SP_PARSE_FN_(fname, kwvar) int fname(char *token, sp_parsed_keyword *kwvar, void *retval)
+#define SP_PARSE_FN(fname) SP_PARSE_FN_(fname, parsed_rule)
+#define SP_PARSEKW_FN(fname) SP_PARSE_FN_(fname, kw)
+
 typedef struct {
-  int (*func)(char *, char *, void *);
+  SP_PARSE_FN((*func));
   char *token;
   void *retval;
-} sp_config_functions;
+} sp_config_keyword;
 
-typedef struct {
-  int (*func)(char *);
-  char *token;
-} sp_config_tokens;
+#define SP_PARSER_SUCCESS 0
+#define SP_PARSER_ERROR -1
+#define SP_PARSER_STOP 1
 
-#define SP_TOKEN_BASE "sp"
+// #define SP_TOKEN_BASE "sp"
 
-#define SP_TOKEN_AUTO_COOKIE_SECURE ".auto_cookie_secure"
-#define SP_TOKEN_COOKIE_ENCRYPTION ".cookie"
-#define SP_TOKEN_SESSION_ENCRYPTION ".session"
-#define SP_TOKEN_DISABLE_FUNC ".disable_function"
-#define SP_TOKEN_GLOBAL ".global"
-#define SP_TOKEN_GLOBAL_STRICT ".global_strict"
-#define SP_TOKEN_HARDEN_RANDOM ".harden_random"
-#define SP_TOKEN_READONLY_EXEC ".readonly_exec"
-#define SP_TOKEN_UNSERIALIZE_HMAC ".unserialize_hmac"
-#define SP_TOKEN_UPLOAD_VALIDATION ".upload_validation"
-#define SP_TOKEN_DISABLE_XXE ".disable_xxe"
-#define SP_TOKEN_EVAL_BLACKLIST ".eval_blacklist"
-#define SP_TOKEN_EVAL_WHITELIST ".eval_whitelist"
-#define SP_TOKEN_SLOPPY_COMPARISON ".sloppy_comparison"
-#define SP_TOKEN_ALLOW_WRAPPERS ".wrappers_whitelist"
-#define SP_TOKEN_INI ".ini"
+#define SP_TOKEN_AUTO_COOKIE_SECURE "auto_cookie_secure"
+#define SP_TOKEN_COOKIE_ENCRYPTION "cookie"
+#define SP_TOKEN_SESSION_ENCRYPTION "session"
+#define SP_TOKEN_DISABLE_FUNC "disable_function"
+#define SP_TOKEN_GLOBAL "global"
+#define SP_TOKEN_GLOBAL_STRICT "global_strict"
+#define SP_TOKEN_HARDEN_RANDOM "harden_random"
+#define SP_TOKEN_READONLY_EXEC "readonly_exec"
+#define SP_TOKEN_UNSERIALIZE_HMAC "unserialize_hmac"
+#define SP_TOKEN_UPLOAD_VALIDATION "upload_validation"
+#define SP_TOKEN_DISABLE_XXE "disable_xxe"
+#define SP_TOKEN_EVAL_BLACKLIST "eval_blacklist"
+#define SP_TOKEN_EVAL_WHITELIST "eval_whitelist"
+#define SP_TOKEN_SLOPPY_COMPARISON "sloppy_comparison"
+#define SP_TOKEN_ALLOW_WRAPPERS "wrappers_whitelist"
+#define SP_TOKEN_INI_PROTECTION "ini_protection"
+#define SP_TOKEN_INI "ini"
 
 // common tokens
-#define SP_TOKEN_ENABLE ".enable("
-#define SP_TOKEN_DISABLE ".disable("
-#define SP_TOKEN_SIMULATION ".simulation("
-#define SP_TOKEN_TRUE "1"
-#define SP_TOKEN_FALSE "0"
-#define SP_TOKEN_DUMP ".dump("
-#define SP_TOKEN_ALIAS ".alias("
-#define SP_TOKEN_ALLOW ".allow("
-#define SP_TOKEN_DROP ".drop("
-
-#define SP_TOKEN_END_PARAM ')'
+#define SP_TOKEN_ENABLE "enable"
+#define SP_TOKEN_DISABLE "disable"
+#define SP_TOKEN_SIMULATION "simulation"
+#define SP_TOKEN_SIM "sim"
+// #define SP_TOKEN_TRUE "1"
+// #define SP_TOKEN_FALSE "0"
+#define SP_TOKEN_DUMP "dump"
+#define SP_TOKEN_ALIAS "alias"
+#define SP_TOKEN_ALLOW "allow"
+#define SP_TOKEN_DROP "drop"
 
 // disable_function
-#define SP_TOKEN_CIDR ".cidr("
-#define SP_TOKEN_FILENAME ".filename("
-#define SP_TOKEN_FILENAME_REGEXP ".filename_r("
-#define SP_TOKEN_FUNCTION ".function("
-#define SP_TOKEN_FUNCTION_REGEXP ".function_r("
-#define SP_TOKEN_HASH ".hash("
-#define SP_TOKEN_LOCAL_VAR ".var("
-#define SP_TOKEN_PARAM ".param("
-#define SP_TOKEN_PARAM_REGEXP ".param_r("
-#define SP_TOKEN_PARAM_TYPE ".param_type("
-#define SP_TOKEN_RET ".ret("
-#define SP_TOKEN_RET_REGEXP ".ret_r("
-#define SP_TOKEN_RET_TYPE ".ret_type("
-#define SP_TOKEN_VALUE ".value("
-#define SP_TOKEN_VALUE_REGEXP ".value_r("
-#define SP_TOKEN_KEY ".key("
-#define SP_TOKEN_KEY_REGEXP ".key_r("
-#define SP_TOKEN_VALUE_ARG_POS ".pos("
-#define SP_TOKEN_LINE_NUMBER ".line("
+#define SP_TOKEN_CIDR "cidr"
+#define SP_TOKEN_FILENAME "filename"
+#define SP_TOKEN_FILENAME_REGEXP "filename_r"
+#define SP_TOKEN_FUNCTION "function"
+#define SP_TOKEN_FUNCTION_REGEXP "function_r"
+#define SP_TOKEN_HASH "hash"
+#define SP_TOKEN_LOCAL_VAR "var"
+#define SP_TOKEN_PARAM "param"
+#define SP_TOKEN_PARAM_REGEXP "param_r"
+#define SP_TOKEN_PARAM_TYPE "param_type"
+#define SP_TOKEN_RET "ret"
+#define SP_TOKEN_RET_REGEXP "ret_r"
+#define SP_TOKEN_RET_TYPE "ret_type"
+#define SP_TOKEN_VALUE "value"
+#define SP_TOKEN_VALUE_REGEXP "value_r"
+#define SP_TOKEN_KEY "key"
+#define SP_TOKEN_KEY_REGEXP "key_r"
+#define SP_TOKEN_VALUE_ARG_POS "pos"
+#define SP_TOKEN_LINE_NUMBER "line"
 
 // cookies encryption
-#define SP_TOKEN_NAME ".name("
-#define SP_TOKEN_NAME_REGEXP ".name_r("
+#define SP_TOKEN_NAME "name"
+#define SP_TOKEN_NAME_REGEXP "name_r"
 
 // cookies samesite
-#define SP_TOKEN_SAMESITE ".samesite("
-#define SP_TOKEN_ENCRYPT ".encrypt("
+#define SP_TOKEN_SAMESITE "samesite"
+#define SP_TOKEN_ENCRYPT "encrypt"
 #define SP_TOKEN_SAMESITE_LAX "Lax"
 #define SP_TOKEN_SAMESITE_STRICT "Strict"
 
 // Global configuration options
-#define SP_TOKEN_ENCRYPTION_KEY ".secret_key("
-#define SP_TOKEN_ENV_VAR ".cookie_env_var("
-#define SP_TOKEN_LOG_MEDIA ".log_media("
+#define SP_TOKEN_ENCRYPTION_KEY "secret_key"
+#define SP_TOKEN_ENV_VAR "cookie_env_var"
+#define SP_TOKEN_LOG_MEDIA "log_media"
 
 // upload_validator
-#define SP_TOKEN_UPLOAD_SCRIPT ".script("
+#define SP_TOKEN_UPLOAD_SCRIPT "script"
 
-#define SP_TOKEN_LIST ".list("
+#define SP_TOKEN_LIST "list"
 
-int sp_parse_config(const char *);
-int parse_array(sp_disabled_function *);
+zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, sp_config_keyword *config_keywords);
 
-int parse_str(char *restrict, char *restrict, void *);
-int parse_regexp(char *restrict, char *restrict, void *);
-int parse_empty(char *restrict, char *restrict, void *);
-int parse_cidr(char *restrict, char *restrict, void *);
-int parse_php_type(char *restrict, char *restrict, void *);
-int parse_list(char *restrict, char *restrict, void *);
+zend_result sp_parse_config(const char *filename);
+
+#define SP_PARSE_CHECK_ARG_EXISTS(value) \
+if (!value) { \
+  sp_log_err("config", "Missing argument to keyword '%s' - it should be '%s(\"...\")' on line %zu", token, token, kw->lineno); \
+  return SP_PARSER_ERROR; \
+}
+
+#define SP_PARSE_ARG(value) \
+  zend_string *value = sp_get_arg_string(kw); \
+  SP_PARSE_CHECK_ARG_EXISTS(value);
+
+SP_PARSEKW_FN(parse_str);
+SP_PARSEKW_FN(parse_regexp);
+SP_PARSEKW_FN(parse_empty);
+SP_PARSEKW_FN(parse_int);
+SP_PARSEKW_FN(parse_ulong);
+SP_PARSEKW_FN(parse_php_type);
+SP_PARSEKW_FN(parse_cidr);
+SP_PARSEKW_FN(parse_list);
 
 // cleanup
 void sp_free_disabled_function(void *data);

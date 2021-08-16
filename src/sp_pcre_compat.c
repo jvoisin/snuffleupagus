@@ -24,8 +24,7 @@ sp_pcre* sp_pcre_compile(const char* const pattern) {
 #endif
 
   if (NULL == ret) {
-    sp_log_err("config", "Failed to compile '%s': %s on line %zu.", pattern,
-               pcre_error, sp_line_no);
+    sp_log_err("config", "Failed to compile '%s': %s.", pattern, pcre_error);
   }
   return ret;
 }

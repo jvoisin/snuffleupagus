@@ -9,9 +9,8 @@ sp.configuration_file={PWD}/config/broken_conf_unserialize.ini
 <?php
 echo 1;
 ?>
---EXPECTF--
-
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Trailing chars '234);' at the end of '.enable(1234);' on line 1 in Unknown on line 0
+--EXPECT--
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Missing paranthesis for keyword 'enable' - it should be 'enable()' on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in Unknown on line 0
 Could not startup.

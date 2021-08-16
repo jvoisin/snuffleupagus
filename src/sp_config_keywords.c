@@ -2,311 +2,236 @@
 
 #define SP_SET_ENABLE_DISABLE(enable, disable, varname) \
   if (((varname) || enable) && disable) { \
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu", sp_line_no); \
-    return -1; \
+    sp_log_err("config", "A rule can't be enabled and disabled on line %zu", parsed_rule->lineno); \
+    return SP_PARSER_ERROR; \
   } \
   if (enable || disable) { \
     (varname) = (enable || !disable); \
   }
 
-static int parse_enable(char *line, bool *restrict retval,
-                        bool *restrict simulation) {
+#define SP_PROCESS_CONFIG_KEYWORDS(CMD) if (sp_process_rule(&(parsed_rule[1]), config_keywords) != SUCCESS) { CMD; }
+#define SP_PROCESS_CONFIG_KEYWORDS_ERR() SP_PROCESS_CONFIG_KEYWORDS(return SP_PARSER_ERROR)
+
+SP_PARSE_FN(parse_enable) {
   bool enable = false, disable = false;
-  sp_config_functions sp_config_funcs[] = {
+  sp_config_keyword config_keywords[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
-      {parse_empty, SP_TOKEN_SIMULATION, simulation},
       {0, 0, 0}};
 
-  int ret = parse_keywords(sp_config_funcs, line);
+  SP_PROCESS_CONFIG_KEYWORDS_ERR();
 
-  if (0 != ret) {
-    return ret;
-  }
+  SP_SET_ENABLE_DISABLE(enable, disable, *(bool*)retval);
 
-  SP_SET_ENABLE_DISABLE(enable, disable, *retval);
-
-  return ret;
+  return SP_PARSER_STOP;
 }
 
-int parse_session(char *line) {
-  sp_config_session *session = pecalloc(sizeof(sp_config_session), 1, 0);
+SP_PARSE_FN(parse_session) {
+  sp_config_session *cfg = retval;
 
-  sp_config_functions sp_config_funcs_session_encryption[] = {
-      {parse_empty, SP_TOKEN_ENCRYPT, &(session->encrypt)},
-      {parse_empty, SP_TOKEN_SIMULATION, &(session->simulation)},
+  sp_config_keyword config_keywords[] = {
+      {parse_empty, SP_TOKEN_ENCRYPT, &(cfg->encrypt)},
+      {parse_empty, SP_TOKEN_SIMULATION, &(cfg->simulation)},
+      {parse_empty, SP_TOKEN_SIM, &(cfg->simulation)},
       {0, 0, 0}};
-  int ret = parse_keywords(sp_config_funcs_session_encryption, line);
-  if (0 != ret) {
-    return ret;
-  }
+
+  SP_PROCESS_CONFIG_KEYWORDS_ERR();
 
 #if (!HAVE_PHP_SESSION || defined(COMPILE_DL_SESSION))
-  sp_log_err(
-      "config",
+  sp_log_err("config",
       "You're trying to use the session cookie encryption feature "
       "on line %zu without having session support statically built into PHP. "
       "This isn't supported, see "
-      "https://github.com/jvoisin/snuffleupagus/issues/278 for details.",
-      sp_line_no);
-  pefree(session, 0);
-  return -1;
+      "https://github.com/jvoisin/snuffleupagus/issues/278 for details.", parsed_rule->lineno);
+  return SP_PARSER_ERROR;
 #endif
 
-  if (session->encrypt) {
-    if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)) {
-      sp_log_err(
-          "config",
-          "You're trying to use the session cookie encryption feature "
-          "on line %zu without having set the `.cookie_env_var` option in"
-          "`sp.global`: please set it first",
-          sp_line_no);
-      pefree(session, 0);
-      return -1;
-    } else if (0 ==
-               (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
-      sp_log_err("config",
-                 "You're trying to use the session cookie encryption feature "
-                 "on line %zu without having set the `.secret_key` option in"
-                 "`sp.global`: please set it first",
-                 sp_line_no);
-      pefree(session, 0);
-      return -1;
+  if (cfg->encrypt) {
+    if (!SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var) {
+      sp_log_err("config", "You're trying to use the session cookie encryption feature "
+          "on line %zu without having set the `.cookie_env_var` option in "
+          "`sp.global`: please set it first", parsed_rule->lineno);
+      return SP_PARSER_ERROR;
+    } else if (!SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
+      sp_log_err("config", "You're trying to use the session cookie encryption feature "
+                 "on line %zu without having set the `.secret_key` option in "
+                 "`sp.global`: please set it first", parsed_rule->lineno);
+      return SP_PARSER_ERROR;
     }
   }
 
-  SNUFFLEUPAGUS_G(config).config_session->encrypt = session->encrypt;
-  SNUFFLEUPAGUS_G(config).config_session->simulation = session->simulation;
-  pefree(session, 0);
-  return ret;
+  return SP_PARSER_STOP;
 }
 
-int parse_random(char *line) {
-  return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_random->enable),
-                      NULL);
-}
-
-int parse_log_media(char *line) {
-  size_t consumed = 0;
-  zend_string *value =
-      get_param(&consumed, line, SP_TYPE_STR, SP_TOKEN_LOG_MEDIA);
-
-  if (value) {
-    if (!strcmp(ZSTR_VAL(value), "php")) {
-      SNUFFLEUPAGUS_G(config).log_media = SP_ZEND;
-      return 0;
-    } else if (!strcmp(ZSTR_VAL(value), "syslog")) {
-      SNUFFLEUPAGUS_G(config).log_media = SP_SYSLOG;
-      return 0;
-    }
+SP_PARSEKW_FN(parse_log_media) {
+  SP_PARSE_ARG(value);
+  
+  if (!strcmp(ZSTR_VAL(value), "php")) {
+    *(char*)retval = SP_ZEND;
+    zend_string_release_ex(value, 1);
+    return SP_PARSER_SUCCESS;
+  } else if (!strcmp(ZSTR_VAL(value), "syslog")) {
+    *(char*)retval = SP_SYSLOG;
+    zend_string_release_ex(value, 1);
+    return SP_PARSER_SUCCESS;
   }
-  sp_log_err("config", "%s) only supports 'syslog' or 'php', on line %zu",
-             SP_TOKEN_LOG_MEDIA, sp_line_no);
-  return -1;
+
+  sp_log_err("config", "." SP_TOKEN_LOG_MEDIA "() only supports 'syslog' or 'php' on line %zu", kw->lineno);
+
+  return SP_PARSER_ERROR;
 }
 
-int parse_sloppy_comparison(char *line) {
-  return parse_enable(line, &(SNUFFLEUPAGUS_G(config).config_sloppy->enable),
-                      NULL);
-}
-
-int parse_disable_xxe(char *line) {
-  return parse_enable(
-      line, &(SNUFFLEUPAGUS_G(config).config_disable_xxe->enable), NULL);
-}
-
-int parse_auto_cookie_secure(char *line) {
-  return parse_enable(
-      line, &(SNUFFLEUPAGUS_G(config).config_auto_cookie_secure->enable), NULL);
-}
-
-int parse_global_strict(char *line) {
-  return parse_enable(
-      line, &(SNUFFLEUPAGUS_G(config).config_global_strict->enable), NULL);
-}
-
-int parse_unserialize(char *line) {
+SP_PARSE_FN(parse_unserialize) {
   bool enable = false, disable = false;
-  sp_config_unserialize *unserialize =
-      SNUFFLEUPAGUS_G(config).config_unserialize;
+  sp_config_unserialize *cfg = (sp_config_unserialize*)retval;
 
-  sp_config_functions sp_config_funcs[] = {
+  sp_config_keyword config_keywords[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
-      {parse_empty, SP_TOKEN_SIMULATION, &(unserialize->simulation)},
-      {parse_str, SP_TOKEN_DUMP, &(unserialize->dump)},
+      {parse_empty, SP_TOKEN_SIMULATION, &(cfg->simulation)},
+      {parse_empty, SP_TOKEN_SIM, &(cfg->simulation)},
+      {parse_str, SP_TOKEN_DUMP, &(cfg->dump)},
       {0, 0, 0}};
 
-  unserialize->textual_representation = zend_string_init(line, strlen(line), 1);
+  SP_PROCESS_CONFIG_KEYWORDS_ERR();
 
-  int ret = parse_keywords(sp_config_funcs, line);
-  if (0 != ret) {
-    return ret;
-  }
+  SP_SET_ENABLE_DISABLE(enable, disable, cfg->enable);
 
-  SP_SET_ENABLE_DISABLE(enable, disable, SNUFFLEUPAGUS_G(config).config_unserialize->enable);
+  cfg->textual_representation = sp_get_textual_representation(parsed_rule);
 
-  return ret;
+  return SP_PARSER_STOP;
 }
 
-int parse_readonly_exec(char *line) {
+SP_PARSE_FN(parse_readonly_exec) {
   bool enable = false, disable = false;
-  sp_config_readonly_exec *readonly_exec =
-      SNUFFLEUPAGUS_G(config).config_readonly_exec;
+  sp_config_readonly_exec *cfg = (sp_config_readonly_exec*)retval;
 
-  sp_config_functions sp_config_funcs[] = {
+  sp_config_keyword config_keywords[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
-      {parse_empty, SP_TOKEN_SIMULATION, &(readonly_exec->simulation)},
-      {parse_str, SP_TOKEN_DUMP, &(readonly_exec->dump)},
+      {parse_empty, SP_TOKEN_SIMULATION, &(cfg->simulation)},
+      {parse_empty, SP_TOKEN_SIM, &(cfg->simulation)},
+      {parse_str, SP_TOKEN_DUMP, &(cfg->dump)},
       {0, 0, 0}};
 
-  readonly_exec->textual_representation =
-      zend_string_init(line, strlen(line), 1);
-  int ret = parse_keywords(sp_config_funcs, line);
+  SP_PROCESS_CONFIG_KEYWORDS_ERR();
 
-  if (0 != ret) {
-    return ret;
-  }
+  cfg->textual_representation = sp_get_textual_representation(parsed_rule);
 
-  SP_SET_ENABLE_DISABLE(enable, disable, SNUFFLEUPAGUS_G(config).config_readonly_exec->enable);
+  SP_SET_ENABLE_DISABLE(enable, disable, cfg->enable);
 
-  return ret;
+  return SP_PARSER_STOP;
 }
 
-int parse_global(char *line) {
-  sp_config_functions sp_config_funcs_global[] = {
-      {parse_str, SP_TOKEN_ENCRYPTION_KEY,
-       &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)},
-      {parse_str, SP_TOKEN_ENV_VAR,
-       &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)},
-      {0, 0, 0}};
-  return parse_keywords(sp_config_funcs_global, line);
-}
-
-static int parse_eval_filter_conf(char *line, sp_list_node **list) {
-  sp_config_eval *eval = SNUFFLEUPAGUS_G(config).config_eval;
-
-  sp_config_functions sp_config_funcs[] = {
-      {parse_list, SP_TOKEN_LIST, list},
-      {parse_empty, SP_TOKEN_SIMULATION,
-       &(SNUFFLEUPAGUS_G(config).config_eval->simulation)},
-      {parse_str, SP_TOKEN_DUMP, &(SNUFFLEUPAGUS_G(config).config_eval->dump)},
+SP_PARSE_FN(parse_global) {
+  sp_config_keyword config_keywords[] = {
+      {parse_str, SP_TOKEN_ENCRYPTION_KEY, &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)},
+      {parse_str, SP_TOKEN_ENV_VAR, &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)},
+      {parse_log_media, SP_TOKEN_LOG_MEDIA, &(SNUFFLEUPAGUS_G(config).log_media)},
       {0, 0, 0}};
 
-  eval->textual_representation = zend_string_init(line, strlen(line), 1);
-
-  int ret = parse_keywords(sp_config_funcs, line);
-  if (0 != ret) {
-    return ret;
-  }
-
-  return SUCCESS;
+  SP_PROCESS_CONFIG_KEYWORDS_ERR();
+  return SP_PARSER_STOP;
 }
 
-int parse_wrapper_whitelist(char *line) {
-  SNUFFLEUPAGUS_G(config).config_wrapper->enabled = true;
-  sp_config_functions sp_config_funcs[] = {
-      {parse_list, SP_TOKEN_LIST,
-       &SNUFFLEUPAGUS_G(config).config_wrapper->whitelist},
+SP_PARSE_FN(parse_eval_filter_conf) {
+  sp_config_eval *cfg = SNUFFLEUPAGUS_G(config).config_eval;
+
+  sp_config_keyword config_keywords[] = {
+      {parse_list, SP_TOKEN_LIST, retval},
+      {parse_empty, SP_TOKEN_SIMULATION, &(cfg->simulation)},
+      {parse_empty, SP_TOKEN_SIM, &(cfg->simulation)},
+      {parse_str, SP_TOKEN_DUMP, &(cfg->dump)},
       {0, 0, 0}};
-  int ret = parse_keywords(sp_config_funcs, line);
-  if (0 != ret) {
-    return ret;
-  }
-  return SUCCESS;
+
+  SP_PROCESS_CONFIG_KEYWORDS_ERR();
+
+  cfg->textual_representation = sp_get_textual_representation(parsed_rule);
+
+  return SP_PARSER_STOP;
 }
 
-int parse_eval_blacklist(char *line) {
-  return parse_eval_filter_conf(
-      line, &SNUFFLEUPAGUS_G(config).config_eval->blacklist);
+SP_PARSE_FN(parse_wrapper_whitelist) {
+  sp_config_wrapper *cfg = (sp_config_wrapper*)retval;
+  
+  sp_config_keyword config_keywords[] = {
+      {parse_list, SP_TOKEN_LIST, &cfg->whitelist},
+      {0, 0, 0}};
+
+  SP_PROCESS_CONFIG_KEYWORDS_ERR();
+
+  cfg->enabled = true;
+
+  return SP_PARSER_STOP;
 }
 
-int parse_eval_whitelist(char *line) {
-  return parse_eval_filter_conf(
-      line, &SNUFFLEUPAGUS_G(config).config_eval->whitelist);
-}
-
-int parse_cookie(char *line) {
+SP_PARSE_FN(parse_cookie) {
   int ret = 0;
   zend_string *samesite = NULL;
   sp_cookie *cookie = pecalloc(sizeof(sp_cookie), 1, 1);
 
-  sp_config_functions sp_config_funcs_cookie_encryption[] = {
+  sp_config_keyword config_keywords[] = {
       {parse_str, SP_TOKEN_NAME, &(cookie->name)},
       {parse_regexp, SP_TOKEN_NAME_REGEXP, &(cookie->name_r)},
       {parse_str, SP_TOKEN_SAMESITE, &samesite},
       {parse_empty, SP_TOKEN_ENCRYPT, &cookie->encrypt},
       {parse_empty, SP_TOKEN_SIMULATION, &cookie->simulation},
+      {parse_empty, SP_TOKEN_SIM, &cookie->simulation},
       {0, 0, 0}};
 
-  ret = parse_keywords(sp_config_funcs_cookie_encryption, line);
-  if (0 != ret) {
-    return ret;
-  }
+  SP_PROCESS_CONFIG_KEYWORDS(goto err);
 
   if (cookie->encrypt) {
-    if (0 == (SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)) {
-      sp_log_err(
-          "config",
-          "You're trying to use the cookie encryption feature"
-          "on line %zu without having set the `.cookie_env_var` option in"
-          "`sp.global`: please set it first",
-          sp_line_no);
-      return -1;
-    } else if (0 ==
-               (SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)) {
-      sp_log_err(
-          "config",
-          "You're trying to use the cookie encryption feature"
-          "on line %zu without having set the `.encryption_key` option in"
-          "`sp.global`: please set it first",
-          sp_line_no);
-      return -1;
+    if (!SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var) {
+      sp_log_err("config", "You're trying to use the cookie encryption feature on line %zu "
+                            "without having set the `." SP_TOKEN_ENV_VAR "` option in`sp.global`: please set it first", parsed_rule->lineno);
+      goto err;
+    } else if (!SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
+      sp_log_err("config", "You're trying to use the cookie encryption feature "
+          "on line %zu without having set the `." SP_TOKEN_ENCRYPTION_KEY "` option in "
+          "`sp." SP_TOKEN_GLOBAL "`: please set it first", parsed_rule->lineno);
+      goto err;
     }
   } else if (!samesite) {
-    sp_log_err("config",
-               "You must specify a at least one action to a cookie on line "
-               "%zu",
-               sp_line_no);
-    return -1;
+    sp_log_err("config", "You must specify a at least one action to a cookie on line %zu", parsed_rule->lineno);
+    goto err;
   }
   if ((!cookie->name || 0 == ZSTR_LEN(cookie->name)) && !cookie->name_r) {
-    sp_log_err("config",
-               "You must specify a cookie name/regexp on line "
-               "%zu",
-               sp_line_no);
-    return -1;
+    sp_log_err("config", "You must specify a cookie name/regexp on line %zu", parsed_rule->lineno);
+    goto err;
   }
   if (cookie->name && cookie->name_r) {
-    sp_log_err("config",
-               "name and name_r are mutually exclusive on line "
-               "%zu",
-               sp_line_no);
-    return -1;
+    sp_log_err("config", "name and name_r are mutually exclusive on line %zu", parsed_rule->lineno);
+    goto err;
   }
   if (samesite) {
     if (zend_string_equals_literal_ci(samesite, SP_TOKEN_SAMESITE_LAX)) {
       cookie->samesite = lax;
-    } else if (zend_string_equals_literal_ci(samesite,
-                                             SP_TOKEN_SAMESITE_STRICT)) {
+    } else if (zend_string_equals_literal_ci(samesite, SP_TOKEN_SAMESITE_STRICT)) {
       cookie->samesite = strict;
     } else {
-      sp_log_err(
-          "config",
-          "%s is an invalid value to samesite (expected %s or %s) on line "
-          "%zu",
-          ZSTR_VAL(samesite), SP_TOKEN_SAMESITE_LAX, SP_TOKEN_SAMESITE_STRICT,
-          sp_line_no);
-      return -1;
+      sp_log_err("config", "'%s' is an invalid value to samesite (expected " SP_TOKEN_SAMESITE_LAX " or " SP_TOKEN_SAMESITE_STRICT ") on line %zu",
+        ZSTR_VAL(samesite), parsed_rule->lineno);
+      goto err;
     }
   }
-  SNUFFLEUPAGUS_G(config).config_cookie->cookies =
-      sp_list_insert(SNUFFLEUPAGUS_G(config).config_cookie->cookies, cookie);
-  return SUCCESS;
+
+  SNUFFLEUPAGUS_G(config).config_cookie->cookies = sp_list_insert(SNUFFLEUPAGUS_G(config).config_cookie->cookies, cookie);
+
+  return SP_PARSER_STOP;
+
+err:
+  if (samesite) {
+    zend_string_release(samesite);
+  }
+  if (cookie) {
+    sp_free_cookie(cookie);
+    pefree(cookie, 1);
+  }
+  return SP_PARSER_ERROR;
 }
 
-int add_df_to_hashtable(HashTable *ht, sp_disabled_function *df) {
+static int add_df_to_hashtable(HashTable *ht, sp_disabled_function *df) {
   zval *list = zend_hash_find(ht, df->function);
 
   if (NULL == list) {
@@ -317,19 +242,19 @@ int add_df_to_hashtable(HashTable *ht, sp_disabled_function *df) {
   return SUCCESS;
 }
 
-int parse_disabled_functions(char *line) {
-  int ret = 0;
-  bool enable = true, disable = false, allow = false, drop = false;
-  zend_string *pos = NULL, *var = NULL, *param = NULL;
-  zend_string *line_number = NULL;
+SP_PARSE_FN(parse_disabled_functions) {
+  int ret = SP_PARSER_ERROR;
+  bool enable = false, disable = false, allow = false, drop = false;
+  zend_string *var = NULL, *param = NULL;
   sp_disabled_function *df = pecalloc(sizeof(*df), 1, 1);
   df->pos = -1;
 
-  sp_config_functions sp_config_funcs_disabled_functions[] = {
+  sp_config_keyword config_keywords[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
       {parse_str, SP_TOKEN_ALIAS, &(df->alias)},
       {parse_empty, SP_TOKEN_SIMULATION, &(df->simulation)},
+      {parse_empty, SP_TOKEN_SIM, &(df->simulation)},
       {parse_str, SP_TOKEN_FILENAME, &(df->filename)},
       {parse_regexp, SP_TOKEN_FILENAME_REGEXP, &(df->r_filename)},
       {parse_str, SP_TOKEN_FUNCTION, &(df->function)},
@@ -350,23 +275,21 @@ int parse_disabled_functions(char *line) {
       {parse_regexp, SP_TOKEN_RET_REGEXP, &(df->r_ret)},
       {parse_php_type, SP_TOKEN_RET_TYPE, &(df->ret_type)},
       {parse_str, SP_TOKEN_LOCAL_VAR, &(var)},
-      {parse_str, SP_TOKEN_VALUE_ARG_POS, &(pos)},
-      {parse_str, SP_TOKEN_LINE_NUMBER, &(line_number)},
+      {parse_int, SP_TOKEN_VALUE_ARG_POS, &(df->pos)},
+      {parse_ulong, SP_TOKEN_LINE_NUMBER, &(df->line)},
       {0, 0, 0}};
 
-  ret = parse_keywords(sp_config_funcs_disabled_functions, line);
+  SP_PROCESS_CONFIG_KEYWORDS(goto out);
 
-  if (0 != ret) {
-    goto out;
+  SP_SET_ENABLE_DISABLE(enable, disable, enable);
+  if (disable) {
+    ret = SP_PARSER_STOP; goto out;
   }
 
 #define MUTUALLY_EXCLUSIVE(X, Y, STR1, STR2)                             \
   if (X && Y) {                                                          \
-    sp_log_err("config",                                                 \
-               "Invalid configuration line: 'sp.disabled_functions%s': " \
-               "'.%s' and '.%s' are mutually exclusive on line %zu",     \
-               line, STR1, STR2, sp_line_no);                            \
-    ret = -1; goto out;                                                  \
+    sp_log_err("config", "Invalid configuration line for 'sp.disabled_functions': '.%s' and '.%s' are mutually exclusive on line %zu", STR1, STR2, parsed_rule->lineno); \
+    goto out;                                                  \
   }
 
   MUTUALLY_EXCLUSIVE(df->value, df->r_value, "value", "value_r");
@@ -374,8 +297,8 @@ int parse_disabled_functions(char *line) {
   MUTUALLY_EXCLUSIVE(df->filename, df->r_filename, "filename", "filename_r");
   MUTUALLY_EXCLUSIVE(df->ret, df->r_ret, "ret", "ret_r");
   MUTUALLY_EXCLUSIVE(df->key, df->r_key, "key", "key_r");
-  MUTUALLY_EXCLUSIVE(pos, param, "pos", "param");
-  MUTUALLY_EXCLUSIVE(pos, df->r_param, "pos", "param_r");
+  MUTUALLY_EXCLUSIVE((df->pos >= 0), param, "pos", "param");
+  MUTUALLY_EXCLUSIVE((df->pos >= 0), df->r_param, "pos", "param_r");
   MUTUALLY_EXCLUSIVE(param, df->r_param, "param", "param_r");
   MUTUALLY_EXCLUSIVE((df->r_key || df->key), (df->r_value || df->value), "key", "value");
   MUTUALLY_EXCLUSIVE((df->r_ret || df->ret || df->ret_type), (df->r_param || param), "ret", "param");
@@ -385,52 +308,21 @@ int parse_disabled_functions(char *line) {
 #undef MUTUALLY_EXCLUSIVE
 
   if (!(df->r_function || df->function)) {
-    sp_log_err("config",
-               "Invalid configuration line: 'sp.disabled_functions%s':"
-               " must take a function name on line %zu",
-               line, sp_line_no);
-    ret = -1; goto out;
+    sp_log_err("config", "Invalid configuration line: 'sp.disabled_functions': must take a function name on line %zu", parsed_rule->lineno);
+    goto out;
   }
   if (df->filename && (*ZSTR_VAL(df->filename) != '/') &&
              (0 != strncmp(ZSTR_VAL(df->filename), "phar://", strlen("phar://")))) {
-    sp_log_err(
-        "config",
-        "Invalid configuration line: 'sp.disabled_functions%s':"
-        "'.filename' must be an absolute path or a phar archive on line %zu",
-        line, sp_line_no);
-    ret = -1; goto out;
+    sp_log_err("config", "Invalid configuration line: 'sp.disabled_functions': '.filename' must be an absolute path or a phar archive on line %zu", parsed_rule->lineno);
+    goto out;
   }
   if (!(allow ^ drop)) {
-    sp_log_err("config",
-               "Invalid configuration line: 'sp.disabled_functions%s': The "
-               "rule must either be a `drop` or `allow` one on line %zu",
-               line, sp_line_no);
-    ret = -1; goto out;
+    sp_log_err("config", "Invalid configuration line: 'sp.disabled_functions': The rule must either be a `drop` or `allow` one on line %zu", parsed_rule->lineno);
+    goto out;
   }
 
-  if (pos) {
-    errno = 0;
-    char *endptr;
-    df->pos = (int)strtol(ZSTR_VAL(pos), &endptr, 10);
-    if (errno != 0 || endptr == ZSTR_VAL(pos)) {
-      sp_log_err("config", "Failed to parse arg '%s' of `pos` on line %zu",
-                 ZSTR_VAL(pos), sp_line_no);
-      ret = -1; goto out;
-    }
-  }
-
-  if (line_number) {
-    errno = 0;
-    char *endptr;
-    df->line = (unsigned int)strtoul(ZSTR_VAL(line_number), &endptr, 10);
-    if (errno != 0 || endptr == ZSTR_VAL(line_number)) {
-      sp_log_err("config", "Failed to parse arg '%s' of `line` on line %zu",
-                 ZSTR_VAL(line_number), sp_line_no);
-      ret = -1; goto out;
-    }
-  }
   df->allow = allow;
-  df->textual_representation = zend_string_init(line, strlen(line), 1);
+  df->textual_representation = sp_get_textual_representation(parsed_rule);
 
   if (df->function) {
     df->functions_list = parse_functions_list(ZSTR_VAL(df->function));
@@ -450,31 +342,21 @@ int parse_disabled_functions(char *line) {
       df->param = sp_parse_var(ZSTR_VAL(param));
     }
     if (!df->param) {
-      sp_log_err("config", "Invalid value '%s' for `param` on line %zu",
-                 ZSTR_VAL(param), sp_line_no);
-      ret = -1; goto out;
+      sp_log_err("config", "Invalid value '%s' for `param` on line %zu", ZSTR_VAL(param), parsed_rule->lineno);
+      goto out;
     }
   }
-
   if (var) {
     if (ZSTR_LEN(var)) {
       df->var = sp_parse_var(ZSTR_VAL(var));
       if (!df->var) {
-        sp_log_err("config", "Invalid value '%s' for `var` on line %zu",
-                   ZSTR_VAL(var), sp_line_no);
-        ret = -1; goto out;
+        sp_log_err("config", "Invalid value '%s' for `var` on line %zu", ZSTR_VAL(var), parsed_rule->lineno);
+        goto out;
       }
     } else {
-      sp_log_err("config", "Empty value in `var` on line %zu", sp_line_no);
-      ret = -1; goto out;
+      sp_log_err("config", "Empty value in `var` on line %zu", parsed_rule->lineno);
+      goto out;
     }
-  }
-
-  if (true == disable || 0 != ret) {
-    out:
-    sp_free_disabled_function(df);
-    pefree(df, 1);
-    return ret;
   }
 
   if (df->function && zend_string_equals_literal(df->function, "print")) {
@@ -484,148 +366,136 @@ int parse_disabled_functions(char *line) {
 
   if (df->function && !df->functions_list) {
     if (df->ret || df->r_ret || df->ret_type) {
-      add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
-                          df);
+      add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret, df);
     } else {
-      add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions,
-                          df);
+      add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions, df);
     }
   } else {
     if (df->ret || df->r_ret || df->ret_type) {
-      SNUFFLEUPAGUS_G(config)
-          .config_disabled_functions_reg_ret->disabled_functions =
-          sp_list_insert(
-              SNUFFLEUPAGUS_G(config)
-                  .config_disabled_functions_reg_ret->disabled_functions,
-              df);
+      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg_ret->disabled_functions = sp_list_insert(SNUFFLEUPAGUS_G(config).config_disabled_functions_reg_ret->disabled_functions, df);
     } else {
-      SNUFFLEUPAGUS_G(config)
-          .config_disabled_functions_reg->disabled_functions =
-          sp_list_insert(SNUFFLEUPAGUS_G(config)
-                             .config_disabled_functions_reg->disabled_functions,
-                         df);
+      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions = sp_list_insert(SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions, df);
     }
   }
+  return SP_PARSER_STOP;
+
+out:
+  if (df) {
+    sp_free_disabled_function(df);
+    pefree(df, 1);
+  }
+  if (param) { zend_string_release(param); }
+  if (var) { zend_string_release(var); }
+
   return ret;
 }
 
-int parse_upload_validation(char *line) {
+SP_PARSE_FN(parse_upload_validation) {
   bool disable = false, enable = false;
-  sp_config_functions sp_config_funcs_upload_validation[] = {
-      {parse_str, SP_TOKEN_UPLOAD_SCRIPT,
-       &(SNUFFLEUPAGUS_G(config).config_upload_validation->script)},
-      {parse_empty, SP_TOKEN_SIMULATION,
-       &(SNUFFLEUPAGUS_G(config).config_upload_validation->simulation)},
+  sp_config_upload_validation *cfg = (sp_config_upload_validation*)retval;
+
+  sp_config_keyword config_keywords[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
+      {parse_str, SP_TOKEN_UPLOAD_SCRIPT, &(cfg->script)},
+      {parse_empty, SP_TOKEN_SIMULATION, &(cfg->simulation)},
+      {parse_empty, SP_TOKEN_SIM, &(cfg->simulation)},
       {0, 0, 0}};
 
-  int ret = parse_keywords(sp_config_funcs_upload_validation, line);
+  SP_PROCESS_CONFIG_KEYWORDS_ERR();
+  SP_SET_ENABLE_DISABLE(enable, disable, cfg->enable);
 
-  if (0 != ret) {
-    return ret;
+  if (!cfg->script) {
+    sp_log_err("config", "The `script` directive is mandatory in '.%s' on line %zu", token, parsed_rule->lineno);
+    return SP_PARSER_ERROR;
+  } else if (-1 == access(ZSTR_VAL(cfg->script), F_OK)) {
+    sp_log_err("config", "The `script` (%s) doesn't exist on line %zu", ZSTR_VAL(cfg->script), parsed_rule->lineno);
+    return SP_PARSER_ERROR;
+  } else if (-1 == access(ZSTR_VAL(cfg->script), X_OK)) {
+    sp_log_err("config", "The `script` (%s) isn't executable on line %zu", ZSTR_VAL(cfg->script), parsed_rule->lineno);
+    return SP_PARSER_ERROR;
   }
 
-  SP_SET_ENABLE_DISABLE(enable, disable, SNUFFLEUPAGUS_G(config).config_upload_validation->enable);
-
-  zend_string const *script =
-      SNUFFLEUPAGUS_G(config).config_upload_validation->script;
-
-  if (!script) {
-    sp_log_err("config",
-               "The `script` directive is mandatory in '%s' on line %zu", line,
-               sp_line_no);
-    return -1;
-  } else if (-1 == access(ZSTR_VAL(script), F_OK)) {
-    sp_log_err("config", "The `script` (%s) doesn't exist on line %zu",
-               ZSTR_VAL(script), sp_line_no);
-    return -1;
-  } else if (-1 == access(ZSTR_VAL(script), X_OK)) {
-    sp_log_err("config", "The `script` (%s) isn't executable on line %zu",
-               ZSTR_VAL(script), sp_line_no);
-    return -1;
-  }
-
-  return ret;
+  return SP_PARSER_STOP;
 }
 
-int parse_ini_protection(char *line) {
+SP_PARSE_FN(parse_ini_protection) {
   bool disable = false, enable = false;
   bool rw = false, ro = false; // rw is ignored, but declaring .policy_rw is valid for readability
-  sp_config_ini *cfg = SNUFFLEUPAGUS_G(config).config_ini;
-  sp_config_functions sp_config_ini_protection[] = {
-    {parse_empty, SP_TOKEN_ENABLE, &(enable)},
-    {parse_empty, SP_TOKEN_DISABLE, &(disable)},
-    {parse_empty, SP_TOKEN_SIMULATION, &cfg->simulation},
-    {parse_empty, ".policy_readonly(", &ro},
-    {parse_empty, ".policy_ro(", &ro},
-    {parse_empty, ".policy_readwrite(", &rw},
-    {parse_empty, ".policy_rw(", &rw},
-    {parse_empty, ".policy_silent_ro(", &cfg->policy_silent_ro},
-    {parse_empty, ".policy_silent_fail(", &cfg->policy_silent_fail},
-    {parse_empty, ".policy_no_log(", &cfg->policy_silent_fail},
-    {parse_empty, ".policy_drop(", &cfg->policy_drop},
+  sp_config_ini *cfg = (sp_config_ini*)retval;
+  sp_config_keyword config_keywords[] = {
+    {parse_empty, "enable", &(enable)},
+    {parse_empty, "disable", &(disable)},
+    {parse_empty, "simulation", &cfg->simulation},
+    {parse_empty, "sim", &cfg->simulation},
+    {parse_empty, "policy_readonly", &ro},
+    {parse_empty, "policy_ro", &ro},
+    {parse_empty, "policy_readwrite", &rw},
+    {parse_empty, "policy_rw", &rw},
+    {parse_empty, "policy_silent_ro", &cfg->policy_silent_ro},
+    {parse_empty, "policy_silent_fail", &cfg->policy_silent_fail},
+    {parse_empty, "policy_no_log", &cfg->policy_silent_fail},
+    {parse_empty, "policy_drop", &cfg->policy_drop},
     {0, 0, 0}};
 
-  int ret = parse_keywords(sp_config_ini_protection, line);
-  if (ret) { return ret; }
+  SP_PROCESS_CONFIG_KEYWORDS_ERR();
 
   SP_SET_ENABLE_DISABLE(enable, disable, cfg->enable);
 
   if (ro && rw) {
-    sp_log_err("config", "rule cannot be both read-write and read-only on line %zu", sp_line_no);
-    return -1;
+    sp_log_err("config", "rule cannot be both read-write and read-only on line %zu", parsed_rule->lineno);
+    return SP_PARSER_ERROR;
   }
   cfg->policy_readonly = ro;
 
   if (cfg->policy_silent_fail && cfg->policy_drop) {
-    sp_log_err("config", "policy cannot be drop and silent at the same time on line %zu", sp_line_no);
-    return -1;
+    sp_log_err("config", "policy cannot be drop and silent at the same time on line %zu", parsed_rule->lineno);
+    return SP_PARSER_ERROR;
   }
-  return ret;
+  return SP_PARSER_STOP;
 }
 
-int parse_ini_entry(char *line) {
+SP_PARSE_FN(parse_ini_entry) {
   sp_ini_entry *entry = pecalloc(sizeof(sp_ini_entry), 1, 1);
   bool rw = false, ro = false;
 
-  sp_config_functions sp_config_ini_protection[] = {
-    {parse_empty, SP_TOKEN_SIMULATION, &entry->simulation},
-    {parse_str, ".key(", &entry->key},
-    {parse_str, ".msg(", &entry->msg},
-    {parse_str, ".set(", &entry->set},
-    {parse_str, ".min(", &entry->min},
-    {parse_str, ".max(", &entry->max},
-    {parse_regexp, ".regexp(", &entry->regexp},
-    {parse_empty, ".readonly(", &ro},
-    {parse_empty, ".ro(", &ro},
-    {parse_empty, ".readwrite(", &rw},
-    {parse_empty, ".rw(", &rw},
-    {parse_empty, ".drop(", &entry->drop},
-    {parse_empty, ".allow_null(", &entry->allow_null},
+  sp_config_keyword config_keywords[] = {
+    {parse_empty, "simulation", &entry->simulation},
+    {parse_empty, "sim", &entry->simulation},
+    {parse_str, "key", &entry->key},
+    {parse_str, "msg", &entry->msg},
+    {parse_str, "set", &entry->set},
+    {parse_str, "min", &entry->min},
+    {parse_str, "max", &entry->max},
+    {parse_regexp, "regexp", &entry->regexp},
+    {parse_empty, "readonly", &ro},
+    {parse_empty, "ro", &ro},
+    {parse_empty, "readwrite", &rw},
+    {parse_empty, "rw", &rw},
+    {parse_empty, "drop", &entry->drop},
+    {parse_empty, "allow_null", &entry->allow_null},
     {0, 0, 0}};
 
-  int ret = parse_keywords(sp_config_ini_protection, line);
-  if (ret) { goto err; }
+  SP_PROCESS_CONFIG_KEYWORDS(goto err);
 
-  if (!entry->key) {
-    sp_log_err("config", "A .key() must be provided on line %zu", sp_line_no);
-    ret = -1; goto err;
+   if (!entry->key) {
+    sp_log_err("config", "A .key() must be provided on line %zu", parsed_rule->lineno);
+    goto err;
   }
 
   if (ro && rw) {
-    sp_log_err("config", "rule cannot be both read-write and read-only on line %zu", sp_line_no);
-    ret = -1; goto err;
+    sp_log_err("config", "rule cannot be both read-write and read-only on line %zu", parsed_rule->lineno);
+    goto err;
   }
   entry->access = ro - rw;
 
   zend_hash_add_ptr(SNUFFLEUPAGUS_G(config).config_ini->entries, entry->key, entry);
-  return ret;
+  return SP_PARSER_STOP;
 
 err:
   if (entry) {
     sp_free_ini_entry(entry);
     pefree(entry, 1);
   }
-  return ret;
+  return SP_PARSER_ERROR;
 }

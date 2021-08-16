@@ -10,8 +10,7 @@ sp.configuration_file={PWD}/../broken_configuration/config/broken_conf_upload_va
 echo 1;
 ?>
 --EXPECTF--
-
-Fatal error: [snuffleupagus][0.0.0.0][error][log] A valid string as parameter is expected on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Missing argument to keyword 'script' - it should be 'script("...")' on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in Unknown on line 0
 Could not startup.

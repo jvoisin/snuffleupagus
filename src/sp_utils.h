@@ -85,9 +85,7 @@ bool hook_function(const char *, HashTable *, zif_handler);
 void unhook_functions(HashTable *ht);
 int hook_regexp(const sp_pcre *, HashTable *, zif_handler);
 bool check_is_in_eval_whitelist(const zend_string *const function_name);
-int sp_log_request(const zend_string *restrict folder,
-                   const zend_string *restrict text_repr,
-                   char const *const from);
+int sp_log_request(const zend_string *restrict folder, const zend_string *restrict text_repr);
 bool sp_zend_string_equals(const zend_string *s1, const zend_string *s2);
 
 #endif /* SP_UTILS_H */

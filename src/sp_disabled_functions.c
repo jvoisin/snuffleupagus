@@ -69,28 +69,22 @@ static bool is_functions_list_matching(zend_execute_data* execute_data,
   return false;
 }
 
-static bool is_local_var_matching(
-    zend_execute_data* execute_data,
-    const sp_disabled_function* const config_node) {
+static bool is_local_var_matching(zend_execute_data* execute_data, const sp_disabled_function* const config_node) {
   zval* var_value = {0};
 
   var_value = sp_get_var_value(execute_data, config_node->var, false);
   if (var_value) {
     if (Z_TYPE_P(var_value) == IS_ARRAY) {
       if (config_node->key || config_node->r_key) {
-        if (sp_match_array_key(var_value, config_node->key,
-                               config_node->r_key)) {
+        if (sp_match_array_key(var_value, config_node->key, config_node->r_key)) {
           return true;
         }
-      } else if (sp_match_array_value(var_value, config_node->value,
-                                      config_node->r_value)) {
+      } else if (sp_match_array_value(var_value, config_node->value, config_node->r_value)) {
         return true;
       }
     } else {
-      zend_string const* const var_value_str =
-          sp_zval_to_zend_string(var_value);
-      bool match = sp_match_value(var_value_str, config_node->value,
-                                  config_node->r_value);
+      zend_string const* const var_value_str = sp_zval_to_zend_string(var_value);
+      bool match = sp_match_value(var_value_str, config_node->value, config_node->r_value);
 
       if (true == match) {
         return true;
@@ -555,24 +549,19 @@ ZEND_FUNCTION(eval_blacklist_callback) {
   zend_string_release(tmp);
 
   if (SNUFFLEUPAGUS_G(in_eval) > 0) {
-    zend_string* filename = get_eval_filename(zend_get_executed_filename());
-    const int line_number = zend_get_executed_lineno(TSRMLS_C);
+    // zend_string* filename = get_eval_filename(zend_get_executed_filename());
+    // const int line_number = zend_get_executed_lineno(TSRMLS_C);
     const sp_config_eval* config_eval = SNUFFLEUPAGUS_G(config).config_eval;
 
     if (config_eval->dump) {
-      sp_log_request(config_eval->dump, config_eval->textual_representation,
-                     SP_TOKEN_EVAL_BLACKLIST);
+      sp_log_request(config_eval->dump, config_eval->textual_representation);
     }
     if (config_eval->simulation) {
-      sp_log_simulation("eval",
-                        "A call to %s was tried in eval, in %s:%d, logging it.",
-                        current_function_name, ZSTR_VAL(filename), line_number);
+      sp_log_simulation("eval", "A call to '%s' was tried in eval. logging it.", current_function_name);
     } else {
-      sp_log_drop("eval",
-                  "A call to %s was tried in eval, in %s:%d, dropping it.",
-                  current_function_name, ZSTR_VAL(filename), line_number);
+      sp_log_drop("eval", "A call to '%s' was tried in eval. dropping it.", current_function_name);
     }
-    efree(filename);
+    // efree(filename);
   }
 
 whitelisted:

@@ -2,23 +2,18 @@
 #define SP_CONFIG_KEYWORDS_H
 #include "php_snuffleupagus.h"
 
-int parse_random(char *line);
-int parse_disable_xxe(char *line);
-int parse_auto_cookie_secure(char *line);
-int parse_global_strict(char *line);
-int parse_global(char *line);
-int parse_cookie(char *line);
-int parse_unserialize(char *line);
-int parse_readonly_exec(char *line);
-int parse_disabled_functions(char *line);
-int parse_upload_validation(char *line);
-int parse_eval_blacklist(char *line);
-int parse_eval_whitelist(char *line);
-int parse_session(char *line);
-int parse_sloppy_comparison(char *line);
-int parse_wrapper_whitelist(char *line);
-int parse_log_media(char *line);
-int parse_ini_protection(char *line);
-int parse_ini_entry(char *line);
+SP_PARSE_FN(parse_enable);
+SP_PARSE_FN(parse_global);
+SP_PARSE_FN(parse_cookie);
+SP_PARSE_FN(parse_unserialize);
+SP_PARSE_FN(parse_readonly_exec);
+SP_PARSE_FN(parse_disabled_functions);
+SP_PARSE_FN(parse_upload_validation);
+SP_PARSE_FN(parse_eval_filter_conf);
+SP_PARSE_FN(parse_session);
+SP_PARSE_FN(parse_wrapper_whitelist);
+SP_PARSE_FN(parse_log_media);
+SP_PARSE_FN(parse_ini_protection);
+SP_PARSE_FN(parse_ini_entry);
 
 #endif  // __SP_CONFIG_KEYWORDS_H

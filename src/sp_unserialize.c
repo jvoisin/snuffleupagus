@@ -89,8 +89,7 @@ PHP_FUNCTION(sp_unserialize) {
   } else {
     if (config_unserialize->dump) {
       sp_log_request(config_unserialize->dump,
-                     config_unserialize->textual_representation,
-                     SP_TOKEN_UNSERIALIZE_HMAC);
+                     config_unserialize->textual_representation);
     }
     if (true == config_unserialize->simulation) {
       sp_log_simulation("unserialize", "Invalid HMAC for %s", serialized_str);

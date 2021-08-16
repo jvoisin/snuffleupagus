@@ -7,8 +7,7 @@ Broken configuration
 sp.configuration_file={PWD}/config/broken_conf2.ini
 --FILE--
 --EXPECT--
-
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration section 'sp.wrong' on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Unexpected keyword 'wrong' on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in Unknown on line 0
 Could not startup.

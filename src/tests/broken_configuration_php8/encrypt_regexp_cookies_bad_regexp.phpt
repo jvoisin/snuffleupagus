@@ -17,6 +17,6 @@ EOF;
 --EXPECT--
 Fatal error: [snuffleupagus][127.0.0.1][config][log] Invalid configuration file in Unknown on line 0
 
-Fatal error: [snuffleupagus][127.0.0.1][config][log] Failed to compile '^super_co[a-z+$': missing terminating ] for character class on line 2. in Unknown on line 0
+Fatal error: [snuffleupagus][127.0.0.1][config][log] Failed to compile '^super_co[a-z+$': missing terminating ] for character class. in Unknown on line 0
 
-Fatal error: [snuffleupagus][127.0.0.1][config][log] '.name_r()' is expecting a valid regexp, and not '"^super_co[a-z+$"' on line 2 in Unknown on line 0
+Fatal error: [snuffleupagus][127.0.0.1][config][log] Invalid regexp '^super_co[a-z+$' for '.name_r()' on line 2 in Unknown on line 0

@@ -70,6 +70,7 @@ typedef void (*zif_handler)(INTERNAL_FUNCTION_PARAMETERS);
 #include "sp_list.h"
 #include "sp_tree.h"
 #include "sp_var_parser.h"
+#include "sp_config_scanner.h"
 #include "sp_config.h"
 #include "sp_config_utils.h"
 #include "sp_config_keywords.h"

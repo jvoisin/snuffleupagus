@@ -123,9 +123,7 @@ static int construct_filename(char* filename,
   return 0;
 }
 
-int sp_log_request(const zend_string* restrict folder,
-                   const zend_string* restrict text_repr,
-                   char const* const from) {
+int sp_log_request(const zend_string* restrict folder, const zend_string* restrict text_repr) {
   FILE* file;
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);
@@ -146,7 +144,7 @@ int sp_log_request(const zend_string* restrict folder,
     return -1;
   }
 
-  fprintf(file, "RULE: sp%s%s\n", from, ZSTR_VAL(text_repr));
+  fprintf(file, "RULE: %s\n", ZSTR_VAL(text_repr));
 
   fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
 
@@ -285,8 +283,7 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
   const int sim = config_node->simulation;
 
   if (dump) {
-    sp_log_request(config_node->dump, config_node->textual_representation,
-                   SP_TOKEN_DISABLE_FUNC);
+    sp_log_request(config_node->dump, config_node->textual_representation);
   }
   if (arg_name) {
     char* char_repr = NULL;
@@ -329,8 +326,7 @@ void sp_log_disable_ret(const char* restrict path,
   char* char_repr = NULL;
 
   if (dump) {
-    sp_log_request(dump, config_node->textual_representation,
-                   SP_TOKEN_DISABLE_FUNC);
+    sp_log_request(dump, config_node->textual_representation);
   }
   if (ret_value) {
     char_repr = zend_string_to_char(ret_value);
@@ -479,7 +475,6 @@ void unhook_functions(HashTable *ht) {
 
 bool check_is_in_eval_whitelist(const zend_string* const function_name) {
   const sp_list_node* it = SNUFFLEUPAGUS_G(config).config_eval->whitelist;
-
   if (!it) {
     return false;
   }

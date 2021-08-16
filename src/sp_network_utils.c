@@ -85,9 +85,7 @@ int get_ip_and_cidr(char *ip, sp_cidr *cidr) {
   char *mask = strchr(ip, '/');
 
   if (NULL == mask) {
-    sp_log_err(
-        "config",
-        "'%s' isn't a valid network mask, it seems that you forgot a '/'.", ip);
+    sp_log_err("config", "'%s' isn't a valid network mask, it seems that you forgot a '/'.", ip);
     return -1;
   }
 
@@ -117,7 +115,7 @@ int get_ip_and_cidr(char *ip, sp_cidr *cidr) {
 
   ip[mask - ip] = '/';
   if (cidr->ip_version < 0) {
-    sp_log_err("cidr_match", "Weird ip (%s) family", ip);
+    sp_log_err("config", "Weird ip (%s) family", ip);
     return -1;
   }
 
