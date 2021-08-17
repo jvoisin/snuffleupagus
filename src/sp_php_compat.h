@@ -11,6 +11,9 @@ ZEND_API zend_string *zend_string_concat2(
 	_key = _p->key; \
 	_ptr = Z_PTR_P(_z);
 
+// zend_result was introduced to replace ZEND_RESULT_CODE with PHP8
+typedef ZEND_RESULT_CODE zend_result;
+
 #endif
 
 #if PHP_VERSION_ID < 70300
