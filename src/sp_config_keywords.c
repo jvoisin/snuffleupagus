@@ -166,7 +166,6 @@ SP_PARSE_FN(parse_wrapper_whitelist) {
 }
 
 SP_PARSE_FN(parse_cookie) {
-  int ret = 0;
   zend_string *samesite = NULL;
   sp_cookie *cookie = pecalloc(sizeof(sp_cookie), 1, 1);
 

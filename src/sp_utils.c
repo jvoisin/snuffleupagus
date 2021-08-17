@@ -415,9 +415,6 @@ bool /* success */ _hook_function(const char* original_name, HashTable* hook_tab
 
 bool hook_function(const char* original_name, HashTable* hook_table,
                    zif_handler new_function) {
-  zend_function* func;
-
-
   bool ret = _hook_function(original_name, hook_table, new_function);
 
 #if PHP_VERSION_ID < 80000
