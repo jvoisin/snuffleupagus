@@ -41,5 +41,5 @@ if test "$PHP_SNUFFLEUPAGUS" = "yes"; then
    PHP_NEW_EXTENSION(snuffleupagus, $sources, $ext_shared,-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi
 
-PHP_PROG_RE2C([2.0])
+# PHP_PROG_RE2C([2.0])
 PHP_ADD_MAKEFILE_FRAGMENT()
