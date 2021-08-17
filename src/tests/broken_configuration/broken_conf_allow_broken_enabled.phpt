@@ -11,7 +11,7 @@ sp.allow_broken_configuration=On
 echo 1337;
 ?>
 --EXPECT--
-PHP Fatal error:  [snuffleupagus][0.0.0.0][config][log] Invalid configuration prefix for 'this is a broken line' on line 1 in Unknown on line 0
+PHP Fatal error:  [snuffleupagus][0.0.0.0][config][log] Parser error on line 1 in Unknown on line 0
 
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration prefix for 'this is a broken line' on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Parser error on line 1 in Unknown on line 0
 1337
