@@ -1,0 +1,281 @@
+## This file is part of the Suhosin-NG (SNG) PHP Hardening project
+## - see https://suhosin.org/ for more information.
+##
+## Snuffleupagus compatibility: Version 0.7.0 with SNG patches and above
+##   https://github.com/sektioneins/snuffleupagus
+##
+############################# ### # ---------
+##
+## This file documents the effort to port as many Suhosin features as possible to Snuffleupagus rules.
+## It is meant as a proof of concept and it will serve multiple purposes:
+## * Create a reasonably secure configuration for Snuffleupagus.
+## * Make it apparent which Suhosin features cannot be easily implemented in SP by just using configuration
+##   rules. These will be collected and some features will be implemented as part of the Suhosin-NG project.
+## * Create a base set of Snuffleupagus rules to make the expert task of configuring a PHP hardening
+##   extension accessible to a broader audience. This base set of rules will be integrated into a Tool -
+##   see Milestone 6 (MS6) here: https://github.com/sektioneins/suhosin-ng/projects/1
+## * Provide more configuration examples.
+##
+############################# ### # ---------
+
+## Let's enable relevant features first.
+sp.ini_protection.enable();
+
+## =====================
+## Logging Configuration
+## =====================
+
+## suhosin.log.syslog
+## suhosin.log.syslog.facility
+## suhosin.log.syslog.priority
+## suhosin.log.sapi
+## suhosin.log.stdout
+## suhosin.log.file
+## suhosin.log.file.name
+## suhosin.log.file.time
+## suhosin.log.script
+## suhosin.log.script.name
+## suhosin.log.phpscript
+## suhosin.log.phpscript.name
+## suhosin.log.phpscript.is_safe
+## suhosin.log.use-x-forwarded-for
+
+## SP will always use either REMOTE_ADDR or HTTP_X_FORWARDED_FOR.
+
+## Logging output can be one of
+sp.log_media("php");
+#sp.log_media("syslog");
+
+## More logging options are not implemented in SP.
+
+## ================
+## Executor Options
+## ================
+
+## suhosin.executor.max_depth
+## Not implemented in SP.
+
+## suhosin.executor.include.max_traversal
+## SP example for max_traversal = 3
+sp.disable_function.function_r("^(require|include)(_once)?$").value_r("\\.\\./+\\.\\./+\\.\\./+").drop();
+
+## suhosin.executor.include.whitelist
+## suhosin.executor.include.blacklist
+## SP version with wrapper whitelist and regex matching include/require:
+sp.wrappers_whitelist.list("file,php,phar");
+sp.disable_function.function_r("^(require|include)(_once)?$").value_r("^php://(stdin|stdout|stderr|input|output|memory|temp)").drop();
+
+## suhosin.executor.include.allow_writable_files
+## SP can enable readonly protection
+#sp.readonly_exec.enable();
+
+## suhosin.executor.func.whitelist
+## suhosin.executor.func.blacklist
+#sp.disable_function.function("...").drop();
+
+## suhosin.executor.eval.whitelist
+## suhosin.executor.eval.blacklist
+#sp.eval_blacklist.list("system,exec,shell_exec");
+
+## suhosin.executor.disable_eval
+#sp.disable_function.function("eval").drop();
+
+
+## suhosin.executor.disable_emodifier
+## This is actually not needed anymore in PHP 7 and above
+
+## suhosin.executor.allow_symlink
+## SP can simply disable the symlink function.
+## Other ways to create symlinks should be disabled as well, e.g. system("ln -s ...")
+#sp.disable_function.function("symlink").drop();
+#sp.disable_function.function("system").drop();
+#sp.disable_function.function("shell_exec").drop();
+#sp.disable_function.function("exec").drop();
+#sp.disable_function.function("proc_open").drop();
+
+
+## 
+## ============
+## Misc Options
+## ============
+## 
+
+## suhosin.simulation
+## SP provides individual .simulation() switches for most features.
+
+## suhosin.perdir
+## Not implemented in SP.
+
+
+## suhosin.protectkey
+## SP does not actually need to protect its secret key this way, as it is not a native PHP ini directive shown in phpinfo()
+
+## suhosin.coredump
+## SP can be started in gdb/lldb, so this feature may not be needed.
+
+## suhosin.stealth
+## Not implemented in SP.
+## If ionCube support or similar extensions should ever be requested to run with SP, this feature may be implemented some day.
+
+## suhosin.apc_bug_workaround
+## This is not a thing anymore with PHP7+
+
+## suhosin.disable.display_errors
+#sp.ini.key("display_errors").set("0").ro();
+#sp.ini.key("display_startup_errors").set("0").ro();
+#sp.ini.key("expose_php").set("0").ro();
+
+## suhosin.multiheader
+## There is a PHP filter in place to prevent multiple headers in one header() call - let's hope it works.
+
+## suhosin.mail.protect
+sp.disable_function.function("mail").param("to").value_r("\\n").alias("newline in mail() To:").drop();
+sp.disable_function.function("mail").param("subject").value_r("\\n").alias("newline in mail() Subject:").drop();
+sp.disable_function.function("mail").param("additional_headers").param_type("STRING").drop();
+sp.disable_function.function("mail").param("additional_headers").param_type("NULL").allow();
+sp.disable_function.function("mail").param("additional_headers").key_r("^(to|b?cc)$").drop();
+
+
+## suhosin.memory_limit
+## SP can either disable or limit the memory_limit setting
+#sp.ini.key("memory_limit").ro();
+sp.ini.key("memory_limit").min("4M").max("256M").rw();
+
+
+## ========================
+## SQL Injection Protection
+## ========================
+
+## suhosin.sql.bailout_on_error
+## SP example for mysqli and PDO
+#sp.disable_function.function("mysqli_query").ret("FALSE").drop();
+#sp.disable_function.function("mysqli::query").ret("FALSE").drop();
+#sp.disable_function.function("mysqli_real_query").ret("FALSE").drop();
+#sp.disable_function.function("mysqli::real_query").ret("FALSE").drop();
+#sp.disable_function.function("mysqli_prepare").ret("FALSE").drop();
+#sp.disable_function.function("mysqli::prepare").ret("FALSE").drop();
+#sp.disable_function.function("mysqli_stmt_execute").ret("FALSE").drop();
+#sp.disable_function.function("mysqli_stmt::execute").ret("FALSE").drop();
+#sp.disable_function.function("mysqli_execute").ret("FALSE").drop();
+#sp.disable_function.function("PDO::query").ret("FALSE").drop();
+#sp.disable_function.function("PDO::prepare").ret("FALSE").drop();
+#sp.disable_function.function("PDO::exec").ret("FALSE").drop();
+#sp.disable_function.function("PDOStatement::execute").ret("FALSE").drop();
+
+
+## suhosin.sql.user_match
+## suhosin.sql.user_prefix
+## suhosin.sql.user_postfix
+## SP example for mysqli
+set SQL_USER "^public_";
+sp.disable_function.function("mysqli::__construct").param("username").value_r(SQL_USER).allow();
+sp.disable_function.function("mysqli::__construct").drop();
+sp.disable_function.function("mysqli_connect").param("username").value_r(SQL_USER).allow();
+sp.disable_function.function("mysqli_connect").drop();
+sp.disable_function.function("mysqli::change_user").param("username").value_r(SQL_USER).allow();
+sp.disable_function.function("mysqli::change_user").drop();
+sp.disable_function.function("mysqli_change_user").param("username").value_r(SQL_USER).allow();
+sp.disable_function.function("mysqli_change_user").drop();
+
+## suhosin.sql.comment
+## suhosin.sql.opencomment
+## Not implemented in SP.
+## It is possible to try and find common injection patterns such as ' or 1=1 -- via regex,
+## but that would likely trigger valid SQL strings containing these patterns as well. The same argument
+## applies to multiselect and union:
+
+## suhosin.sql.multiselect
+## suhosin.sql.union
+## Not implemented in SP.
+
+
+## ==============================
+## Transparent Encryption Options
+## ==============================
+
+## suhosin.session.cryptkey
+## suhosin.session.cryptua
+## suhosin.cookie.cryptkey
+## suhosin.cookie.cryptua
+
+## SP's session encryption and cookie encryption features rely on a secret key that is derived from
+## * the user agent string from the environment variable HTTP_USER_AGENT
+## * the value of the environment variable specified using sp.global.cookie_env_var(),
+##   usually either REMOTE_ADDR or SSL_SESSION_ID
+## * a very secret key as specified using sp.global.secret_key()
+sp.global.secret_key("c6a0e02b3b818f7559d5f85303d8fe44"); ## this key should be unique to your installation.
+sp.global.cookie_env_var("REMOTE_ADDR");
+#sp.global.cookie_env_var("SSL_SESSION_ID");
+
+## suhosin.session.encrypt
+sp.session.encrypt();
+
+## suhosin.cookie.encrypt
+## suhosin.cookie.cryptlist
+## suhosin.cookie.plainlist
+#sp.cookie.name("my_cookie_name").encrypt();
+#sp.cookie.name_r("^enc_[a-z]+$").encrypt();
+
+## suhosin.session.cryptdocroot
+## suhosin.session.cryptraddr
+## suhosin.session.checkraddr
+## suhosin.cookie.cryptdocroot
+## suhosin.cookie.cryptraddr
+## suhosin.cookie.checkraddr
+## For SP to include the document root or part of the IP address in the encryption key, the .cookie_env_var()
+## can be constructed by the web server to include these values.
+
+
+## =================
+## Filtering Options
+## =================
+
+## suhosin.filter.action
+## suhosin.cookie|get|post|request.max_array_depth
+## suhosin.cookie|get|post|request.max_array_index_length
+## suhosin.cookie|get|post.max_name_length
+## suhosin.request.max_varname_length
+## suhosin.cookie|get|post|request.max_totalname_length
+## suhosin.cookie|get|post|request.max_value_length
+## suhosin.cookie|get|post|request.max_vars
+## suhosin.cookie|get|post|request.disallow_nul
+## suhosin.cookie|get|post|request.disallow_ws
+## suhosin.request.array_index_blacklist
+## suhosin.request.array_index_whitelist
+## suhosin.upload.max_uploads
+## suhosin.upload.max_newlines
+## suhosin.upload.disallow_elf
+## suhosin.upload.disallow_binary
+## suhosin.upload.remove_binary
+## suhosin.upload.allow_utf8
+## Not implemented in SP.
+
+## suhosin.upload.verification_script
+#sp.upload_validation.script("/var/www/is_valid_php.py").enable();
+
+
+## suhosin.session.max_id_length
+## suhosin.server.encode
+## suhosin.server.strip
+## Not implemented in SP.
+
+## suhosin.rand.seedingkey
+## suhosin.rand.reseed_every_request
+## suhosin.srand.ignore
+## suhosin.mt_srand.ignore
+## Instead of removing srand()/mt_srand(), SP basically replaces rand()/mt_rand() with the more secure random_int()
+sp.harden_random.enable();
+
+############################# ### # ---------
+##
+## features included in SP that are not covered by Suhosin rule equivalents
+## - see https://snuffleupagus.readthedocs.io/ for more information
+
+# sp.unserialize_hmac.enable();
+# sp.global_strict.enable();
+sp.auto_cookie_secure.enable();
+#sp.cookie.name("cookie1").samesite("lax");
+#sp.cookie.name("cookie2").samesite("strict");;
+sp.disable_xxe.enable();
+#sp.sloppy_comparison.enable();
+
