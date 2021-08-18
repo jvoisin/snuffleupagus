@@ -14,7 +14,7 @@ sp.disable_xxe.enable();
 # sp.global.secret_key("YOU _DO_ NEED TO CHANGE THIS WITH SOME RANDOM CHARACTERS.");
 
 # Globally activate strict mode
-# https://secure.php.net/manual/en/functions.arguments.php#functions.arguments.type-declaration.strict
+# https://www.php.net/manual/en/language.types.declarations.php#language.types.declarations.strict
 # sp.global_strict.enable();
 
 # Prevent unserialize-related exploits
