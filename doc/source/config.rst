@@ -1,16 +1,6 @@
 Configuration
 =============
 
-Options are chainable by using dots (``.``) and string parameters
-**must** be quoted, while booleans and integers aren't.
-
-Comments are prefixed either with ``#``, or ``;``.
-
-Some rules apply in a specific ``function`` (context) on a specific ``variable``
-(data), like ``disable_function``. Others can only be enabled/disabled, like
-``harden_random``.
-
-
 .. warning::
 
   If you configure Snuffleupagus incorrectly, your website *might* not work
@@ -20,17 +10,6 @@ Some rules apply in a specific ``function`` (context) on a specific ``variable``
   It's up to you to understand the :doc:`features <features>`,
   read the present documentation about how to configure them,
   evaluate your threat model and write your configuration file accordingly.
-
-Most of the features can be used in ``simulation`` mode by appending the
-``.simulation()`` option to them (eg. ``sp.readonly_exec.simulation().enable();``) to see
-whether or not they could break your website. The simulation mode won't block the request,
-but will write a warning in the log.
-
-The rules are evaluated in the order that they are written, the **first** one
-to match will terminate the evaluation (except for rules in simulation mode).
-
-Configuration file format
--------------------------
 
 Since PHP *ini-like* configuration model isn't flexible enough,
 Snuffleupagus is using its own format in the file specified by
@@ -60,6 +39,38 @@ configuration contains syntax errors. You'll still get a big scary message in
 your logs of course. We do **not** recommend to use it of course, but sometimes
 it might be useful to be able to "debug in production" without breaking your
 website.
+
+Configuration file format
+-------------------------
+
+Options are chainable by using dots (``.``).
+
+Some options have a string parameter, that **must** be quoted with double quotes, e.g. ``"string"``.
+
+Comments are prefixed either with ``#``, or ``;``.
+
+Some rules apply in a specific ``function`` (context) on a specific ``variable``
+(data), like ``disable_function``. Others can only be enabled/disabled, like
+``harden_random``.
+
+Most of the features can be used in ``simulation`` mode by appending the
+``.simulation()`` or ``.sim()`` option to them (eg. ``sp.readonly_exec.simulation().enable();``) to see
+whether or not they could break your website. The simulation mode won't block the request,
+but will write a warning in the log.
+
+The rules are evaluated in the order that they are written, the **first** one
+to match will terminate the evaluation (except for rules in simulation mode).
+
+Rules can be split into lines and contain whitespace for easier readability and maintenance: (This feature is available since version 0.8.0.)
+
+::
+
+  sp.disable_function.function("mail")
+    .param("to").value_r("\\n")
+    .alias("newline in mail() To:")
+    .drop();
+
+The terminating ``;`` is optional for now, but it should be used for future compatibility.
 
 Miscellaneous
 -------------
@@ -380,7 +391,7 @@ It's currently not possible to:
   `for now <https://github.com/jvoisin/snuffleupagus/issues/190>`__).
   This is why hooked ``print`` will be displayed as ``echo`` in the logs.
 - Hook `strlen`, since in latest PHP versions, this function is usually
-  optimized away by the compiled.
+  optimized away by the compiler.
 
 
 Examples
