@@ -73,6 +73,26 @@ ZEND_DLEXPORT zend_extension zend_extension_entry = {
     NULL,                /* op_array_dtor_func_t */
     STANDARD_ZEND_EXTENSION_PROPERTIES};
 
+static void sp_load_other_modules() {
+  // try to load other modules before initializing Snuffleupagus
+  zend_module_entry *module;
+  bool should_start = false;
+  ZEND_HASH_FOREACH_PTR(&module_registry, module) {
+    if (should_start) {
+      sp_log_debug("attempting to start module '%s' early", module->name);
+      if (zend_startup_module_ex(module) != SUCCESS) {
+        // startup failed. let's try again later.
+        module->module_started = 0;
+      }
+    }
+    if (strcmp(module->name, PHP_SNUFFLEUPAGUS_EXTNAME) == 0) {
+      should_start = true;
+    }
+  } ZEND_HASH_FOREACH_END();
+
+
+}
+
 static PHP_GINIT_FUNCTION(snuffleupagus) {
 #ifdef SP_DEBUG_STDERR
   if (getenv("SP_NODEBUG")) {
@@ -82,6 +102,7 @@ static PHP_GINIT_FUNCTION(snuffleupagus) {
   }
 #endif
   sp_log_debug("(GINIT)");
+  sp_load_other_modules();
   snuffleupagus_globals->is_config_valid = SP_CONFIG_NONE;
   snuffleupagus_globals->in_eval = 0;
 
