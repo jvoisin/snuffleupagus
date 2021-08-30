@@ -137,7 +137,7 @@ sp.ini.key("max_input_vars").min("0").max("1024").rw();
 sp.ini.key("memory_limit").min("4M").max("256M").rw();
 sp.ini.key("post_max_size").max("256M").rw();
 sp.ini.key("upload_max_filesize").max("256M").rw();
-sp.ini.key("precision").max("14").rv();
+sp.ini.key("precision").max("14").rw();
 sp.ini.key("unserialize_max_depth").min("128").max("4096").rw();
 sp.ini.key("serialize_precision").ro();
 
