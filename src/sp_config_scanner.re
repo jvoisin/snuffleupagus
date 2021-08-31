@@ -71,6 +71,21 @@ static void str_dtor(zval *zv) {
   zend_string_release_ex(Z_STR_P(zv), 1);
 }
 
+static int apply_op(int v1, char op, int v2, int neg) {
+  if (neg) { v2 = !v2; }
+  switch (op) {
+    case 0: return v2;
+    case '&': return (v1 && v2);
+    case '|': return (v1 || v2);
+    case '<': return (v1 < v2);
+    case '>': return (v1 > v2);
+    case '=': return (v1 == v2);
+  }
+  return 0;
+}
+
+#define APPLY_OP(v2) cond_res = apply_op(cond_res, cond_op, v2, cond_neg); cond_op = cond_neg = 0;
+
 zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_keyword*))
 {
   const char *YYCURSOR = data;
@@ -85,6 +100,10 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
 
   HashTable vars;
   zend_hash_init(&vars, 10, NULL, str_dtor, 1);
+
+  int cond_res = 1;
+  char cond_op = 0;
+  int cond_neg = 0;
 
   int cond = yycinit;
   long lineno = 1;
@@ -101,7 +120,6 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
     end = "\x00";
     nl = "\r"?"\n";
     ws = [ \t];
-    wsnl = [ \t\r\n];
     keyword = [a-zA-Z_][a-zA-Z0-9_]*;
     string = "\"" ("\\\"" | [^"\r\n])* "\"";
 
@@ -111,7 +129,7 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
     <init> nl      { lineno++; goto yyc_init; }
     <init> "sp"    { kw_i = 0;  goto yyc_rule; }
     <init> end     { ret = SUCCESS; goto out; }
-    <init> "set" wsnl+ @t1 keyword @t2 wsnl+ @t3 string @t4 ";"? {
+    <init> "set" ws+ @t1 keyword @t2 ws+ @t3 string @t4 ws* ";"? {
       char *key = (char*)t1;
       int keylen = t2-t1;
       zend_string *tmp = zend_hash_str_find_ptr(&vars, key, keylen);
@@ -122,11 +140,42 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
       zend_hash_str_add_ptr(&vars, key, keylen, tmp);
       goto yyc_init;
     }
+    <init> "@condition" ws+ { goto yyc_cond; }
+    <init> "@end_condition" ws* ";" { cond_res = 1; goto yyc_init; }
 
+    <cond> ws+ { goto yyc_cond; }
+    <cond> nl  { lineno++; goto yyc_cond; }
+    <cond> @t1 keyword @t2 "(" @t3 string? @t4 ")" {
+      if (t4-t3 >= 2 && strlen("extension_loaded") == t2-t1 && strncmp("extension_loaded", t1, t2-t1) == 0) {
+        int is_loaded = (zend_hash_str_find_ptr(&module_registry, t3+1, t4-t3-2) != NULL);
+        APPLY_OP(is_loaded);
+      } else {
+        cs_error_log("unknown function in condition on line %d", lineno);
+        goto out;
+      }
+      goto yyc_cond_op;
+    }
+    <cond> @t1 keyword @t2 {
+      zend_string *tmp = zend_hash_str_find_ptr(&vars, t1, t2-t1);
+      if (!tmp) {
+        cs_error_log("unknown variable in condition on line %d", lineno);
+        goto out;
+      }
+      APPLY_OP(atoi(ZSTR_VAL(tmp)));
+      goto yyc_cond_op;
+    }
+    <cond> @t1 [0-9]+ @t2 { APPLY_OP(atoi(t1));  goto yyc_cond_op; }
+    <cond> @t1 "!" { cond_neg = (cond_neg + 1) % 2; goto yyc_cond; }
+    <cond_op> ws+ { goto yyc_cond_op; }
+    <cond_op> nl  { lineno++; goto yyc_cond_op; }
+    <cond_op> @t1 ( "&&" | "||" | "<" | ">" | "==" ) { cond_op = *t1; goto yyc_cond; }
+    <cond_op> ";" { goto yyc_init; }
+    <cond, cond_op> * { cs_error_log("Syntax error in condition on line %d", lineno); return false; }
 
     <rule> ws+     {  goto yyc_rule; }
     <rule> nl / ( nl | ws )* "." {  lineno++; goto yyc_rule; }
     <rule> "." @t1 keyword @t2 ( "(" @t3 ( string? | keyword ) @t4 ")" )?  {
+      if (!cond_res) { goto yyc_rule; }
       if (kw_i == max_keywords) {
         cs_error_log("Too many keywords in rule (more than %d) on line %d", max_keywords, lineno);
         goto out;
@@ -157,6 +206,7 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
     }
     <rule> ";"     {
       end_of_rule:
+      if (!cond_res) { goto yyc_init; }
       parsed_rule[kw_i++] = (sp_parsed_keyword){0, 0, 0, 0, 0, 0};
       if (process_rule && process_rule(parsed_rule) != SUCCESS) {
         goto out;
