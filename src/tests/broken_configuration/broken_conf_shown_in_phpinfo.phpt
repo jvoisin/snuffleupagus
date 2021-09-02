@@ -18,10 +18,10 @@ if (strstr($info, 'Valid config => no') !== FALSE) {
 }
 ?>
 --EXPECTF--
-PHP Fatal error:  [snuffleupagus][0.0.0.0][config][log] Failed to compile '*.': quantifier does not follow a repeatable item. in Unknown on line 0
+PHP Fatal error:  [snuffleupagus][0.0.0.0][config][log] Failed to compile '*.': %a. in Unknown on line 0
 PHP Fatal error:  [snuffleupagus][0.0.0.0][config][log] Invalid regexp '*.' for '.filename_r()' on line 1 in Unknown on line 0
 
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Failed to compile '*.': quantifier does not follow a repeatable item. in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Failed to compile '*.': %a. in Unknown on line 0
 
 Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid regexp '*.' for '.filename_r()' on line 1 in Unknown on line 0
 
