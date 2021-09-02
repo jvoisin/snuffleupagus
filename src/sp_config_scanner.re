@@ -143,7 +143,7 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
   zend_hash_str_add_ptr(&vars, ZEND_STRL("PHP_VERSION_ID"), zend_string_init(ZEND_STRL(ZEND_TOSTR(PHP_VERSION_ID)), 1));
 
 
-  int cond_res[100] = {0};
+  int cond_res[100] = {1};
   int cond_res_i = 0;
   char cond_op[100] = {0};
   int cond_op_i = 0;
@@ -220,12 +220,12 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
           case '>': op1 = 'G'; break; // >=
         }
       }
-      while (cond_op_i && sy_op_peek() != '(' && ((sy_op_precedence(sy_op_peek()) > sy_op_precedence(*t1)) || (sy_op_precedence(sy_op_peek()) == sy_op_precedence(*t1)) && sy_op_is_left_assoc(*t1))) {
-          SY_APPLY_OP_FROM_STACK();
-        }
-        sy_op_push(*t1);
-        goto yyc_cond;
+      while (cond_op_i && sy_op_peek() != '(' && ((sy_op_precedence(sy_op_peek()) > sy_op_precedence(*t1)) || (sy_op_precedence(sy_op_peek()) == sy_op_precedence(*t1) && sy_op_is_left_assoc(*t1)))) {
+        SY_APPLY_OP_FROM_STACK();
       }
+      sy_op_push(*t1);
+      goto yyc_cond;
+    }
     <cond_op> ")" {
       while (cond_op_i && sy_op_peek() != '(') {
         SY_APPLY_OP_FROM_STACK();
@@ -233,7 +233,7 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
       if (cond_op_i == 0 || sy_op_peek() != '(') {
         cs_error_log("unbalanced parathesis on line %d", lineno); goto out;
       }
-      sy_op_pop();
+      cond_op_i--;
       goto yyc_cond_op;
     }
     <cond_op> ";" {

@@ -183,7 +183,7 @@ SP_PARSE_FN(parse_cookie) {
   if (cookie->encrypt) {
     if (!SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var) {
       sp_log_err("config", "You're trying to use the cookie encryption feature on line %zu "
-                            "without having set the `." SP_TOKEN_ENV_VAR "` option in`sp.global`: please set it first", parsed_rule->lineno);
+                            "without having set the `." SP_TOKEN_ENV_VAR "` option in `sp.global`: please set it first", parsed_rule->lineno);
       goto err;
     } else if (!SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
       sp_log_err("config", "You're trying to use the cookie encryption feature "
