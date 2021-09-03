@@ -4,7 +4,7 @@ Set a custom session handler, twice
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_crypt_session.ini
-session.save_path = "/tmp"
+session.save_path="/tmp"
 --ENV--
 return <<<EOF
 REMOTE_ADDR=127.0.0.1

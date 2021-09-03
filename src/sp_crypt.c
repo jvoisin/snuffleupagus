@@ -43,8 +43,7 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
   unsigned char *decrypted = NULL, *backup = NULL;
   int ret = 0;
 
-  zend_string *debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)),
-                               Z_STRLEN_P(pDest));
+  zend_string *debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)), Z_STRLEN_P(pDest));
 
   if (ZSTR_LEN(debase64) < crypto_secretbox_NONCEBYTES) {
     if (true == simulation) {

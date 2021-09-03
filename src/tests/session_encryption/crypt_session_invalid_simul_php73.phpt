@@ -1,7 +1,7 @@
 --TEST--
 SESSION crypt and bad decrypt
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus") || PHP_VERSION_ID < 70400) print "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus") || PHP_VERSION_ID >= 70400) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_crypt_session_simul.ini
 display_errors=0
@@ -30,5 +30,4 @@ unlink(dirname(__FILE__) . "/crypt_session_invalid_simul.tmp");
 --EXPECTF--
 array(0) {
 }
-%aPHP Warning:  [snuffleupagus][127.0.0.2][cookie_encryption][simulation] Something went wrong with the decryption of the session. Using the cookie 'as is' instead of decrypting it in %a/crypt_session_invalid_simul.php on line 9
-%aPHP Warning:  session_start(): Failed to decode session object. Session has been destroyed in %a/crypt_session_invalid_simul.php on line 9
+%aPHP Warning:  [snuffleupagus][127.0.0.2][cookie_encryption][simulation] Something went wrong with the decryption of the session. Using the cookie 'as is' instead of decrypting it in %a/crypt_session_invalid_simul%a.php on line 9

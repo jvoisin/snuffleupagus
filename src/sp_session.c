@@ -113,16 +113,9 @@ static PHP_INI_MH(sp_OnUpdateSaveHandler) {
 }
 
 static int sp_hook_session_RINIT(INIT_FUNC_ARGS) {
-  if (SESSION_G(mod) == NULL) {
-    zend_ini_entry *ini_entry;
-    if ((ini_entry = zend_hash_str_find_ptr(
-             EG(ini_directives), ZEND_STRL("session.save_handler")))) {
-      if (ini_entry && ini_entry->value) {
-        sp_OnUpdateSaveHandler(NULL, ini_entry->value, NULL, NULL, NULL, 0);
-      }
-    }
-  }
-  return previous_sessionRINIT(INIT_FUNC_ARGS_PASSTHRU);
+  int ret = previous_sessionRINIT(INIT_FUNC_ARGS_PASSTHRU);
+  sp_hook_session_module();
+  return ret;
 }
 
 void hook_session() {
