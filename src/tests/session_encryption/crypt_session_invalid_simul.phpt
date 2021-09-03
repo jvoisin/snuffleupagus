@@ -1,7 +1,7 @@
 --TEST--
 SESSION crypt and bad decrypt
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus") || PHP_VERSION_ID < 70400) print "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus") || PHP_VERSION_ID < 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_crypt_session_simul.ini
 display_errors=0
