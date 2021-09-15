@@ -112,6 +112,15 @@ zend_string *get_eval_filename(const char *const filename) {
   return clean_filename;
 }
 
+static inline void sp_orig_execute(zend_execute_data *execute_data) {
+  SNUFFLEUPAGUS_G(execution_depth)++;
+  if (SNUFFLEUPAGUS_G(execution_depth) > SNUFFLEUPAGUS_G(config).max_execution_depth && SNUFFLEUPAGUS_G(config).max_execution_depth > 0) {
+    sp_log_drop("execute", "Maximum recursion limit reached. Script terminated.");
+  }
+  orig_execute_ex(execute_data);
+  SNUFFLEUPAGUS_G(execution_depth)--;
+}
+
 static void sp_execute_ex(zend_execute_data *execute_data) {
   is_in_eval_and_whitelisted(execute_data);
   const HashTable *config_disabled_functions =
@@ -131,7 +140,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
     zend_string_release(filename);
 
     SNUFFLEUPAGUS_G(in_eval)++;
-    orig_execute_ex(execute_data);
+    sp_orig_execute(execute_data);
     SNUFFLEUPAGUS_G(in_eval)--;
     return;
   }
@@ -150,7 +159,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
             .config_disabled_functions_reg->disabled_functions;
 
     if (!function_name) {
-      orig_execute_ex(execute_data);
+      sp_orig_execute(execute_data);
       return;
     }
 
@@ -184,7 +193,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
       EX(return_value) = &ret_val;
     }
 
-    orig_execute_ex(execute_data);
+    sp_orig_execute(execute_data);
 
     should_drop_on_ret_ht(
         EX(return_value), function_name,
@@ -197,7 +206,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
       EX(return_value) = NULL;
     }
   } else {
-    orig_execute_ex(execute_data);
+    sp_orig_execute(execute_data);
   }
 }
 

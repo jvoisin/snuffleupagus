@@ -251,6 +251,8 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
 }
 
 PHP_RINIT_FUNCTION(snuffleupagus) {
+  SNUFFLEUPAGUS_G(execution_depth) = 0;
+
   const sp_config_wrapper *const config_wrapper =
       SNUFFLEUPAGUS_G(config).config_wrapper;
 #if defined(COMPILE_DL_SNUFFLEUPAGUS) && defined(ZTS)

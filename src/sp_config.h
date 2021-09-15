@@ -196,6 +196,7 @@ typedef struct {
   sp_config_ini *config_ini;
   bool hook_execute;
   char log_media;
+  u_long max_execution_depth;
 
   HashTable *config_disabled_functions;
   HashTable *config_disabled_functions_hooked;
@@ -286,6 +287,7 @@ typedef struct {
 #define SP_TOKEN_ENCRYPTION_KEY "secret_key"
 #define SP_TOKEN_ENV_VAR "cookie_env_var"
 #define SP_TOKEN_LOG_MEDIA "log_media"
+#define SP_TOKEN_MAX_EXECUTION_DEPTH "max_execution_depth"
 
 // upload_validator
 #define SP_TOKEN_UPLOAD_SCRIPT "script"

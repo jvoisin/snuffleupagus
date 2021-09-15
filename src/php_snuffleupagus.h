@@ -108,6 +108,7 @@ ZEND_BEGIN_MODULE_GLOBALS(snuffleupagus)
 size_t in_eval;
 sp_config config;
 int is_config_valid;  // 1 = valid, 0 = invalid, -1 = none
+u_long execution_depth;
 bool allow_broken_configuration;
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;
