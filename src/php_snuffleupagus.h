@@ -1,10 +1,10 @@
 #ifndef PHP_SNUFFLEUPAGUS_H
 #define PHP_SNUFFLEUPAGUS_H
 
-#define PHP_SNUFFLEUPAGUS_VERSION "0.7.0"
+#define PHP_SNUFFLEUPAGUS_VERSION "0.8.0"
 #define PHP_SNUFFLEUPAGUS_EXTNAME "snuffleupagus"
-#define PHP_SNUFFLEUPAGUS_AUTHOR "NBS System & Julien (jvoisin) Voisin"
-#define PHP_SNUFFLEUPAGUS_URL "https://github.com/jvoisin/snuffleupagus"
+#define PHP_SNUFFLEUPAGUS_AUTHOR "NBS System & Julien (jvoisin) Voisin | Suhosin-NG patches by SektionEins GmbH"
+#define PHP_SNUFFLEUPAGUS_URL "https://github.com/sektioneins/snuffleupagus"
 #define PHP_SNUFFLEUPAGUS_COPYRIGHT "LGPLv2"
 
 #ifdef HAVE_CONFIG_H

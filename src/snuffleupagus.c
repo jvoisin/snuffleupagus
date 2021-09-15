@@ -302,7 +302,7 @@ PHP_MINFO_FUNCTION(snuffleupagus) {
   php_info_print_table_row(
       2, "snuffleupagus support",
       SNUFFLEUPAGUS_G(is_config_valid) ? "enabled" : "disabled");
-  php_info_print_table_row(2, "Version", PHP_SNUFFLEUPAGUS_VERSION);
+  php_info_print_table_row(2, "Version", PHP_SNUFFLEUPAGUS_VERSION "-sng (with Suhosin-NG patches)");
   php_info_print_table_row(2, "Valid config", valid_config);
   php_info_print_table_end();
   DISPLAY_INI_ENTRIES();
