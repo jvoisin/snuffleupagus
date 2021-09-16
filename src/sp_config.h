@@ -81,6 +81,8 @@ typedef struct {
 typedef struct {
   bool encrypt;
   bool simulation;
+  u_long sid_min_length;
+  u_long sid_max_length;
 } sp_config_session;
 
 typedef struct {
@@ -292,6 +294,8 @@ typedef struct {
 #define SP_TOKEN_MAX_EXECUTION_DEPTH "max_execution_depth"
 #define SP_TOKEN_SERVER_ENCODE "server_encode"
 #define SP_TOKEN_SERVER_STRIP "server_strip"
+#define SP_TOKEN_SID_MIN_LENGTH "sid_min_length"
+#define SP_TOKEN_SID_MAX_LENGTH "sid_max_length"
 
 // upload_validator
 #define SP_TOKEN_UPLOAD_SCRIPT "script"

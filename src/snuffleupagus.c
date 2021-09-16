@@ -365,7 +365,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     hook_stream_wrappers();
   }
 
-  if (SNUFFLEUPAGUS_G(config).config_session->encrypt) {
+  if (SNUFFLEUPAGUS_G(config).config_session->encrypt || SNUFFLEUPAGUS_G(config).config_session->sid_min_length || SNUFFLEUPAGUS_G(config).config_session->sid_max_length) {
     hook_session();
   }
 

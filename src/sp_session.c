@@ -24,21 +24,35 @@ static int (*old_s_write)(PS_WRITE_ARGS);
 static int (*previous_sessionRINIT)(INIT_FUNC_ARGS) = NULL;
 static ZEND_INI_MH((*old_OnUpdateSaveHandler)) = NULL;
 
+static void check_sid_length(zend_string *sid) {
+  const sp_config_session *cfg = SNUFFLEUPAGUS_G(config).config_session;
+
+  if (sid) {
+    if (cfg->sid_min_length && ZSTR_LEN(sid) < cfg->sid_min_length) {
+      sp_log_auto("session", cfg->simulation, "Session ID is too short");
+    }
+    if (cfg->sid_max_length && ZSTR_LEN(sid) > cfg->sid_max_length) {
+      sp_log_auto("session", cfg->simulation, "Session ID is too long");
+    }
+  }
+}
+
 static int sp_hook_s_read(PS_READ_ARGS) {
+  const sp_config_session *cfg = SNUFFLEUPAGUS_G(config).config_session;
+  check_sid_length(key);
+
   int r = old_s_read(mod_data, key, val, maxlifetime);
-  const sp_config_session *config_session =
-      SNUFFLEUPAGUS_G(config).config_session;
 
   if ((NULL == val) || (NULL == *val) || (0 == ZSTR_LEN(*val))) {
     return r;
   }
 
-  if (r == SUCCESS && config_session->encrypt) {
+  if (r == SUCCESS && cfg->encrypt) {
     zend_string *orig_val = *val;
     zval val_zval;
     ZVAL_PSTRINGL(&val_zval, ZSTR_VAL(*val), ZSTR_LEN(*val));
 
-    int ret = decrypt_zval(&val_zval, config_session->simulation, NULL);
+    int ret = decrypt_zval(&val_zval, cfg->simulation, NULL);
     if (ZEND_HASH_APPLY_KEEP != ret) {
       zend_bailout();
     }
@@ -51,7 +65,10 @@ static int sp_hook_s_read(PS_READ_ARGS) {
 }
 
 static int sp_hook_s_write(PS_WRITE_ARGS) {
-  if (ZSTR_LEN(val) > 0 && SNUFFLEUPAGUS_G(config).config_session->encrypt) {
+  const sp_config_session *cfg = SNUFFLEUPAGUS_G(config).config_session;
+  check_sid_length(key);
+
+  if (ZSTR_LEN(val) > 0 && cfg->encrypt) {
     zend_string *new_val = encrypt_zval(val);
     return old_s_write(mod_data, key, new_val, maxlifetime);
   }

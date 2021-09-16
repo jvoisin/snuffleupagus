@@ -33,6 +33,8 @@ SP_PARSE_FN(parse_session) {
       {parse_empty, SP_TOKEN_ENCRYPT, &(cfg->encrypt)},
       {parse_empty, SP_TOKEN_SIMULATION, &(cfg->simulation)},
       {parse_empty, SP_TOKEN_SIM, &(cfg->simulation)},
+      {parse_ulong, SP_TOKEN_SID_MIN_LENGTH, &(cfg->sid_min_length)},
+      {parse_ulong, SP_TOKEN_SID_MAX_LENGTH, &(cfg->sid_max_length)},
       {0, 0, 0}};
 
   SP_PROCESS_CONFIG_KEYWORDS_ERR();
