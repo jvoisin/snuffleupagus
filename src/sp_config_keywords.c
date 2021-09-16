@@ -129,6 +129,8 @@ SP_PARSE_FN(parse_global) {
       {parse_str, SP_TOKEN_ENV_VAR, &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)},
       {parse_log_media, SP_TOKEN_LOG_MEDIA, &(SNUFFLEUPAGUS_G(config).log_media)},
       {parse_ulong, SP_TOKEN_MAX_EXECUTION_DEPTH, &(SNUFFLEUPAGUS_G(config).max_execution_depth)},
+      {parse_enable, SP_TOKEN_SERVER_ENCODE, &(SNUFFLEUPAGUS_G(config).server_encode)},
+      {parse_enable, SP_TOKEN_SERVER_STRIP, &(SNUFFLEUPAGUS_G(config).server_strip)},
       {0, 0, 0}};
 
   SP_PROCESS_CONFIG_KEYWORDS_ERR();

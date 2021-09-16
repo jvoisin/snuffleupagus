@@ -383,6 +383,8 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     sp_hook_ini();
   }
 
+  sp_hook_register_server_variables();
+
   if (true == SNUFFLEUPAGUS_G(config).config_global_strict->enable) {
     if (!zend_get_extension(PHP_SNUFFLEUPAGUS_EXTNAME)) {
       zend_extension_entry.startup = NULL;

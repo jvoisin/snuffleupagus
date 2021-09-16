@@ -197,6 +197,8 @@ typedef struct {
   bool hook_execute;
   char log_media;
   u_long max_execution_depth;
+  bool server_encode;
+  bool server_strip;
 
   HashTable *config_disabled_functions;
   HashTable *config_disabled_functions_hooked;
@@ -288,6 +290,8 @@ typedef struct {
 #define SP_TOKEN_ENV_VAR "cookie_env_var"
 #define SP_TOKEN_LOG_MEDIA "log_media"
 #define SP_TOKEN_MAX_EXECUTION_DEPTH "max_execution_depth"
+#define SP_TOKEN_SERVER_ENCODE "server_encode"
+#define SP_TOKEN_SERVER_STRIP "server_strip"
 
 // upload_validator
 #define SP_TOKEN_UPLOAD_SCRIPT "script"
