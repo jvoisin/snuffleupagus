@@ -32,8 +32,7 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
 
   if (event == MULTIPART_EVENT_END) {
     zend_string *file_key __attribute__((unused)) = NULL;
-    const sp_config_upload_validation *config_upload =
-        SNUFFLEUPAGUS_G(config).config_upload_validation;
+    const sp_config_upload_validation *config_upload = &(SPCFG(upload_validation));
     zval *file;
     pid_t pid;
 
@@ -44,12 +43,9 @@ int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
     ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL(PG(http_globals)[TRACK_VARS_FILES]),
                                   file_key, file) {  // for each uploaded file
 
-      char *filename = Z_STRVAL_P(
-          zend_hash_str_find(Z_ARRVAL_P(file), "name", sizeof("name") - 1));
-      char *tmp_name = Z_STRVAL_P(zend_hash_str_find(
-          Z_ARRVAL_P(file), "tmp_name", sizeof("tmp_name") - 1));
-      size_t filesize = Z_LVAL_P(
-          zend_hash_str_find(Z_ARRVAL_P(file), "size", sizeof("size") - 1));
+      char *filename = Z_STRVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), ZEND_STRL("name")));
+      char *tmp_name = Z_STRVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), ZEND_STRL("tmp_name")));
+      size_t filesize = Z_LVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), ZEND_STRL("size")));
       char *cmd[3] = {0};
       char *env[5] = {0};
 

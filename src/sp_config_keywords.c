@@ -49,12 +49,12 @@ SP_PARSE_FN(parse_session) {
 #endif
 
   if (cfg->encrypt) {
-    if (!SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var) {
+    if (!SPCFG(cookies_env_var)) {
       sp_log_err("config", "You're trying to use the session cookie encryption feature "
           "on line %zu without having set the `.cookie_env_var` option in "
           "`sp.global`: please set it first", parsed_rule->lineno);
       return SP_PARSER_ERROR;
-    } else if (!SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
+    } else if (!SPCFG(encryption_key)) {
       sp_log_err("config", "You're trying to use the session cookie encryption feature "
                  "on line %zu without having set the `.secret_key` option in "
                  "`sp.global`: please set it first", parsed_rule->lineno);
@@ -127,12 +127,12 @@ SP_PARSE_FN(parse_readonly_exec) {
 
 SP_PARSE_FN(parse_global) {
   sp_config_keyword config_keywords[] = {
-      {parse_str, SP_TOKEN_ENCRYPTION_KEY, &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key)},
-      {parse_str, SP_TOKEN_ENV_VAR, &(SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var)},
-      {parse_log_media, SP_TOKEN_LOG_MEDIA, &(SNUFFLEUPAGUS_G(config).log_media)},
-      {parse_ulong, SP_TOKEN_MAX_EXECUTION_DEPTH, &(SNUFFLEUPAGUS_G(config).max_execution_depth)},
-      {parse_enable, SP_TOKEN_SERVER_ENCODE, &(SNUFFLEUPAGUS_G(config).server_encode)},
-      {parse_enable, SP_TOKEN_SERVER_STRIP, &(SNUFFLEUPAGUS_G(config).server_strip)},
+      {parse_str, SP_TOKEN_ENCRYPTION_KEY, &(SPCFG(encryption_key))},
+      {parse_str, SP_TOKEN_ENV_VAR, &(SPCFG(cookies_env_var))},
+      {parse_log_media, SP_TOKEN_LOG_MEDIA, &(SPCFG(log_media))},
+      {parse_ulong, SP_TOKEN_MAX_EXECUTION_DEPTH, &(SPCFG(max_execution_depth))},
+      {parse_enable, SP_TOKEN_SERVER_ENCODE, &(SPCFG(server_encode))},
+      {parse_enable, SP_TOKEN_SERVER_STRIP, &(SPCFG(server_strip))},
       {0, 0, 0}};
 
   SP_PROCESS_CONFIG_KEYWORDS_ERR();
@@ -140,7 +140,7 @@ SP_PARSE_FN(parse_global) {
 }
 
 SP_PARSE_FN(parse_eval_filter_conf) {
-  sp_config_eval *cfg = SNUFFLEUPAGUS_G(config).config_eval;
+  sp_config_eval *cfg = &(SPCFG(eval));
 
   sp_config_keyword config_keywords[] = {
       {parse_list, SP_TOKEN_LIST, retval},
@@ -186,11 +186,11 @@ SP_PARSE_FN(parse_cookie) {
   SP_PROCESS_CONFIG_KEYWORDS(goto err);
 
   if (cookie->encrypt) {
-    if (!SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var) {
+    if (!SPCFG(cookies_env_var)) {
       sp_log_err("config", "You're trying to use the cookie encryption feature on line %zu "
                             "without having set the `." SP_TOKEN_ENV_VAR "` option in `sp.global`: please set it first", parsed_rule->lineno);
       goto err;
-    } else if (!SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
+    } else if (!SPCFG(encryption_key)) {
       sp_log_err("config", "You're trying to use the cookie encryption feature "
           "on line %zu without having set the `." SP_TOKEN_ENCRYPTION_KEY "` option in "
           "`sp." SP_TOKEN_GLOBAL "`: please set it first", parsed_rule->lineno);
@@ -220,7 +220,7 @@ SP_PARSE_FN(parse_cookie) {
     }
   }
 
-  SNUFFLEUPAGUS_G(config).config_cookie->cookies = sp_list_insert(SNUFFLEUPAGUS_G(config).config_cookie->cookies, cookie);
+  SPCFG(cookie).cookies = sp_list_insert(SPCFG(cookie).cookies, cookie);
 
   return SP_PARSER_STOP;
 
@@ -316,7 +316,7 @@ SP_PARSE_FN(parse_disabled_functions) {
     goto out;
   }
   if (df->filename && (*ZSTR_VAL(df->filename) != '/') &&
-             (0 != strncmp(ZSTR_VAL(df->filename), "phar://", strlen("phar://")))) {
+             (0 != strncmp(ZSTR_VAL(df->filename), ZEND_STRL("phar://")))) {
     sp_log_err("config", "Invalid configuration line: 'sp.disabled_functions': '.filename' must be an absolute path or a phar archive on line %zu", parsed_rule->lineno);
     goto out;
   }
@@ -365,20 +365,20 @@ SP_PARSE_FN(parse_disabled_functions) {
 
   if (df->function && zend_string_equals_literal(df->function, "print")) {
     zend_string_release(df->function);
-    df->function = zend_string_init("echo", sizeof("echo") - 1, 1);
+    df->function = zend_string_init(ZEND_STRL("echo"), 1);
   }
 
   if (df->function && !df->functions_list) {
     if (df->ret || df->r_ret || df->ret_type) {
-      add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret, df);
+      add_df_to_hashtable(SPCFG(disabled_functions_ret), df);
     } else {
-      add_df_to_hashtable(SNUFFLEUPAGUS_G(config).config_disabled_functions, df);
+      add_df_to_hashtable(SPCFG(disabled_functions), df);
     }
   } else {
     if (df->ret || df->r_ret || df->ret_type) {
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg_ret->disabled_functions = sp_list_insert(SNUFFLEUPAGUS_G(config).config_disabled_functions_reg_ret->disabled_functions, df);
+      SPCFG(disabled_functions_reg_ret).disabled_functions = sp_list_insert(SPCFG(disabled_functions_reg_ret).disabled_functions, df);
     } else {
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions = sp_list_insert(SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions, df);
+      SPCFG(disabled_functions_reg).disabled_functions = sp_list_insert(SPCFG(disabled_functions_reg).disabled_functions, df);
     }
   }
   return SP_PARSER_STOP;
@@ -493,7 +493,7 @@ SP_PARSE_FN(parse_ini_entry) {
   }
   entry->access = ro - rw;
 
-  zend_hash_add_ptr(SNUFFLEUPAGUS_G(config).config_ini->entries, entry->key, entry);
+  zend_hash_add_ptr(SPCFG(ini).entries, entry->key, entry);
   return SP_PARSER_STOP;
 
 err:

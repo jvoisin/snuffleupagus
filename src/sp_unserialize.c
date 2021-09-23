@@ -4,10 +4,10 @@ PHP_FUNCTION(sp_serialize) {
   zif_handler orig_handler;
 
   /* Call the original `serialize` function. */
-  orig_handler =
-      zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
-                             "serialize", sizeof("serialize") - 1);
-  orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+  orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("serialize"));
+  if (orig_handler) {
+    orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+  }
 
   /* Compute the HMAC of the textual representation of the serialized data*/
   zval func_name;
@@ -19,7 +19,7 @@ PHP_FUNCTION(sp_serialize) {
   params[1] = *return_value;
   ZVAL_STRING(
       &params[2],
-      ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key));
+      ZSTR_VAL(SPCFG(encryption_key)));
   call_user_function(CG(function_table), NULL, &func_name, &hmac, 3, params);
 
   size_t len = Z_STRLEN_P(return_value) + Z_STRLEN(hmac);
@@ -46,8 +46,7 @@ PHP_FUNCTION(sp_unserialize) {
   size_t buf_len = 0;
   zval *opts = NULL;
 
-  const sp_config_unserialize *config_unserialize =
-      SNUFFLEUPAGUS_G(config).config_unserialize;
+  const sp_config_unserialize *config_unserialize = &(SPCFG(unserialize));
 
   if (zend_parse_parameters(ZEND_NUM_ARGS(), "s|a", &buf, &buf_len, &opts) ==
       FAILURE) {
@@ -71,7 +70,7 @@ PHP_FUNCTION(sp_unserialize) {
   ZVAL_STRING(&params[1], serialized_str);
   ZVAL_STRING(
       &params[2],
-      ZSTR_VAL(SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key));
+      ZSTR_VAL(SPCFG(encryption_key)));
   call_user_function(CG(function_table), NULL, &func_name, &expected_hmac, 3,
                      params);
 
@@ -81,9 +80,7 @@ PHP_FUNCTION(sp_unserialize) {
   }
 
   if (0 == status) {
-    if ((orig_handler = zend_hash_str_find_ptr(
-             SNUFFLEUPAGUS_G(sp_internal_functions_hook), "unserialize",
-             sizeof("unserialize") - 1))) {
+    if ((orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("unserialize")))) {
       orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     }
   } else {
@@ -93,9 +90,7 @@ PHP_FUNCTION(sp_unserialize) {
     }
     if (true == config_unserialize->simulation) {
       sp_log_simulation("unserialize", "Invalid HMAC for %s", serialized_str);
-      if ((orig_handler = zend_hash_str_find_ptr(
-               SNUFFLEUPAGUS_G(sp_internal_functions_hook), "unserialize",
-               sizeof("unserialize") - 1))) {
+      if ((orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("unserialize")))) {
         orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
       }
     } else {

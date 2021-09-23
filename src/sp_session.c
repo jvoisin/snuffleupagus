@@ -25,7 +25,7 @@ static int (*previous_sessionRINIT)(INIT_FUNC_ARGS) = NULL;
 static ZEND_INI_MH((*old_OnUpdateSaveHandler)) = NULL;
 
 static void check_sid_length(zend_string *sid) {
-  const sp_config_session *cfg = SNUFFLEUPAGUS_G(config).config_session;
+  const sp_config_session *cfg = &(SPCFG(session));
 
   if (sid) {
     if (cfg->sid_min_length && ZSTR_LEN(sid) < cfg->sid_min_length) {
@@ -38,7 +38,7 @@ static void check_sid_length(zend_string *sid) {
 }
 
 static int sp_hook_s_read(PS_READ_ARGS) {
-  const sp_config_session *cfg = SNUFFLEUPAGUS_G(config).config_session;
+  const sp_config_session *cfg = &(SPCFG(session));
   check_sid_length(key);
 
   int r = old_s_read(mod_data, key, val, maxlifetime);
@@ -65,7 +65,7 @@ static int sp_hook_s_read(PS_READ_ARGS) {
 }
 
 static int sp_hook_s_write(PS_WRITE_ARGS) {
-  const sp_config_session *cfg = SNUFFLEUPAGUS_G(config).config_session;
+  const sp_config_session *cfg = &(SPCFG(session));
   check_sid_length(key);
 
   if (ZSTR_LEN(val) > 0 && cfg->encrypt) {

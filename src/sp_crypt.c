@@ -3,13 +3,10 @@
 void generate_key(unsigned char *key) {
   PHP_SHA256_CTX ctx;
   const char *user_agent = getenv("HTTP_USER_AGENT");
-  const zend_string *env_var_zend =
-      SNUFFLEUPAGUS_G(config).config_snuffleupagus->cookies_env_var;
-  const zend_string *encryption_key_zend =
-      SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key;
+  const zend_string *env_var_zend = SPCFG(cookies_env_var);
+  const zend_string *encryption_key_zend = SPCFG(encryption_key);
   const char *env_var = (env_var_zend ? getenv(ZSTR_VAL(env_var_zend)) : NULL);
-  const char *encryption_key =
-      (encryption_key_zend ? ZSTR_VAL(encryption_key_zend) : NULL);
+  const char *encryption_key = (encryption_key_zend ? ZSTR_VAL(encryption_key_zend) : NULL);
 
   assert(32 == crypto_secretbox_KEYBYTES);  // 32 is the size of a SHA256.
   assert(encryption_key);                   // Encryption key can't be NULL

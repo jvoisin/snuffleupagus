@@ -33,11 +33,6 @@ typedef struct {
 } sp_cidr;
 
 typedef struct {
-  zend_string *encryption_key;
-  zend_string *cookies_env_var;
-} sp_config_global;
-
-typedef struct {
   bool enable;
   bool simulation;
   zend_string *dump;
@@ -180,35 +175,6 @@ typedef struct {
   bool policy_drop;
   HashTable *entries;  // ht of sp_ini_entry
 } sp_config_ini;
-
-typedef struct {
-  sp_config_random *config_random;
-  sp_config_sloppy *config_sloppy;
-  sp_config_unserialize *config_unserialize;
-  sp_config_readonly_exec *config_readonly_exec;
-  sp_config_upload_validation *config_upload_validation;
-  sp_config_cookie *config_cookie;
-  sp_config_global *config_snuffleupagus;
-  sp_config_auto_cookie_secure *config_auto_cookie_secure;
-  sp_config_global_strict *config_global_strict;
-  sp_config_disable_xxe *config_disable_xxe;
-  sp_config_eval *config_eval;
-  sp_config_wrapper *config_wrapper;
-  sp_config_session *config_session;
-  sp_config_ini *config_ini;
-  bool hook_execute;
-  char log_media;
-  u_long max_execution_depth;
-  bool server_encode;
-  bool server_strip;
-
-  HashTable *config_disabled_functions;
-  HashTable *config_disabled_functions_hooked;
-  HashTable *config_disabled_functions_ret;
-  HashTable *config_disabled_functions_ret_hooked;
-  sp_config_disabled_functions *config_disabled_functions_reg;
-  sp_config_disabled_functions *config_disabled_functions_reg_ret;
-} sp_config;
 
 #define SP_PARSE_FN_(fname, kwvar) int fname(char *token, sp_parsed_keyword *kwvar, void *retval)
 #define SP_PARSE_FN(fname) SP_PARSE_FN_(fname, parsed_rule)

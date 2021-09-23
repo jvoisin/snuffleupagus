@@ -46,7 +46,7 @@ void sp_log_msgf(char const* restrict feature, int level, int type,
       break;
   }
 
-  switch (SNUFFLEUPAGUS_G(config).log_media) {
+  switch (SPCFG(log_media)) {
     case SP_SYSLOG: {
       const char* error_filename = zend_get_executed_filename();
       int syslog_level = (level == E_ERROR) ? LOG_ERR : LOG_INFO;
@@ -244,17 +244,17 @@ const zend_string* sp_zval_to_zend_string(const zval* zv) {
       return Z_STR_P(zv);
     }
     case IS_FALSE:
-      return zend_string_init("FALSE", sizeof("FALSE") - 1, 0);
+      return zend_string_init(ZEND_STRL("FALSE"), 0);
     case IS_TRUE:
-      return zend_string_init("TRUE", sizeof("TRUE") - 1, 0);
+      return zend_string_init(ZEND_STRL("TRUE"), 0);
     case IS_NULL:
-      return zend_string_init("NULL", sizeof("NULL") - 1, 0);
+      return zend_string_init(ZEND_STRL("NULL"), 0);
     case IS_OBJECT:
-      return zend_string_init("OBJECT", sizeof("OBJECT") - 1, 0);
+      return zend_string_init(ZEND_STRL("OBJECT"), 0);
     case IS_ARRAY:
-      return zend_string_init("ARRAY", sizeof("ARRAY") - 1, 0);
+      return zend_string_init(ZEND_STRL("ARRAY"), 0);
     case IS_RESOURCE:
-      return zend_string_init("RESOURCE", sizeof("RESOURCE") - 1, 0);
+      return zend_string_init(ZEND_STRL("RESOURCE"), 0);
     default:                              // LCOV_EXCL_LINE
       return zend_string_init("", 0, 0);  // LCOV_EXCL_LINE
   }
@@ -432,7 +432,7 @@ bool hook_function(const char* original_name, HashTable* hook_table,
     if (NULL == mb_name) {
       return FAILURE;
     }
-    memcpy(mb_name, "mb_", sizeof("mb_") - 1);
+    memcpy(mb_name, ZEND_STRL("mb_"));
     memcpy(mb_name + 3, VAR_AND_LEN(original_name));
     _hook_function(mb_name, hook_table, new_function);
     efree(mb_name);
@@ -471,7 +471,7 @@ void unhook_functions(HashTable *ht) {
 }
 
 bool check_is_in_eval_whitelist(const zend_string* const function_name) {
-  const sp_list_node* it = SNUFFLEUPAGUS_G(config).config_eval->whitelist;
+  const sp_list_node* it = SPCFG(eval).whitelist;
   if (!it) {
     return false;
   }

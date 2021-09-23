@@ -30,7 +30,7 @@ static inline void sp_op_array_handler(zend_op_array *const op) {
   if (NULL == op->filename || op->fn_flags & ZEND_ACC_STRICT_TYPES) {
     return;
   } else {
-    if (true == SNUFFLEUPAGUS_G(config).config_global_strict->enable) {
+    if (SPCFG(global_strict).enable) {
       op->fn_flags |= ZEND_ACC_STRICT_TYPES;
     }
   }
@@ -41,16 +41,15 @@ ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 static PHP_INI_MH(StrictMode) {
   TSRMLS_FETCH();
 
-  SNUFFLEUPAGUS_G(allow_broken_configuration) = false;
+  SPG(allow_broken_configuration) = false;
   if (new_value && zend_string_equals_literal(new_value, "1")) {
-    SNUFFLEUPAGUS_G(allow_broken_configuration) = true;
+    SPG(allow_broken_configuration) = true;
   }
   return SUCCESS;
 }
 
 PHP_INI_BEGIN()
-PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM,
-              OnUpdateConfiguration)
+PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM, OnUpdateConfiguration)
 PHP_INI_ENTRY("sp.allow_broken_configuration", "0", PHP_INI_SYSTEM, StrictMode)
 PHP_INI_END()
 
@@ -106,47 +105,28 @@ static PHP_GINIT_FUNCTION(snuffleupagus) {
   snuffleupagus_globals->is_config_valid = SP_CONFIG_NONE;
   snuffleupagus_globals->in_eval = 0;
 
-#define SP_INIT(F)                  \
-  snuffleupagus_globals->config.F = \
-      pecalloc(sizeof(*(snuffleupagus_globals->config.F)), 1, 1);
-  SP_INIT(config_random);
-  SP_INIT(config_sloppy);
-  SP_INIT(config_unserialize);
-  SP_INIT(config_readonly_exec);
-  SP_INIT(config_upload_validation);
-  SP_INIT(config_cookie);
-  SP_INIT(config_snuffleupagus);
-  SP_INIT(config_auto_cookie_secure);
-  SP_INIT(config_global_strict);
-  SP_INIT(config_disable_xxe);
-  SP_INIT(config_eval);
-  SP_INIT(config_wrapper);
-  SP_INIT(config_session);
-  SP_INIT(config_ini);
-  SP_INIT(config_disabled_functions_reg);
-  SP_INIT(config_disabled_functions_reg_ret);
-#undef SP_INIT
-
 #define SP_INIT_HT(F)                                                          \
   snuffleupagus_globals->F = pemalloc(sizeof(*(snuffleupagus_globals->F)), 1); \
-  zend_hash_init(snuffleupagus_globals->F, 10, NULL, NULL, 1);
+    zend_hash_init(snuffleupagus_globals->F, 10, NULL, NULL, 1);
   SP_INIT_HT(disabled_functions_hook);
   SP_INIT_HT(sp_internal_functions_hook);
   SP_INIT_HT(sp_eval_blacklist_functions_hook);
-  SP_INIT_HT(config.config_disabled_functions);
-  SP_INIT_HT(config.config_disabled_functions_hooked);
-  SP_INIT_HT(config.config_disabled_functions_ret);
-  SP_INIT_HT(config.config_disabled_functions_ret_hooked);
-  SP_INIT_HT(config.config_ini->entries);
+  SP_INIT_HT(config_disabled_functions);
+  SP_INIT_HT(config_disabled_functions_hooked);
+  SP_INIT_HT(config_disabled_functions_ret);
+  SP_INIT_HT(config_disabled_functions_ret_hooked);
+  SP_INIT_HT(config_ini.entries);
 #undef SP_INIT_HT
 
-#define SP_INIT_NULL(F) snuffleupagus_globals->config.F = NULL;
-  SP_INIT_NULL(config_disabled_functions_reg->disabled_functions);
-  SP_INIT_NULL(config_disabled_functions_reg_ret->disabled_functions);
-  SP_INIT_NULL(config_cookie->cookies);
-  SP_INIT_NULL(config_eval->blacklist);
-  SP_INIT_NULL(config_eval->whitelist);
-  SP_INIT_NULL(config_wrapper->whitelist);
+#define SP_INIT_NULL(F) snuffleupagus_globals->F = NULL;
+  SP_INIT_NULL(config_encryption_key);
+  SP_INIT_NULL(config_cookies_env_var);
+  SP_INIT_NULL(config_disabled_functions_reg.disabled_functions);
+  SP_INIT_NULL(config_disabled_functions_reg_ret.disabled_functions);
+  SP_INIT_NULL(config_cookie.cookies);
+  SP_INIT_NULL(config_eval.blacklist);
+  SP_INIT_NULL(config_eval.whitelist);
+  SP_INIT_NULL(config_wrapper.whitelist);
 #undef SP_INIT_NULL
 }
 
@@ -159,10 +139,10 @@ PHP_MINIT_FUNCTION(snuffleupagus) {
 
 PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   sp_log_debug("(MSHUTDOWN)");
-  unhook_functions(SNUFFLEUPAGUS_G(sp_internal_functions_hook));
-  unhook_functions(SNUFFLEUPAGUS_G(disabled_functions_hook));
-  unhook_functions(SNUFFLEUPAGUS_G(sp_eval_blacklist_functions_hook));
-  if (SNUFFLEUPAGUS_G(config).config_ini->enable) { sp_unhook_ini(); }
+  unhook_functions(SPG(sp_internal_functions_hook));
+  unhook_functions(SPG(disabled_functions_hook));
+  unhook_functions(SPG(sp_eval_blacklist_functions_hook));
+  if (SPCFG(ini).enable) { sp_unhook_ini(); }
   UNREGISTER_INI_ENTRIES();
 
   return SUCCESS;
@@ -189,57 +169,37 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_HT(sp_eval_blacklist_functions_hook);
 
 #define FREE_HT_LIST(F)                                         \
-  free_disabled_functions_hashtable(snuffleupagus_globals->config.F); \
-  FREE_HT(config.F);
+  free_disabled_functions_hashtable(snuffleupagus_globals->F); \
+  FREE_HT(F);
   FREE_HT_LIST(config_disabled_functions);
   FREE_HT_LIST(config_disabled_functions_hooked);
   FREE_HT_LIST(config_disabled_functions_ret);
   FREE_HT_LIST(config_disabled_functions_ret_hooked);
 #undef FREE_HT_LIST
 
-  free_config_ini_entries(snuffleupagus_globals->config.config_ini->entries);
-  FREE_HT(config.config_ini->entries);
+  free_config_ini_entries(snuffleupagus_globals->config_ini.entries);
+  FREE_HT(config_ini.entries);
 #undef FREE_HT
 
-#define FREE_LST_DISABLE(L)                       \
-    sp_list_free(snuffleupagus_globals->config.L, sp_free_disabled_function);
-  FREE_LST_DISABLE(config_disabled_functions_reg->disabled_functions);
-  FREE_LST_DISABLE(config_disabled_functions_reg_ret->disabled_functions);
-#undef FREE_LST_DISABLE
+  sp_list_free(snuffleupagus_globals->config_disabled_functions_reg.disabled_functions, sp_free_disabled_function);
+  sp_list_free(snuffleupagus_globals->config_disabled_functions_reg_ret.disabled_functions, sp_free_disabled_function);
+  sp_list_free(snuffleupagus_globals->config_cookie.cookies, sp_free_cookie);
 
-  sp_list_free(snuffleupagus_globals->config.config_cookie->cookies, sp_free_cookie);
-
-#define FREE_LST(L) sp_list_free(snuffleupagus_globals->config.L, sp_free_zstr);
-  FREE_LST(config_eval->blacklist);
-  FREE_LST(config_eval->whitelist);
-  FREE_LST(config_wrapper->whitelist);
+#define FREE_LST(L) sp_list_free(snuffleupagus_globals->L, sp_free_zstr);
+  FREE_LST(config_eval.blacklist);
+  FREE_LST(config_eval.whitelist);
+  FREE_LST(config_wrapper.whitelist);
 #undef FREE_LST
 
 
-#define FREE_CFG(C) pefree(snuffleupagus_globals->config.C, 1);
-#define FREE_CFG_ZSTR(C) sp_free_zstr(snuffleupagus_globals->config.C);
-  FREE_CFG(config_random);
-  FREE_CFG(config_sloppy);
-  FREE_CFG_ZSTR(config_unserialize->dump);
-  FREE_CFG_ZSTR(config_unserialize->textual_representation);
-  FREE_CFG(config_unserialize);
-  FREE_CFG(config_readonly_exec);
-  FREE_CFG_ZSTR(config_upload_validation->script);
-  FREE_CFG(config_upload_validation);
-  FREE_CFG(config_cookie);
-  FREE_CFG(config_snuffleupagus);
-  FREE_CFG(config_auto_cookie_secure);
-  FREE_CFG(config_global_strict);
-  FREE_CFG(config_disable_xxe);
-  FREE_CFG_ZSTR(config_eval->dump);
-  FREE_CFG_ZSTR(config_eval->textual_representation);
-  FREE_CFG(config_eval);
-  FREE_CFG(config_wrapper);
-  FREE_CFG(config_session);
-  FREE_CFG(config_ini);
-  FREE_CFG(config_disabled_functions_reg);
-  FREE_CFG(config_disabled_functions_reg_ret);
-#undef FREE_CFG
+// #define FREE_CFG(C) pefree(snuffleupagus_globals->config.C, 1);
+#define FREE_CFG_ZSTR(C) sp_free_zstr(snuffleupagus_globals->C);
+  FREE_CFG_ZSTR(config_unserialize.dump);
+  FREE_CFG_ZSTR(config_unserialize.textual_representation);
+  FREE_CFG_ZSTR(config_upload_validation.script);
+  FREE_CFG_ZSTR(config_eval.dump);
+  FREE_CFG_ZSTR(config_eval.textual_representation);
+// #undef FREE_CFG
 #undef FREE_CFG_ZSTR
 
 #ifdef SP_DEBUG_STDERR
@@ -251,35 +211,32 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
 }
 
 PHP_RINIT_FUNCTION(snuffleupagus) {
-  SNUFFLEUPAGUS_G(execution_depth) = 0;
+  SPG(execution_depth) = 0;
+  SPG(in_eval) = 0;
 
-  const sp_config_wrapper *const config_wrapper =
-      SNUFFLEUPAGUS_G(config).config_wrapper;
+  const sp_config_wrapper *const config_wrapper = &(SPCFG(wrapper));
 #if defined(COMPILE_DL_SNUFFLEUPAGUS) && defined(ZTS)
   ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
-  if (!SNUFFLEUPAGUS_G(allow_broken_configuration)) {
-    if (SNUFFLEUPAGUS_G(is_config_valid) == SP_CONFIG_INVALID) {
+  if (!SPG(allow_broken_configuration)) {
+    if (SPG(is_config_valid) == SP_CONFIG_INVALID) {
       sp_log_err("config", "Invalid configuration file");
-    } else if (SNUFFLEUPAGUS_G(is_config_valid) == SP_CONFIG_NONE) {
+    } else if (SPG(is_config_valid) == SP_CONFIG_NONE) {
       sp_log_warn("config",
                   "No configuration specificed via sp.configuration_file");
     }
   }
 
-  // We need to disable wrappers loaded by extensions loaded after
-  // SNUFFLEUPAGUS.
+  // We need to disable wrappers loaded by extensions loaded after SNUFFLEUPAGUS.
   if (config_wrapper->enabled &&
-      zend_hash_num_elements(php_stream_get_url_stream_wrappers_hash()) !=
-          config_wrapper->num_wrapper) {
+      zend_hash_num_elements(php_stream_get_url_stream_wrappers_hash()) != config_wrapper->num_wrapper) {
     sp_disable_wrapper();
   }
 
-  if (NULL != SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
-    if (NULL != SNUFFLEUPAGUS_G(config).config_cookie->cookies) {
-      zend_hash_apply_with_arguments(
-          Z_ARRVAL(PG(http_globals)[TRACK_VARS_COOKIE]), decrypt_cookie, 0);
+  if (NULL != SPCFG(encryption_key)) {
+    if (NULL != SPCFG(cookie).cookies) {
+      zend_hash_apply_with_arguments(Z_ARRVAL(PG(http_globals)[TRACK_VARS_COOKIE]), decrypt_cookie, 0);
     }
   }
   return SUCCESS;
@@ -289,7 +246,7 @@ PHP_RSHUTDOWN_FUNCTION(snuffleupagus) { return SUCCESS; }
 
 PHP_MINFO_FUNCTION(snuffleupagus) {
   const char *valid_config;
-  switch (SNUFFLEUPAGUS_G(is_config_valid)) {
+  switch (SPG(is_config_valid)) {
     case SP_CONFIG_VALID:
       valid_config = "yes";
       break;
@@ -303,7 +260,7 @@ PHP_MINFO_FUNCTION(snuffleupagus) {
   php_info_print_table_start();
   php_info_print_table_row(
       2, "snuffleupagus support",
-      SNUFFLEUPAGUS_G(is_config_valid) ? "enabled" : "disabled");
+      SPG(is_config_valid) ? "enabled" : "disabled");
   php_info_print_table_row(2, "Version", PHP_SNUFFLEUPAGUS_VERSION "-sng (with Suhosin-NG patches)");
   php_info_print_table_row(2, "Valid config", valid_config);
   php_info_print_table_end();
@@ -328,14 +285,14 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
     glob_t globbuf;
     if (0 != glob(config_file, GLOB_NOCHECK, NULL, &globbuf)) {
-      SNUFFLEUPAGUS_G(is_config_valid) = SP_CONFIG_INVALID;
+      SPG(is_config_valid) = SP_CONFIG_INVALID;
       globfree(&globbuf);
       return FAILURE;
     }
 
     for (size_t i = 0; globbuf.gl_pathv[i]; i++) {
       if (sp_parse_config(globbuf.gl_pathv[i]) != SUCCESS) {
-        SNUFFLEUPAGUS_G(is_config_valid) = SP_CONFIG_INVALID;
+        SPG(is_config_valid) = SP_CONFIG_INVALID;
         globfree(&globbuf);
         return FAILURE;
       }
@@ -343,34 +300,34 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     globfree(&globbuf);
   }
 
-  SNUFFLEUPAGUS_G(is_config_valid) = SP_CONFIG_VALID;
+  SPG(is_config_valid) = SP_CONFIG_VALID;
 
-  if ((SNUFFLEUPAGUS_G(config).config_sloppy->enable)) {
+  if (SPCFG(sloppy).enable) {
     hook_sloppy();
   }
 
-  if (SNUFFLEUPAGUS_G(config).config_random->enable) {
+  if (SPCFG(random).enable) {
     hook_rand();
   }
 
-  if (SNUFFLEUPAGUS_G(config).config_upload_validation->enable) {
+  if (SPCFG(upload_validation).enable) {
     hook_upload();
   }
 
-  if (SNUFFLEUPAGUS_G(config).config_disable_xxe->enable == 0) {
+  if (SPCFG(disable_xxe).enable == 0) {
     hook_libxml_disable_entity_loader();
   }
 
-  if (SNUFFLEUPAGUS_G(config).config_wrapper->enabled) {
+  if (SPCFG(wrapper).enabled) {
     hook_stream_wrappers();
   }
 
-  if (SNUFFLEUPAGUS_G(config).config_session->encrypt || SNUFFLEUPAGUS_G(config).config_session->sid_min_length || SNUFFLEUPAGUS_G(config).config_session->sid_max_length) {
+  if (SPCFG(session).encrypt || SPCFG(session).sid_min_length || SPCFG(session).sid_max_length) {
     hook_session();
   }
 
-  if (NULL != SNUFFLEUPAGUS_G(config).config_snuffleupagus->encryption_key) {
-    if (SNUFFLEUPAGUS_G(config).config_unserialize->enable) {
+  if (NULL != SPCFG(encryption_key)) {
+    if (SPCFG(unserialize).enable) {
       hook_serialize();
     }
   }
@@ -379,13 +336,13 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   hook_execute();
   hook_cookies();
 
-  if (SNUFFLEUPAGUS_G(config).config_ini->enable) {
+  if (SPCFG(ini).enable) {
     sp_hook_ini();
   }
 
   sp_hook_register_server_variables();
 
-  if (true == SNUFFLEUPAGUS_G(config).config_global_strict->enable) {
+  if (SPCFG(global_strict).enable) {
     if (!zend_get_extension(PHP_SNUFFLEUPAGUS_EXTNAME)) {
       zend_extension_entry.startup = NULL;
       zend_register_extension(&zend_extension_entry, NULL);
@@ -395,26 +352,18 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   }
 
   // If `zend_write_default` is not NULL it is already hooked.
-  if ((zend_hash_str_find(
-           SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked, "echo",
-           sizeof("echo") - 1) ||
-       zend_hash_str_find(
-           SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked, "echo",
-           sizeof("echo") - 1)) &&
+  if ((zend_hash_str_find(SPCFG(disabled_functions_hooked), ZEND_STRL("echo")) ||
+       zend_hash_str_find(SPCFG(disabled_functions_ret_hooked), ZEND_STRL("echo"))) &&
       NULL == zend_write_default && zend_write != hook_echo) {
     zend_write_default = zend_write;
     zend_write = hook_echo;
   }
 
-  SNUFFLEUPAGUS_G(config).hook_execute =
-      SNUFFLEUPAGUS_G(config)
-          .config_disabled_functions_reg->disabled_functions ||
-      SNUFFLEUPAGUS_G(config)
-          .config_disabled_functions_reg_ret->disabled_functions ||
-      zend_hash_num_elements(
-          SNUFFLEUPAGUS_G(config).config_disabled_functions) ||
-      zend_hash_num_elements(
-          SNUFFLEUPAGUS_G(config).config_disabled_functions_ret);
+  SPG(hook_execute) = SPCFG(max_execution_depth) > 0 ||
+    SPCFG(disabled_functions_reg).disabled_functions ||
+    SPCFG(disabled_functions_reg_ret).disabled_functions ||
+    (SPCFG(disabled_functions) && zend_hash_num_elements(SPCFG(disabled_functions))) ||
+    (SPCFG(disabled_functions) && zend_hash_num_elements(SPCFG(disabled_functions_ret)));
 
   return SUCCESS;
 }

@@ -77,12 +77,12 @@ static void sp_register_server_variables(zval *track_vars_array) {
   svars = Z_ARRVAL_P(track_vars_array);
 
 
-  if (SNUFFLEUPAGUS_G(config).server_encode) {
+  if (SPCFG(server_encode)) {
     sp_server_encode(svars, ZEND_STRL("REQUEST_URI"));
     sp_server_encode(svars, ZEND_STRL("QUERY_STRING"));
   }
 
-  if (SNUFFLEUPAGUS_G(config).server_strip) {
+  if (SPCFG(server_strip)) {
     sp_server_strip(svars, ZEND_STRL("PHP_SELF"));
     sp_server_strip(svars, ZEND_STRL("HTTP_HOST"));
     sp_server_strip(svars, ZEND_STRL("HTTP_USER_AGENT"));

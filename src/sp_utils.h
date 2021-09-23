@@ -23,10 +23,10 @@
 #define SHA256_SIZE 32
 
 #define HOOK_FUNCTION(original_name, hook_table, new_function) \
-  hook_function(original_name, SNUFFLEUPAGUS_G(hook_table), new_function)
+  hook_function(original_name, SPG(hook_table), new_function)
 
 #define HOOK_FUNCTION_BY_REGEXP(regexp, hook_table, new_function) \
-  hook_regexp(regexp, SNUFFLEUPAGUS_G(hook_table), new_function)
+  hook_regexp(regexp, SPG(hook_table), new_function)
 
 #define SP_TYPE_LOG (0)
 #define SP_TYPE_DROP (1)

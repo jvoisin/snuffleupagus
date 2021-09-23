@@ -106,11 +106,44 @@ extern zend_module_entry snuffleupagus_module_entry;
 #endif
 
 ZEND_BEGIN_MODULE_GLOBALS(snuffleupagus)
-size_t in_eval;
-sp_config config;
-int is_config_valid;  // 1 = valid, 0 = invalid, -1 = none
-u_long execution_depth;
+// sp_config config;
+// --- snuffleupagus config
+sp_config_random config_random;
+sp_config_sloppy config_sloppy;
+sp_config_unserialize config_unserialize;
+sp_config_readonly_exec config_readonly_exec;
+sp_config_upload_validation config_upload_validation;
+sp_config_cookie config_cookie;
+sp_config_auto_cookie_secure config_auto_cookie_secure;
+sp_config_global_strict config_global_strict;
+sp_config_disable_xxe config_disable_xxe;
+sp_config_eval config_eval;
+sp_config_wrapper config_wrapper;
+sp_config_session config_session;
+sp_config_ini config_ini;
+char config_log_media;
+u_long config_max_execution_depth;
+bool config_server_encode;
+bool config_server_strip;
+zend_string *config_encryption_key;
+zend_string *config_cookies_env_var;
+
+HashTable *config_disabled_functions;
+HashTable *config_disabled_functions_hooked;
+HashTable *config_disabled_functions_ret;
+HashTable *config_disabled_functions_ret_hooked;
+sp_config_disabled_functions config_disabled_functions_reg;
+sp_config_disabled_functions config_disabled_functions_reg_ret;
+
+bool hook_execute;
+
+// --- ini options
 bool allow_broken_configuration;
+
+// --- runtime/state variables
+int is_config_valid;  // 1 = valid, 0 = invalid, -1 = none
+size_t in_eval;
+u_long execution_depth;
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;
 HashTable *sp_eval_blacklist_functions_hook;
@@ -118,6 +151,8 @@ ZEND_END_MODULE_GLOBALS(snuffleupagus)
 
 ZEND_EXTERN_MODULE_GLOBALS(snuffleupagus)
 #define SNUFFLEUPAGUS_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(snuffleupagus, v)
+#define SPG(v) SNUFFLEUPAGUS_G(v)
+#define SPCFG(v) SPG(config_##v)
 
 #if defined(ZTS) && defined(COMPILE_DL_SNUFFLEUPAGUS)
 ZEND_TSRMLS_CACHE_EXTERN()

@@ -479,21 +479,13 @@ ZEND_FUNCTION(check_disabled_function) {
   zif_handler orig_handler;
   const char* current_function_name = get_active_function_name(TSRMLS_C);
 
-  should_disable_ht(
-      execute_data, current_function_name, NULL, NULL,
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
+  should_disable_ht(execute_data, current_function_name, NULL, NULL, SPCFG(disabled_functions_reg).disabled_functions, SPCFG(disabled_functions_hooked));
 
   orig_handler = zend_hash_str_find_ptr(
-      SNUFFLEUPAGUS_G(disabled_functions_hook), current_function_name,
+      SPG(disabled_functions_hook), current_function_name,
       strlen(current_function_name));
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-  should_drop_on_ret_ht(
-      return_value, current_function_name,
-      SNUFFLEUPAGUS_G(config)
-          .config_disabled_functions_reg_ret->disabled_functions,
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked,
-      execute_data);
+  should_drop_on_ret_ht(return_value, current_function_name, SPCFG(disabled_functions_reg_ret).disabled_functions, SPCFG(disabled_functions_ret_hooked), execute_data);
 }
 
 static int hook_functions_regexp(const sp_list_node* config) {
@@ -547,10 +539,10 @@ ZEND_FUNCTION(eval_blacklist_callback) {
   }
   zend_string_release(tmp);
 
-  if (SNUFFLEUPAGUS_G(in_eval) > 0) {
+  if (SPG(in_eval) > 0) {
     // zend_string* filename = get_eval_filename(zend_get_executed_filename());
     // const int line_number = zend_get_executed_lineno(TSRMLS_C);
-    const sp_config_eval* config_eval = SNUFFLEUPAGUS_G(config).config_eval;
+    const sp_config_eval* config_eval = &(SPCFG(eval));
 
     if (config_eval->dump) {
       sp_log_request(config_eval->dump, config_eval->textual_representation);
@@ -565,7 +557,7 @@ ZEND_FUNCTION(eval_blacklist_callback) {
 
 whitelisted:
   orig_handler = zend_hash_str_find_ptr(
-      SNUFFLEUPAGUS_G(sp_eval_blacklist_functions_hook), current_function_name,
+      SPG(sp_eval_blacklist_functions_hook), current_function_name,
       strlen(current_function_name));
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
@@ -575,26 +567,19 @@ int hook_disabled_functions(void) {
 
   int ret = SUCCESS;
 
-  hook_functions(SNUFFLEUPAGUS_G(config).config_disabled_functions,
-                 SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
+  hook_functions(SPCFG(disabled_functions), SPCFG(disabled_functions_hooked));
+  hook_functions(SPCFG(disabled_functions_ret), SPCFG(disabled_functions_ret_hooked));
 
-  hook_functions(SNUFFLEUPAGUS_G(config).config_disabled_functions_ret,
-                 SNUFFLEUPAGUS_G(config).config_disabled_functions_ret_hooked);
+  ret |= hook_functions_regexp(SPCFG(disabled_functions_reg).disabled_functions);
 
-  ret |= hook_functions_regexp(
-      SNUFFLEUPAGUS_G(config)
-          .config_disabled_functions_reg->disabled_functions);
+  ret |= hook_functions_regexp(SPCFG(disabled_functions_reg_ret).disabled_functions);
 
-  ret |= hook_functions_regexp(
-      SNUFFLEUPAGUS_G(config)
-          .config_disabled_functions_reg_ret->disabled_functions);
-
-  if (NULL != SNUFFLEUPAGUS_G(config).config_eval->blacklist) {
-    sp_list_node* it = SNUFFLEUPAGUS_G(config).config_eval->blacklist;
+  if (NULL != SPCFG(eval).blacklist) {
+    sp_list_node* it = SPCFG(eval).blacklist;
 
     while (it) {
       hook_function(ZSTR_VAL((zend_string*)it->data),
-                    SNUFFLEUPAGUS_G(sp_eval_blacklist_functions_hook),
+                    SPG(sp_eval_blacklist_functions_hook),
                     PHP_FN(eval_blacklist_callback));
       it = it->next;
     }
@@ -611,10 +596,7 @@ int hook_echo(const char* str, size_t str_length) {
 #endif
   zend_string* zs = zend_string_init(str, str_length, 0);
 
-  should_disable_ht(
-      EG(current_execute_data), "echo", zs, NULL,
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_reg->disabled_functions,
-      SNUFFLEUPAGUS_G(config).config_disabled_functions_hooked);
+  should_disable_ht(EG(current_execute_data), "echo", zs, NULL, SPCFG(disabled_functions_reg).disabled_functions, SPCFG(disabled_functions_hooked));
 
   zend_string_release(zs);
 

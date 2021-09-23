@@ -1,7 +1,7 @@
 #include "php_snuffleupagus.h"
 
 static bool wrapper_is_whitelisted(const zend_string *const zs) {
-  const sp_list_node *list = SNUFFLEUPAGUS_G(config).config_wrapper->whitelist;
+  const sp_list_node *list = SPCFG(wrapper).whitelist;
 
   if (!zs) {
     return false;  // LCOV_EXCL_LINE
@@ -38,8 +38,7 @@ void sp_disable_wrapper() {
 
   zend_hash_destroy(orig_complete);
   pefree(orig_complete, 1);
-  SNUFFLEUPAGUS_G(config).config_wrapper->num_wrapper =
-      zend_hash_num_elements(orig);
+  SPCFG(wrapper).num_wrapper = zend_hash_num_elements(orig);
 }
 
 PHP_FUNCTION(sp_stream_wrapper_register) {
@@ -53,9 +52,7 @@ PHP_FUNCTION(sp_stream_wrapper_register) {
   // LCOV_EXCL_BR_END
 
   if (wrapper_is_whitelisted(protocol_name)) {
-    orig_handler = zend_hash_str_find_ptr(
-        SNUFFLEUPAGUS_G(sp_internal_functions_hook), "stream_wrapper_register",
-        sizeof("stream_wrapper_register") - 1);
+    orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("stream_wrapper_register"));
     orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   }
 }
