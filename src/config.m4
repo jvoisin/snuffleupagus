@@ -23,7 +23,7 @@ AC_PROG_CC_STDC()
 CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -Wall -Wextra -Wno-unused-parameter"
 CFLAGS="$CFLAGS -Wformat=2 -Wformat-security -D_FORTIFY_SOURCE=2"
-CFLAGS="$CFLAGS -fstack-protector"
+CFLAGS="$CFLAGS -fstack-protector-strong"
 
 LDFLAGS="$LDFLAGS `pcre2-config --libs8`"
 
