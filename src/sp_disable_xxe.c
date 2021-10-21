@@ -18,7 +18,7 @@ int hook_libxml_disable_entity_loader() {
 
   zval func_name;
   zval retval;
-  zval params[1];
+  zval params[1] = {0};
 
 #if PHP_VERSION_ID < 80000
   // This function is deprecated in PHP8, but better safe than sorry for php7.

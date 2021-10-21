@@ -12,7 +12,7 @@ PHP_FUNCTION(sp_serialize) {
   /* Compute the HMAC of the textual representation of the serialized data*/
   zval func_name;
   zval hmac;
-  zval params[3];
+  zval params[3] = {0};
 
   ZVAL_STRING(&func_name, "hash_hmac");
   ZVAL_STRING(&params[0], "sha256");
@@ -65,7 +65,7 @@ PHP_FUNCTION(sp_unserialize) {
   zval func_name;
   ZVAL_STRING(&func_name, "hash_hmac");
 
-  zval params[3];
+  zval params[3] = {0};
   ZVAL_STRING(&params[0], "sha256");
   ZVAL_STRING(&params[1], serialized_str);
   ZVAL_STRING(

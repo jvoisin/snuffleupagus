@@ -45,7 +45,7 @@ bool ZEND_HOT sp_is_regexp_matching_len(const sp_pcre* regexp, const char* str,
   ret = pcre2_match(regexp, (PCRE2_SPTR)str, len, 0, 0, match_data, NULL);
   pcre2_match_data_free(match_data);
 #else
-  int vec[30];
+  int vec[30] = {0};
   ret = pcre_exec(regexp, NULL, str, len, 0, 0, vec, sizeof(vec) / sizeof(int));
 #endif
 

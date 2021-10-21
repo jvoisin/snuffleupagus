@@ -72,8 +72,8 @@ void sp_log_msgf(char const* restrict feature, int level, int type,
 
 int compute_hash(const char* const restrict filename,
                  char* restrict file_hash) {
-  unsigned char buf[1024];
-  unsigned char digest[SHA256_SIZE];
+  unsigned char buf[1024] = {0};
+  unsigned char digest[SHA256_SIZE] = {0};
   PHP_SHA256_CTX context;
   size_t n;
 

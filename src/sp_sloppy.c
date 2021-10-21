@@ -48,7 +48,7 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
                           const char* spec) {
   zif_handler handler;
   zval func_name;
-  zval params[3];
+  zval params[3] = {0};
   zval *value, *array = NULL;
   zend_bool strict = 0;
   uint32_t nb_params = ZEND_NUM_ARGS();
