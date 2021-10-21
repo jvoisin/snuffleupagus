@@ -164,7 +164,7 @@ const char *yyt4;
 
   
 {
-	char yych;
+	unsigned char yych;
 	unsigned int yyaccept = 0;
 	if (cond < 2) {
 		if (cond < 1) {

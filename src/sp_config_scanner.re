@@ -152,7 +152,7 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
   long lineno = 1;
 
   /*!re2c
-    re2c:define:YYCTYPE = char;
+    re2c:define:YYCTYPE = "unsigned char";
     // re2c:define:YYCURSOR = data;
     re2c:yyfill:enable = 0;
     re2c:flags:tags = 1;
