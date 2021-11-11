@@ -314,7 +314,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     hook_upload();
   }
 
-  if (SPCFG(disable_xxe).enable == 0) {
+  if (SPCFG(xxe_protection).enable) {
     hook_libxml_disable_entity_loader();
   }
 

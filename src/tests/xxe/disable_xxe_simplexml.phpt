@@ -2,8 +2,9 @@
 Disable XXE
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus") || !extension_loaded("simplexml") || getenv('TRAVIS')) print("skip"); ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
-sp.configuration_file={PWD}/config/disable_xxe.ini
+sp.configuration_file={PWD}/config/disable_xxe_disable.ini
 --EXTENSIONS--
 simplexml
 --XFAIL--

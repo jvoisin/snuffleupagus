@@ -17,7 +17,7 @@ static zend_result sp_process_config_root(sp_parsed_keyword *parsed_rule) {
     {parse_cookie,              SP_TOKEN_COOKIE_ENCRYPTION, NULL},
     {parse_global,              SP_TOKEN_GLOBAL, NULL},
     {parse_enable,              SP_TOKEN_AUTO_COOKIE_SECURE, &(SPCFG(auto_cookie_secure).enable)},
-    {parse_enable,              SP_TOKEN_DISABLE_XXE, &(SPCFG(disable_xxe).enable)},
+    {parse_enable,              SP_TOKEN_XXE_PROTECTION, &(SPCFG(xxe_protection).enable)},
     {parse_eval_filter_conf,    SP_TOKEN_EVAL_BLACKLIST, &(SPCFG(eval).blacklist)},
     {parse_eval_filter_conf,    SP_TOKEN_EVAL_WHITELIST, &(SPCFG(eval).whitelist)},
     {parse_session,             SP_TOKEN_SESSION_ENCRYPTION, &(SPCFG(session))},

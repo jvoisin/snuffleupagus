@@ -57,7 +57,7 @@ typedef struct {
 
 typedef struct {
   bool enable;
-} sp_config_disable_xxe;
+} sp_config_xxe_protection;
 
 typedef struct {
   enum samesite_type { strict = 1, lax = 2 } samesite;
@@ -202,7 +202,7 @@ typedef struct {
 #define SP_TOKEN_READONLY_EXEC "readonly_exec"
 #define SP_TOKEN_UNSERIALIZE_HMAC "unserialize_hmac"
 #define SP_TOKEN_UPLOAD_VALIDATION "upload_validation"
-#define SP_TOKEN_DISABLE_XXE "disable_xxe"
+#define SP_TOKEN_XXE_PROTECTION "xxe_protection"
 #define SP_TOKEN_EVAL_BLACKLIST "eval_blacklist"
 #define SP_TOKEN_EVAL_WHITELIST "eval_whitelist"
 #define SP_TOKEN_SLOPPY_COMPARISON "sloppy_comparison"

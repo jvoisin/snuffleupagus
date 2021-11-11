@@ -293,14 +293,15 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
   sp.upload_validation.script("/var/www/is_valid_php.py").enable();
 
 
-disable_xxe
+xxe_protection
 ^^^^^^^^^^^
 
-:ref:`disable_xxe <xxe-feature>`, enabled by default, will prevent XXE attacks by disabling the loading of external entities (``libxml_disable_entity_loader``) in the XML parser.
+:ref:`xxe_protection <xxe-feature>`, disabled by default, will prevent XXE attacks by disabling the loading of external entities (``libxml_disable_entity_loader``) in the XML parser.
 
 ::
 
-  sp.disable_xxe.enable();
+  sp.xxe_protection.enable();
+  sp.xxe_protection.disable();
 
 
 Whitelist of stream-wrappers

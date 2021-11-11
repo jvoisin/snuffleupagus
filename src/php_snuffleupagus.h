@@ -116,7 +116,7 @@ sp_config_upload_validation config_upload_validation;
 sp_config_cookie config_cookie;
 sp_config_auto_cookie_secure config_auto_cookie_secure;
 sp_config_global_strict config_global_strict;
-sp_config_disable_xxe config_disable_xxe;
+sp_config_xxe_protection config_xxe_protection;
 sp_config_eval config_eval;
 sp_config_wrapper config_wrapper;
 sp_config_session config_session;

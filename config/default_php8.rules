@@ -8,7 +8,7 @@
 sp.harden_random.enable();
 
 # Disabled XXE
-sp.disable_xxe.enable();
+sp.xxe_protection.enable();
 
 # Global configuration variables
 # sp.global.secret_key("YOU _DO_ NEED TO CHANGE THIS WITH SOME RANDOM CHARACTERS.");
