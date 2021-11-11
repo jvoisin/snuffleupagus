@@ -9,5 +9,5 @@ sp.configuration_file={PWD}/config/config_serialize.ini
 echo serialize("a");
 ?>
 --EXPECT--
-s:1:"a";650609b417904d0d9bbf1fc44a975d13ecdf6b02b715c1a06271fb3b673f25b1
+s:1:"a";cdbc93e593656164d448db33e4668a3f30fa794d6658016365f7eb453d48b022
 

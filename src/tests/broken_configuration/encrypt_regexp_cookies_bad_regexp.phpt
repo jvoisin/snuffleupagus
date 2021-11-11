@@ -2,11 +2,12 @@
 Cookie decryption in ipv4
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_encrypted_regexp_cookies_bad_regexp.ini
 error_reporting=1
 --COOKIE--
-super_cookie=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP3gV9YJZL/pUeNAjCKFW0U2ywmf1CwHzwd2pWM=;awful_cookie=awful_cookie_value;
+super_cookie=IpRZV4rivSjANrEOSxINd%2FdFe17giJgaAAAAAAAAAAAAAAAAAAAAALnmBVs%2BTILKxauHeGcUyJpR%2BX2UiZ6OamUTaWc=;awful_cookie=awful_cookie_value;
 --ENV--
 return <<<EOF
 REMOTE_ADDR=127.0.0.1

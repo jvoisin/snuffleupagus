@@ -136,6 +136,19 @@ SP_PARSE_FN(parse_global) {
       {0, 0, 0}};
 
   SP_PROCESS_CONFIG_KEYWORDS_ERR();
+
+  if (SPCFG(encryption_key)) {
+    if (ZSTR_LEN(SPCFG(encryption_key)) < 10) {
+      sp_log_err("config", "The encryption key set on line %zu is too short. please use at least 10 bytes", parsed_rule->lineno);
+      return SP_PARSER_ERROR;
+    }
+    if (zend_string_equals_literal(SPCFG(encryption_key), "YOU _DO_ NEED TO CHANGE THIS WITH SOME RANDOM CHARACTERS.") ||
+        zend_string_equals_literal(SPCFG(encryption_key), "c6a0e02b3b818f7559d5f85303d8fe44")) {
+      sp_log_err("config", "The encryption key set on line %zu is an unchanged dummy value. please use a unique secret.", parsed_rule->lineno);
+      return SP_PARSER_ERROR;
+    }
+  }
+
   return SP_PARSER_STOP;
 }
 
