@@ -1,5 +1,7 @@
 #include "php_snuffleupagus.h"
 
+#ifdef HAVE_XML
+
 PHP_FUNCTION(sp_libxml_disable_entity_loader) {
   sp_log_warn("xxe",
               "A call to libxml_disable_entity_loader was tried and nopped");
@@ -39,3 +41,8 @@ int hook_libxml_disable_entity_loader() {
 
   return SUCCESS;
 }
+#else
+int hook_libxml_disable_entity_loader() {
+  sp_log_warn("xxe", "Cannot enable XXE protection. XML support is disabled in PHP.");
+}
+#endif
