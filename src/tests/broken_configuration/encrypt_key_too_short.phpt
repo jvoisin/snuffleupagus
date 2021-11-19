@@ -2,6 +2,7 @@
 Cookie encryption key too short
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_encryption_key_short.ini
 --COOKIE--
