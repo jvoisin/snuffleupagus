@@ -1,5 +1,40 @@
 #include "php_snuffleupagus.h"
 
+// condensed version of PHP's php_hash_do_hash_hmac() in ext/hash/hash.c
+static zend_string *sp_do_hash_hmac_sha256(char *data, size_t data_len, char *key, size_t key_len)
+{
+  zend_string *algo = zend_string_init(ZEND_STRL("sha256"), 0);
+  const php_hash_ops *ops = php_hash_fetch_ops(algo);
+  zend_string_release_ex(algo, 0);
+
+  if (!ops || !ops->is_crypto) {
+    sp_log_err("unsupported hash algorithm for hmac: %s", ZSTR_VAL(algo));
+    return NULL;
+  }
+
+  void *context = php_hash_alloc_context(ops);
+
+  unsigned char *K = emalloc(ops->block_size);
+  zend_string *digest = zend_string_alloc(ops->digest_size, 0);
+
+  php_hash_hmac_prep_key(K, ops, context, (unsigned char *) key, key_len);
+  php_hash_hmac_round((unsigned char *) ZSTR_VAL(digest), ops, context, K, (unsigned char *) data, data_len);
+  php_hash_string_xor_char(K, K, 0x6A, ops->block_size);
+  php_hash_hmac_round((unsigned char *) ZSTR_VAL(digest), ops, context, K, (unsigned char *) ZSTR_VAL(digest), ops->digest_size);
+
+  /* Zero the key */
+  ZEND_SECURE_ZERO(K, ops->block_size);
+  efree(K);
+  efree(context);
+
+  zend_string *hex_digest = zend_string_safe_alloc(ops->digest_size, 2, 0, 0);
+
+  php_hash_bin2hex(ZSTR_VAL(hex_digest), (unsigned char *) ZSTR_VAL(digest), ops->digest_size);
+  ZSTR_VAL(hex_digest)[2 * ops->digest_size] = 0;
+  zend_string_release_ex(digest, 0);
+  return hex_digest;
+}
+
 PHP_FUNCTION(sp_serialize) {
   zif_handler orig_handler;
 
@@ -10,19 +45,13 @@ PHP_FUNCTION(sp_serialize) {
   }
 
   /* Compute the HMAC of the textual representation of the serialized data*/
-  zval func_name;
-  zval hmac;
-  zval params[3] = {0};
+  zend_string *hmac = sp_do_hash_hmac_sha256(Z_STRVAL_P(return_value), Z_STRLEN_P(return_value), ZSTR_VAL(SPCFG(encryption_key)), ZSTR_LEN(SPCFG(encryption_key)));
 
-  ZVAL_STRING(&func_name, "hash_hmac");
-  ZVAL_STRING(&params[0], "sha256");
-  params[1] = *return_value;
-  ZVAL_STRING(
-      &params[2],
-      ZSTR_VAL(SPCFG(encryption_key)));
-  call_user_function(CG(function_table), NULL, &func_name, &hmac, 3, params);
+  if (!hmac) {
+    zend_bailout();
+  }
 
-  size_t len = Z_STRLEN_P(return_value) + Z_STRLEN(hmac);
+  size_t len = Z_STRLEN_P(return_value) + ZSTR_LEN(hmac);
   if (len < Z_STRLEN_P(return_value)) {
     // LCOV_EXCL_START
     sp_log_err("overflow_error",
@@ -32,8 +61,9 @@ PHP_FUNCTION(sp_serialize) {
   }
 
   /* Append the computed HMAC to the serialized data. */
-  return_value->value.str = zend_string_concat2(Z_STRVAL_P(return_value), Z_STRLEN_P(return_value), Z_STRVAL(hmac), Z_STRLEN(hmac));
-  return;
+  zend_string *orig_ret_str = return_value->value.str;
+  RETVAL_NEW_STR(zend_string_concat2(Z_STRVAL_P(return_value), Z_STRLEN_P(return_value), ZSTR_VAL(hmac), ZSTR_LEN(hmac)));
+  zend_string_free(orig_ret_str);
 }
 
 PHP_FUNCTION(sp_unserialize) {
@@ -42,7 +72,6 @@ PHP_FUNCTION(sp_unserialize) {
   char *buf = NULL;
   char *serialized_str = NULL;
   char *hmac = NULL;
-  zval expected_hmac;
   size_t buf_len = 0;
   zval *opts = NULL;
 
@@ -62,22 +91,14 @@ PHP_FUNCTION(sp_unserialize) {
   serialized_str = ecalloc(buf_len - 64 + 1, 1);
   memcpy(serialized_str, buf, buf_len - 64);
 
-  zval func_name;
-  ZVAL_STRING(&func_name, "hash_hmac");
-
-  zval params[3] = {0};
-  ZVAL_STRING(&params[0], "sha256");
-  ZVAL_STRING(&params[1], serialized_str);
-  ZVAL_STRING(
-      &params[2],
-      ZSTR_VAL(SPCFG(encryption_key)));
-  call_user_function(CG(function_table), NULL, &func_name, &expected_hmac, 3,
-                     params);
+  zend_string *expected_hmac = sp_do_hash_hmac_sha256(serialized_str, strlen(serialized_str), ZSTR_VAL(SPCFG(encryption_key)), ZSTR_LEN(SPCFG(encryption_key)));
 
   unsigned int status = 0;
-  for (uint8_t i = 0; i < 64; i++) {
-    status |= (hmac[i] ^ (Z_STRVAL(expected_hmac))[i]);
-  }
+  if (expected_hmac) {
+    for (uint8_t i = 0; i < 64; i++) {
+      status |= (hmac[i] ^ (ZSTR_VAL(expected_hmac))[i]);
+    }
+  } else { status = 1; }
 
   if (0 == status) {
     if ((orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("unserialize")))) {

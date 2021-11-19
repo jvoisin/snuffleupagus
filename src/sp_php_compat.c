@@ -1,5 +1,9 @@
 #include "php_snuffleupagus.h"
 
+/* code in this file is licensed under its original license
+   The PHP License, version 3.01 (https://www.php.net/license/3_01.txt)
+   which is also included with these sources in the file `PHP_LICENSE` */
+
 #if PHP_VERSION_ID < 80000
 
 // copied from PHP 8.0.9 sources

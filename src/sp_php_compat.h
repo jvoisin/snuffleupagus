@@ -1,3 +1,7 @@
+/* code in this file is licensed under its original license
+The PHP License, version 3.01 (https://www.php.net/license/3_01.txt)
+which is also included with these sources in the file `PHP_LICENSE` */
+
 #if PHP_VERSION_ID < 80000
 
 // copied from PHP 8.0.9 sources
@@ -94,3 +98,33 @@ static zend_always_inline void zend_string_efree(zend_string *s)
 	} while (0)
 
 #endif
+
+// copied from PHP 8.0.11 sources, ext/hash/hash.c
+
+static inline void php_hash_string_xor_char(unsigned char *out, const unsigned char *in, const unsigned char xor_with, const size_t length) {
+	size_t i;
+	for (i=0; i < length; i++) {
+		out[i] = in[i] ^ xor_with;
+	}
+}
+
+static inline void php_hash_hmac_prep_key(unsigned char *K, const php_hash_ops *ops, void *context, const unsigned char *key, const size_t key_len) {
+	memset(K, 0, ops->block_size);
+	if (key_len > ops->block_size) {
+		/* Reduce the key first */
+		ops->hash_init(context);
+		ops->hash_update(context, key, key_len);
+		ops->hash_final(K, context);
+	} else {
+		memcpy(K, key, key_len);
+	}
+	/* XOR the key with 0x36 to get the ipad) */
+	php_hash_string_xor_char(K, K, 0x36, ops->block_size);
+}
+
+static inline void php_hash_hmac_round(unsigned char *final, const php_hash_ops *ops, void *context, const unsigned char *key, const unsigned char *data, const zend_long data_size) {
+	ops->hash_init(context);
+	ops->hash_update(context, key, ops->block_size);
+	ops->hash_update(context, data, data_size);
+	ops->hash_final(final, context);
+}
