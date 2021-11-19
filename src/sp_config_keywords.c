@@ -1,7 +1,7 @@
 #include "php_snuffleupagus.h"
 
 #define SP_SET_ENABLE_DISABLE(enable, disable, varname) \
-  if (((varname) || enable) && disable) { \
+  if (enable && disable) { \
     sp_log_err("config", "A rule can't be enabled and disabled on line %zu", parsed_rule->lineno); \
     return SP_PARSER_ERROR; \
   } \
@@ -133,6 +133,7 @@ SP_PARSE_FN(parse_global) {
       {parse_ulong, SP_TOKEN_MAX_EXECUTION_DEPTH, &(SPCFG(max_execution_depth))},
       {parse_enable, SP_TOKEN_SERVER_ENCODE, &(SPCFG(server_encode))},
       {parse_enable, SP_TOKEN_SERVER_STRIP, &(SPCFG(server_strip))},
+      {parse_enable, SP_TOKEN_SHOW_OLD_PHP_WARNING, &(SPCFG(show_old_php_warning))},
       {0, 0, 0}};
 
   SP_PROCESS_CONFIG_KEYWORDS_ERR();

@@ -276,6 +276,9 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     return FAILURE;
   }
 
+  // set some defaults
+  SPCFG(show_old_php_warning) = true;
+
   char *str = new_value->val;
 
   while (1) {
@@ -365,6 +368,16 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     (SPCFG(disabled_functions) && zend_hash_num_elements(SPCFG(disabled_functions))) ||
     (SPCFG(disabled_functions) && zend_hash_num_elements(SPCFG(disabled_functions_ret)));
 
+  if (SPCFG(show_old_php_warning)) {
+    time_t ts = time(NULL);
+    sp_log_debug("foo");
+    if (PHP_VERSION_ID < 70300 ||
+        PHP_VERSION_ID < 70400 && ts >= (time_t)1638745200L ||
+        PHP_VERSION_ID < 80000 && ts >= (time_t)1669590000L ||
+        PHP_VERSION_ID < 80100 && ts >= (time_t)1700953200L) {
+      sp_log_warn("End-of-Life Check", "Your PHP version '" PHP_VERSION "' is not officially mainained anymore. Please upgrade as soon as possible.");
+    }
+  }
   return SUCCESS;
 }
 
