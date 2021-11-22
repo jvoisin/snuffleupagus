@@ -269,8 +269,8 @@ allow this to be prevented.
 ::
    
   # Allow `id.php` to restrict system() calls to `id`
-  sp.disable_function.function("system").filename("id.php").param("cmd").value("id").allow();
-  sp.disable_function.function("system").filename("id.php").drop()
+  sp.disable_function.function("system").filename("/var/www/html/id.php").param("cmd").value("id").allow();
+  sp.disable_function.function("system").filename("/var/www/html/id.php").drop()
 
 Of course, this is a trivial example,  a lot can be achieved with this feature, as you will see below.
 
