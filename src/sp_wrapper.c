@@ -44,14 +44,12 @@ void sp_disable_wrapper() {
 PHP_FUNCTION(sp_stream_wrapper_register) {
   zif_handler orig_handler;
   zend_string *protocol_name = NULL;
+  zval *params = NULL;
+  uint32_t param_count = 0;
 
-  // LCOV_EXCL_BR_START
-  ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_QUIET, 2, EX_NUM_ARGS());
-  Z_PARAM_STR(protocol_name);
-  ZEND_PARSE_PARAMETERS_END_EX((void)0);
-  // LCOV_EXCL_BR_END
-
-  if (wrapper_is_whitelisted(protocol_name)) {
+  zend_parse_parameters_ex(ZEND_PARSE_PARAMS_QUIET, ZEND_NUM_ARGS(), "S*", &protocol_name, &params, &param_count);
+  // ignore proper arguments here and just let the original handler deal with it
+  if (!protocol_name || wrapper_is_whitelisted(protocol_name)) {
     orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("stream_wrapper_register"));
     orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   }
