@@ -2,7 +2,8 @@
 
 /*!types:re2c*/
 
-#define cs_error_log(fmt, ...) sp_log_err("config", fmt, ##__VA_ARGS__)
+#define cs_log_error(fmt, ...) sp_log_err("config", fmt, ##__VA_ARGS__)
+#define cs_log_info(fmt, ...) sp_log_msg("config", SP_LOG_INFO, fmt, ##__VA_ARGS__)
 
 zend_string *sp_get_arg_string(sp_parsed_keyword *kw) {
   if (!kw || !kw->arg) {
@@ -73,11 +74,11 @@ static void str_dtor(zval *zv) {
 
 // sy_ functions and macros are helpers for the shunting yard algorithm
 #define sy_res_push(val) \
-  if (cond_res_i >= 100) { cs_error_log("condition too complex on line %d", lineno); goto out; } \
+  if (cond_res_i >= 100) { cs_log_error("condition too complex on line %d", lineno); goto out; } \
   cond_res[cond_res_i++] = val;
 #define sy_res_pop() cond_res[--cond_res_i]
 #define sy_op_push(op) \
-  if (cond_op_i >= 100) { cs_error_log("condition too complex on line %d", lineno); goto out; } \
+  if (cond_op_i >= 100) { cs_log_error("condition too complex on line %d", lineno); goto out; } \
   cond_op[cond_op_i++] = op;
 #define sy_op_pop() cond_op[--cond_op_i]
 #define sy_op_peek() cond_op[cond_op_i-1]
@@ -119,7 +120,7 @@ static int sy_apply_op(char op, int a, int b) {
 #define SY_APPLY_OP_FROM_STACK() \
   char op = sy_op_pop(); \
   int unary = (op == '!'); \
-  if (cond_res_i < (2 - unary)) { cs_error_log("not enough input on line %d", lineno); goto out; } \
+  if (cond_res_i < (2 - unary)) { cs_log_error("not enough input on line %d", lineno); goto out; } \
   int a = sy_res_pop(); \
   int b = unary ? 0 : sy_res_pop(); \
   int res = sy_apply_op(op, a, b); \
@@ -166,7 +167,7 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
     keyword = [a-zA-Z_][a-zA-Z0-9_]*;
     string = "\"" ("\\\"" | [^"\r\n])* "\"";
 
-    <init> *       { cs_error_log("Parser error on line %d", lineno); goto out; }
+    <init> *       { cs_log_error("Parser error on line %d", lineno); goto out; }
     <init> ws+     { goto yyc_init; }
     <init> [;#] .* { goto yyc_init; }
     <init> nl      { lineno++; goto yyc_init; }
@@ -185,6 +186,14 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
     }
     <init> "@condition" ws+ { goto yyc_cond; }
     <init> "@end_condition" ws* ";" { cond_res[0] = 1; goto yyc_init; }
+    <init> "@log" ws+ @t1 string? @t2 {
+      char tmpstr[1024];
+      size_t tmplen = MIN(t2-t1-2, 1023);
+      strncpy(tmpstr, t1+1, tmplen);
+      tmpstr[tmplen] = 0;
+      cs_log_info("[line %d]: %s", lineno, tmpstr);
+      goto yyc_init;
+    }
 
     <cond> ws+ { goto yyc_cond; }
     <cond> nl  { lineno++; goto yyc_cond; }
@@ -193,7 +202,7 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
         int is_loaded = (zend_hash_str_find_ptr(&module_registry, t3+1, t4-t3-2) != NULL);
         sy_res_push(is_loaded);
       } else {
-        cs_error_log("unknown function in condition on line %d", lineno);
+        cs_log_error("unknown function in condition on line %d", lineno);
         goto out;
       }
       goto yyc_cond_op;
@@ -201,7 +210,7 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
     <cond> @t1 keyword @t2 {
       zend_string *tmp = zend_hash_str_find_ptr(&vars, t1, t2-t1);
       if (!tmp) {
-        cs_error_log("unknown variable in condition on line %d", lineno);
+        cs_log_error("unknown variable in condition on line %d", lineno);
         goto out;
       }
       sy_res_push(atoi(ZSTR_VAL(tmp)));
@@ -231,27 +240,27 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
         SY_APPLY_OP_FROM_STACK();
       }
       if (cond_op_i == 0 || sy_op_peek() != '(') {
-        cs_error_log("unbalanced parathesis on line %d", lineno); goto out;
+        cs_log_error("unbalanced parathesis on line %d", lineno); goto out;
       }
       cond_op_i--;
       goto yyc_cond_op;
     }
     <cond_op> ";" {
       while (cond_op_i) {
-        if (sy_op_peek() == '(') { cs_error_log("unbalanced parathesis on line %d", lineno); goto out; }
+        if (sy_op_peek() == '(') { cs_log_error("unbalanced parathesis on line %d", lineno); goto out; }
         SY_APPLY_OP_FROM_STACK();
       }
-      if (cond_res_i > 1) { cs_error_log("invalid condition on line %d", lineno); goto out; }
+      if (cond_res_i > 1) { cs_log_error("invalid condition on line %d", lineno); goto out; }
       goto yyc_init;
     }
-    <cond, cond_op> * { cs_error_log("Syntax error in condition on line %d", lineno); goto out; }
+    <cond, cond_op> * { cs_log_error("Syntax error in condition on line %d", lineno); goto out; }
 
     <rule> ws+     {  goto yyc_rule; }
     <rule> nl / ( nl | ws )* "." {  lineno++; goto yyc_rule; }
     <rule> "." @t1 keyword @t2 ( "(" @t3 ( string? | keyword ) @t4 ")" )?  {
       if (!cond_res[0]) { goto yyc_rule; }
       if (kw_i == max_keywords) {
-        cs_error_log("Too many keywords in rule (more than %d) on line %d", max_keywords, lineno);
+        cs_log_error("Too many keywords in rule (more than %d) on line %d", max_keywords, lineno);
         goto out;
       }
       sp_parsed_keyword kw = {.kw = (char*)t1, .kwlen = t2-t1, .arg = (char*)t3, .arglen = t4-t3, .argtype = SP_ARGTYPE_UNKNOWN, .lineno = lineno};
@@ -265,7 +274,7 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
         } else {
           zend_string *tmp = zend_hash_str_find_ptr(&vars, t3, t4-t3);
           if (!tmp) {
-            cs_error_log("unknown variable on line %d", lineno);
+            cs_log_error("unknown variable on line %d", lineno);
             goto out;
           }
           kw.arg = ZSTR_VAL(tmp);
