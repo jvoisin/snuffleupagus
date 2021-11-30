@@ -100,6 +100,7 @@ static zend_always_inline void zend_string_efree(zend_string *s)
 #endif
 
 // copied from PHP 8.0.11 sources, ext/hash/hash.c
+// slightly modified for PHP 8.1 compatibility
 
 static inline void php_hash_string_xor_char(unsigned char *out, const unsigned char *in, const unsigned char xor_with, const size_t length) {
 	size_t i;
@@ -112,7 +113,11 @@ static inline void php_hash_hmac_prep_key(unsigned char *K, const php_hash_ops *
 	memset(K, 0, ops->block_size);
 	if (key_len > ops->block_size) {
 		/* Reduce the key first */
+#if PHP_VERSION_ID < 80100
 		ops->hash_init(context);
+#else
+		ops->hash_init(context, NULL);
+#endif
 		ops->hash_update(context, key, key_len);
 		ops->hash_final(K, context);
 	} else {
@@ -123,7 +128,11 @@ static inline void php_hash_hmac_prep_key(unsigned char *K, const php_hash_ops *
 }
 
 static inline void php_hash_hmac_round(unsigned char *final, const php_hash_ops *ops, void *context, const unsigned char *key, const unsigned char *data, const zend_long data_size) {
+#if PHP_VERSION_ID < 80100
 	ops->hash_init(context);
+#else
+	ops->hash_init(context, NULL);
+#endif
 	ops->hash_update(context, key, ops->block_size);
 	ops->hash_update(context, data, data_size);
 	ops->hash_final(final, context);
