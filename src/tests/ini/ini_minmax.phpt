@@ -6,29 +6,29 @@ INI protection .min()/.max()
 sp.configuration_file={PWD}/config/sp.ini
 --FILE--
 <?php 
-var_dump(ini_set("log_errors_max_len", "200") === false);
-var_dump(ini_get("log_errors_max_len"));
+var_dump(ini_set("max_execution_time", "30") === false);
+var_dump(ini_get("max_execution_time"));
 
-var_dump(ini_set("log_errors_max_len", "2000") === false);
-var_dump(ini_get("log_errors_max_len"));
+var_dump(ini_set("max_execution_time", "300") === false);
+var_dump(ini_get("max_execution_time"));
 
-var_dump(ini_set("log_errors_max_len", "199") === false);
-var_dump(ini_get("log_errors_max_len"));
+var_dump(ini_set("max_execution_time", "29") === false);
+var_dump(ini_get("max_execution_time"));
 
-var_dump(ini_set("log_errors_max_len", "2001") === false);
-var_dump(ini_get("log_errors_max_len"));
+var_dump(ini_set("max_execution_time", "301") === false);
+var_dump(ini_get("max_execution_time"));
 
 ?>
 --EXPECTF-- 
 bool(false)
-string(3) "200"
+string(2) "30"
 bool(false)
-string(4) "2000"
+string(3) "300"
 
 Warning: [snuffleupagus][0.0.0.0][ini_protection][log] INI value out of range in %a/ini_minmax.php on line 8
 bool(true)
-string(4) "2000"
+string(3) "300"
 
 Warning: [snuffleupagus][0.0.0.0][ini_protection][log] INI value out of range in %a/ini_minmax.php on line 11
 bool(true)
-string(4) "2000"
+string(3) "300"

@@ -370,7 +370,6 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
   if (SPCFG(show_old_php_warning)) {
     time_t ts = time(NULL);
-    sp_log_debug("foo");
     if (PHP_VERSION_ID < 70300 ||
         PHP_VERSION_ID < 70400 && ts >= (time_t)1638745200L ||
         PHP_VERSION_ID < 80000 && ts >= (time_t)1669590000L ||

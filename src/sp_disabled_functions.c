@@ -498,11 +498,9 @@ static int hook_functions_regexp(const sp_list_node* config) {
     assert(function_name || function_name_regexp);
 
     if (function_name) {
-      HOOK_FUNCTION(ZSTR_VAL(function_name), disabled_functions_hook,
-                    PHP_FN(check_disabled_function));
+      HOOK_FUNCTION(ZSTR_VAL(function_name), disabled_functions_hook, PHP_FN(check_disabled_function));
     } else {
-      HOOK_FUNCTION_BY_REGEXP(function_name_regexp, disabled_functions_hook,
-                              PHP_FN(check_disabled_function));
+      HOOK_FUNCTION_BY_REGEXP(function_name_regexp, disabled_functions_hook, PHP_FN(check_disabled_function));
     }
 
     config = config->next;
@@ -515,10 +513,8 @@ static void hook_functions(HashTable* to_hook_ht, HashTable* hooked_ht) {
   zval* value;
 
   ZEND_HASH_FOREACH_STR_KEY_VAL(to_hook_ht, key, value) {
-    bool hooked = HOOK_FUNCTION(ZSTR_VAL(key), disabled_functions_hook,
-                                PHP_FN(check_disabled_function));
-    bool is_builtin =
-        check_is_builtin_name(((sp_list_node*)Z_PTR_P(value))->data);
+    bool hooked = HOOK_FUNCTION(ZSTR_VAL(key), disabled_functions_hook, PHP_FN(check_disabled_function));
+    bool is_builtin = check_is_builtin_name(((sp_list_node*)Z_PTR_P(value))->data);
     if (hooked || is_builtin) {
       zend_symtable_add_new(hooked_ht, key, value);
       zend_hash_del(to_hook_ht, key);

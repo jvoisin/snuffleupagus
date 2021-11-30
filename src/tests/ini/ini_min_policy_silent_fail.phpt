@@ -6,8 +6,8 @@ INI protection .min() + .policy_silent_fail()
 sp.configuration_file={PWD}/config/sp-policy-silent-fail.ini
 --FILE--
 <?php 
-var_dump(ini_set("log_errors_max_len", "199") === false);
-var_dump(ini_get("log_errors_max_len"));
+var_dump(ini_set("max_execution_time", "29") === false);
+var_dump(ini_get("max_execution_time"));
 ?>
 --EXPECTF-- 
 bool(true)

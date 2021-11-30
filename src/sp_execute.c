@@ -3,8 +3,11 @@
 static void (*orig_execute_ex)(zend_execute_data *execute_data) = NULL;
 static void (*orig_zend_execute_internal)(zend_execute_data *execute_data,
                                           zval *return_value) = NULL;
-static int (*orig_zend_stream_open)(const char *filename,
-                                    zend_file_handle *handle) = NULL;
+#if PHP_VERSION_ID < 80100
+static int (*orig_zend_stream_open)(const char *filename, zend_file_handle *handle) = NULL;
+#else
+static zend_result (*orig_zend_stream_open)(zend_file_handle *handle) = NULL;
+#endif
 
 // FIXME handle symlink
 ZEND_COLD static inline void terminate_if_writable(const char *filename) {
@@ -168,6 +171,7 @@ static void sp_execute_ex(zend_execute_data *execute_data) {
         case ZEND_DO_FCALL_BY_NAME:
         case ZEND_DO_ICALL:
         case ZEND_DO_UCALL:
+        case ZEND_TICKS:
           should_disable_ht(execute_data, function_name, NULL, NULL,
                             config_disabled_functions_reg,
                             config_disabled_functions);
@@ -209,21 +213,21 @@ static void sp_zend_execute_internal(INTERNAL_FUNCTION_PARAMETERS) {
   }
 }
 
-static int sp_stream_open(const char *filename, zend_file_handle *handle) {
+static inline void sp_stream_open_checks(zend_string *zend_filename, zend_file_handle *handle) {
   zend_execute_data const *const data = EG(current_execute_data);
 
   if ((NULL == data) || (NULL == data->opline) ||
       (data->func->type != ZEND_USER_FUNCTION)) {
-    goto end;
+    return;
   }
 
-  zend_string *zend_filename = zend_string_init(filename, strlen(filename), 0);
+  // zend_string *zend_filename = zend_string_init(filename, strlen(filename), 0);
   const HashTable *disabled_functions_hooked = SPCFG(disabled_functions_hooked);
 
   switch (data->opline->opcode) {
     case ZEND_INCLUDE_OR_EVAL:
       if (SPCFG(readonly_exec).enable) {
-        terminate_if_writable(filename);
+        terminate_if_writable(ZSTR_VAL(zend_filename));
       }
       switch (data->opline->extended_value) {
         case ZEND_INCLUDE:
@@ -253,11 +257,31 @@ static int sp_stream_open(const char *filename, zend_file_handle *handle) {
           EMPTY_SWITCH_DEFAULT_CASE();  // LCOV_EXCL_LINE
       }
   }
-  efree(zend_filename);
+  // efree(zend_filename);
 
-end:
+// end:
+  // return orig_zend_stream_open(filename, handle);
+}
+
+#if PHP_VERSION_ID < 80100
+
+static int sp_stream_open(const char *filename, zend_file_handle *handle) {
+  zend_string *zend_filename = zend_string_init(filename, strlen(filename), 0);
+
+  sp_stream_open_checks(zend_filename, handle);
+
+  zend_string_release_ex(zend_filename, 0);
   return orig_zend_stream_open(filename, handle);
 }
+
+#else // PHP >= 8.1
+
+static zend_result sp_stream_open(zend_file_handle *handle) {
+  sp_stream_open_checks(handle->filename, handle);
+  return orig_zend_stream_open(handle);
+}
+
+#endif
 
 int hook_execute(void) {
   TSRMLS_FETCH();

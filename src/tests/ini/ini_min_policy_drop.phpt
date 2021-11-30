@@ -6,8 +6,8 @@ INI protection .min() + .policy_drop()
 sp.configuration_file={PWD}/config/sp-policy-drop.ini
 --FILE--
 <?php 
-var_dump(ini_set("log_errors_max_len", "199") === false);
-var_dump(ini_get("log_errors_max_len"));
+var_dump(ini_set("max_execution_time", "29") === false);
+var_dump(ini_get("max_execution_time"));
 ?>
 --EXPECTF-- 
 Fatal error: [snuffleupagus][0.0.0.0][ini_protection][drop] INI value out of range in %a/ini_min_policy_drop.php on line 2
