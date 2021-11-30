@@ -269,10 +269,8 @@ bool sp_match_value(const zend_string* value, const zend_string* to_match,
     bool ret = sp_is_regexp_matching(rx, tmp);
     efree(tmp);
     return ret;
-  } else {
-    return true;
   }
-  return false;
+  return true;
 }
 
 void sp_log_disable(const char* restrict path, const char* restrict arg_name,
