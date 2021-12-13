@@ -1,14 +1,25 @@
 #include "php_snuffleupagus.h"
 
 // condensed version of PHP's php_hash_do_hash_hmac() in ext/hash/hash.c
+#if PHP_VERSION_ID < 80000
+static inline void *php_hash_alloc_context(const php_hash_ops *ops) {
+  /* Zero out context memory so serialization doesn't expose internals */
+  return ecalloc(1, ops->context_size);
+}
+#endif
+
 static zend_string *sp_do_hash_hmac_sha256(char *data, size_t data_len, char *key, size_t key_len)
 {
+#if PHP_VERSION_ID < 80000
+  const php_hash_ops *ops = php_hash_fetch_ops(ZEND_STRL("sha256"));
+#else
   zend_string *algo = zend_string_init(ZEND_STRL("sha256"), 0);
   const php_hash_ops *ops = php_hash_fetch_ops(algo);
   zend_string_release_ex(algo, 0);
+#endif
 
   if (!ops || !ops->is_crypto) {
-    sp_log_err("unsupported hash algorithm for hmac: %s", ZSTR_VAL(algo));
+    sp_log_err("hmac", "unsupported hash algorithm: sha256");
     return NULL;
   }
 
@@ -34,6 +45,8 @@ static zend_string *sp_do_hash_hmac_sha256(char *data, size_t data_len, char *ke
   zend_string_release_ex(digest, 0);
   return hex_digest;
 }
+
+// ------------------
 
 PHP_FUNCTION(sp_serialize) {
   zif_handler orig_handler;
