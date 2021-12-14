@@ -366,7 +366,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     SPCFG(disabled_functions_reg).disabled_functions ||
     SPCFG(disabled_functions_reg_ret).disabled_functions ||
     (SPCFG(disabled_functions) && zend_hash_num_elements(SPCFG(disabled_functions))) ||
-    (SPCFG(disabled_functions) && zend_hash_num_elements(SPCFG(disabled_functions_ret)));
+    (SPCFG(disabled_functions_ret) && zend_hash_num_elements(SPCFG(disabled_functions_ret)));
 
   if (SPCFG(show_old_php_warning)) {
     time_t ts = time(NULL);
