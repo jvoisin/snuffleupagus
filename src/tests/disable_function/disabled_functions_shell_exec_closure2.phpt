@@ -1,0 +1,14 @@
+--TEST--
+Disable functions - shell_exec via 1st class closure
+--SKIPIF--
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+<?php if (PHP_VERSION_ID < 80100) print "skip"; ?>
+--INI--
+sp.configuration_file={PWD}/config/disabled_functions_extra.ini
+--FILE--
+<?php
+$x = shell_exec(...);
+echo $x('ls');
+?>
+--EXPECTF--
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'shell_exec', %a matched a rule in %a.php on line 3
