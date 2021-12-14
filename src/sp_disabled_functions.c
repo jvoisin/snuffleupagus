@@ -13,20 +13,19 @@ static void should_drop_on_ret(const zval* return_value,
                                zend_execute_data* execute_data);
 
 char* get_complete_function_path(zend_execute_data const* const execute_data) {
-  if (zend_is_executing() && !EG(current_execute_data)->func) {
+  if (!execute_data) {
     return NULL;  // LCOV_EXCL_LINE
   }
-  if (!(execute_data->func->common.function_name)) {
+  zend_function *func = execute_data->func;
+  if (!(func->common.function_name)) {
     return NULL;
   }
 
-  char const* class_name;
-  char const* const function_name =
-      ZSTR_VAL(execute_data->func->common.function_name);
+  char const* const function_name = ZSTR_VAL(func->common.function_name);
   char* complete_path_function = NULL;
 
-  class_name = get_active_class_name(NULL);
-  if (*class_name) {
+  if ((func->type == ZEND_USER_FUNCTION || func->type == ZEND_INTERNAL_FUNCTION) && func->common.scope) {
+    char const* class_name = ZSTR_VAL(func->common.scope->name);
     const size_t len = strlen(class_name) + 2 + strlen(function_name) + 1;
     complete_path_function = emalloc(len);
     snprintf(complete_path_function, len, "%s::%s", class_name, function_name);
