@@ -259,7 +259,7 @@ void should_disable_ht(zend_execute_data* execute_data,
     current_filename = zend_string_init(tmp, strlen(tmp), 0);
   }
 
-  ht_entry = zend_hash_str_find_ptr(ht, function_name, strlen(function_name));
+  ht_entry = zend_hash_str_find_ptr(ht, VAR_AND_LEN(function_name));
 
   if (ht_entry) {
     should_disable(execute_data, function_name, builtin_param,
@@ -279,29 +279,24 @@ static void should_disable(zend_execute_data* execute_data,
                            const sp_list_node* config,
                            const zend_string* current_filename) {
   char current_file_hash[SHA256_SIZE * 2 + 1] = {0};
-  // sp_log_debug("%s %s %s",  complete_function_path, builtin_param, builtin_param_name);
 
   while (config) {
-    sp_disabled_function const* const config_node =
-        (sp_disabled_function*)(config->data);
+    sp_disabled_function const* const config_node = (sp_disabled_function*)(config->data);
     const char* arg_name = NULL;
     const zend_string* arg_value_str = NULL;
 
     /* The order matters, since when we have `config_node->functions_list`,
     we also do have `config_node->function` */
     if (config_node->functions_list) {
-      if (false == is_functions_list_matching(execute_data,
-                                              config_node->functions_list)) {
+      if (false == is_functions_list_matching(execute_data, config_node->functions_list)) {
         goto next;
       }
     } else if (config_node->function) {
-      if (0 !=
-          strcmp(ZSTR_VAL(config_node->function), complete_function_path)) {
+      if (0 != strcmp(ZSTR_VAL(config_node->function), complete_function_path)) {
         goto next;  // LCOV_EXCL_LINE
       }
     } else if (config_node->r_function) {
-      if (false == sp_is_regexp_matching(config_node->r_function,
-                                         complete_function_path)) {
+      if (false == sp_is_regexp_matching(config_node->r_function, complete_function_path)) {
         goto next;
       }
     }
@@ -313,8 +308,7 @@ static void should_disable(zend_execute_data* execute_data,
     }
 
     if (config_node->filename || config_node->r_filename) {
-      zend_execute_data* ex =
-          is_file_matching(execute_data, config_node, current_filename);
+      zend_execute_data* ex = is_file_matching(execute_data, config_node, current_filename);
       if (!ex) {
         goto next;
       }
@@ -337,8 +331,7 @@ static void should_disable(zend_execute_data* execute_data,
       if ('\0' == current_file_hash[0]) {
         compute_hash(ZSTR_VAL(current_filename), current_file_hash);
       }
-      if (0 != strncmp(current_file_hash, ZSTR_VAL(config_node->hash),
-                       SHA256_SIZE)) {
+      if (0 != strncmp(current_file_hash, ZSTR_VAL(config_node->hash), SHA256_SIZE)) {
         goto next;
       }
     }
@@ -359,9 +352,7 @@ static void should_disable(zend_execute_data* execute_data,
             "Snuffleupagus doesn't support variadic functions yet, sorry. "
             "Check https://github.com/jvoisin/snuffleupagus/issues/164 for "
             "details.");
-      } else if (false == is_param_matching(
-                              execute_data, config_node, builtin_param, builtin_param_name,
-                              &arg_name, &arg_value_str)) {
+      } else if (false == is_param_matching(execute_data, config_node, builtin_param, builtin_param_name, &arg_name, &arg_value_str)) {
         goto next;
       }
     }
@@ -372,11 +363,9 @@ static void should_disable(zend_execute_data* execute_data,
     }
 
     if (config_node->functions_list) {
-      sp_log_disable(ZSTR_VAL(config_node->function), arg_name, arg_value_str,
-                     config_node);
+      sp_log_disable(ZSTR_VAL(config_node->function), arg_name, arg_value_str, config_node);
     } else {
-      sp_log_disable(complete_function_path, arg_name, arg_value_str,
-                     config_node);
+      sp_log_disable(complete_function_path, arg_name, arg_value_str, config_node);
     }
 
   next:
@@ -480,10 +469,9 @@ ZEND_FUNCTION(check_disabled_function) {
 
   should_disable_ht(execute_data, current_function_name, NULL, NULL, SPCFG(disabled_functions_reg).disabled_functions, SPCFG(disabled_functions_hooked));
 
-  orig_handler = zend_hash_str_find_ptr(
-      SPG(disabled_functions_hook), current_function_name,
-      strlen(current_function_name));
+  orig_handler = zend_hash_str_find_ptr(SPG(disabled_functions_hook), VAR_AND_LEN(current_function_name));
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+
   should_drop_on_ret_ht(return_value, current_function_name, SPCFG(disabled_functions_reg_ret).disabled_functions, SPCFG(disabled_functions_ret_hooked), execute_data);
 }
 
