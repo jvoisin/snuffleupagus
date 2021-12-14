@@ -1,12 +1,5 @@
 #include "php_snuffleupagus.h"
 
-bool sp_zend_string_equals(const zend_string* s1, const zend_string* s2) {
-  // We can't use `zend_string_equals` here because it doesn't work on
-  // `const` zend_string.
-  return ZSTR_LEN(s1) == ZSTR_LEN(s2) &&
-         !memcmp(ZSTR_VAL(s1), ZSTR_VAL(s2), ZSTR_LEN(s1));
-}
-
 static const char* default_ipaddr = "0.0.0.0";
 const char* get_ipaddr() {
   const char* client_ip = getenv("REMOTE_ADDR");
@@ -155,8 +148,8 @@ int sp_log_request(const zend_string* restrict folder, const zend_string* restri
     char* const complete_path_function = get_complete_function_path(current);
     if (complete_path_function) {
       const int current_line = zend_get_executed_lineno(TSRMLS_C);
-      fprintf(file, "STACKTRACE: %s:%d\n", complete_path_function,
-              current_line);
+      fprintf(file, "STACKTRACE: %s:%d\n", complete_path_function, current_line);
+      efree(complete_path_function);
     }
     current = current->prev_execute_data;
   }
@@ -468,7 +461,7 @@ void unhook_functions(HashTable *ht) {
   ZEND_HASH_FOREACH_END_DEL();
 }
 
-bool check_is_in_eval_whitelist(const zend_string* const function_name) {
+bool check_is_in_eval_whitelist(const char* function_name) {
   const sp_list_node* it = SPCFG(eval).whitelist;
   if (!it) {
     return false;
@@ -477,7 +470,7 @@ bool check_is_in_eval_whitelist(const zend_string* const function_name) {
   /* yes, we could use a HashTable instead, but since the list is pretty
    * small, it doesn't make a difference in practise. */
   while (it && it->data) {
-    if (sp_zend_string_equals(function_name, (const zend_string*)(it->data))) {
+    if (sp_zend_string_equals_str((const zend_string*)(it->data), VAR_AND_LEN(function_name))) {
       /* We've got a match, the function is whiteslited. */
       return true;
     }

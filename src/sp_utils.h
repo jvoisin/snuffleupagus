@@ -85,8 +85,10 @@ void sp_log_disable_ret(const char *restrict, const zend_string *restrict,
 bool hook_function(const char *, HashTable *, zif_handler);
 void unhook_functions(HashTable *ht);
 int hook_regexp(const sp_pcre *, HashTable *, zif_handler);
-bool check_is_in_eval_whitelist(const zend_string *const function_name);
+bool check_is_in_eval_whitelist(const char* function_name);
 int sp_log_request(const zend_string *restrict folder, const zend_string *restrict text_repr);
-bool sp_zend_string_equals(const zend_string *s1, const zend_string *s2);
-
+#define sp_zend_string_equals(s1, s2) zend_string_equals((zend_string*)s1, (zend_string*)s2)
+static inline bool sp_zend_string_equals_str(const zend_string* s1, const char *str, size_t len) {
+  return (ZSTR_LEN(s1) == len && !memcmp(ZSTR_VAL(s1), str, len));
+}
 #endif /* SP_UTILS_H */

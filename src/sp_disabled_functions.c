@@ -512,19 +512,13 @@ static void hook_functions(HashTable* to_hook_ht, HashTable* hooked_ht) {
 
 ZEND_FUNCTION(eval_blacklist_callback) {
   zif_handler orig_handler;
-  const char* current_function_name = get_active_function_name(TSRMLS_C);
-  zend_string* tmp =
-      zend_string_init(current_function_name, strlen(current_function_name), 0);
+  char* current_function_name = get_complete_function_path(EG(current_execute_data));
 
-  if (true == check_is_in_eval_whitelist(tmp)) {
-    zend_string_release(tmp);
+  if (!current_function_name || true == check_is_in_eval_whitelist(current_function_name)) {
     goto whitelisted;
   }
-  zend_string_release(tmp);
 
   if (SPG(in_eval) > 0) {
-    // zend_string* filename = get_eval_filename(zend_get_executed_filename());
-    // const int line_number = zend_get_executed_lineno(TSRMLS_C);
     const sp_config_eval* config_eval = &(SPCFG(eval));
 
     if (config_eval->dump) {
@@ -535,13 +529,12 @@ ZEND_FUNCTION(eval_blacklist_callback) {
     } else {
       sp_log_drop("eval", "A call to '%s' was tried in eval. dropping it.", current_function_name);
     }
-    // efree(filename);
   }
 
 whitelisted:
-  orig_handler = zend_hash_str_find_ptr(
-      SPG(sp_eval_blacklist_functions_hook), current_function_name,
-      strlen(current_function_name));
+
+  orig_handler = zend_hash_str_find_ptr(SPG(sp_eval_blacklist_functions_hook), current_function_name, strlen(current_function_name));
+  efree(current_function_name);
   orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 

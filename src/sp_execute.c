@@ -48,8 +48,7 @@ inline static void is_builtin_matching(
   should_disable_ht(EG(current_execute_data), function_name, param_value, param_name, SPCFG(disabled_functions_reg).disabled_functions, ht);
 }
 
-static void ZEND_HOT
-is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
+static void ZEND_HOT is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
   const sp_config_eval *config_eval = &(SPCFG(eval));
 
   if (EXPECTED(0 == SPG(in_eval))) {
@@ -60,35 +59,29 @@ is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
     return;
   }
 
-  if (zend_is_executing() && !EG(current_execute_data)->func) {
+  if (zend_is_executing() && !EX(func)) {
     return;  // LCOV_EXCL_LINE
   }
 
-  if (UNEXPECTED(!(execute_data->func->common.function_name))) {
+  char *function_name = get_complete_function_path(execute_data);
+  if (!function_name) {
     return;
   }
 
-  zend_string const *const current_function = EX(func)->common.function_name;
-
-  if (EXPECTED(NULL != current_function)) {
-    if (UNEXPECTED(false == check_is_in_eval_whitelist(current_function))) {
+    if (UNEXPECTED(false == check_is_in_eval_whitelist(function_name))) {
       if (config_eval->dump) {
         sp_log_request(config_eval->dump, config_eval->textual_representation);
       }
       if (config_eval->simulation) {
-        sp_log_simulation(
-            "Eval_whitelist",
-            "The function '%s' isn't in the eval whitelist, logging its call.",
-            ZSTR_VAL(current_function));
-        return;
+        sp_log_simulation("Eval_whitelist", "The function '%s' isn't in the eval whitelist, logging its call.", function_name);
+        goto out;
       } else {
-        sp_log_drop(
-            "Eval_whitelist",
-            "The function '%s' isn't in the eval whitelist, dropping its call.",
-            ZSTR_VAL(current_function));
+        sp_log_drop("Eval_whitelist", "The function '%s' isn't in the eval whitelist, dropping its call.", function_name);
       }
     }
-  }
+  // }
+out:
+  efree(function_name);
 }
 
 /* This function gets the filename in which `eval()` is called from,
