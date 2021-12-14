@@ -12,25 +12,19 @@ static zend_result (*orig_zend_stream_open)(zend_file_handle *handle) = NULL;
 // FIXME handle symlink
 ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   const sp_config_readonly_exec *config_ro_exec = &(SPCFG(readonly_exec));
-
   if (0 == access(filename, W_OK)) {
     if (config_ro_exec->dump) {
-      sp_log_request(config_ro_exec->dump,
-                     config_ro_exec->textual_representation);
+      sp_log_request(config_ro_exec->dump, config_ro_exec->textual_representation);
     }
     if (true == config_ro_exec->simulation) {
-      sp_log_simulation("readonly_exec",
-                        "Attempted execution of a writable file (%s).",
-                        filename);
+      sp_log_simulation("readonly_exec", "Attempted execution of a writable file (%s).", filename);
     } else {
-      sp_log_drop("readonly_exec",
-                  "Attempted execution of a writable file (%s).", filename);
+      sp_log_drop("readonly_exec", "Attempted execution of a writable file (%s).", filename);
     }
   } else {
     if (EACCES != errno) {
       // LCOV_EXCL_START
-      sp_log_err("Writable execution", "Error while accessing %s: %s", filename,
-                 strerror(errno));
+      sp_log_err("Writable execution", "Error while accessing %s: %s", filename, strerror(errno));
       // LCOV_EXCL_STOP
     }
   }
@@ -113,97 +107,108 @@ static inline void sp_orig_execute(zend_execute_data *execute_data) {
   SPG(execution_depth)--;
 }
 
-static void sp_execute_ex(zend_execute_data *execute_data) {
-  is_in_eval_and_whitelisted(execute_data);
-  const HashTable *config_disabled_functions = SPCFG(disabled_functions);
-
-  if (!execute_data) {
-    return;  // LCOV_EXCL_LINE
+static inline void sp_check_writable(zend_execute_data *execute_data) {
+  if (execute_data && EX(func) && EX(func)->op_array.filename && SPCFG(readonly_exec).enable) {
+    terminate_if_writable(ZSTR_VAL(EX(func)->op_array.filename));
   }
+}
 
-  if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
-    const sp_list_node *config = zend_hash_str_find_ptr(config_disabled_functions, ZEND_STRL("eval"));
-
-    zend_string *filename = get_eval_filename(zend_get_executed_filename());
-    is_builtin_matching(filename, "eval", NULL, config, config_disabled_functions);
-    zend_string_release(filename);
-
-    SPG(in_eval)++;
-    sp_orig_execute(execute_data);
-    SPG(in_eval)--;
-    return;
-  }
-
-  if (NULL != EX(func)->op_array.filename) {
-    if (SPCFG(readonly_exec).enable) {
-      terminate_if_writable(ZSTR_VAL(EX(func)->op_array.filename));
-    }
-  }
-
-  if (SPG(hook_execute)) {
-    char *function_name = get_complete_function_path(execute_data);
-    zval ret_val;
-    const sp_list_node *config_disabled_functions_reg = SPCFG(disabled_functions_reg).disabled_functions;
-
-    if (!function_name) {
-      sp_orig_execute(execute_data);
-      return;
-    }
-
-    // If we're at an internal function
-    if (!execute_data->prev_execute_data ||
-        !execute_data->prev_execute_data->func ||
-        !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
-        !execute_data->prev_execute_data->opline) {
-      should_disable_ht(execute_data, function_name, NULL, NULL,
-                        config_disabled_functions_reg,
-                        config_disabled_functions);
-    } else {  // If we're at a userland function call
-      switch (execute_data->prev_execute_data->opline->opcode) {
-        case ZEND_DO_FCALL:
-        case ZEND_DO_FCALL_BY_NAME:
-        case ZEND_DO_ICALL:
-        case ZEND_DO_UCALL:
-        case ZEND_TICKS:
-          should_disable_ht(execute_data, function_name, NULL, NULL,
-                            config_disabled_functions_reg,
-                            config_disabled_functions);
-        default:
-          break;
-      }
-    }
-
-    // When a function's return value isn't used, php doesn't store it in the
-    // execute_data, so we need to use a local variable to be able to match on
-    // it later.
-    if (EX(return_value) == NULL) {
-      memset(&ret_val, 0, sizeof(ret_val));
-      EX(return_value) = &ret_val;
-    }
-
-    sp_orig_execute(execute_data);
-
-    should_drop_on_ret_ht(EX(return_value), function_name, SPCFG(disabled_functions_reg_ret).disabled_functions, SPCFG(disabled_functions_ret), execute_data);
-    efree(function_name);
-
-    if (EX(return_value) == &ret_val) {
-      EX(return_value) = NULL;
+static inline void sp_call_orig_execute(INTERNAL_FUNCTION_PARAMETERS, bool internal) {
+  if (internal) {
+    if (UNEXPECTED(NULL != orig_zend_execute_internal)) {
+      orig_zend_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+    } else {
+      EX(func)->internal_function.handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     }
   } else {
     sp_orig_execute(execute_data);
   }
 }
 
-static void sp_zend_execute_internal(INTERNAL_FUNCTION_PARAMETERS) {
+static inline void sp_execute_handler(INTERNAL_FUNCTION_PARAMETERS, bool internal) {
+  if (!execute_data) {
+    return;  // LCOV_EXCL_LINE
+  }
+
   is_in_eval_and_whitelisted(execute_data);
 
-  if (UNEXPECTED(NULL != orig_zend_execute_internal)) {
-    // LCOV_EXCL_START
-    orig_zend_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-    // LCOV_EXCL_STOP
-  } else {
-    EX(func)->internal_function.handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+  if (!internal) {
+    if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
+      const sp_list_node *config = zend_hash_str_find_ptr(SPCFG(disabled_functions), ZEND_STRL("eval"));
+
+      zend_string *filename = get_eval_filename(zend_get_executed_filename());
+      is_builtin_matching(filename, "eval", NULL, config, SPCFG(disabled_functions));
+      zend_string_release(filename);
+
+      SPG(in_eval)++;
+      sp_orig_execute(execute_data);
+      SPG(in_eval)--;
+      return;
+    }
+
+    sp_check_writable(execute_data);
   }
+
+  if (!SPG(hook_execute)) {
+    sp_call_orig_execute(INTERNAL_FUNCTION_PARAM_PASSTHRU, internal);
+    return;
+  }
+
+  char *function_name = get_complete_function_path(execute_data);
+
+  if (!function_name) {
+    sp_call_orig_execute(INTERNAL_FUNCTION_PARAM_PASSTHRU, internal);
+    return;
+  }
+
+  const sp_list_node *config_disabled_functions_reg = SPCFG(disabled_functions_reg).disabled_functions;
+
+  // If we're at an internal function
+  if (!execute_data->prev_execute_data ||
+      !execute_data->prev_execute_data->func ||
+      !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
+      !execute_data->prev_execute_data->opline) {
+    should_disable_ht(execute_data, function_name, NULL, NULL, config_disabled_functions_reg, SPCFG(disabled_functions));
+  } else {  // If we're at a userland function call
+    switch (execute_data->prev_execute_data->opline->opcode) {
+      case ZEND_DO_FCALL:
+      case ZEND_DO_FCALL_BY_NAME:
+      case ZEND_DO_ICALL:
+      case ZEND_DO_UCALL:
+      case ZEND_TICKS:
+        should_disable_ht(execute_data, function_name, NULL, NULL, config_disabled_functions_reg, SPCFG(disabled_functions));
+      default:
+        break;
+    }
+  }
+
+  // When a function's return value isn't used, php doesn't store it in the
+  // execute_data, so we need to use a local variable to be able to match on
+  // it later.
+  zval ret_val;
+  if (EX(return_value) == NULL) {
+    memset(&ret_val, 0, sizeof(ret_val));
+    EX(return_value) = &ret_val;
+  }
+
+  sp_call_orig_execute(INTERNAL_FUNCTION_PARAM_PASSTHRU, internal);
+
+  should_drop_on_ret_ht(EX(return_value), function_name, SPCFG(disabled_functions_reg_ret).disabled_functions, SPCFG(disabled_functions_ret), execute_data);
+  efree(function_name);
+
+  if (EX(return_value) == &ret_val) {
+    EX(return_value) = NULL;
+  }
+
+}
+
+
+static void sp_execute_ex(zend_execute_data *execute_data) {
+  sp_execute_handler(execute_data, NULL, false);
+}
+
+static void sp_zend_execute_internal(INTERNAL_FUNCTION_PARAMETERS) {
+  sp_execute_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, true);
 }
 
 static inline void sp_stream_open_checks(zend_string *zend_filename, zend_file_handle *handle) {
