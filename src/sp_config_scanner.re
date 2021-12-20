@@ -182,6 +182,7 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
     <init> "sp"    { kw_i = 0;  goto yyc_rule; }
     <init> end     { ret = SUCCESS; goto out; }
     <init> "set" ws+ @t1 keyword @t2 ws+ @t3 string @t4 ws* ";"? {
+      if (!cond_res[0]) { goto yyc_init; }
       char *key = (char*)t1;
       int keylen = t2-t1;
       zend_string *tmp = zend_hash_str_find_ptr(&vars, key, keylen);
@@ -192,19 +193,22 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
       zend_hash_str_add_ptr(&vars, key, keylen, tmp);
       goto yyc_init;
     }
-    <init> "@condition" ws+ { goto yyc_cond; }
-    <init> "@end_condition" ws* ";" { cond_res[0] = 1; goto yyc_init; }
-    <init> ( "@log" | "@info" ) ws+ @t1 string @t2 {
+    <init> "@condition" ws+ { cond_res_i = 0; goto yyc_cond; }
+    <init> "@end_condition" ws* ";" { cond_res[0] = 1; cond_res_i = 0; goto yyc_init; }
+    <init> ( "@log" | "@info" ) ws+ @t1 string @t2 ";"? {
+      if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);
       cs_log_info("[line %d]: %s", lineno, tmpstr);
       goto yyc_init;
     }
-    <init> ( "@warn" | "@warning" ) ws+ @t1 string @t2 {
+    <init> ( "@warn" | "@warning" ) ws+ @t1 string @t2 ";"? {
+      if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);
       cs_log_warning("[line %d]: %s", lineno, tmpstr);
       goto yyc_init;
     }
-    <init> ( "@err" | "@error" ) ws+ @t1 string @t2 {
+    <init> ( "@err" | "@error" ) ws+ @t1 string @t2 ";"? {
+      if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);
       cs_log_error("[line %d]: %s", lineno, tmpstr);
       goto out;
