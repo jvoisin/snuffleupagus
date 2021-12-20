@@ -4,6 +4,8 @@
 
 #define cs_log_error(fmt, ...) sp_log_err("config", fmt, ##__VA_ARGS__)
 #define cs_log_info(fmt, ...) sp_log_msg("config", SP_LOG_INFO, fmt, ##__VA_ARGS__)
+#define cs_log_warning(fmt, ...) sp_log_warn("config", fmt, ##__VA_ARGS__)
+
 
 zend_string *sp_get_arg_string(sp_parsed_keyword *kw) {
   if (!kw || !kw->arg) {
@@ -126,6 +128,12 @@ static int sy_apply_op(char op, int a, int b) {
   int res = sy_apply_op(op, a, b); \
   sy_res_push(res);
 
+#define TMPSTR(tmpstr, t2, t1) \
+      char tmpstr[1024]; \
+      size_t tmplen = MIN(t2-t1-2, 1023); \
+      strncpy(tmpstr, t1+1, tmplen); \
+      tmpstr[tmplen] = 0;
+
 
 zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_keyword*))
 {
@@ -186,14 +194,22 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
     }
     <init> "@condition" ws+ { goto yyc_cond; }
     <init> "@end_condition" ws* ";" { cond_res[0] = 1; goto yyc_init; }
-    <init> "@log" ws+ @t1 string? @t2 {
-      char tmpstr[1024];
-      size_t tmplen = MIN(t2-t1-2, 1023);
-      strncpy(tmpstr, t1+1, tmplen);
-      tmpstr[tmplen] = 0;
+    <init> ( "@log" | "@info" ) ws+ @t1 string @t2 {
+      TMPSTR(tmpstr, t2, t1);
       cs_log_info("[line %d]: %s", lineno, tmpstr);
       goto yyc_init;
     }
+    <init> ( "@warn" | "@warning" ) ws+ @t1 string @t2 {
+      TMPSTR(tmpstr, t2, t1);
+      cs_log_warning("[line %d]: %s", lineno, tmpstr);
+      goto yyc_init;
+    }
+    <init> ( "@err" | "@error" ) ws+ @t1 string @t2 {
+      TMPSTR(tmpstr, t2, t1);
+      cs_log_error("[line %d]: %s", lineno, tmpstr);
+      goto out;
+    }
+
 
     <cond> ws+ { goto yyc_cond; }
     <cond> nl  { lineno++; goto yyc_cond; }
