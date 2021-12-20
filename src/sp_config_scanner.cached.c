@@ -582,7 +582,6 @@ yy70:
 		t2 = YYCURSOR;
 		{
       TMPSTR(tmpstr, t2, t1);
-      sp_log_debug("tmplen: %d", tmplen);
       cs_log_info("[line %d]: %s", lineno, tmpstr);
       goto yyc_init;
     }
