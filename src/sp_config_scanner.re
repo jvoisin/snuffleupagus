@@ -181,7 +181,7 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
     <init> nl      { lineno++; goto yyc_init; }
     <init> "sp"    { kw_i = 0;  goto yyc_rule; }
     <init> end     { ret = SUCCESS; goto out; }
-    <init> "set" ws+ @t1 keyword @t2 ws+ @t3 string @t4 ws* ";"? {
+    <init> "@"? "set" ws+ @t1 keyword @t2 ws+ @t3 string @t4 ws* ";"? {
       if (!cond_res[0]) { goto yyc_init; }
       char *key = (char*)t1;
       int keylen = t2-t1;
