@@ -429,9 +429,6 @@ SP_PARSE_FN(parse_upload_validation) {
   } else if (-1 == access(ZSTR_VAL(cfg->script), F_OK)) {
     sp_log_err("config", "The `script` (%s) doesn't exist on line %zu", ZSTR_VAL(cfg->script), parsed_rule->lineno);
     return SP_PARSER_ERROR;
-  } else if (-1 == access(ZSTR_VAL(cfg->script), X_OK)) {
-    sp_log_err("config", "The `script` (%s) isn't executable on line %zu", ZSTR_VAL(cfg->script), parsed_rule->lineno);
-    return SP_PARSER_ERROR;
   }
 
   return SP_PARSER_STOP;
