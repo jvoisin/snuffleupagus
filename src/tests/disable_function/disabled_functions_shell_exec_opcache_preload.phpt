@@ -11,6 +11,7 @@ allow_url_include=1
 opcache.enable=1
 opcache.enable_cli=1
 opcache.preload=data://text/plain,%3C%3Fphp+shell_exec%28%22ls%22%29%3B
+opcache.preload_user=nobody
 --FILE--
 <?php
 ?>
