@@ -19,7 +19,7 @@ jobs:
         if: startsWith(matrix.container, 'php:7')
         run: |
           pecl install vld-beta
-          rm -rf src/tests/*php8*/ src/tests/*/*_php8.phpt
+          rm -rf src/tests/*php8*/ src/tests/*/*_php8.phpt src/tests/disable_function/*_signal.phpt
       - name: Build and run the testsuite
         run: |
           make release
