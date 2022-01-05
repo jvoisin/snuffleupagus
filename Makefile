@@ -19,7 +19,7 @@ compile_debug:  ## compile a debug build
 	make -C src
 
 tests: release  ## compile a release build and run the testsuite
-	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C src test
+	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 SP_SKIP_OLD_PHP_CHECK=1 make -C src test
 
 coverage:  ## compile snuffleugpaus, and run the testsuite with coverage
 	cd src; phpize

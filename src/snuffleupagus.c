@@ -367,7 +367,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     (SPCFG(disabled_functions) && zend_hash_num_elements(SPCFG(disabled_functions))) ||
     (SPCFG(disabled_functions_ret) && zend_hash_num_elements(SPCFG(disabled_functions_ret)));
 
-  if (SPCFG(show_old_php_warning)) {
+  if (SPCFG(show_old_php_warning) && getenv("SP_SKIP_OLD_PHP_CHECK") == NULL) {
     time_t ts = time(NULL);
     if (PHP_VERSION_ID < 70300 ||
         PHP_VERSION_ID < 70400 && ts >= (time_t)1638745200L ||
