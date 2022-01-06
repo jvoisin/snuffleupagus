@@ -161,14 +161,18 @@ static inline void sp_execute_handler(INTERNAL_FUNCTION_PARAMETERS, bool interna
     return;
   }
 
-  const sp_list_node *config_disabled_functions_reg = SPCFG(disabled_functions_reg).disabled_functions;
+  bool is_hooked = (zend_hash_str_find(SPG(disabled_functions_hook), VAR_AND_LEN(function_name)) || zend_hash_str_find(SPG(disabled_functions_hook), VAR_AND_LEN(function_name)));
+  if (is_hooked) {
+    sp_call_orig_execute(INTERNAL_FUNCTION_PARAM_PASSTHRU, internal);
+    return;
+  }
 
   // If we're at an internal function
   if (!execute_data->prev_execute_data ||
       !execute_data->prev_execute_data->func ||
       !ZEND_USER_CODE(execute_data->prev_execute_data->func->type) ||
       !execute_data->prev_execute_data->opline) {
-    should_disable_ht(execute_data, function_name, NULL, NULL, config_disabled_functions_reg, SPCFG(disabled_functions));
+    should_disable_ht(execute_data, function_name, NULL, NULL, SPCFG(disabled_functions_reg).disabled_functions, SPCFG(disabled_functions));
   } else {  // If we're at a userland function call
     switch (execute_data->prev_execute_data->opline->opcode) {
       case ZEND_DO_FCALL:
@@ -176,7 +180,7 @@ static inline void sp_execute_handler(INTERNAL_FUNCTION_PARAMETERS, bool interna
       case ZEND_DO_ICALL:
       case ZEND_DO_UCALL:
       case ZEND_TICKS:
-        should_disable_ht(execute_data, function_name, NULL, NULL, config_disabled_functions_reg, SPCFG(disabled_functions));
+        should_disable_ht(execute_data, function_name, NULL, NULL, SPCFG(disabled_functions_reg).disabled_functions, SPCFG(disabled_functions));
       default:
         break;
     }
@@ -188,23 +192,24 @@ static inline void sp_execute_handler(INTERNAL_FUNCTION_PARAMETERS, bool interna
   zval ret_val;
   if (EX(return_value) == NULL) {
     memset(&ret_val, 0, sizeof(ret_val));
-    EX(return_value) = &ret_val;
+    return_value = EX(return_value) = &ret_val;
   }
 
   sp_call_orig_execute(INTERNAL_FUNCTION_PARAM_PASSTHRU, internal);
 
-  should_drop_on_ret_ht(EX(return_value), function_name, SPCFG(disabled_functions_reg_ret).disabled_functions, SPCFG(disabled_functions_ret), execute_data);
+  should_drop_on_ret_ht(return_value, function_name, SPCFG(disabled_functions_reg_ret).disabled_functions, SPCFG(disabled_functions_ret), execute_data);
+
   efree(function_name);
 
   if (EX(return_value) == &ret_val) {
-    EX(return_value) = NULL;
+    return_value = EX(return_value) = NULL;
   }
 
 }
 
 
 static void sp_execute_ex(zend_execute_data *execute_data) {
-  sp_execute_handler(execute_data, NULL, false);
+  sp_execute_handler(execute_data, execute_data ? EX(return_value) : NULL, false);
 }
 
 static void sp_zend_execute_internal(INTERNAL_FUNCTION_PARAMETERS) {

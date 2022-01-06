@@ -400,7 +400,6 @@ static void should_drop_on_ret(const zval* return_value,
   bool match_type = false, match_value = false;
 
   while (config) {
-    const zend_string* ret_value_str = NULL;
     sp_disabled_function const* const config_node =
         (sp_disabled_function*)(config->data);
 
@@ -444,13 +443,18 @@ static void should_drop_on_ret(const zval* return_value,
       }
     }
 
-    ret_value_str = sp_zval_to_zend_string(return_value);
+    const zend_string* ret_value_str = NULL;
+    sp_php_type ret_type = SP_PHP_TYPE_NULL;
+
+    if (return_value) {
+      ret_value_str = sp_zval_to_zend_string(return_value);
+      ret_type = Z_TYPE_P(return_value);
+    }
 
     match_type = (config_node->ret_type) &&
-                 (config_node->ret_type == Z_TYPE_P(return_value));
-    match_value = (config_node->ret || config_node->r_ret) &&
-                  (true == sp_match_value(ret_value_str, config_node->ret,
-                                          config_node->r_ret));
+                 (config_node->ret_type == ret_type);
+    match_value = return_value && (config_node->ret || config_node->r_ret) &&
+                  (true == sp_match_value(ret_value_str, config_node->ret, config_node->r_ret));
 
     if (true == match_type || true == match_value) {
       if (true == config_node->allow) {
