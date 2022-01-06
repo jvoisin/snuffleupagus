@@ -18,6 +18,9 @@ PHP_ARG_ENABLE(coverage, whether to enable coverage support,
 PHP_ARG_ENABLE(debug, whether to enable debug messages,
 [  --enable-debug           Enable debug messages], no, no)
 
+PHP_ARG_ENABLE(debug-stderr, whether to enable debug messages,
+[  --enable-debug-stderr           Enable debug messages], no, no)
+
 AC_PROG_CC_STDC()
 
 CFLAGS="$CFLAGS"
@@ -28,8 +31,11 @@ CFLAGS="$CFLAGS -fstack-protector-strong"
 LDFLAGS="$LDFLAGS `pcre2-config --libs8`"
 
 if test "$PHP_DEBUG" = "yes"; then
-	AC_DEFINE(SP_DEBUG, 1, [Wether you want to enable debug messages])
-      CFLAGS="$CFLAGS -g -ggdb -O0"
+  AC_DEFINE(SP_DEBUG, 1, [Enable SP debug messages])
+  CFLAGS="$CFLAGS -g -ggdb -O0"
+  if test "$PHP_DEBUG_STDERR" = "yes"; then
+    AC_DEFINE(SP_DEBUG_STDERR, 1, [Print SP debug messages to stderr])
+  fi
 fi
 
 AC_CHECK_LIB(pcre, pcre_compile, AC_DEFINE(HAVE_PCRE, 1, [have pcre]))
