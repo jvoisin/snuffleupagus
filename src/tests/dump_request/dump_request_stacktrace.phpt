@@ -5,7 +5,9 @@ Dump request
 if (!extension_loaded("snuffleupagus")) {
     print "skip";
 } 
-
+?>
+--CLEAN--
+<?php
 foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
     @unlink($dump);
 }
