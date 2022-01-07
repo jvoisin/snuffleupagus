@@ -8,15 +8,29 @@ clean:  ## clean everything
 release:  ## compile with releases flags
 	cd src; phpize
 	cd src; ./configure --enable-snuffleupagus
-	make -C src
+	make -C src -j4 clean all
 
 install: release  ## compile and install snuffleupagus
 	make -C src install
 
 compile_debug:  ## compile a debug build
-	cd src; phpize
-	export CFLAGS="-g3 -ggdb -O1 -g"; cd src; ./configure --enable-snuffleupagus --enable-debug
-	make -C src
+	cd src; if [[ ! -f configure ]]; then phpize; fi; \
+	./configure --enable-snuffleupagus --enable-debug --enable-debug-stderr
+	make -C src -j4 clean all
+
+DOCKER_IMAGE := php:latest
+docker: ## start docker container with current PHP
+	@echo "starting new docker container with snuffleupagus bind-mounted to /sp"
+	docker run -it -v "$$(pwd)":/sp $(DOCKER_IMAGE) /bin/bash
+
+linked-clone:
+	@if [[ "$(CLONE)" == "" ]]; then echo "Please provide clone name, e.g.\n  make linked-clone CLONE=php8.1"; exit 1; fi
+	@if [[ -d "src-$(CLONE)" ]]; then echo "Clone '$(CLONE)' already exists."; exit 1; fi
+	@echo "creating linked clone in 'src-$(CLONE)'..."
+	mkdir "src-$(CLONE)"; cd "src-$(CLONE)"; \
+	SRC=../src; ln -s $$SRC/*.[hc] $$SRC/config.m4 $$SRC/snuffleupagus.php $$SRC/Makefile.frag $$SRC/*.re .; \
+	cp -r $$SRC/tests .
+	@echo "done. go ahead and do phpize/configure/make"
 
 tests: release  ## compile a release build and run the testsuite
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 SP_SKIP_OLD_PHP_CHECK=1 make -C src test
