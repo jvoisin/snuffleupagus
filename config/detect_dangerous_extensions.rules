@@ -1,0 +1,12 @@
+## This example rules file shows how to detect and disable certain potentially
+## dangerous or unwanted extensions.
+
+@condition extension_loaded("runkit7");
+@error "The runkit7 extension can be used to rename classes and functions, thereby circumventing any filters set by Snuffleupagus. Please disable runkit7.";
+
+@condition extension_loaded("FFI");
+@warning "FFI extension is loaded. Disabling via 'ffi.enable=false'";
+sp.ini_protection.enable();
+sp.ini.key("ffi.enable").set("false").ro();
+@end_condition;
+
