@@ -190,7 +190,7 @@ static inline void sp_execute_handler(INTERNAL_FUNCTION_PARAMETERS, bool interna
   // execute_data, so we need to use a local variable to be able to match on
   // it later.
   zval ret_val;
-  if (EX(return_value) == NULL) {
+  if (EX(return_value) == NULL && return_value == NULL) {
     memset(&ret_val, 0, sizeof(ret_val));
     return_value = EX(return_value) = &ret_val;
   }

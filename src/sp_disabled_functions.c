@@ -469,7 +469,7 @@ static void should_drop_on_ret(const zval* return_value,
 
 ZEND_FUNCTION(check_disabled_function) {
   zif_handler orig_handler;
-  const char* current_function_name = get_active_function_name(TSRMLS_C);
+  const char* current_function_name = get_active_function_name();
 
   should_disable_ht(execute_data, current_function_name, NULL, NULL, SPCFG(disabled_functions_reg).disabled_functions, SPCFG(disabled_functions_hooked));
 
