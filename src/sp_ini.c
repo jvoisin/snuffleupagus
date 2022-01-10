@@ -79,7 +79,6 @@ static PHP_INI_MH(sp_ini_onmodify) {
   zend_ini_entry *ini_entry = entry;
   sp_ini_entry *sp_entry = NULL;
 
-  sp_log_debug("%s =? %s", ZSTR_VAL(ini_entry->name), ZSTR_VAL(new_value));
   if (!sp_ini_check(ini_entry->name, new_value, &sp_entry)) {
     return FAILURE;
   }
@@ -96,7 +95,6 @@ void sp_hook_ini() {
   sp_ini_entry *sp_entry;
   zend_ini_entry *ini_entry;
   ZEND_HASH_FOREACH_PTR(cfg->entries, sp_entry)
-    sp_log_debug("hook entry `%s`", ZSTR_VAL(sp_entry->key));
     if ((ini_entry = zend_hash_find_ptr(EG(ini_directives), sp_entry->key)) == NULL) {
       sp_log_warn("ini_protection", "Cannot hook INI var `%s`. Maybe a typo or the PHP extension providing this var is not loaded yet.", ZSTR_VAL(sp_entry->key));
       continue;
