@@ -49,7 +49,9 @@ sp.ini.key("expose_php").set("0").ro();
 sp.ini.key("error_log").ro();
 sp.ini.key("error_reporting").ro();
 sp.ini.key("log_errors").ro();
+@condition PHP_VERSION_ID < 80000;
 sp.ini.key("log_errors_max_len").set("2048").ro();
+@end_condition;
 sp.ini.key("ignore_repeated_errors").ro();
 sp.ini.key("ignore_repeated_source").ro();
 sp.ini.key("syslog.filter").ro();
@@ -143,8 +145,10 @@ sp.ini.key("serialize_precision").ro();
 
 ## some applications rely on these filters for security
 ## even though they should implement proper input validation for each input field separately.
+@condition extension_loaded("filter");
 sp.ini.key("filter.default").rw();
 sp.ini.key("filter.default_flags").rw();
+@end_condition;
 
 ## scripts will not be terminated after a client has aborted their connection.
 ## this feature may be needed for some time consuming server-side calculation
@@ -174,44 +178,53 @@ sp.ini.key("output_handler").ro();
 #sp.ini.key("sendmail_from").ro();
 
 ## mysqli/mysqlnd options
-#sp.ini.key("mysqli.allow_local_infile").ro();
-#sp.ini.key("mysqli.allow_persistent").ro();
-#sp.ini.key("mysqli.default_host").ro();
-#sp.ini.key("mysqli.default_port").ro();
-#sp.ini.key("mysqli.default_pw").ro();
-#sp.ini.key("mysqli.default_socket").ro();
-#sp.ini.key("mysqli.default_user").ro();
-#sp.ini.key("mysqli.max_links").set("-1").ro();
-#sp.ini.key("mysqli.max_persistent").set("-1").ro();
-#sp.ini.key("mysqli.reconnect").set("0").ro();
-#sp.ini.key("mysqli.rollback_on_cached_plink").set("0").ro();
-#sp.ini.key("mysqlnd.collect_memory_statistics").set("0").ro();
-#sp.ini.key("mysqlnd.collect_statistics").set("1").ro();
-#sp.ini.key("mysqlnd.debug").set("").ro();
-#sp.ini.key("mysqlnd.fetch_data_copy").set("0").ro();
-#sp.ini.key("mysqlnd.log_mask").set("0").ro();
-#sp.ini.key("mysqlnd.mempool_default_size").set("16000").ro();
-#sp.ini.key("mysqlnd.net_cmd_buffer_size").set("4096").ro();
-#sp.ini.key("mysqlnd.net_read_buffer_size").set("32768").ro();
-#sp.ini.key("mysqlnd.net_read_timeout").set("86400").ro();
-#sp.ini.key("mysqlnd.sha256_server_public_key").set("").ro();
-#sp.ini.key("mysqlnd.trace_alloc").set("").ro();
+@condition extension_loaded("mysqli");
+sp.ini.key("mysqli.allow_local_infile").ro();
+sp.ini.key("mysqli.allow_persistent").ro();
+sp.ini.key("mysqli.default_host").ro();
+sp.ini.key("mysqli.default_port").ro();
+sp.ini.key("mysqli.default_pw").ro();
+sp.ini.key("mysqli.default_socket").ro();
+sp.ini.key("mysqli.default_user").ro();
+sp.ini.key("mysqli.max_links").set("-1").ro();
+sp.ini.key("mysqli.max_persistent").set("-1").ro();
+sp.ini.key("mysqli.reconnect").set("0").ro();
+sp.ini.key("mysqli.rollback_on_cached_plink").set("0").ro();
+@condition extension_loaded("mysqlnd");
+sp.ini.key("mysqlnd.collect_memory_statistics").set("0").ro();
+sp.ini.key("mysqlnd.collect_statistics").set("1").ro();
+sp.ini.key("mysqlnd.debug").set("").ro();
+sp.ini.key("mysqlnd.log_mask").set("0").ro();
+sp.ini.key("mysqlnd.mempool_default_size").set("16000").ro();
+sp.ini.key("mysqlnd.net_cmd_buffer_size").set("4096").ro();
+sp.ini.key("mysqlnd.net_read_buffer_size").set("32768").ro();
+sp.ini.key("mysqlnd.net_read_timeout").set("86400").ro();
+sp.ini.key("mysqlnd.sha256_server_public_key").set("").ro();
+sp.ini.key("mysqlnd.trace_alloc").set("").ro();
+@condition extension_loaded("mysqlnd") && PHP_VERSION_ID < 80100;
+sp.ini.key("mysqlnd.fetch_data_copy").set("0").ro();
+@end_condition;
 
 ## open basedir is a security feature similar to chroot.
 ## why should it be allowed to disable this feature during runtime?
 sp.ini.key("open_basedir").ro();
 
 ## pcre options
+@condition extension_loaded("pcre");
 sp.ini.key("pcre.backtrack_limit").min("1000").max("1000000").rw();
 sp.ini.key("pcre.jit").rw();
 sp.ini.key("pcre.recursion_limit").min("1000").max("100000").ro();
+@end_condition;
 
 ## phar options
+@condition extension_loaded("phar");
 sp.ini.key("phar.cache_list").ro();
 sp.ini.key("phar.readonly").ro();
 sp.ini.key("phar.require_hash").ro();
+@end_condition;
 
 ## session options
+@condition extension_loaded("session");
 #sp.ini.key("session.auto_start").set("0").ro();
 #sp.ini.key("session.cache_expire").set("180").ro();
 #sp.ini.key("session.cache_limiter").set("nocache").ro();
@@ -244,6 +257,7 @@ sp.ini.key("session.sid_length").min("32").max("128").rw();
 #sp.ini.key("session.use_only_cookies").set("1").ro();
 #sp.ini.key("session.use_strict_mode").set("0").ro();
 #sp.ini.key("session.use_trans_sid").set("0").ro();
+@end_condition;
 
 ## allow setting the user agent
 sp.ini.key("user_agent").rw();
@@ -262,9 +276,11 @@ sp.ini.key("hard_timeout").ro();
 sp.ini.key("realpath_cache_size").ro();
 sp.ini.key("realpath_cache_ttl").ro();
 sp.ini.key("sendmail_path").ro();
+@condition extension_loaded("sqlite3");
 sp.ini.key("sqlite3.defensive").ro();
 sp.ini.key("sqlite3.extension_dir").ro();
-sp.ini.key("sys_temp_dir").set("").ro();
+@end_condition;
+sp.ini.key("sys_temp_dir").ro();
 sp.ini.key("syslog.facility").ro();
 sp.ini.key("syslog.ident").ro();
 sp.ini.key("upload_tmp_dir").ro();
