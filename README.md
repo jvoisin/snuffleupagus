@@ -1,9 +1,14 @@
+![CI for PHP versions](https://github.com/sektioneins/snuffleupagus/actions/workflows/builds.yml/badge.svg)
+![CI for Linux distributions](https://github.com/sektioneins/snuffleupagus/actions/workflows/distributions.yml/badge.svg)
+![CI for CodeQL Analysis](https://github.com/sektioneins/snuffleupagus/actions/workflows/codeql-analysis.yml/badge.svg)
+
 <p align="center">
   <img src="https://github.com/sektioneins/snuffleupagus/blob/master/doc/source/_static/sp.png" alt="Snuffleupagus logo" width="200">
 
   # Snuffleupagus fork with Suhosin-NG patches
   
 </p>
+
 
 ## About Snuffleupagus
 
