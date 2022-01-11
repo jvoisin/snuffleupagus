@@ -9,7 +9,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Remove php8 tests for php7
-        run: rm -rf src/tests/*php8*/
+        run: rm -rf src/tests/*php8*/ src/tests/*/*_php8.phpt src/tests/disable_function/*_signal.phpt
       - name: Install dependencies
         run: |
           apt update
@@ -17,12 +17,11 @@ jobs:
       - name: Install pecl
         run: pecl install vld-beta
       - name: Build and run the testsuite
-        run: make tests
+        run: make release tests
       - name: Show logs in case of failure
         if: ${{ failure() }}
         run: |
-          grep -r . ./src/tests/*/*.out
-          grep -r . ./src/tests/*/*.diff
+          grep -r . --include='*.log' src/tests
 
   fedora:
     runs-on: ubuntu-latest
@@ -31,19 +30,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Remove php8 tests for php7
-        run: rm -rf src/tests/*php8*/
+        run: rm -rf src/tests/*php8*/ src/tests/*/*_php8.phpt src/tests/disable_function/*_signal.phpt
       - name: Install dependencies
         run: |
           dnf install -y php-devel php-pear make
       - name: Install pecl
         run: pecl install vld-beta
       - name: Build and run the testsuite
-        run: make tests
+        run: make release tests
       - name: Show logs in case of failure
         if: ${{ failure() }}
         run: |
-          grep -r . ./src/tests/*/*.out
-          grep -r . ./src/tests/*/*.diff
+          grep -r . --include='*.log' src/tests
 
   ubuntu:
     runs-on: ubuntu-latest
@@ -64,8 +62,7 @@ jobs:
       - name: Show logs in case of failure
         if: ${{ failure() }}
         run: |
-          grep -r . ./src/tests/*/*.out
-          grep -r . ./src/tests/*/*.diff
+          grep -r . --include='*.log' src/tests
 
   archlinux:
     runs-on: ubuntu-latest
@@ -91,8 +88,7 @@ jobs:
         continue-on-error: true
         if: ${{ failure() }}
         run: |
-          grep -r . ./src/tests/*/*.out
-          grep -r . ./src/tests/*/*.diff
+          grep -r . --include='*.log' src/tests
 
   alpine:
     runs-on: ubuntu-latest
@@ -116,5 +112,33 @@ jobs:
         if: ${{ failure() }}
         continue-on-error: true
         run: |
-          grep -r . ./src/tests/*/*.out
-          grep -r . ./src/tests/*/*.diff
+          grep -r . --include='*.log' src/tests
+
+  ## PHP 8
+  alpine:
+    runs-on: ubuntu-latest
+    container: alpine:edge
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      # - name: Remove php7 tests for php8
+      #   run: rm -rf src/tests/*php7*/
+      # - name: Remove tests failing on alpine for wathever reason
+      #   run: rm -rf src/tests/*session*/ src/tests/broken_configuration/ src/tests/*cookie* src/tests/upload_validation/
+      - name: Install dependencies
+        run: apk add php8-dev php8-cgi php8-simplexml php8-xml pcre-dev build-base php8-pear php8-openssl
+      - name: Install pecl
+        continue-on-error: true
+        run: pecl install vld-beta
+      - name: Link phpize
+        run: ln -s /usr/bin/phpize8 /usr/bin/phpize
+      - name: Link php-config
+        run: ln -s /usr/bin/php-config8 /usr/bin/php-config
+      - name: Build and run the testsuite
+        continue-on-error: true
+        run: make tests
+      - name: Show logs in case of failure
+        if: ${{ failure() }}
+        continue-on-error: true
+        run: |
+          grep -r . --include='*.log' src/tests
