@@ -2,6 +2,7 @@
 Disable functions - shell_exec via signal handler
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+<?php if (!extension_loaded("pcntl")) print "skip"; ?>
 <?php if (PHP_VERSION_ID < 70100) print "skip"; ?>
 --EXTENSIONS--
 pcntl
