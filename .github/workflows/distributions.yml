@@ -115,7 +115,7 @@ jobs:
           grep -r . --include='*.log' src/tests
 
   ## PHP 8
-  alpine:
+  alpine_php8:
     runs-on: ubuntu-latest
     container: alpine:edge
     steps:
