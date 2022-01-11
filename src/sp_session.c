@@ -121,8 +121,7 @@ static PHP_INI_MH(sp_OnUpdateSaveHandler) {
 
   SESSION_G(mod) = s_original_mod;
 
-  int r = old_OnUpdateSaveHandler(entry, new_value, mh_arg1, mh_arg2, mh_arg3,
-                                  stage);
+  int r = old_OnUpdateSaveHandler(entry, new_value, mh_arg1, mh_arg2, mh_arg3, stage);
 
   sp_hook_session_module();
 
@@ -138,8 +137,7 @@ static int sp_hook_session_RINIT(INIT_FUNC_ARGS) {
 void hook_session() {
   zend_module_entry *module;
 
-  if ((module = zend_hash_str_find_ptr(&module_registry,
-                                       ZEND_STRL("session"))) == NULL) {
+  if ((module = zend_hash_str_find_ptr(&module_registry, ZEND_STRL("session"))) == NULL) {
     return;  // LCOV_EXCL_LINE
   }
 
@@ -160,8 +158,7 @@ void hook_session() {
   module->request_startup_func = sp_hook_session_RINIT;
 
   zend_ini_entry *ini_entry;
-  if ((ini_entry = zend_hash_str_find_ptr(
-           EG(ini_directives), ZEND_STRL("session.save_handler"))) != NULL) {
+  if ((ini_entry = zend_hash_str_find_ptr(EG(ini_directives), ZEND_STRL("session.save_handler"))) != NULL) {
     old_OnUpdateSaveHandler = ini_entry->on_modify;
     ini_entry->on_modify = sp_OnUpdateSaveHandler;
   }
