@@ -6,8 +6,10 @@
 # Harden the PRNG
 sp.harden_random.enable();
 
-# Disabled XXE
+# Enable XXE protection
+@condition extension_loaded("xml");
 sp.xxe_protection.enable();
+@end_condition;
 
 # Global configuration variables
 # sp.global.secret_key("YOU _DO_ NEED TO CHANGE THIS WITH SOME RANDOM CHARACTERS.");
