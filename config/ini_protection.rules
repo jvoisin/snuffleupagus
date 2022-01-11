@@ -255,7 +255,7 @@ sp.ini.key("session.sid_length").min("32").max("128").rw();
 #sp.ini.key("session.upload_progress.prefix").set("upload_progress_").ro();
 #sp.ini.key("session.use_cookies").set("1").ro();
 #sp.ini.key("session.use_only_cookies").set("1").ro();
-#sp.ini.key("session.use_strict_mode").set("0").ro();
+sp.ini.key("session.use_strict_mode").set("1").ro();
 #sp.ini.key("session.use_trans_sid").set("0").ro();
 @end_condition;
 
