@@ -2,9 +2,11 @@
 Disable functions - shell_exec via opcache.preload
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+<?php if (!extension_loaded("opcache")) print "skip"; ?>
 <?php if (PHP_VERSION_ID < 70400) print "skip"; ?>
 --EXTENSIONS--
 opcache
+--XFAIL--
 --INI--
 sp.configuration_file={PWD}/config/disabled_functions_extra.ini
 allow_url_include=1
