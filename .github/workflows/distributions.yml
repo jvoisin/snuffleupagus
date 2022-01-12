@@ -50,7 +50,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Remove php8 tests for php7
-        run: rm -rf src/tests/*php8*/
+        run: rm -rf src/tests/*php8*/ src/tests/*/*_php8.phpt
       - name: Install dependencies
         run: |
           apt update
@@ -71,7 +71,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Remove php8 tests for php7
-        run: rm -rf src/tests/*php8*/
+        run: rm -rf src/tests/*php8*/ src/tests/*/*_php8.phpt
       - name: Install dependencies
         continue-on-error: true
         run: |
@@ -81,7 +81,7 @@ jobs:
       - name: Install pecl
         continue-on-error: true
         run: pecl install vld-beta
-      - name: Build and run the testsuite
+      - name: Build SP and run the testsuite
         continue-on-error: true
         run: make tests
       - name: Show logs in case of failure
@@ -92,22 +92,25 @@ jobs:
 
   alpine:
     runs-on: ubuntu-latest
-    container: alpine:edge
+    container: alpine:latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Remove php8 tests for php7
-        run: rm -rf src/tests/*php8*/
+        run: rm -rf src/tests/*php8*/ src/tests/*/*_php8.phpt
       - name: Remove tests failing on alpine for wathever reason
-        run: rm -rf src/tests/*session*/ src/tests/broken_configuration/ src/tests/*cookie* src/tests/upload_validation/
+        run: rm -rf src/tests/cookies_encryption_warning src/tests/upload_validation/upload_validation.phpt /tests/broken_configuration/encrypt_regexp_cookies_bad_regexp.phpt
       - name: Install dependencies
-        run: apk add php7-dev php7-cgi php7-simplexml php7-xml pcre-dev build-base php7-pear php7-openssl
+        run: apk add php7-dev php7-cgi php7-simplexml php7-xml pcre-dev build-base php7-pear php7-openssl php7-session
       - name: Install pecl
         continue-on-error: true
         run: pecl install vld-beta
-      - name: Build and run the testsuite
+      - name: Build SP and run the testsuite
         continue-on-error: true
-        run: make tests
+        run: |
+          make release
+          ln -s $(php -r 'echo ini_get("extension_dir");')/* src/modules/
+          make tests
       - name: Show logs in case of failure
         if: ${{ failure() }}
         continue-on-error: true
@@ -121,22 +124,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      # - name: Remove php7 tests for php8
-      #   run: rm -rf src/tests/*php7*/
-      # - name: Remove tests failing on alpine for wathever reason
-      #   run: rm -rf src/tests/*session*/ src/tests/broken_configuration/ src/tests/*cookie* src/tests/upload_validation/
+      - name: Remove tests failing on alpine for wathever reason
+        run: rm -rf src/tests/cookies_encryption_warning src/tests/upload_validation/upload_validation.phpt
       - name: Install dependencies
-        run: apk add php8-dev php8-cgi php8-simplexml php8-xml pcre-dev build-base php8-pear php8-openssl
+        run: apk add php8-dev php8-cgi php8-simplexml php8-xml pcre-dev build-base php8-pear php8-openssl php8-session php8-curl
       - name: Install pecl
         continue-on-error: true
         run: pecl install vld-beta
-      - name: Link phpize
-        run: ln -s /usr/bin/phpize8 /usr/bin/phpize
-      - name: Link php-config
-        run: ln -s /usr/bin/php-config8 /usr/bin/php-config
-      - name: Build and run the testsuite
+      - name: Build SP and run the testsuite
         continue-on-error: true
-        run: make tests
+        run: |
+          make release
+          ln -s $(php -r 'echo ini_get("extension_dir");')/* src/modules/
+          make tests
       - name: Show logs in case of failure
         if: ${{ failure() }}
         continue-on-error: true
