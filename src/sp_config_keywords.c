@@ -39,15 +39,6 @@ SP_PARSE_FN(parse_session) {
 
   SP_PROCESS_CONFIG_KEYWORDS_ERR();
 
-#if (!HAVE_PHP_SESSION || defined(COMPILE_DL_SESSION))
-  sp_log_err("config",
-      "You're trying to use the session cookie encryption feature "
-      "on line %zu without having session support statically built into PHP. "
-      "This isn't supported, see "
-      "https://github.com/jvoisin/snuffleupagus/issues/278 for details.", parsed_rule->lineno);
-  return SP_PARSER_ERROR;
-#endif
-
   if (cfg->encrypt) {
     if (!SPCFG(cookies_env_var)) {
       sp_log_err("config", "You're trying to use the session cookie encryption feature "

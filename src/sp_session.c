@@ -1,7 +1,5 @@
 #include "php_snuffleupagus.h"
 
-#if (HAVE_PHP_SESSION && !defined(COMPILE_DL_SESSION))
-
 #ifdef ZTS
 static ts_rsrc_id session_globals_id = 0;
 #define SESSION_G(v) ZEND_TSRMG(session_globals_id, php_ps_globals *, v)
@@ -10,7 +8,7 @@ ZEND_TSRMLS_CACHE_EXTERN();
 #endif
 #else
 static php_ps_globals *session_globals = NULL;
-#define SESSION_G(v) (ps_globals.v)
+#define SESSION_G(v) (session_globals->v)
 #endif
 
 static ps_module *s_module;
@@ -138,6 +136,7 @@ void hook_session() {
   zend_module_entry *module;
 
   if ((module = zend_hash_str_find_ptr(&module_registry, ZEND_STRL("session"))) == NULL) {
+    sp_log_err("session", "You are trying to use session encryption or session ID restrictions, but your PHP installation has no session support. Please install the PHP session module or recompile PHP with session support.");
     return;  // LCOV_EXCL_LINE
   }
 
@@ -166,9 +165,3 @@ void hook_session() {
 
   sp_hook_session_module();
 }
-
-#else
-
-void hook_session() {}
-
-#endif  // HAVE_PHP_SESSION && !defined(COMPILE_DL_SESSION)
