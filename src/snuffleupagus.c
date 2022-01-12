@@ -370,11 +370,11 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
   if (SPCFG(show_old_php_warning) && getenv("SP_SKIP_OLD_PHP_CHECK") == NULL) {
     time_t ts = time(NULL);
-    if (PHP_VERSION_ID < 70300 ||
-        PHP_VERSION_ID < 70400 && ts >= (time_t)1638745200L ||
-        PHP_VERSION_ID < 80000 && ts >= (time_t)1669590000L ||
-        PHP_VERSION_ID < 80100 && ts >= (time_t)1700953200L) {
-      sp_log_warn("End-of-Life Check", "Your PHP version '" PHP_VERSION "' is not officially mainained anymore. Please upgrade as soon as possible.");
+    if ((PHP_VERSION_ID < 70300) ||
+        (PHP_VERSION_ID < 70400 && ts >= (time_t)1638745200L) ||
+        (PHP_VERSION_ID < 80000 && ts >= (time_t)1669590000L) ||
+        (PHP_VERSION_ID < 80100 && ts >= (time_t)1700953200L)) {
+      sp_log_warn("End-of-Life Check", "Your PHP version '" PHP_VERSION "' is not officially mainained anymore. Please upgrade as soon as possible. - Note: This message can be switched off by setting 'sp.global.show_old_php_warning.disable();' in your rules file or by setting the environment variable SP_SKIP_OLD_PHP_CHECK=1.");
     }
   }
   return SUCCESS;
