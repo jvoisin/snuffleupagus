@@ -2,6 +2,9 @@
 SESSION crypt/decrypt valid
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+<?php if (!extension_loaded("session")) print "skip"; ?>
+--EXTENSIONS--
+session
 --INI--
 sp.configuration_file={PWD}/config/config_crypt_session_simul.ini
 --ENV--

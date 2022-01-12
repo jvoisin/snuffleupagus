@@ -2,7 +2,6 @@
 Cookie decryption in ipv4
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_encrypted_regexp_cookies_bad_regexp.ini
 error_reporting=1
@@ -15,9 +14,7 @@ HTTP_USER_AGENT=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like 
 EOF;
 --FILE--
 <?php var_dump($_COOKIE); ?>
---EXPECT--
+--EXPECTF--
 Fatal error: [snuffleupagus][127.0.0.1][config][log] Invalid configuration file in Unknown on line 0
-
-Fatal error: [snuffleupagus][127.0.0.1][config][log] Failed to compile '^super_co[a-z+$': missing terminating ] for character class. in Unknown on line 0
-
+%A
 Fatal error: [snuffleupagus][127.0.0.1][config][log] Invalid regexp '^super_co[a-z+$' for '.name_r()' on line 2 in Unknown on line 0
