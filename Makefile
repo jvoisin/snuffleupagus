@@ -11,7 +11,7 @@ clean:  ## clean everything
 release:  ## compile with releases flags
 	cd $(SRC); phpize
 	cd $(SRC); ./configure --enable-snuffleupagus
-	make -C $(SRC) -j4 clean all
+	make -C $(SRC)
 
 install: release  ## compile and install snuffleupagus
 	make -C $(SRC) install
