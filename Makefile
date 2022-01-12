@@ -27,13 +27,13 @@ docker: ## start docker container with current PHP
 	docker run -it -v "$$(pwd)":/sp $(DOCKER_IMAGE) /bin/bash
 
 linked-clone:
-	@if [[ "$(CLONE)" == "" ]]; then echo "==> Please provide clone name, e.g.\n  make linked-clone CLONE=php8.1"; exit 1; fi
-	@if [[ -d "src-$(CLONE)" ]]; then echo "==> Clone '$(CLONE)' already exists."; exit 1; fi
+	@if [[ "$(CLONE)" == "" ]]; then echo -e "==> Please provide clone name, e.g.\n  make linked-clone CLONE=php8.1\n"; exit 1; fi
+	@if [[ -d "src-$(CLONE)" ]]; then echo -e "==> Clone '$(CLONE)' already exists.\n"; exit 1; fi
 	@echo "==> CREATING LINKED CLONE IN 'src-$(CLONE)' <=="
 	mkdir "src-$(CLONE)"; cd "src-$(CLONE)"; \
-	SRCDIR=../src; ln -s $$SRC/*.[hc] $$SRCDIR/config.m4 $$SRCDIR/snuffleupagus.php $$SRCDIR/Makefile.frag $$SRCDIR/*.re .; \
+	SRCDIR=../src; ln -s $$SRCDIR/*.[hc] $$SRCDIR/config.m4 $$SRCDIR/snuffleupagus.php $$SRCDIR/Makefile.frag $$SRCDIR/*.re .; \
 	cp -r $$SRCDIR/tests .
-	@echo "==> DONE. <==\nCompile a debug build with\n  make compile_debug SRC=src-$(CLONE)"
+	@echo -e "==> DONE. <==\nCompile a debug build with\n  make compile_debug SRC=src-$(CLONE)"
 
 tests: release  ## compile a release build and run the testsuite
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 SP_SKIP_OLD_PHP_CHECK=1 make -C $(SRC) test
