@@ -16,7 +16,7 @@ sp_pcre* sp_pcre_compile(const char* const pattern) {
   PCRE2_SIZE erroroffset;
   ret = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED,
                       PCRE2_CASELESS, &errornumber, &erroroffset, NULL);
-  pcre2_get_error_message(errornumber, pcre_error, sizeof(pcre_error));
+  pcre2_get_error_message(errornumber, pcre_error, sizeof(pcre_error)-1);
 #else
   const char* pcre_error = NULL;
   int erroroffset;
