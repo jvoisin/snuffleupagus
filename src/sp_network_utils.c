@@ -121,3 +121,30 @@ int get_ip_and_cidr(char *ip, sp_cidr *cidr) {
 
   return 0;
 }
+
+bool /* success */ get_ip_str(char *dst, size_t dst_len, sp_cidr *cidr) {
+  size_t ipstr_len = 0;
+  void *ip = NULL;
+  switch (cidr->ip_version) {
+    case AF_INET:
+      ipstr_len = INET_ADDRSTRLEN;
+      ip = &cidr->ip.ipv4;
+      break;
+    case AF_INET6:
+      ipstr_len = INET6_ADDRSTRLEN;
+      ip = &cidr->ip.ipv6;
+      break;
+    default:
+      return false;
+  }
+
+  if (dst_len < ipstr_len + 1 + 3 + 1) {
+    return false;
+  }
+  if (!inet_ntop(cidr->ip_version, ip, dst, ipstr_len)) {
+    return false;
+  }
+  ipstr_len = strlen(dst);
+  snprintf(dst + ipstr_len, dst_len - ipstr_len, "/%d", cidr->mask);
+  return true;
+}
