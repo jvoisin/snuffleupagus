@@ -75,3 +75,9 @@ sp_list_node *sp_list_prepend(sp_list_node *list, void *data) {
   new->data = data;
   return new;
 }
+
+size_t sp_list_len(sp_list_node *p) {
+  size_t num = 0;
+  for (; p; p = p->next) { num++; }
+  return num;
+}
