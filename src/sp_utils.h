@@ -71,17 +71,14 @@ extern int sp_debug_stderr;
 #define GET_SUFFIX(x) (x == 1) ? "st" : ((x == 2) ? "nd" : "th")
 
 const char *get_ipaddr(void);
-void sp_log_msgf(char const *restrict feature, int level, int type,
-                 const char *restrict fmt, ...);
+void sp_log_msgf(char const *restrict feature, int level, int type, const char *restrict fmt, ...);
 int compute_hash(const char *const restrict filename, char *restrict file_hash);
 const zend_string *sp_zval_to_zend_string(const zval *);
-bool sp_match_value(const zend_string *, const zend_string *, const sp_pcre *);
-bool sp_match_array_key(const zval *, const zend_string *, const sp_pcre *);
-bool sp_match_array_value(const zval *, const zend_string *, const sp_pcre *);
-void sp_log_disable(const char *restrict, const char *restrict,
-                    const zend_string *restrict, const sp_disabled_function *);
-void sp_log_disable_ret(const char *restrict, const zend_string *restrict,
-                        const sp_disabled_function *);
+bool sp_match_value(const zend_string* value, const zend_string* to_match, const sp_regexp* rx);
+bool sp_match_array_key(const zval *, const zend_string *, const sp_regexp *);
+bool sp_match_array_value(const zval *, const zend_string *, const sp_regexp *);
+void sp_log_disable(const char *restrict, const char *restrict, const zend_string *restrict, const sp_disabled_function *);
+void sp_log_disable_ret(const char *restrict, const zend_string *restrict, const sp_disabled_function *);
 bool hook_function(const char *, HashTable *, zif_handler);
 void unhook_functions(HashTable *ht);
 int hook_regexp(const sp_pcre *, HashTable *, zif_handler);

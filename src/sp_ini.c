@@ -66,7 +66,7 @@ static bool /* success */ sp_ini_check(zend_string *varname, zend_string *new_va
   }
 
   if (entry->regexp) {
-    if (!sp_is_regexp_matching_len(entry->regexp, ZSTR_VAL(new_value), ZSTR_LEN(new_value))) {
+    if (!sp_is_regexp_matching_zstr(entry->regexp, new_value)) {
       sp_log_ini_check_violation("%s", (entry->msg ? ZSTR_VAL(entry->msg) : "INI value does not match regex"));
       return simulation;
     }

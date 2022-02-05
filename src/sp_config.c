@@ -228,20 +228,17 @@ SP_PARSEKW_FN(parse_cidr) {
 }
 
 SP_PARSEKW_FN(parse_regexp) {
-  /* TODO: Do we want to use pcre_study?
-   * (http://www.pcre.org/original/doc/html/pcre_study.html)
-   * maybe not: http://sljit.sourceforge.net/pcre.html*/
   CHECK_DUPLICATE_KEYWORD(retval);
   SP_PARSE_ARG(value);
 
-  sp_pcre *compiled_re = sp_pcre_compile(ZSTR_VAL(value));
+  sp_regexp *compiled_re = sp_regexp_compile(value);
   if (!compiled_re) {
     sp_log_err("config", "Invalid regexp '%s' for '.%s()' on line %zu", ZSTR_VAL(value), token, kw->lineno);
     zend_string_release_ex(value, 1);
     return SP_PARSER_ERROR;
   }
 
-  *(sp_pcre **)retval = compiled_re;
+  *(sp_regexp **)retval = compiled_re;
 
   return SP_PARSER_SUCCESS;
 }
@@ -252,24 +249,24 @@ void sp_free_disabled_function(void *data) {
   sp_free_zstr(df->textual_representation);
 
   sp_free_zstr(df->filename);
-  sp_pcre_free(df->r_filename);
+  sp_regexp_free(df->r_filename);
 
   sp_free_zstr(df->function);
-  sp_pcre_free(df->r_function);
+  sp_regexp_free(df->r_function);
   sp_list_free(df->functions_list, free);
 
   sp_free_zstr(df->hash);
 
   sp_tree_free(df->param);
-  sp_pcre_free(df->r_param);
+  sp_regexp_free(df->r_param);
 
-  sp_pcre_free(df->r_ret);
+  sp_regexp_free(df->r_ret);
   sp_free_zstr(df->ret);
 
-  sp_pcre_free(df->r_value);
+  sp_regexp_free(df->r_value);
   sp_free_zstr(df->value);
 
-  sp_pcre_free(df->r_key);
+  sp_regexp_free(df->r_key);
   sp_free_zstr(df->key);
 
   sp_free_zstr(df->dump);
@@ -287,7 +284,7 @@ void sp_free_cookie(void *data) {
   sp_cookie *c = data;
   if (c->name)
     zend_string_release_ex(c->name, 1);
-  sp_pcre_free(c->name_r);
+  sp_regexp_free(c->name_r);
 }
 
 void sp_free_zstr(void *data) {
@@ -302,7 +299,7 @@ void sp_free_ini_entry(void *data) {
   sp_free_zstr(entry->key);
   sp_free_zstr(entry->min);
   sp_free_zstr(entry->max);
-  sp_pcre_free(entry->regexp);
+  sp_regexp_free(entry->regexp);
   sp_free_zstr(entry->msg);
   sp_free_zstr(entry->set);
 }

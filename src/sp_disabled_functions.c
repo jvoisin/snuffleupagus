@@ -210,17 +210,15 @@ static zend_execute_data* is_file_matching(
       return ex;  // LCOV_EXCL_LINE
     }
     ITERATE(ex);
-    if (zend_string_equals(ex->func->op_array.filename,
-                           config_node->filename)) {
+    if (zend_string_equals(ex->func->op_array.filename, config_node->filename)) {
       return ex;  // LCOV_EXCL_LINE
     }
   } else if (config_node->r_filename) {
-    if (sp_is_regexp_matching_zend(config_node->r_filename, current_filename)) {
+    if (sp_is_regexp_matching_zstr(config_node->r_filename, current_filename)) {
       return ex;
     }
     ITERATE(ex);
-    if (sp_is_regexp_matching_zend(config_node->r_filename,
-                                   ex->func->op_array.filename)) {
+    if (sp_is_regexp_matching_zstr(config_node->r_filename, ex->func->op_array.filename)) {
       return ex;
     }
   }
@@ -481,10 +479,9 @@ ZEND_FUNCTION(check_disabled_function) {
 
 static int hook_functions_regexp(const sp_list_node* config) {
   while (config && config->data) {
-    const zend_string* function_name =
-        ((sp_disabled_function*)config->data)->function;
-    const sp_pcre* function_name_regexp =
-        ((sp_disabled_function*)config->data)->r_function;
+    const zend_string* function_name = ((sp_disabled_function*)config->data)->function;
+    sp_regexp *function_name_sp_regexp = ((sp_disabled_function*)config->data)->r_function;
+    const sp_pcre* function_name_regexp = function_name_sp_regexp ? function_name_sp_regexp->re : NULL;
 
     assert(function_name || function_name_regexp);
 

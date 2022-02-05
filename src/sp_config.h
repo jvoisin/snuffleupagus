@@ -63,7 +63,7 @@ typedef struct {
   enum samesite_type { strict = 1, lax = 2 } samesite;
   bool encrypt;
   zend_string *name;
-  sp_pcre *name_r;
+  sp_regexp *name_r;
   bool simulation;
 } sp_cookie;
 
@@ -91,29 +91,29 @@ typedef struct {
   zend_string *textual_representation;
 
   zend_string *filename;
-  sp_pcre *r_filename;
+  sp_regexp *r_filename;
 
   zend_string *function;
-  sp_pcre *r_function;
+  sp_regexp *r_function;
   sp_list_node *functions_list;
 
   zend_string *hash;
   int simulation;
 
   sp_tree *param;
-  sp_pcre *r_param;
+  sp_regexp *r_param;
   sp_php_type param_type;
   int pos;
   unsigned int line;
 
-  sp_pcre *r_ret;
+  sp_regexp *r_ret;
   zend_string *ret;
   sp_php_type ret_type;
 
-  sp_pcre *r_value;
+  sp_regexp *r_value;
   zend_string *value;
 
-  sp_pcre *r_key;
+  sp_regexp *r_key;
   zend_string *key;
 
   zend_string *dump;
@@ -157,7 +157,7 @@ typedef struct {
   sp_ini_permission access;
   zend_string *min;
   zend_string *max;
-  sp_pcre *regexp;
+  sp_regexp *regexp;
   zend_string *msg;
   zend_string *set;
   bool allow_null;

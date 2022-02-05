@@ -253,15 +253,11 @@ const zend_string* sp_zval_to_zend_string(const zval* zv) {
   }
 }
 
-bool sp_match_value(const zend_string* value, const zend_string* to_match,
-                    const sp_pcre* rx) {
+bool sp_match_value(const zend_string* value, const zend_string* to_match, const sp_regexp* rx) {
   if (to_match) {
     return (sp_zend_string_equals(to_match, value));
   } else if (rx) {
-    char* tmp = zend_string_to_char(value);
-    bool ret = sp_is_regexp_matching(rx, tmp);
-    efree(tmp);
-    return ret;
+    return sp_is_regexp_matching_zstr(rx, value);
   }
   return true;
 }
@@ -338,8 +334,7 @@ void sp_log_disable_ret(const char* restrict path,
   efree(char_repr);
 }
 
-bool sp_match_array_key(const zval* zv, const zend_string* to_match,
-                        const sp_pcre* rx) {
+bool sp_match_array_key(const zval* zv, const zend_string* to_match, const sp_regexp* rx) {
   zend_string* key;
   zend_ulong idx;
 
@@ -363,8 +358,7 @@ bool sp_match_array_key(const zval* zv, const zend_string* to_match,
   return false;
 }
 
-bool sp_match_array_value(const zval* arr, const zend_string* to_match,
-                          const sp_pcre* rx) {
+bool sp_match_array_value(const zval* arr, const zend_string* to_match, const sp_regexp* rx) {
   zval* value;
 
   ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(arr), value) {
@@ -380,8 +374,7 @@ bool sp_match_array_value(const zval* arr, const zend_string* to_match,
   return false;
 }
 
-bool /* success */ _hook_function(const char* original_name, HashTable* hook_table,
-                   zif_handler new_function) {
+bool /* success */ _hook_function(const char* original_name, HashTable* hook_table, zif_handler new_function) {
   zend_function* func;
   if ((func = zend_hash_str_find_ptr(CG(function_table), VAR_AND_LEN(original_name)))) {
     if (func->type != ZEND_INTERNAL_FUNCTION) {
@@ -393,8 +386,7 @@ bool /* success */ _hook_function(const char* original_name, HashTable* hook_tab
     if (zend_hash_str_add_new_ptr((hook_table), VAR_AND_LEN(original_name),
                                   func->internal_function.handler) == NULL) {
       // LCOV_EXCL_START
-      sp_log_err("function_pointer_saving",
-                 "Could not save function pointer for %s", original_name);
+      sp_log_err("function_pointer_saving", "Could not save function pointer for %s", original_name);
       return false;
       // LCOV_EXCL_STOP
     }
@@ -404,8 +396,7 @@ bool /* success */ _hook_function(const char* original_name, HashTable* hook_tab
   return false;
 }
 
-bool hook_function(const char* original_name, HashTable* hook_table,
-                   zif_handler new_function) {
+bool hook_function(const char* original_name, HashTable* hook_table, zif_handler new_function) {
   bool ret = _hook_function(original_name, hook_table, new_function);
 
 #if PHP_VERSION_ID < 80000
@@ -433,8 +424,7 @@ bool hook_function(const char* original_name, HashTable* hook_table,
   return ret;
 }
 
-int hook_regexp(const sp_pcre* regexp, HashTable* hook_table,
-                zif_handler new_function) {
+int hook_regexp(const sp_pcre* regexp, HashTable* hook_table, zif_handler new_function) {
   zend_string* key;
 
   ZEND_HASH_FOREACH_STR_KEY(CG(function_table), key)

@@ -17,12 +17,36 @@
 #endif
 
 sp_pcre* sp_pcre_compile(const char* str);
-void sp_pcre_free(sp_pcre* regexp);
-#define sp_is_regexp_matching_zend(regexp, zstr) \
-  sp_is_regexp_matching_len(regexp, ZSTR_VAL(zstr), ZSTR_LEN(zstr))
-#define sp_is_regexp_matching(regexp, str) \
-  sp_is_regexp_matching_len(regexp, str, strlen(str))
-bool sp_is_regexp_matching_len(const sp_pcre* regexp, const char* str,
-                               size_t len);
+static inline void sp_pcre_free(sp_pcre* regexp) {
+#ifdef SP_HAS_PCRE2
+  pcre2_code_free(regexp);
+#endif
+}
+bool sp_is_regexp_matching_len(const sp_pcre* regexp, const char* str, size_t len);
+
+
+typedef struct {
+  sp_pcre *re;
+  zend_string *pattern;
+} sp_regexp;
+
+#define sp_is_regexp_matching_zstr(regexp, zstr) sp_is_regexp_matching_len(regexp->re, ZSTR_VAL(zstr), ZSTR_LEN(zstr))
+#define sp_is_regexp_matching(regexp, str) sp_is_regexp_matching_len(regexp->re, str, strlen(str))
+static inline sp_regexp* sp_regexp_compile(zend_string *zstr) {
+  sp_pcre *re = sp_pcre_compile(ZSTR_VAL(zstr));
+  if (!re) { return NULL; }
+  sp_regexp *ret = pecalloc(sizeof(sp_regexp), 1, 1);
+  ret->re = re;
+  ret->pattern = zstr;
+  return ret;
+}
+static inline void sp_regexp_free(sp_regexp *regexp) {
+  if (regexp) {
+    if (regexp->re) { sp_pcre_free(regexp->re); }
+    if (regexp->pattern) { zend_string_release(regexp->pattern); }
+    pefree(regexp, 1);
+  }
+}
+
 
 #endif  // SP_PCRE_COMPAT_H

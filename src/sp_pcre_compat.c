@@ -1,10 +1,5 @@
 #include "php_snuffleupagus.h"
 
-inline void sp_pcre_free(sp_pcre* regexp) {
-#ifdef SP_HAS_PCRE2
-  pcre2_code_free(regexp);
-#endif
-}
 
 sp_pcre* sp_pcre_compile(const char* const pattern) {
   assert(NULL != pattern);
@@ -14,8 +9,7 @@ sp_pcre* sp_pcre_compile(const char* const pattern) {
   unsigned char pcre_error[128] = {0};
   int errornumber;
   PCRE2_SIZE erroroffset;
-  ret = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED,
-                      PCRE2_CASELESS, &errornumber, &erroroffset, NULL);
+  ret = pcre2_compile((PCRE2_SPTR)pattern, PCRE2_ZERO_TERMINATED, PCRE2_CASELESS, &errornumber, &erroroffset, NULL);
   pcre2_get_error_message(errornumber, pcre_error, sizeof(pcre_error)-1);
 #else
   const char* pcre_error = NULL;
@@ -29,16 +23,14 @@ sp_pcre* sp_pcre_compile(const char* const pattern) {
   return ret;
 }
 
-bool ZEND_HOT sp_is_regexp_matching_len(const sp_pcre* regexp, const char* str,
-                                        size_t len) {
+bool ZEND_HOT sp_is_regexp_matching_len(const sp_pcre* regexp, const char* str, size_t len) {
   int ret = 0;
 
   assert(NULL != regexp);
   assert(NULL != str);
 
 #ifdef SP_HAS_PCRE2
-  pcre2_match_data* match_data =
-      pcre2_match_data_create_from_pattern(regexp, NULL);
+  pcre2_match_data* match_data = pcre2_match_data_create_from_pattern(regexp, NULL);
   if (NULL == match_data) {
     sp_log_err("regexp", "Unable to get memory for a regxp.");
   }
