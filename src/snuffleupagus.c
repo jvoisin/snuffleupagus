@@ -4,6 +4,8 @@
 #include <glob.h>
 #endif
 
+#include "zend_smart_str.h"
+
 #include "php_snuffleupagus.h"
 
 #ifndef ZEND_EXT_API
@@ -38,19 +40,10 @@ static inline void sp_op_array_handler(zend_op_array *const op) {
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
-static PHP_INI_MH(StrictMode) {
-  TSRMLS_FETCH();
-
-  SPG(allow_broken_configuration) = false;
-  if (new_value && zend_string_equals_literal(new_value, "1")) {
-    SPG(allow_broken_configuration) = true;
-  }
-  return SUCCESS;
-}
-
 PHP_INI_BEGIN()
 PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM, OnUpdateConfiguration)
-PHP_INI_ENTRY("sp.allow_broken_configuration", "0", PHP_INI_SYSTEM, StrictMode)
+STD_PHP_INI_BOOLEAN("sp.allow_broken_configuration", "0", PHP_INI_SYSTEM, OnUpdateBool, allow_broken_configuration, zend_snuffleupagus_globals, snuffleupagus_globals)
+
 PHP_INI_END()
 
 ZEND_DLEXPORT zend_extension zend_extension_entry = {
@@ -266,6 +259,237 @@ PHP_MINFO_FUNCTION(snuffleupagus) {
   DISPLAY_INI_ENTRIES();
 }
 
+#define ADD_ASSOC_ZSTR(arr, key, zstr) if (zstr) { add_assoc_str(arr, key, zstr); } else { add_assoc_null(arr, key); }
+#define ADD_ASSOC_REGEXP(arr, key, regexp) if (regexp && regexp->pattern) { add_assoc_str(arr, key, regexp->pattern); } else { add_assoc_null(arr, key); }
+
+static void add_df_to_arr(zval *arr, sp_disabled_function *df) {
+  zval arr_df;
+  array_init(&arr_df);
+
+  ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_FILENAME, df->filename);
+  ADD_ASSOC_REGEXP(&arr_df, SP_TOKEN_FILENAME_REGEXP, df->r_filename);
+  ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_FUNCTION, df->function);
+  ADD_ASSOC_REGEXP(&arr_df, SP_TOKEN_FUNCTION_REGEXP, df->r_function);
+  if (df->functions_list && df->functions_list->data) {
+    zval arr_fl;
+    array_init(&arr_fl);
+    for (sp_list_node *p = df->functions_list; p; p = p->next) { add_next_index_str(&arr_fl, p->data); }
+    add_assoc_zval(&arr_df, "function_list", &arr_fl);
+  } else {
+    add_assoc_null(&arr_df, "function_list");
+  }
+  ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_HASH, df->hash);
+  add_assoc_bool(&arr_df, SP_TOKEN_SIM, df->simulation);
+  if (df->param && df->param->value) {
+    add_assoc_string(&arr_df, SP_TOKEN_PARAM, df->param->value);
+  } else {
+    add_assoc_null(&arr_df, SP_TOKEN_PARAM);
+  }
+  ADD_ASSOC_REGEXP(&arr_df, SP_TOKEN_PARAM_REGEXP, df->r_param);
+  add_assoc_long(&arr_df, SP_TOKEN_PARAM_TYPE, df->param_type);
+  add_assoc_long(&arr_df, SP_TOKEN_VALUE_ARG_POS, df->pos);
+  add_assoc_long(&arr_df, SP_TOKEN_LINE_NUMBER, df->line);
+  ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_RET, df->ret);
+  ADD_ASSOC_REGEXP(&arr_df, SP_TOKEN_RET_REGEXP, df->r_ret);
+  ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_VALUE, df->value);
+  ADD_ASSOC_REGEXP(&arr_df, SP_TOKEN_VALUE_REGEXP, df->r_value);
+  ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_KEY, df->key);
+  ADD_ASSOC_REGEXP(&arr_df, SP_TOKEN_KEY_REGEXP, df->r_key);
+  ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_DUMP, df->dump);
+  ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_ALIAS, df->alias);
+  add_assoc_bool(&arr_df, "param_is_array", df->param_is_array);
+  add_assoc_bool(&arr_df, "var_is_array", df->var_is_array);
+  add_assoc_bool(&arr_df, "allow", df->allow);
+  // todo: properly traverse tree for .var() and .param()
+  // sp_tree *tr = df->var;
+  // for (; tr; tr = tr->next) {
+  //   sp_log_debug("tree: %s", tr->value);
+  // }
+
+  if (df->var && df->var->value) {
+    add_assoc_string(&arr_df, SP_TOKEN_LOCAL_VAR, df->var->value);
+  } else {
+    add_assoc_null(&arr_df, SP_TOKEN_LOCAL_VAR);
+  }
+  if (df->param && df->param->value) {
+    add_assoc_string(&arr_df, SP_TOKEN_PARAM, df->param->value);
+  } else {
+    add_assoc_null(&arr_df, SP_TOKEN_PARAM);
+  }
+
+  if (df->cidr) {
+    char cidrstr[INET6_ADDRSTRLEN+5];
+    if (!get_ip_str(cidrstr, sizeof(cidrstr), df->cidr)) {
+      add_assoc_null(&arr_df, SP_TOKEN_CIDR);
+    } else {
+      add_assoc_string(&arr_df, SP_TOKEN_CIDR, cidrstr);
+    }
+  } else {
+    add_assoc_null(&arr_df, SP_TOKEN_CIDR);
+  }
+
+  add_next_index_zval(arr, &arr_df);
+}
+
+static void dump_config() {
+  zval arr;
+  php_serialize_data_t var_hash;
+  smart_str buf = {0};
+
+  array_init(&arr);
+  add_assoc_string(&arr, "version", PHP_SNUFFLEUPAGUS_VERSION);
+
+  add_assoc_bool(&arr, SP_TOKEN_UNSERIALIZE_HMAC "." SP_TOKEN_ENABLE, SPCFG(unserialize).enable);
+  add_assoc_bool(&arr, SP_TOKEN_UNSERIALIZE_HMAC "." SP_TOKEN_SIM, SPCFG(unserialize).simulation);
+  ADD_ASSOC_ZSTR(&arr, SP_TOKEN_UNSERIALIZE_HMAC "." SP_TOKEN_DUMP, SPCFG(unserialize).dump);
+
+  add_assoc_bool(&arr, SP_TOKEN_HARDEN_RANDOM "." SP_TOKEN_ENABLE, SPCFG(random).enable);
+
+  add_assoc_bool(&arr, "readonly_exec.enable", SPCFG(readonly_exec).enable);
+  add_assoc_bool(&arr, "readonly_exec.sim", SPCFG(readonly_exec).simulation);
+  ADD_ASSOC_ZSTR(&arr, SP_TOKEN_READONLY_EXEC "." SP_TOKEN_DUMP, SPCFG(readonly_exec).dump);
+
+  add_assoc_bool(&arr, "global_strict.enable", SPCFG(global_strict).enable);
+
+  add_assoc_bool(&arr, "upload_validation.enable", SPCFG(upload_validation).enable);
+  add_assoc_bool(&arr, "upload_validation.sim", SPCFG(upload_validation).simulation);
+  ADD_ASSOC_ZSTR(&arr, SP_TOKEN_UPLOAD_VALIDATION "." SP_TOKEN_UPLOAD_SCRIPT, SPCFG(upload_validation).script);
+
+  // global
+  add_assoc_bool(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_ENCRYPTION_KEY, SPCFG(encryption_key) && ZSTR_LEN(SPCFG(encryption_key)));
+  ADD_ASSOC_ZSTR(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_ENV_VAR, SPCFG(cookies_env_var));
+  add_assoc_long(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_LOG_MEDIA, SPCFG(log_media));
+  add_assoc_long(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_MAX_EXECUTION_DEPTH, SPCFG(max_execution_depth));
+  add_assoc_bool(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_SERVER_ENCODE, SPCFG(server_encode));
+  add_assoc_bool(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_SERVER_STRIP, SPCFG(server_strip));
+  add_assoc_bool(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_SHOW_OLD_PHP_WARNING, SPCFG(show_old_php_warning));
+
+  add_assoc_bool(&arr, SP_TOKEN_AUTO_COOKIE_SECURE, SPCFG(auto_cookie_secure).enable);
+  add_assoc_bool(&arr, SP_TOKEN_XXE_PROTECTION, SPCFG(xxe_protection).enable);
+
+  add_assoc_bool(&arr, SP_TOKEN_EVAL_BLACKLIST "." SP_TOKEN_SIM, SPCFG(eval).simulation);
+  ADD_ASSOC_ZSTR(&arr, SP_TOKEN_EVAL_BLACKLIST "." SP_TOKEN_DUMP, SPCFG(eval).dump);
+#define ADD_ASSOC_SPLIST(arr, key, splist) \
+  if (splist) { \
+    zval arr_sp; \
+    array_init(&arr_sp); \
+    for (sp_list_node *p = splist; p; p = p->next) { add_next_index_str(&arr_sp, p->data); } \
+    add_assoc_zval(arr, key, &arr_sp); \
+  } else { add_assoc_null(arr, key); }
+
+  ADD_ASSOC_SPLIST(&arr, SP_TOKEN_EVAL_BLACKLIST "." SP_TOKEN_LIST, SPCFG(eval).blacklist);
+  ADD_ASSOC_SPLIST(&arr, SP_TOKEN_EVAL_WHITELIST "." SP_TOKEN_LIST, SPCFG(eval).whitelist)
+
+  add_assoc_bool(&arr, SP_TOKEN_SESSION_ENCRYPTION "." SP_TOKEN_ENCRYPT, SPCFG(session).encrypt);
+  add_assoc_bool(&arr, SP_TOKEN_SESSION_ENCRYPTION "." SP_TOKEN_SIM, SPCFG(session).simulation);
+
+  add_assoc_long(&arr, SP_TOKEN_SESSION_ENCRYPTION "." SP_TOKEN_SID_MIN_LENGTH, SPCFG(session).sid_min_length);
+  add_assoc_long(&arr, SP_TOKEN_SESSION_ENCRYPTION "." SP_TOKEN_SID_MAX_LENGTH, SPCFG(session).sid_max_length);
+  add_assoc_bool(&arr, SP_TOKEN_SLOPPY_COMPARISON "." SP_TOKEN_ENABLE, SPCFG(sloppy).enable);
+
+  ADD_ASSOC_SPLIST(&arr, SP_TOKEN_ALLOW_WRAPPERS, SPCFG(wrapper).whitelist);
+
+  add_assoc_bool(&arr, SP_TOKEN_INI_PROTECTION "." SP_TOKEN_ENABLE, SPCFG(ini).enable);
+  add_assoc_bool(&arr, SP_TOKEN_INI_PROTECTION "." SP_TOKEN_SIM, SPCFG(ini).simulation);
+  add_assoc_bool(&arr, SP_TOKEN_INI_PROTECTION "." "policy_ro", SPCFG(ini).policy_readonly);
+  add_assoc_bool(&arr, SP_TOKEN_INI_PROTECTION "." "policy_silent_ro", SPCFG(ini).policy_silent_ro);
+  add_assoc_bool(&arr, SP_TOKEN_INI_PROTECTION "." "policy_silent_fail", SPCFG(ini).policy_silent_fail);
+  add_assoc_bool(&arr, SP_TOKEN_INI_PROTECTION "." "policy_drop", SPCFG(ini).policy_drop);
+
+  if (SPCFG(ini).entries && zend_hash_num_elements(SPCFG(ini).entries) > 0) {
+    zval arr_ini;
+    array_init(&arr_ini);
+
+    sp_ini_entry *sp_entry;
+    ZEND_HASH_FOREACH_PTR(SPCFG(ini).entries, sp_entry)
+      zval arr_ini_entry;
+      array_init(&arr_ini_entry);
+      add_assoc_bool(&arr_ini_entry, SP_TOKEN_SIM, sp_entry->simulation);
+      ADD_ASSOC_ZSTR(&arr_ini_entry, SP_TOKEN_KEY, sp_entry->key);
+      ADD_ASSOC_ZSTR(&arr_ini_entry, "msg", sp_entry->msg);
+      ADD_ASSOC_ZSTR(&arr_ini_entry, "set", sp_entry->set);
+      ADD_ASSOC_ZSTR(&arr_ini_entry, "min", sp_entry->min);
+      ADD_ASSOC_ZSTR(&arr_ini_entry, "max", sp_entry->max);
+      add_assoc_long(&arr_ini_entry, "access", sp_entry->access);
+      add_assoc_bool(&arr_ini_entry, "drop", sp_entry->drop);
+      add_assoc_bool(&arr_ini_entry, "allow_null", sp_entry->allow_null);
+      ADD_ASSOC_REGEXP(&arr_ini_entry, "regexp", sp_entry->regexp);
+      add_next_index_zval(&arr_ini, &arr_ini_entry);
+    ZEND_HASH_FOREACH_END();
+    add_assoc_zval(&arr, SP_TOKEN_INI, &arr_ini);
+  } else {
+    add_assoc_null(&arr, SP_TOKEN_INI);
+  }
+
+  if (SPCFG(cookie).cookies && SPCFG(cookie).cookies->data) {
+    zval arr_cookies;
+    array_init(&arr_cookies);
+
+    sp_cookie *cookie;
+    sp_list_node *p = SPCFG(cookie).cookies;
+    for (; p; p = p->next) {
+      zval arr_cookie;
+      array_init(&arr_cookie);
+      cookie = (sp_cookie*)p->data;
+
+      add_assoc_long(&arr_cookie, SP_TOKEN_SAMESITE, cookie->samesite);
+      add_assoc_bool(&arr_cookie, SP_TOKEN_ENCRYPT, cookie->encrypt);
+      ADD_ASSOC_ZSTR(&arr_cookie, SP_TOKEN_NAME, cookie->name);
+      ADD_ASSOC_REGEXP(&arr_cookie, SP_TOKEN_NAME_REGEXP, cookie->name_r);
+      add_assoc_bool(&arr_cookie, SP_TOKEN_SIM, cookie->simulation);
+
+      add_next_index_zval(&arr_cookies, &arr_cookie);
+    }
+
+    add_assoc_zval(&arr, SP_TOKEN_COOKIE_ENCRYPTION, &arr_cookies);
+  } else {
+    add_assoc_null(&arr, SP_TOKEN_COOKIE_ENCRYPTION);
+  }
+
+  // disabled_functions
+  zval arr_dfs;
+  array_init(&arr_dfs);
+  size_t num_df = 0;
+  sp_list_node *dflist, *dfp;
+  ZEND_HASH_FOREACH_PTR(SPCFG(disabled_functions), dflist)
+    for (dfp = dflist; dfp; dfp = dfp->next) {
+      add_df_to_arr(&arr_dfs, dfp->data);
+      num_df++;
+    }
+  ZEND_HASH_FOREACH_END();
+  ZEND_HASH_FOREACH_PTR(SPCFG(disabled_functions_ret), dflist)
+    for (dfp = dflist; dfp; dfp = dfp->next) {
+      add_df_to_arr(&arr_dfs, dfp->data);
+      num_df++;
+    }
+  ZEND_HASH_FOREACH_END();
+  for (dfp = SPCFG(disabled_functions_reg).disabled_functions; dfp; dfp = dfp->next) {
+    add_df_to_arr(&arr_dfs, dfp->data);
+    num_df++;
+  }
+  for (dfp = SPCFG(disabled_functions_reg_ret).disabled_functions; dfp; dfp = dfp->next) {
+    add_df_to_arr(&arr_dfs, dfp->data);
+    num_df++;
+  }
+
+  if (num_df) {
+    add_assoc_zval(&arr, SP_TOKEN_DISABLE_FUNC, &arr_dfs);
+  } else {
+    add_assoc_null(&arr, SP_TOKEN_DISABLE_FUNC);
+  }
+
+  // serialize and print array
+  PHP_VAR_SERIALIZE_INIT(var_hash);
+  php_var_serialize(&buf, &arr, &var_hash);
+  PHP_VAR_SERIALIZE_DESTROY(var_hash);
+
+  printf("%s", ZSTR_VAL(buf.s));
+  sp_log_debug("--");
+
+  smart_str_free(&buf);
+
+}
+
 static PHP_INI_MH(OnUpdateConfiguration) {
   sp_log_debug("(OnUpdateConfiguration)");
 
@@ -303,6 +527,20 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   }
 
   SPG(is_config_valid) = SP_CONFIG_VALID;
+
+  // dump config
+  sp_log_debug("module name? %s", sapi_module.name);
+  if (getenv("SP_DUMP_CONFIG")) {
+    sp_log_debug("env? %s", getenv("SP_DUMP_CONFIG"));
+  }
+
+  if (strcmp(sapi_module.name, "cli") == 0 && getenv("SP_DUMP_CONFIG")) {
+    dump_config();
+    return SUCCESS;
+  }
+
+
+  // start hooks
 
   if (SPCFG(sloppy).enable) {
     hook_sloppy();
