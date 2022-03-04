@@ -59,6 +59,8 @@ Mentions
 """"
 
 - `Habr - PHP Дайджест № 196 <https://habr.com/ru/post/536726/>`__ (ru) - Habr
+- `OWASP's PHP Configuration Cheat Sheet <https://cheatsheetseries.owasp.org/cheatsheets/PHP_Configuration_Cheat_Sheet.html#snuffleupagus>`__ - OWASP
+
 
 
 Articles
@@ -103,9 +105,16 @@ Articles
 - `Sortie de Snuffleupagus 0.7.0 - Los Elefantes <https://linuxfr.org/news/sortie-de-snuffleupagus-0-7-0-los-elefantes>`__ (fr) - linuxfr
 - `Virtual patching CVE-2021-29447 with Snuffleupagus <https://dustri.org/b/virtual-patching-cve-2021-29447-with-snuffleupagus.html>`__ - dustri.org
 
+2022
+""""
+
+- `Lightweight post-exploitation hardening in PHP via call-site freezing and
+  ghetto-CFI with Snuffleupagus
+  <https://dustri.org/b/lightweight-post-exploitation-hardening-in-php-via-call-site-freezing-and-ghetto-cfi-with-snuffleupagus.html>`__ - dustri.org
 
 Papers
 ------
+
 - `Sécurisez vos applications php avec Snuffleupagus <https://connect.ed-diamond.com/GNU-Linux-Magazine/GLMF-213/Securisez-vos-applications-PHP-avec-Snuffleupagus>`__ (fr) (paywall) - 2018-03-2018
 
 
