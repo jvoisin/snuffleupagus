@@ -31,7 +31,7 @@ jobs:
 
   fedora:
     runs-on: ubuntu-latest
-    container: fedora:latest
+    container: fedora:34
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
