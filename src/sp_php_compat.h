@@ -111,7 +111,7 @@ static inline void php_hash_string_xor_char(unsigned char *out, const unsigned c
 
 static inline void php_hash_hmac_prep_key(unsigned char *K, const php_hash_ops *ops, void *context, const unsigned char *key, const size_t key_len) {
 	memset(K, 0, ops->block_size);
-	if (key_len > ops->block_size) {
+	if (key_len > (size_t)ops->block_size) {
 		/* Reduce the key first */
 #if PHP_VERSION_ID < 80100
 		ops->hash_init(context);

@@ -15,6 +15,4 @@ EOF;
 --FILE--
 <?php var_dump($_COOKIE); ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][127.0.0.1][config][log] Invalid configuration file in Unknown on line 0
-%A
-Fatal error: [snuffleupagus][127.0.0.1][config][log] Invalid regexp '^super_co[a-z+$' for '.name_r()' on line 2 in Unknown on line 0
+%AFatal error: [snuffleupagus][127.0.0.1][config][log] Invalid regexp '^super_co[a-z+$' for '.name_r()' on line 2 in Unknown on line 0

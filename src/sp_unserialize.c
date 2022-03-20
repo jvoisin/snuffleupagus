@@ -18,7 +18,11 @@ static zend_string *sp_do_hash_hmac_sha256(char *data, size_t data_len, char *ke
   zend_string_release_ex(algo, 0);
 #endif
 
+#if PHP_VERSION_ID < 70200
+  if (!ops) {
+#else
   if (!ops || !ops->is_crypto) {
+#endif
     sp_log_err("hmac", "unsupported hash algorithm: sha256");
     return NULL;
   }
