@@ -17,7 +17,7 @@ jobs:
       - name: Remove tests failing on alpine for wathever reason
         run: rm -rf src/tests/*session*/ src/tests/broken_configuration/ src/tests/*cookie* src/tests/upload_validation/
       - name: Install dependencies
-        run: apk add php8-dev php8-cgi php8-simplexml php8-xml pcre-dev build-base php8-pear php8-openssl
+        run: apk add php8-dev php8-cgi php8-simplexml php8-xml pcre-dev build-base php8-pear php8-openssl re2c
       - name: Install pecl
         continue-on-error: true
         run: pecl install vld-beta
@@ -40,7 +40,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt update
-          DEBIAN_FRONTEND=noninteractive apt install -y php-dev php-pear
+          DEBIAN_FRONTEND=noninteractive apt install -y php-dev php-pear re2c
       - name: Install pecl
         run: pecl install vld-beta
       - name: Build and run the testsuite
@@ -58,7 +58,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Install dependencies
         run: |
-          dnf install -y php-devel php-pear make
+          dnf install -y php-devel php-pear make re2c
       - name: Install pecl
         run: pecl install vld-beta
       - name: Build and run the testsuite
@@ -77,7 +77,7 @@ jobs:
       - name: Install dependencies
         continue-on-error: true
         run: |
-          pacman --sync --refresh --noconfirm --quiet php8 wget autoconf gcc make
+          pacman --sync --refresh --noconfirm --quiet php8 wget autoconf gcc make re2c
           wget https://pear.php.net/go-pear.phar
           php go-pear.phar
       - name: Install pecl
@@ -101,7 +101,7 @@ jobs:
       - name: Remove tests failing on alpine for wathever reason
         run: rm -rf src/tests/cookies_encryption_warning src/tests/upload_validation/upload_validation.phpt
       - name: Install dependencies
-        run: apk add php8-dev php8-cgi php8-simplexml php8-xml pcre-dev build-base php8-pear php8-openssl php8-session php8-curl bash grep
+        run: apk add php8-dev php8-cgi php8-simplexml php8-xml pcre-dev build-base php8-pear php8-openssl php8-session php8-curl bash grep re2c
       - name: Install pecl
         continue-on-error: true
         run: pecl install vld-beta

@@ -1,4 +1,4 @@
-name: CI for linux distributions
+name: CI for linux distributions on PHP7
 on:
   pull_request:
   push:
@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: |
           apt update
-          DEBIAN_FRONTEND=noninteractive apt install -y php-dev php-pear
+          DEBIAN_FRONTEND=noninteractive apt install -y php-dev php-pear re2c
       - name: Install pecl
         run: pecl install vld-beta
       - name: Build and run the testsuite
@@ -38,7 +38,7 @@ jobs:
         run: rm -rf src/tests/*php8*/ src/tests/*/*_php8.phpt src/tests/disable_function/*_signal.phpt
       - name: Install dependencies
         run: |
-          dnf install -y php-devel php-pear make
+          dnf install -y php-devel php-pear make re2c
       - name: Install pecl
         run: pecl install vld-beta
       - name: Build and run the testsuite
@@ -80,7 +80,7 @@ jobs:
       - name: Install dependencies
         continue-on-error: true
         run: |
-          pacman --sync --refresh --noconfirm --quiet php wget autoconf gcc make
+          pacman --sync --refresh --noconfirm --quiet php wget autoconf gcc make re2c
           wget https://pear.php.net/go-pear.phar
           php go-pear.phar
       - name: Install pecl
@@ -106,7 +106,7 @@ jobs:
       - name: Remove tests failing on alpine for wathever reason
         run: rm -rf src/tests/cookies_encryption_warning src/tests/upload_validation/upload_validation.phpt /tests/broken_configuration/encrypt_regexp_cookies_bad_regexp.phpt
       - name: Install dependencies
-        run: apk add php7-dev php7-cgi php7-simplexml php7-xml pcre-dev build-base php7-pear php7-openssl php7-session bash grep
+        run: apk add php7-dev php7-cgi php7-simplexml php7-xml pcre-dev build-base php7-pear php7-openssl php7-session bash grep re2c
       - name: Install pecl
         continue-on-error: true
         run: pecl install vld-beta
