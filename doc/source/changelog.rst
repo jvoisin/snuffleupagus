@@ -1,6 +1,19 @@
 Changelog
 =========
 
+0.8.0 - Woolly Mammoth
+----------------------
+
+- Massive simplification of the configuration parser
+- Better memory management
+- Removal of internal calls to `call_user_func`
+- Check for unsupported PHP version
+- Compatibility with PHP8.1
+- Suhosin features backports:
+  - Maximum stack depth/recursion limit
+  - Maximum length for session id
+
+
 0.7.1 - `Proboscidea <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.7.0>`__ 2021/08/02
 -------------------------------------------------------------------------------------------------
 

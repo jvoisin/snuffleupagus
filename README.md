@@ -129,7 +129,8 @@ Many thanks to:
 - The [Suhosin project](https://suhosin.org) for being a __huge__ source of inspiration
 - [NBS System](https://www.nbs-system.com) for initially sponsoring the development
 - [Suhosin-ng](https://github.com/sektioneins/suhosin-ng) for their
-  experimentations and [contributions](https://github.com/jvoisin/snuffleupagus/commits?author=bef),
+  [experimentations](https://github.com/sektioneins/suhosin-ng/wiki/News)
+  and [contributions](https://github.com/jvoisin/snuffleupagus/commits?author=bef),
   as well as [NLNet](https://nlnet.nl/project/Suhosin-NG/) for sponsoring it
 - All [our contributors](https://github.com/jvoisin/snuffleupagus/graphs/contributors)
 
