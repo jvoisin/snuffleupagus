@@ -4,6 +4,13 @@ Dump eval blacklist
 <?php 
 if (!extension_loaded("snuffleupagus")) print "skip";
 ?>
+--CLEAN--
+<?php
+foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
+    @unlink($dump);
+}
+@rmdir("/tmp/dump_result/");
+?>
 --POST--
 post_a=data_post_a&post_b=data_post_b
 --GET--
@@ -36,5 +43,5 @@ if ($res[3] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
 --EXPECTF--
 Outside of eval: 1337 1337 1337
 
-Warning: [snuffleupagus][0.0.0.0][eval][simulation] A call to strtoupper was tried in eval, in %a/dump_eval_blacklist.php:1, logging it. in %a/dump_eval_blacklist.php(9) : eval()'d code on line 1
+Warning: [snuffleupagus][0.0.0.0][eval][simulation] A call to 'strtoupper' was tried in eval. logging it. in %a(9) : eval()'d code on line 1
 After eval: 1234

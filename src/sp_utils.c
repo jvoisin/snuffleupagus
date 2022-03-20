@@ -1,12 +1,5 @@
 #include "php_snuffleupagus.h"
 
-bool sp_zend_string_equals(const zend_string* s1, const zend_string* s2) {
-  // We can't use `zend_string_equals` here because it doesn't work on
-  // `const` zend_string.
-  return ZSTR_LEN(s1) == ZSTR_LEN(s2) &&
-         !memcmp(ZSTR_VAL(s1), ZSTR_VAL(s2), ZSTR_LEN(s1));
-}
-
 static const char* default_ipaddr = "0.0.0.0";
 const char* get_ipaddr() {
   const char* client_ip = getenv("REMOTE_ADDR");
@@ -46,7 +39,7 @@ void sp_log_msgf(char const* restrict feature, int level, int type,
       break;
   }
 
-  switch (SNUFFLEUPAGUS_G(config).log_media) {
+  switch (SPCFG(log_media)) {
     case SP_SYSLOG: {
       const char* error_filename = zend_get_executed_filename();
       int syslog_level = (level == E_ERROR) ? LOG_ERR : LOG_INFO;
@@ -72,8 +65,8 @@ void sp_log_msgf(char const* restrict feature, int level, int type,
 
 int compute_hash(const char* const restrict filename,
                  char* restrict file_hash) {
-  unsigned char buf[1024];
-  unsigned char digest[SHA256_SIZE];
+  unsigned char buf[1024] = {0};
+  unsigned char digest[SHA256_SIZE] = {0};
   PHP_SHA256_CTX context;
   size_t n;
 
@@ -123,9 +116,7 @@ static int construct_filename(char* filename,
   return 0;
 }
 
-int sp_log_request(const zend_string* restrict folder,
-                   const zend_string* restrict text_repr,
-                   char const* const from) {
+int sp_log_request(const zend_string* restrict folder, const zend_string* restrict text_repr) {
   FILE* file;
   const char* current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);
@@ -146,7 +137,7 @@ int sp_log_request(const zend_string* restrict folder,
     return -1;
   }
 
-  fprintf(file, "RULE: sp%s%s\n", from, ZSTR_VAL(text_repr));
+  fprintf(file, "RULE: %s\n", ZSTR_VAL(text_repr));
 
   fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
 
@@ -157,8 +148,8 @@ int sp_log_request(const zend_string* restrict folder,
     char* const complete_path_function = get_complete_function_path(current);
     if (complete_path_function) {
       const int current_line = zend_get_executed_lineno(TSRMLS_C);
-      fprintf(file, "STACKTRACE: %s:%d\n", complete_path_function,
-              current_line);
+      fprintf(file, "STACKTRACE: %s:%d\n", complete_path_function, current_line);
+      efree(complete_path_function);
     }
     current = current->prev_execute_data;
   }
@@ -213,6 +204,19 @@ static char* zend_string_to_char(const zend_string* zs) {
   return copy;
 }
 
+static void sp_sanitize_charstring(char* c, size_t maxlen)
+{
+  for (size_t i = 0; *c; c++, i++) {
+    if (maxlen && i > maxlen - 1) {
+      *c = 0;
+      return;
+    }
+    if (*c < 32 || *c > 126) {
+      *c = '*';
+    }
+  }
+}
+
 const zend_string* sp_zval_to_zend_string(const zval* zv) {
   switch (Z_TYPE_P(zv)) {
     case IS_LONG: {
@@ -233,35 +237,29 @@ const zend_string* sp_zval_to_zend_string(const zval* zv) {
       return Z_STR_P(zv);
     }
     case IS_FALSE:
-      return zend_string_init("FALSE", sizeof("FALSE") - 1, 0);
+      return zend_string_init(ZEND_STRL("FALSE"), 0);
     case IS_TRUE:
-      return zend_string_init("TRUE", sizeof("TRUE") - 1, 0);
+      return zend_string_init(ZEND_STRL("TRUE"), 0);
     case IS_NULL:
-      return zend_string_init("NULL", sizeof("NULL") - 1, 0);
+      return zend_string_init(ZEND_STRL("NULL"), 0);
     case IS_OBJECT:
-      return zend_string_init("OBJECT", sizeof("OBJECT") - 1, 0);
+      return zend_string_init(ZEND_STRL("OBJECT"), 0);
     case IS_ARRAY:
-      return zend_string_init("ARRAY", sizeof("ARRAY") - 1, 0);
+      return zend_string_init(ZEND_STRL("ARRAY"), 0);
     case IS_RESOURCE:
-      return zend_string_init("RESOURCE", sizeof("RESOURCE") - 1, 0);
+      return zend_string_init(ZEND_STRL("RESOURCE"), 0);
     default:                              // LCOV_EXCL_LINE
       return zend_string_init("", 0, 0);  // LCOV_EXCL_LINE
   }
 }
 
-bool sp_match_value(const zend_string* value, const zend_string* to_match,
-                    const sp_pcre* rx) {
+bool sp_match_value(const zend_string* value, const zend_string* to_match, const sp_regexp* rx) {
   if (to_match) {
     return (sp_zend_string_equals(to_match, value));
   } else if (rx) {
-    char* tmp = zend_string_to_char(value);
-    bool ret = sp_is_regexp_matching(rx, tmp);
-    efree(tmp);
-    return ret;
-  } else {
-    return true;
+    return sp_is_regexp_matching_zstr(rx, value);
   }
-  return false;
+  return true;
 }
 
 void sp_log_disable(const char* restrict path, const char* restrict arg_name,
@@ -272,13 +270,13 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
   const int sim = config_node->simulation;
 
   if (dump) {
-    sp_log_request(config_node->dump, config_node->textual_representation,
-                   SP_TOKEN_DISABLE_FUNC);
+    sp_log_request(config_node->dump, config_node->textual_representation);
   }
   if (arg_name) {
     char* char_repr = NULL;
     if (arg_value) {
       char_repr = zend_string_to_char(arg_value);
+      sp_sanitize_charstring(char_repr, 255);
     }
     if (alias) {
       sp_log_auto(
@@ -315,11 +313,11 @@ void sp_log_disable_ret(const char* restrict path,
   char* char_repr = NULL;
 
   if (dump) {
-    sp_log_request(dump, config_node->textual_representation,
-                   SP_TOKEN_DISABLE_FUNC);
+    sp_log_request(dump, config_node->textual_representation);
   }
   if (ret_value) {
     char_repr = zend_string_to_char(ret_value);
+    sp_sanitize_charstring(char_repr, 255);
   }
   if (alias) {
     sp_log_auto(
@@ -336,8 +334,7 @@ void sp_log_disable_ret(const char* restrict path,
   efree(char_repr);
 }
 
-bool sp_match_array_key(const zval* zv, const zend_string* to_match,
-                        const sp_pcre* rx) {
+bool sp_match_array_key(const zval* zv, const zend_string* to_match, const sp_regexp* rx) {
   zend_string* key;
   zend_ulong idx;
 
@@ -361,8 +358,7 @@ bool sp_match_array_key(const zval* zv, const zend_string* to_match,
   return false;
 }
 
-bool sp_match_array_value(const zval* arr, const zend_string* to_match,
-                          const sp_pcre* rx) {
+bool sp_match_array_value(const zval* arr, const zend_string* to_match, const sp_regexp* rx) {
   zval* value;
 
   ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(arr), value) {
@@ -378,61 +374,57 @@ bool sp_match_array_value(const zval* arr, const zend_string* to_match,
   return false;
 }
 
-bool hook_function(const char* original_name, HashTable* hook_table,
-                   zif_handler new_function) {
-  zend_internal_function* func;
-  bool ret = false;
-
-  /* The `mb` module likes to hook functions, like strlen->mb_strlen,
-   * so we have to hook both of them. */
-
-  if ((func = zend_hash_str_find_ptr(CG(function_table),
-                                     VAR_AND_LEN(original_name)))) {
-    if (func->handler == new_function) {
-      return SUCCESS;  // the function is already hooked
-    } else {
-      if (zend_hash_str_add_new_ptr((hook_table), VAR_AND_LEN(original_name),
-                                    func->handler) == NULL) {
-        // LCOV_EXCL_START
-        sp_log_err("function_pointer_saving",
-                   "Could not save function pointer for %s", original_name);
-        return FAILURE;
-        // LCOV_EXCL_STOP
-      }
-      func->handler = new_function;
-      ret = true;
+bool /* success */ _hook_function(const char* original_name, HashTable* hook_table, zif_handler new_function) {
+  zend_function* func;
+  if ((func = zend_hash_str_find_ptr(CG(function_table), VAR_AND_LEN(original_name)))) {
+    if (func->type != ZEND_INTERNAL_FUNCTION) {
+      return false;
     }
+    if (func->internal_function.handler == new_function) {
+      return true;
+    }
+    if (zend_hash_str_add_new_ptr((hook_table), VAR_AND_LEN(original_name),
+                                  func->internal_function.handler) == NULL) {
+      // LCOV_EXCL_START
+      sp_log_err("function_pointer_saving", "Could not save function pointer for %s", original_name);
+      return false;
+      // LCOV_EXCL_STOP
+    }
+    func->internal_function.handler = new_function;
+    return true;
   }
+  return false;
+}
+
+bool hook_function(const char* original_name, HashTable* hook_table, zif_handler new_function) {
+  bool ret = _hook_function(original_name, hook_table, new_function);
 
 #if PHP_VERSION_ID < 80000
   CG(compiler_options) |= ZEND_COMPILE_NO_BUILTIN_STRLEN;
 #endif
 
-  if (0 == strncmp(original_name, "mb_", 3) && !CG(multibyte)) {
-    if (zend_hash_str_find(CG(function_table),
-                           VAR_AND_LEN(original_name + 3))) {
-      return hook_function(original_name + 3, hook_table, new_function);
-    }
+  /* The `mb` module likes to hook functions, like strlen->mb_strlen,
+  * so we have to hook both of them. */
+
+  if (!CG(multibyte) && 0 == strncmp(original_name, "mb_", 3)) {
+    _hook_function(original_name + 3, hook_table, new_function);
   } else if (CG(multibyte)) {
     // LCOV_EXCL_START
     char* mb_name = ecalloc(strlen(original_name) + 3 + 1, 1);
     if (NULL == mb_name) {
       return FAILURE;
     }
-    memcpy(mb_name, "mb_", sizeof("mb_") - 1);
+    memcpy(mb_name, ZEND_STRL("mb_"));
     memcpy(mb_name + 3, VAR_AND_LEN(original_name));
-    if (zend_hash_str_find(CG(function_table), VAR_AND_LEN(mb_name))) {
-      return hook_function(mb_name, hook_table, new_function);
-    }
-    free(mb_name);
+    _hook_function(mb_name, hook_table, new_function);
+    efree(mb_name);
     // LCOV_EXCL_STOP
   }
 
   return ret;
 }
 
-int hook_regexp(const sp_pcre* regexp, HashTable* hook_table,
-                zif_handler new_function) {
+int hook_regexp(const sp_pcre* regexp, HashTable* hook_table, zif_handler new_function) {
   zend_string* key;
 
   ZEND_HASH_FOREACH_STR_KEY(CG(function_table), key)
@@ -446,9 +438,21 @@ int hook_regexp(const sp_pcre* regexp, HashTable* hook_table,
   return SUCCESS;
 }
 
-bool check_is_in_eval_whitelist(const zend_string* const function_name) {
-  const sp_list_node* it = SNUFFLEUPAGUS_G(config).config_eval->whitelist;
+void unhook_functions(HashTable *ht) {
+  zend_string *fname;
+  zif_handler orig_handler;
+  zend_ulong idx;
 
+  ZEND_HASH_REVERSE_FOREACH_KEY_PTR(ht, idx, fname, orig_handler)
+    zend_function *func = zend_hash_find_ptr(CG(function_table), fname);
+    if (func && func->type == ZEND_INTERNAL_FUNCTION && orig_handler) {
+      func->internal_function.handler = orig_handler;
+    }
+  ZEND_HASH_FOREACH_END_DEL();
+}
+
+bool check_is_in_eval_whitelist(const char* function_name) {
+  const sp_list_node* it = SPCFG(eval).whitelist;
   if (!it) {
     return false;
   }
@@ -456,7 +460,7 @@ bool check_is_in_eval_whitelist(const zend_string* const function_name) {
   /* yes, we could use a HashTable instead, but since the list is pretty
    * small, it doesn't make a difference in practise. */
   while (it && it->data) {
-    if (sp_zend_string_equals(function_name, (const zend_string*)(it->data))) {
+    if (sp_zend_string_equals_str((const zend_string*)(it->data), VAR_AND_LEN(function_name))) {
       /* We've got a match, the function is whiteslited. */
       return true;
     }

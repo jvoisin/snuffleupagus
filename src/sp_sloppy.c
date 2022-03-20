@@ -48,7 +48,7 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
                           const char* spec) {
   zif_handler handler;
   zval func_name;
-  zval params[3];
+  zval params[3] = {0};
   zval *value, *array = NULL;
   zend_bool strict = 0;
   uint32_t nb_params = ZEND_NUM_ARGS();
@@ -69,7 +69,7 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
 
   ZVAL_STRING(&func_name, name);
 
-  handler = zend_hash_str_find_ptr(SNUFFLEUPAGUS_G(sp_internal_functions_hook),
+  handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook),
                                    name, size);
   zend_internal_function* func =
       zend_hash_str_find_ptr(CG(function_table), name, size);

@@ -1,16 +1,6 @@
 Configuration
 =============
 
-Options are chainable by using dots (``.``) and string parameters
-**must** be quoted, while booleans and integers aren't.
-
-Comments are prefixed either with ``#``, or ``;``.
-
-Some rules apply in a specific ``function`` (context) on a specific ``variable``
-(data), like ``disable_function``. Others can only be enabled/disabled, like
-``harden_random``.
-
-
 .. warning::
 
   If you configure Snuffleupagus incorrectly, your website *might* not work
@@ -20,17 +10,6 @@ Some rules apply in a specific ``function`` (context) on a specific ``variable``
   It's up to you to understand the :doc:`features <features>`,
   read the present documentation about how to configure them,
   evaluate your threat model and write your configuration file accordingly.
-
-Most of the features can be used in ``simulation`` mode by appending the
-``.simulation()`` option to them (eg. ``sp.readonly_exec.simulation().enable();``) to see
-whether or not they could break your website. The simulation mode won't block the request,
-but will write a warning in the log.
-
-The rules are evaluated in the order that they are written, the **first** one
-to match will terminate the evaluation (except for rules in simulation mode).
-
-Configuration file format
--------------------------
 
 Since PHP *ini-like* configuration model isn't flexible enough,
 Snuffleupagus is using its own format in the file specified by
@@ -60,6 +39,38 @@ configuration contains syntax errors. You'll still get a big scary message in
 your logs of course. We do **not** recommend to use it of course, but sometimes
 it might be useful to be able to "debug in production" without breaking your
 website.
+
+Configuration file format
+-------------------------
+
+Options are chainable by using dots (``.``).
+
+Some options have a string parameter, that **must** be quoted with double quotes, e.g. ``"string"``.
+
+Comments are prefixed either with ``#``, or ``;``.
+
+Some rules apply in a specific ``function`` (context) on a specific ``variable``
+(data), like ``disable_function``. Others can only be enabled/disabled, like
+``harden_random``.
+
+Most of the features can be used in ``simulation`` mode by appending the
+``.simulation()`` or ``.sim()`` option to them (eg. ``sp.readonly_exec.simulation().enable();``) to see
+whether or not they could break your website. The simulation mode won't block the request,
+but will write a warning in the log.
+
+The rules are evaluated in the order that they are written, the **first** one
+to match will terminate the evaluation (except for rules in simulation mode).
+
+Rules can be split into lines and contain whitespace for easier readability and maintenance: (This feature is available since version 0.8.0.)
+
+::
+
+  sp.disable_function.function("mail")
+    .param("to").value_r("\\n")
+    .alias("newline in mail() To:")
+    .drop();
+
+The terminating ``;`` is optional for now, but it should be used for future compatibility.
 
 Miscellaneous
 -------------
@@ -178,6 +189,70 @@ Cookies-related mitigations
 Since snuffleupagus is providing several hardening features for cookies,
 there is a dedicated web page :ref:`here <cookie-encryption-page>` about them.
 
+INI Settings Protection
+^^^^^^^^^^^^^^^^^^^^^^^
+INI settings can be forced to a value, limited by min/max value or regular expression and set read-only mode.
+
+First, this feature can be enabled or disabled:
+
+::
+
+  sp.ini_protection.enable();
+  sp.ini_protection.disable();
+
+The INI protection feature can be set to simulation mode, where violations are only reported, but rules are not enforced:
+
+::
+
+  sp.ini_protection.simulation();
+
+Rule violations can be set to drop as a global policy, or alternatively be set on individual rules using ``.drop()``.
+
+::
+
+  sp.ini_protection.policy_drop();
+
+Rules can be set to fail silently without logging anything:
+
+::
+
+  sp.ini_protection.policy_silent_fail();
+  ## or write sp.ini_protection.policy_no_log(); as an alias
+
+Read-only settings are implemented in a way that the PHP system itself can block the setting, which is very efficient. If you do not need to log read-only violations, these can be set to silent separately:
+
+::
+
+  sp.ini_protection.policy_silent_ro();
+
+A global access policy can be set to either read-only or read-write. Individual entries can be set to read-only/read-write as well using ``.ro()``/``.rw()``.
+
+::
+
+  sp.ini_protection.policy_readonly();
+  sp.ini_protection.policy_readwrite();
+
+Individual rules are specified using ``sp.ini``. These entries can have the following attributes:
+
+- ``.key("...")``: mandatory ini name.
+- ``.set("...")``: set the initial value. This overrides php.ini. checks are not performed for this initial value.
+- ``.min("...")`` / ``.max("...")``: value must be an integer between .min and .max. shorthand notation (e.g. 1k = 1024) is allowed
+- ``.regexp("...")``: value must match the regular expression
+- ``.allow_null()``: allow setting a NULL-value
+- ``.msg("...")``: message is shown in logs on rule violation instead of default message
+- ``.readonly()`` / ``.ro()`` / .readwrite() / .rw(): set entry to read-only or read-write respectively. If no access keyword is provided, the entry inherits the default policy set by ``sp.ini_protection.policy_*``-rules.
+- ``.drop()``: drop request on rule violation for this entry
+- ``.simulation()``: only log rule violation for this entry
+
+Examples:
+
+::
+
+  sp.ini.key("display_errors").set("0").ro();
+  sp.ini.key("default_socket_timeout").min("1").max("300").rw();
+  sp.ini.key("highlight.comment").regexp("^#[0-9a-fA-F]{6}$");
+
+For more examples, check out the ``config`` directory.
 
 readonly_exec
 ^^^^^^^^^^^^^
@@ -218,14 +293,15 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
   sp.upload_validation.script("/var/www/is_valid_php.py").enable();
 
 
-disable_xxe
+xxe_protection
 ^^^^^^^^^^^
 
-:ref:`disable_xxe <xxe-feature>`, enabled by default, will prevent XXE attacks by disabling the loading of external entities (``libxml_disable_entity_loader``) in the XML parser.
+:ref:`xxe_protection <xxe-feature>`, disabled by default, will prevent XXE attacks by disabling the loading of external entities (``libxml_disable_entity_loader``) in the XML parser.
 
 ::
 
-  sp.disable_xxe.enable();
+  sp.xxe_protection.enable();
+  sp.xxe_protection.disable();
 
 
 Whitelist of stream-wrappers
@@ -380,7 +456,7 @@ It's currently not possible to:
   `for now <https://github.com/jvoisin/snuffleupagus/issues/190>`__).
   This is why hooked ``print`` will be displayed as ``echo`` in the logs.
 - Hook `strlen`, since in latest PHP versions, this function is usually
-  optimized away by the compiled.
+  optimized away by the compiler.
 
 
 Examples

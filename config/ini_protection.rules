@@ -1,0 +1,291 @@
+## INI protection - prevent unwanted runtime ini changes made by ini_set() or other functions or by .htaccess
+sp.ini_protection.enable();
+
+## simulation mode: only log violations
+#sp.ini_protection.simulation();
+
+## drop policy: drop request on rule violation
+#sp.ini_protection.policy_drop();
+
+## do not log violations.
+## this setting has no effect in simulation or drop mode
+#sp.ini_protection.policy_silent_fail();
+
+## do not log read-only violations
+## this setting has no effect in simulation or drop mode
+sp.ini_protection.policy_silent_ro();
+
+## access policy can be one of
+## .policy_readonly(): All entries are read-only by default.
+##    Individual entries can be set read-write using .readwrite() or .rw()
+## .policy_readwrite(): This is the default and can be omitted.
+##    Individual entries can be set read-only using .readonly() or .ro()
+#sp.ini_protection.policy_readonly();
+
+## sp.ini entries can have the following attributes
+## .key("..."): mandatory ini name.
+## .set("..."): set the initial value. This overrides php.ini.
+##    checks are not performed for this initial value.
+## .min("...") / .max("..."): value must be an integer between .min and .max.
+##    shorthand notation (e.g. 1k = 1024) is allowed
+## .regexp("..."): value must match the regular expression
+## .allow_null(): allow setting a NULL-value
+## .msg("..."): message is shown in logs on rule violation instead of default message
+## .readonly() / .ro() / .readwrite() / .rw(): set entry to read-only or read-write respectively
+##    If no access keyword is provided, the entry inherits the default policy set by sp.ini_protection.policy_*-rules.
+## .drop(): drop request on rule violation for this entry
+## .simulation(): only log rule violation for this entry
+
+## FOR PRODUCTION SYSTEMS: disable error messages and version numbers
+sp.ini.key("display_errors").set("0").ro();
+sp.ini.key("display_startup_errors").set("0").ro();
+sp.ini.key("expose_php").set("0").ro();
+## FOR DEVELOPMENT/TESTING: allow enabling error messages and version numbers
+#sp.ini.key("display_errors").rw();
+#sp.ini.key("display_startup_errors").rw();
+#sp.ini.key("expose_php").rw();
+
+## error logging options should not be set during runtime -> read-only.
+sp.ini.key("error_log").ro();
+sp.ini.key("error_reporting").ro();
+sp.ini.key("log_errors").ro();
+@condition PHP_VERSION_ID < 80000;
+sp.ini.key("log_errors_max_len").set("2048").ro();
+@end_condition;
+sp.ini.key("ignore_repeated_errors").ro();
+sp.ini.key("ignore_repeated_source").ro();
+sp.ini.key("syslog.filter").ro();
+
+## disable assert. assert() in PHP can evaluate arbitrary code just like eval()
+sp.ini.key("assert.active").set("0").ro();
+sp.ini.key("assert.bail").ro();
+sp.ini.key("assert.callback").ro();
+sp.ini.key("assert.exception").ro();
+sp.ini.key("assert.warning").ro();
+
+## enforce color codes. prevents potential XSS
+sp.ini.key("highlight.comment").regexp("^#[0-9a-fA-F]{6}$");
+sp.ini.key("highlight.default").regexp("^#[0-9a-fA-F]{6}$");
+sp.ini.key("highlight.html").regexp("^#[0-9a-fA-F]{6}$");
+sp.ini.key("highlight.keyword").regexp("^#[0-9a-fA-F]{6}$");
+sp.ini.key("highlight.string").regexp("^#[0-9a-fA-F]{6}$");
+
+## prevent remote access via fopen/include
+sp.ini.key("allow_url_fopen").set("0").ro();
+sp.ini.key("allow_url_include").set("0").ro();
+
+## prevent code execution from auto-included files
+sp.ini.key("auto_append_file").ro();
+sp.ini.key("auto_prepend_file").ro();
+
+## make rarely used features read-only. you can always set the value in php.ini
+sp.ini.key("arg_separator.input").ro();
+sp.ini.key("arg_separator.output").ro();
+sp.ini.key("auto_detect_line_endings").ro();
+sp.ini.key("auto_globals_jit").ro();
+sp.ini.key("browscap").ro();
+sp.ini.key("default_charset").ro();
+sp.ini.key("register_argc_argv").ro();
+sp.ini.key("report_memleaks").ro();
+sp.ini.key("report_zend_debug").ro();
+sp.ini.key("request_order").ro();
+sp.ini.key("url_rewriter.hosts").ro();
+sp.ini.key("url_rewriter.tags").ro();
+sp.ini.key("variables_order").ro();
+sp.ini.key("from").ro();
+sp.ini.key("short_open_tag").ro();
+sp.ini.key("unserialize_callback_func").ro();
+sp.ini.key("zend.detect_unicode").ro();
+sp.ini.key("zend.enable_gc").ro();
+sp.ini.key("zend.exception_ignore_args").ro();
+sp.ini.key("zend.exception_string_param_max_len").ro();
+sp.ini.key("zend.multibyte").ro();
+sp.ini.key("zend.script_encoding").ro();
+
+## date and timezone settings
+#sp.ini.key("date.default_latitude").set("31.7667").ro();
+#sp.ini.key("date.default_longitude").set("35.2333").ro();
+#sp.ini.key("date.sunrise_zenith").set("90.833333").ro();
+#sp.ini.key("date.sunset_zenith").set("90.833333").ro();
+#sp.ini.key("date.timezone").set("").ro();
+
+## setting a default mime type other than text/html can be a way to prevent XSS, so this will be set to read-write by default
+sp.ini.key("default_mimetype").rw();
+
+## allow reasonable socket timeouts
+sp.ini.key("default_socket_timeout").min("1").max("300").rw();
+
+## disable dynamic loading of PHP extensions in an apache/mod_php environment as it is a security risk.
+sp.ini.key("enable_dl").set("0").ro();
+
+## links to manual pages in error pages should not be set during runtime.
+sp.ini.key("docref_ext").ro();
+sp.ini.key("docref_root").ro();
+sp.ini.key("html_errors").set("0").ro();
+
+## preventing $_POST and $_FILES to be populated can be a security feature, so read-write is ok.
+sp.ini.key("enable_post_data_reading").rw();
+
+## disable error append/prepend which may lead to log forging.
+sp.ini.key("error_append_string").ro();
+sp.ini.key("error_prepend_string").set("").ro();
+
+## restrict limit settings to prevent Denial-of-Service
+sp.ini.key("max_execution_time").min("30").max("600").rw();
+sp.ini.key("max_file_uploads").min("0").max("25").rw();
+sp.ini.key("max_input_nesting_level").min("16").max("64").rw();
+sp.ini.key("max_input_time").set("-1").ro();
+sp.ini.key("max_input_vars").min("0").max("1024").rw();
+sp.ini.key("memory_limit").min("4M").max("256M").rw();
+sp.ini.key("post_max_size").max("256M").rw();
+sp.ini.key("upload_max_filesize").max("256M").rw();
+sp.ini.key("precision").max("14").rw();
+sp.ini.key("unserialize_max_depth").min("128").max("4096").rw();
+sp.ini.key("serialize_precision").ro();
+
+## some applications rely on these filters for security
+## even though they should implement proper input validation for each input field separately.
+@condition extension_loaded("filter");
+sp.ini.key("filter.default").rw();
+sp.ini.key("filter.default_flags").rw();
+@end_condition;
+
+## scripts will not be terminated after a client has aborted their connection.
+## this feature may be needed for some time consuming server-side calculation
+sp.ini.key("ignore_user_abort").rw();
+
+## flushing may be needed
+sp.ini.key("implicit_flush").rw();
+
+## this feature may be required for some frameworks to work properly,
+## but setting the include path to a fixed value is always more secure.
+sp.ini.key("include_path").ro();
+
+## input/output and encoding options
+sp.ini.key("input_encoding").ro();
+sp.ini.key("internal_encoding").ro();
+sp.ini.key("output_encoding").ro();
+sp.ini.key("output_buffering").min("0").max("4096").rw();
+sp.ini.key("output_handler").ro();
+
+## mail options
+#sp.ini.key("mail.add_x_header").set("0").ro();
+#sp.ini.key("mail.force_extra_parameters").set("").ro();
+#sp.ini.key("mail.log").set("").ro();
+## windows smtp options
+#sp.ini.key("SMTP").set("localhost").ro();
+#sp.ini.key("smtp_port").set("25").ro();
+#sp.ini.key("sendmail_from").ro();
+
+## mysqli/mysqlnd options
+@condition extension_loaded("mysqli");
+sp.ini.key("mysqli.allow_local_infile").ro();
+sp.ini.key("mysqli.allow_persistent").ro();
+sp.ini.key("mysqli.default_host").ro();
+sp.ini.key("mysqli.default_port").ro();
+sp.ini.key("mysqli.default_pw").ro();
+sp.ini.key("mysqli.default_socket").ro();
+sp.ini.key("mysqli.default_user").ro();
+sp.ini.key("mysqli.max_links").set("-1").ro();
+sp.ini.key("mysqli.max_persistent").set("-1").ro();
+sp.ini.key("mysqli.reconnect").set("0").ro();
+sp.ini.key("mysqli.rollback_on_cached_plink").set("0").ro();
+@condition extension_loaded("mysqlnd");
+sp.ini.key("mysqlnd.collect_memory_statistics").set("0").ro();
+sp.ini.key("mysqlnd.collect_statistics").set("1").ro();
+sp.ini.key("mysqlnd.debug").set("").ro();
+sp.ini.key("mysqlnd.log_mask").set("0").ro();
+sp.ini.key("mysqlnd.mempool_default_size").set("16000").ro();
+sp.ini.key("mysqlnd.net_cmd_buffer_size").set("4096").ro();
+sp.ini.key("mysqlnd.net_read_buffer_size").set("32768").ro();
+sp.ini.key("mysqlnd.net_read_timeout").set("86400").ro();
+sp.ini.key("mysqlnd.sha256_server_public_key").set("").ro();
+sp.ini.key("mysqlnd.trace_alloc").set("").ro();
+@condition extension_loaded("mysqlnd") && PHP_VERSION_ID < 80100;
+sp.ini.key("mysqlnd.fetch_data_copy").set("0").ro();
+@end_condition;
+
+## open basedir is a security feature similar to chroot.
+## why should it be allowed to disable this feature during runtime?
+sp.ini.key("open_basedir").ro();
+
+## pcre options
+@condition extension_loaded("pcre");
+sp.ini.key("pcre.backtrack_limit").min("1000").max("1000000").rw();
+sp.ini.key("pcre.jit").rw();
+sp.ini.key("pcre.recursion_limit").min("1000").max("100000").ro();
+@end_condition;
+
+## phar options
+@condition extension_loaded("phar");
+sp.ini.key("phar.cache_list").ro();
+sp.ini.key("phar.readonly").ro();
+sp.ini.key("phar.require_hash").ro();
+@end_condition;
+
+## session options
+@condition extension_loaded("session");
+#sp.ini.key("session.auto_start").set("0").ro();
+#sp.ini.key("session.cache_expire").set("180").ro();
+#sp.ini.key("session.cache_limiter").set("nocache").ro();
+#sp.ini.key("session.cookie_domain").set("").ro();
+#sp.ini.key("session.cookie_httponly").set("0").ro();
+#sp.ini.key("session.cookie_lifetime").set("0").ro();
+#sp.ini.key("session.cookie_path").set("/").ro();
+#sp.ini.key("session.cookie_samesite").set("").ro();
+#sp.ini.key("session.cookie_secure").set("0").ro();
+#sp.ini.key("session.gc_divisor").set("100").ro();
+#sp.ini.key("session.gc_maxlifetime").set("1440").ro();
+#sp.ini.key("session.gc_probability").set("1").ro();
+#sp.ini.key("session.lazy_write").set("1").ro();
+#sp.ini.key("session.name").set("PHPSESSID").ro();
+#sp.ini.key("session.referer_check").set("").ro();
+#sp.ini.key("session.save_handler").set("files").ro();
+#sp.ini.key("session.save_path").set("").ro();
+#sp.ini.key("session.serialize_handler").set("php").ro();
+#sp.ini.key("session.sid_bits_per_character").set("4").ro();
+sp.ini.key("session.sid_length").min("32").max("128").rw();
+#sp.ini.key("session.trans_sid_hosts").set("").ro();
+#sp.ini.key("session.trans_sid_tags").set("a=href,area=href,frame=src,form=").ro();
+#sp.ini.key("session.upload_progress.cleanup").set("1").ro();
+#sp.ini.key("session.upload_progress.enabled").set("1").ro();
+#sp.ini.key("session.upload_progress.freq").set("1%").ro();
+#sp.ini.key("session.upload_progress.min_freq").set("1").ro();
+#sp.ini.key("session.upload_progress.name").set("PHP_SESSION_UPLOAD_PROGRESS").ro();
+#sp.ini.key("session.upload_progress.prefix").set("upload_progress_").ro();
+#sp.ini.key("session.use_cookies").set("1").ro();
+#sp.ini.key("session.use_only_cookies").set("1").ro();
+sp.ini.key("session.use_strict_mode").set("1").ro();
+#sp.ini.key("session.use_trans_sid").set("0").ro();
+@end_condition;
+
+## allow setting the user agent
+sp.ini.key("user_agent").rw();
+
+## allow setting the xmlrpc fault code
+sp.ini.key("xmlrpc_error_number").rw();
+
+## these ini entries can only be set by php.ini anyway,
+## but better set them to read-only anyway, just to be sure.
+sp.ini.key("disable_classes").ro();
+sp.ini.key("disable_functions").ro();
+sp.ini.key("doc_root").ro();
+sp.ini.key("extension_dir").ro();
+sp.ini.key("file_uploads").ro();
+sp.ini.key("hard_timeout").ro();
+sp.ini.key("realpath_cache_size").ro();
+sp.ini.key("realpath_cache_ttl").ro();
+sp.ini.key("sendmail_path").ro();
+@condition extension_loaded("sqlite3");
+sp.ini.key("sqlite3.defensive").ro();
+sp.ini.key("sqlite3.extension_dir").ro();
+@end_condition;
+sp.ini.key("sys_temp_dir").ro();
+sp.ini.key("syslog.facility").ro();
+sp.ini.key("syslog.ident").ro();
+sp.ini.key("upload_tmp_dir").ro();
+sp.ini.key("user_dir").ro();
+sp.ini.key("user_ini.cache_ttl").ro();
+sp.ini.key("user_ini.filename").ro();
+sp.ini.key("zend.assertions").ro();
+sp.ini.key("zend.signal_check").set("0").ro();

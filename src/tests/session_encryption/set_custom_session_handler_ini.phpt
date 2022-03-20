@@ -2,6 +2,9 @@
 Set a custom session handler
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+<?php if (!extension_loaded("session")) print "skip"; ?>
+--EXTENSIONS--
+session
 --INI--
 sp.configuration_file={PWD}/config/config_crypt_session.ini
 session.save_handler = 

@@ -5,7 +5,9 @@ Dump request
 if (!extension_loaded("snuffleupagus")) {
     print "skip";
 } 
-
+?>
+--CLEAN--
+<?php
 foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
     @unlink($dump);
 }
@@ -21,10 +23,6 @@ cookie_a=data_cookie_a&cookie_b=data_cookie_b
 sp.configuration_file={PWD}/config/dump_request.ini
 --FILE--
 <?php
-@mkdir("/tmp/dump_result/");
-foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
-    @unlink($dump);
-}
 echo "1\n";
 system("echo 1337;");
 $filename = glob('/tmp/dump_result/sp_dump.*')[0];
@@ -40,5 +38,5 @@ if ($res[3] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
 --EXPECTF--
 1
 
-Warning: [snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'system' in %a/dump_request.php on line 7
+Warning: [snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'system' in %a/dump_request.php on line %d
 1337

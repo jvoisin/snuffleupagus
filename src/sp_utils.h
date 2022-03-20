@@ -23,16 +23,17 @@
 #define SHA256_SIZE 32
 
 #define HOOK_FUNCTION(original_name, hook_table, new_function) \
-  hook_function(original_name, SNUFFLEUPAGUS_G(hook_table), new_function)
+  hook_function(original_name, SPG(hook_table), new_function)
 
 #define HOOK_FUNCTION_BY_REGEXP(regexp, hook_table, new_function) \
-  hook_regexp(regexp, SNUFFLEUPAGUS_G(hook_table), new_function)
+  hook_regexp(regexp, SPG(hook_table), new_function)
 
 #define SP_TYPE_LOG (0)
 #define SP_TYPE_DROP (1)
 #define SP_TYPE_SIMULATION (2)
 
 #define SP_LOG_DEBUG E_NOTICE
+#define SP_LOG_INFO E_NOTICE
 #define SP_LOG_ERROR E_ERROR
 #define SP_LOG_WARN E_WARNING
 
@@ -57,11 +58,11 @@
 #ifdef SP_DEBUG_STDERR
 extern int sp_debug_stderr;
 #define sp_log_debug(fmt, ...) \
-  dprintf(sp_debug_stderr, "[snuffleupagus][DEBUG] %s(): " fmt "\n", __FUNCTION__, ##__VA_ARGS__);
+  if (sp_debug_stderr > 0) dprintf(sp_debug_stderr, "[snuffleupagus][DEBUG] %s(): " fmt "\n", __FUNCTION__, ##__VA_ARGS__);
 #else
-#define sp_log_debug(...) \
-  sp_log_msgf("DEBUG", SP_LOG_DEBUG, SP_TYPE_LOG, __VA_ARGS__)
-#endif 
+#define sp_log_debug(fmt, ...) \
+  sp_log_msgf("DEBUG", SP_LOG_DEBUG, SP_TYPE_LOG, "%s(): " fmt, __FUNCTION__, ##__VA_ARGS__)
+#endif
 
 #else
 #define sp_log_debug(...)
@@ -70,23 +71,21 @@ extern int sp_debug_stderr;
 #define GET_SUFFIX(x) (x == 1) ? "st" : ((x == 2) ? "nd" : "th")
 
 const char *get_ipaddr(void);
-void sp_log_msgf(char const *restrict feature, int level, int type,
-                 const char *restrict fmt, ...);
+void sp_log_msgf(char const *restrict feature, int level, int type, const char *restrict fmt, ...);
 int compute_hash(const char *const restrict filename, char *restrict file_hash);
 const zend_string *sp_zval_to_zend_string(const zval *);
-bool sp_match_value(const zend_string *, const zend_string *, const sp_pcre *);
-bool sp_match_array_key(const zval *, const zend_string *, const sp_pcre *);
-bool sp_match_array_value(const zval *, const zend_string *, const sp_pcre *);
-void sp_log_disable(const char *restrict, const char *restrict,
-                    const zend_string *restrict, const sp_disabled_function *);
-void sp_log_disable_ret(const char *restrict, const zend_string *restrict,
-                        const sp_disabled_function *);
+bool sp_match_value(const zend_string* value, const zend_string* to_match, const sp_regexp* rx);
+bool sp_match_array_key(const zval *, const zend_string *, const sp_regexp *);
+bool sp_match_array_value(const zval *, const zend_string *, const sp_regexp *);
+void sp_log_disable(const char *restrict, const char *restrict, const zend_string *restrict, const sp_disabled_function *);
+void sp_log_disable_ret(const char *restrict, const zend_string *restrict, const sp_disabled_function *);
 bool hook_function(const char *, HashTable *, zif_handler);
+void unhook_functions(HashTable *ht);
 int hook_regexp(const sp_pcre *, HashTable *, zif_handler);
-bool check_is_in_eval_whitelist(const zend_string *const function_name);
-int sp_log_request(const zend_string *restrict folder,
-                   const zend_string *restrict text_repr,
-                   char const *const from);
-bool sp_zend_string_equals(const zend_string *s1, const zend_string *s2);
-
+bool check_is_in_eval_whitelist(const char* function_name);
+int sp_log_request(const zend_string *restrict folder, const zend_string *restrict text_repr);
+#define sp_zend_string_equals(s1, s2) zend_string_equals((zend_string*)s1, (zend_string*)s2)
+static inline bool sp_zend_string_equals_str(const zend_string* s1, const char *str, size_t len) {
+  return (ZSTR_LEN(s1) == len && !memcmp(ZSTR_VAL(s1), str, len));
+}
 #endif /* SP_UTILS_H */

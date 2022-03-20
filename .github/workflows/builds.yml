@@ -11,26 +11,26 @@ jobs:
     strategy:
         matrix:
           container:
-            - php:7.0
-            - php:7.1
-            - php:7.2
-            - php:7.3
-            - php:7.4
+            - php:8.1
             - php:8.0
+            - php:7.4
+            - php:7.3
     container: ${{ matrix.container }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install pecl
+      - name: PHP 7 env setup
         if: startsWith(matrix.container, 'php:7')
-        run: pecl install vld-beta
-      - name: Remove php8 tests on php7
-        if: startsWith(matrix.container, 'php:7')
-        run: rm -rf src/tests/*php8*/
+        run: |
+          pecl install vld-beta
+          rm -rf src/tests/*php8*/ src/tests/*/*_php8.phpt
       - name: Build and run the testsuite
-        run: make tests
+        run: |
+          make release
+          ln -s $(php -r 'echo ini_get("extension_dir");')/* src/modules/
+          rm -f src/tests/disable_function/*_signal.phpt
+          make tests
       - name: Show logs in case of failure
         if: ${{ failure() }}
         run: |
-          grep -r . ./src/tests/*/*.out
-          grep -r . ./src/tests/*/*.diff
+          grep -r . --include='*.log' src/tests

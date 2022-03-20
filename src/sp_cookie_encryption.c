@@ -1,7 +1,7 @@
 #include "php_snuffleupagus.h"
 
 static inline const sp_cookie *sp_lookup_cookie_config(const zend_string *key) {
-  const sp_list_node *it = SNUFFLEUPAGUS_G(config).config_cookie->cookies;
+  const sp_list_node *it = SPCFG(cookie).cookies;
 
   while (it) {
     const sp_cookie *config = it->data;
@@ -133,11 +133,11 @@ PHP_FUNCTION(sp_setcookie) {
   }
 
   /* If the request was issued over HTTPS, the cookie should be "secure" */
-  if (SNUFFLEUPAGUS_G(config).config_auto_cookie_secure) {
+  if (SPCFG(auto_cookie_secure).enable) {
     const zval server_vars = PG(http_globals)[TRACK_VARS_SERVER];
     if (Z_TYPE(server_vars) == IS_ARRAY) {
       const zval *is_https =
-          zend_hash_str_find(Z_ARRVAL(server_vars), "HTTPS", strlen("HTTPS"));
+          zend_hash_str_find(Z_ARRVAL(server_vars), ZEND_STRL("HTTPS"));
       if (NULL != is_https) {
         secure = 1;
       }

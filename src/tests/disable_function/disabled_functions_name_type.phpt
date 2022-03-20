@@ -13,4 +13,4 @@ echo strcmp([1,23], "pouet") . "\n";
 --EXPECTF--
 0
 
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strcmp', because its argument '$str1' content (ARRAY) matched a rule in %a/disabled_functions_name_type.php on line 3
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'strcmp', because its argument '$str1'%smatched a rule in %s/disabled_functions_name_type.php on line 3

@@ -1,5 +1,5 @@
 --TEST--
-Unserialize fail
+phpinfo() showing snuffleupagus
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--

@@ -23,9 +23,9 @@ Warning: Unknown: Unable to find the wrapper "php" - did you forget to enable it
 
 Warning: file_get_contents(): Unable to find the wrapper "http" - did you forget to enable it when you configured PHP? in %a/stream_wrapper.php on line %d
 
-Warning: file_get_contents(): php_network_getaddresses: getaddrinfo failed: %s
+Warning: file_get_contents(): php_network_getaddresses: getaddrinfo%sfailed: %s
 
-Warning: file_get_contents(https://qweqwezxc): %s to open stream: php_network_getaddresses: getaddrinfo failed: %s
+Warning: file_get_contents(https://qweqwezxc): %s to open stream: php_network_getaddresses: getaddrinfo%sfailed: %s
 
 Warning: file_get_contents(ftp://qweqwezxc): %s to open stream: operation failed in %a/stream_wrapper.php on line %d
 

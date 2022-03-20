@@ -4,6 +4,7 @@ Upload a file, validation script not executable
 file_uploads=1
 sp.configuration_file={PWD}/config/upload_validation_non_exec.ini
 output_buffering=off
+expose_php=0
 --POST_RAW--
 Content-Type: multipart/form-data; boundary=blabla
 --blabla
@@ -14,6 +15,6 @@ Content-Disposition: form-data; name="test"; filename="test.php"
 var_dump($_FILES);
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in Unknown on line 0
-
-Fatal error: [snuffleupagus][0.0.0.0][config][log] The `script` (tests/data/upload_no_exec.sh) isn't executable on line 1 in Unknown on line 0
+Warning: [snuffleupagus][0.0.0.0][upload_validation][log] Could not call '%s' : Permission denied %s
+%a
+Fatal error: [snuffleupagus][0.0.0.0][upload_validation][drop] The upload %s was rejected. in Unknown on line 0

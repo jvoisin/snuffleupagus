@@ -1,7 +1,7 @@
 #include "php_snuffleupagus.h"
 
 static bool wrapper_is_whitelisted(const zend_string *const zs) {
-  const sp_list_node *list = SNUFFLEUPAGUS_G(config).config_wrapper->whitelist;
+  const sp_list_node *list = SPCFG(wrapper).whitelist;
 
   if (!zs) {
     return false;  // LCOV_EXCL_LINE
@@ -38,24 +38,19 @@ void sp_disable_wrapper() {
 
   zend_hash_destroy(orig_complete);
   pefree(orig_complete, 1);
-  SNUFFLEUPAGUS_G(config).config_wrapper->num_wrapper =
-      zend_hash_num_elements(orig);
+  SPCFG(wrapper).num_wrapper = zend_hash_num_elements(orig);
 }
 
 PHP_FUNCTION(sp_stream_wrapper_register) {
   zif_handler orig_handler;
   zend_string *protocol_name = NULL;
+  zval *params = NULL;
+  uint32_t param_count = 0;
 
-  // LCOV_EXCL_BR_START
-  ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_QUIET, 2, EX_NUM_ARGS());
-  Z_PARAM_STR(protocol_name);
-  ZEND_PARSE_PARAMETERS_END_EX((void)0);
-  // LCOV_EXCL_BR_END
-
-  if (wrapper_is_whitelisted(protocol_name)) {
-    orig_handler = zend_hash_str_find_ptr(
-        SNUFFLEUPAGUS_G(sp_internal_functions_hook), "stream_wrapper_register",
-        sizeof("stream_wrapper_register") - 1);
+  zend_parse_parameters_ex(ZEND_PARSE_PARAMS_QUIET, ZEND_NUM_ARGS(), "S*", &protocol_name, &params, &param_count);
+  // ignore proper arguments here and just let the original handler deal with it
+  if (!protocol_name || wrapper_is_whitelisted(protocol_name)) {
+    orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("stream_wrapper_register"));
     orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   }
 }

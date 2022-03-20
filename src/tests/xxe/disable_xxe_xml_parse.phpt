@@ -70,7 +70,8 @@ $parser = create_parser();
 $doc = xml_parse($parser, $xml, true);
 xml_parser_free($parser);
 
---EXPECT--
+--EXPECTF--
+Warning: [snuffleupagus][0.0.0.0][xxe][log] A call to libxml_disable_entity_loader was tried and nopped in %a.php on line 41
 string(4) "TEST"
 
 array(0) {
@@ -81,6 +82,8 @@ array(0) {
 }
 string(7) "TESTING"
 string(4) "TEST"
+
+Warning: [snuffleupagus][0.0.0.0][xxe][log] A call to libxml_disable_entity_loader was tried and nopped in %a.php on line 46
 string(4) "TEST"
 
 array(0) {

@@ -18,7 +18,6 @@ if (TRUE == function_exists("posix_getuid")) {
  ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disable_writable_simulation.ini
---XFAIL--
 --FILE--
 <?php 
 $dir = __DIR__;

@@ -2,11 +2,12 @@
 Set a custom session handler
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 70400) print "skip"; ?>
+<?php if (!extension_loaded("session")) print "skip"; ?>
+--EXTENSIONS--
+session
 --INI--
 sp.configuration_file={PWD}/config/config_crypt_session.ini
-session.save_path = "/tmp"
+session.save_path="/tmp"
 --ENV--
 return <<<EOF
 REMOTE_ADDR=127.0.0.1
@@ -29,4 +30,4 @@ session_start();
 var_dump($_SESSION);
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][127.0.0.1][cookie_encryption][drop] Buffer underflow tentative detected in cookie encryption handling in %s/crypt_session_corrupted_session.php on line %s
+Fatal error: [snuffleupagus][127.0.0.1][cookie_encryption][drop] Buffer underflow (tentative) detected in cookie encryption handling in %s/crypt_session_corrupted_session.php on line %s

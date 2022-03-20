@@ -33,8 +33,8 @@ static bool is_var_name_valid(const char *const name) {
   if (NULL == regexp_var || NULL == regexp_const) {
     return false;  // LCOV_EXCL_LINE
   }
-  if ((false == sp_is_regexp_matching(regexp_var, name)) &&
-      (false == sp_is_regexp_matching(regexp_const, name))) {
+  if ((false == sp_is_regexp_matching_len(regexp_var, VAR_AND_LEN(name))) &&
+      (false == sp_is_regexp_matching_len(regexp_const, VAR_AND_LEN(name)))) {
     return false;
   }
   return true;
@@ -264,7 +264,7 @@ sp_tree *sp_parse_var(const char *line) {
   }
   tokens_list = sp_list_sort(tokens_list, cmp_tokens);
   tree = parse_tokens(line, tokens_list);
-  sp_list_free(tokens_list);
+  sp_list_free2(tokens_list);
   // Check if tree is empty.
   if (tree && tree->next == NULL && tree->type == UNDEFINED) {
     tree->type = CONSTANT;
