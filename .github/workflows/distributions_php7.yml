@@ -119,27 +119,3 @@ jobs:
         if: ${{ failure() }}
         run: |
           grep -r . --include='*.log' src/tests
-
-  ## PHP 8
-  alpine_php8:
-    runs-on: ubuntu-latest
-    container: alpine:edge
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Remove tests failing on alpine for wathever reason
-        run: rm -rf src/tests/cookies_encryption_warning src/tests/upload_validation/upload_validation.phpt
-      - name: Install dependencies
-        run: apk add php8-dev php8-cgi php8-simplexml php8-xml pcre-dev build-base php8-pear php8-openssl php8-session php8-curl bash grep
-      - name: Install pecl
-        continue-on-error: true
-        run: pecl install vld-beta
-      - name: Build SP and run the testsuite
-        run: |
-          make release
-          ln -s $(php -r 'echo ini_get("extension_dir");')/* src/modules/
-          make tests
-      - name: Show logs in case of failure
-        if: ${{ failure() }}
-        run: |
-          grep -r . --include='*.log' src/tests
