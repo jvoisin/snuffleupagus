@@ -21,8 +21,6 @@ PHP_ARG_ENABLE(debug, whether to enable debug messages,
 PHP_ARG_ENABLE(debug-stderr, whether to enable debug messages,
 [  --enable-debug-stderr           Enable debug messages], no, no)
 
-AC_PROG_CC_STDC()
-
 CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -Wall -Wextra -Wno-unused-parameter"
 CFLAGS="$CFLAGS -Wformat=2 -Wformat-security -D_FORTIFY_SOURCE=2"
@@ -47,5 +45,5 @@ if test "$PHP_SNUFFLEUPAGUS" = "yes"; then
    PHP_NEW_EXTENSION(snuffleupagus, $sources, $ext_shared,-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1)
 fi
 
-# PHP_PROG_RE2C([2.0])
+PHP_PROG_RE2C([2.0])
 PHP_ADD_MAKEFILE_FRAGMENT()
