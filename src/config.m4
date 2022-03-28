@@ -21,6 +21,8 @@ PHP_ARG_ENABLE(debug, whether to enable debug messages,
 PHP_ARG_ENABLE(debug-stderr, whether to enable debug messages,
 [  --enable-debug-stderr           Enable debug messages], no, no)
 
+AC_PROG_CC()
+
 CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -Wall -Wextra -Wno-unused-parameter"
 CFLAGS="$CFLAGS -Wformat=2 -Wformat-security -D_FORTIFY_SOURCE=2"
