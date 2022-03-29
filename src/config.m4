@@ -21,7 +21,8 @@ PHP_ARG_ENABLE(debug, whether to enable debug messages,
 PHP_ARG_ENABLE(debug-stderr, whether to enable debug messages,
 [  --enable-debug-stderr           Enable debug messages], no, no)
 
-AC_PROG_CC()
+# AC_PROG_CC_STDC was merged in AC_PROG_CC in autoconf 2.70
+m4_version_prereq([2.70], [AC_PROG_CC], [AC_PROG_CC_STDC])
 
 CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -Wall -Wextra -Wno-unused-parameter"
