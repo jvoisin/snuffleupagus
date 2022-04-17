@@ -1,7 +1,7 @@
 --TEST--
 Disable XXE (feature enabled)
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus") || !extension_loaded("dom")) print("skip"); ?>
+<?php if (!extension_loaded("snuffleupagus") || !extension_loaded("dom") || !extension_loaded("xml")) print("skip"); ?>
 <?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disable_xxe.ini
