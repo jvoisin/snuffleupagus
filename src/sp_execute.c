@@ -17,9 +17,9 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
       sp_log_request(config_ro_exec->dump, config_ro_exec->textual_representation);
     }
     if (true == config_ro_exec->simulation) {
-      sp_log_simulation("readonly_exec", "Attempted execution of a writable file (%s).", filename);
+      sp_log_simulation("readonly_exec", "Attempted execution of a writable file (%s)", filename);
     } else {
-      sp_log_drop("readonly_exec", "Attempted execution of a writable file (%s).", filename);
+      sp_log_drop("readonly_exec", "Attempted execution of a writable file (%s)", filename);
     }
   } else {
     if (EACCES != errno) {
@@ -226,13 +226,18 @@ static inline void sp_stream_open_checks(zend_string *zend_filename, zend_file_h
     return;
   }
 
-  // zend_string *zend_filename = zend_string_init(filename, strlen(filename), 0);
   const HashTable *disabled_functions_hooked = SPCFG(disabled_functions_hooked);
 
   switch (data->opline->opcode) {
     case ZEND_INCLUDE_OR_EVAL:
       if (SPCFG(readonly_exec).enable) {
-        terminate_if_writable(ZSTR_VAL(zend_filename));
+        char *fn = ZSTR_VAL(zend_filename);
+        if (ZSTR_LEN(zend_filename) >= strlen("file://") && memcmp(fn, "file://", strlen("file://")) == 0) {
+          fn += strlen("file://");
+        } else if (!php_memnstr(ZSTR_VAL(zend_filename), "://", strlen("://"), ZSTR_VAL(zend_filename) + ZSTR_LEN(zend_filename))) {
+          // ignore stream wrappers other than file:// for now
+          terminate_if_writable(fn);
+        }
       }
       switch (data->opline->extended_value) {
         case ZEND_INCLUDE:
