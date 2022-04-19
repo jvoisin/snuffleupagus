@@ -40,4 +40,4 @@ unlink("$dir/non_writable_file.txt");
 unlink("$dir/writable_file.txt");
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][readonly_exec][drop] Attempted execution of a writable file (%a/deny_writable_execution.php). in %a/deny_writable_execution.php on line 2
+Fatal error: [snuffleupagus][0.0.0.0][readonly_exec][drop] Attempted execution of a writable file (%a/deny_writable_execution.php) in %a/deny_writable_execution.php on line 2
