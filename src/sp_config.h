@@ -35,6 +35,7 @@ typedef struct {
 typedef struct {
   bool enable;
   bool simulation;
+  bool extended_checks;
   zend_string *dump;
   zend_string *textual_representation;
 } sp_config_readonly_exec;

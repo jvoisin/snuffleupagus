@@ -41,10 +41,14 @@ unlink("$dir/non_writable_file.txt");
 unlink("$dir/writable_file.txt");
 ?>
 --EXPECTF--
-Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/deny_writable_execution_simulation.php). in %a/deny_writable_execution_simulation.php on line 2
+Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/deny_writable_execution_simulation.php) in %a/deny_writable_execution_simulation.php on line 2
 
-Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/writable_file.txt). in %a/deny_writable_execution_simulation.php on line 12
+Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/writable_file.txt) in %a/deny_writable_execution_simulation.php on line 12
 
-Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/writable_file.txt). in %a/writable_file.txt on line 1
+Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/writable_file.txt) in %a/writable_file.txt on line 1
 Code execution within a writable file.
+
+Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of file owned by process (%s/tests/deny_writable/non_writable_file.txt) in %s/tests/deny_writable/deny_writable_execution_simulation.php on line 13
+
+Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of file owned by process (%s/tests/deny_writable/non_writable_file.txt) in %src/tests/deny_writable/non_writable_file.txt on line 1
 Code execution within a non-writable file.

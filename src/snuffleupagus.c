@@ -340,6 +340,7 @@ static void dump_config() {
   add_assoc_bool(&arr, "readonly_exec.enable", SPCFG(readonly_exec).enable);
   add_assoc_bool(&arr, "readonly_exec.sim", SPCFG(readonly_exec).simulation);
   ADD_ASSOC_ZSTR(&arr, SP_TOKEN_READONLY_EXEC "." SP_TOKEN_DUMP, SPCFG(readonly_exec).dump);
+  add_assoc_bool(&arr, "readonly_exec.extended_checks", SPCFG(readonly_exec).extended_checks);
 
   add_assoc_bool(&arr, "global_strict.enable", SPCFG(global_strict).enable);
 
@@ -494,6 +495,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
   // set some defaults
   SPCFG(show_old_php_warning) = true;
+  SPCFG(readonly_exec).extended_checks = true;
 
   char *str = new_value->val;
 
