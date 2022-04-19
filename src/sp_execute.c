@@ -1,4 +1,5 @@
 #include "php_snuffleupagus.h"
+#include "ext/standard/php_string.h"
 
 static void (*orig_execute_ex)(zend_execute_data *execute_data) = NULL;
 static void (*orig_zend_execute_internal)(zend_execute_data *execute_data,
@@ -12,22 +13,72 @@ static zend_result (*orig_zend_stream_open)(zend_file_handle *handle) = NULL;
 // FIXME handle symlink
 ZEND_COLD static inline void terminate_if_writable(const char *filename) {
   const sp_config_readonly_exec *config_ro_exec = &(SPCFG(readonly_exec));
+  char *errmsg = "unknown access problem";
+
+  // check write access
   if (0 == access(filename, W_OK)) {
-    if (config_ro_exec->dump) {
-      sp_log_request(config_ro_exec->dump, config_ro_exec->textual_representation);
-    }
-    if (true == config_ro_exec->simulation) {
-      sp_log_simulation("readonly_exec", "Attempted execution of a writable file (%s)", filename);
-    } else {
-      sp_log_drop("readonly_exec", "Attempted execution of a writable file (%s)", filename);
-    }
-  } else {
-    if (EACCES != errno) {
-      // LCOV_EXCL_START
-      sp_log_err("Writable execution", "Error while accessing %s: %s", filename, strerror(errno));
-      // LCOV_EXCL_STOP
-    }
+    errmsg = "Attempted execution of a writable file";
+    goto violation;
   }
+  if (errno != EACCES) {
+    goto err;
+  }
+
+  // other checks are 'extended checks' that can be enabled/disabled via config
+  if (!config_ro_exec->extended_checks) {
+    return;
+  }
+
+  // check effective uid
+  struct stat buf;
+  if (0 != stat(filename, &buf)) {
+    goto err;
+  }
+  if (buf.st_uid == geteuid()) {
+    errmsg = "Attempted execution of file owned by process";
+    goto violation;
+  }
+
+  // check write access on directory
+  char *dirname = estrndup(filename, strlen(filename));
+  php_dirname(dirname, strlen(dirname));
+  if (0 == access(dirname, W_OK)) {
+    errmsg = "Attempted execution of file in writable directory";
+    efree(dirname);
+    goto violation;
+  }
+  if (errno != EACCES) {
+    efree(dirname);
+    goto err;
+  }
+
+  // check effecite uid of directory
+  if (0 != stat(dirname, &buf)) {
+    efree(dirname);
+    goto err;
+  }
+  efree(dirname);
+  if (buf.st_uid == geteuid()) {
+    errmsg = "Attempted execution of file in directory owned by process";
+    goto violation;
+  }
+
+  // we would actually need to check all parent directories as well, but that task is left for other tools
+  return;
+
+violation:
+  if (config_ro_exec->dump) {
+    sp_log_request(config_ro_exec->dump, config_ro_exec->textual_representation);
+  }
+  if (config_ro_exec->simulation) {
+    sp_log_simulation("readonly_exec", "%s (%s)", errmsg, filename);
+  } else {
+    sp_log_drop("readonly_exec", "%s (%s)", errmsg, filename);
+  }
+  return;
+
+err:
+  sp_log_err("readonly_exec", "Error while accessing %s: %s", filename, strerror(errno));
 }
 
 inline static void is_builtin_matching(

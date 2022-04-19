@@ -96,7 +96,7 @@ SP_PARSE_FN(parse_unserialize) {
 }
 
 SP_PARSE_FN(parse_readonly_exec) {
-  bool enable = false, disable = false;
+  bool enable = false, disable = false, xchecks = false, no_xchecks = false;
   sp_config_readonly_exec *cfg = (sp_config_readonly_exec*)retval;
 
   sp_config_keyword config_keywords[] = {
@@ -105,6 +105,10 @@ SP_PARSE_FN(parse_readonly_exec) {
       {parse_empty, SP_TOKEN_SIMULATION, &(cfg->simulation)},
       {parse_empty, SP_TOKEN_SIM, &(cfg->simulation)},
       {parse_str, SP_TOKEN_DUMP, &(cfg->dump)},
+      {parse_empty, "extended_checks", &(xchecks)},
+      {parse_empty, "xchecks", &(xchecks)},
+      {parse_empty, "no_extended_checks", &(no_xchecks)},
+      {parse_empty, "noxchecks", &(no_xchecks)},
       {0, 0, 0}};
 
   SP_PROCESS_CONFIG_KEYWORDS_ERR();
@@ -112,6 +116,7 @@ SP_PARSE_FN(parse_readonly_exec) {
   cfg->textual_representation = sp_get_textual_representation(parsed_rule);
 
   SP_SET_ENABLE_DISABLE(enable, disable, cfg->enable);
+  if (xchecks) { cfg->extended_checks = true; } else if (no_xchecks) { cfg->extended_checks = false; }
 
   return SP_PARSER_STOP;
 }
