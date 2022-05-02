@@ -111,7 +111,7 @@ static void *get_entry_hashtable(const HashTable *const ht,
 
 static zval *get_array_value(zend_execute_data *ed, const zval *const zvalue,
                              const sp_tree *const tree) {
-  zval *idx_value = sp_get_var_value(ed, tree->idx, false);
+  const zval *const idx_value = sp_get_var_value(ed, tree->idx, false);
 
   if (!zvalue || !idx_value) {
     return NULL;
@@ -129,9 +129,8 @@ static zval *get_array_value(zend_execute_data *ed, const zval *const zvalue,
 static zval *get_object_property(zend_execute_data *ed, zval *object,
                                  const char *property, bool is_param) {
   const char *const class_name = object->value.obj->ce->name->val;
-  HashTable *array = Z_OBJPROP_P(object);
-  zval *zvalue = NULL;
-  const zval *property_val = get_var_value(ed, property, is_param);
+  const HashTable *const array = Z_OBJPROP_P(object);
+  const zval *const property_val = get_var_value(ed, property, is_param);
   size_t len;
 
   if (property_val) {
@@ -141,7 +140,7 @@ static zval *get_object_property(zend_execute_data *ed, zval *object,
       property = Z_STRVAL_P(property_val);
     }
   }
-  zvalue = get_entry_hashtable(array, property, strlen(property));
+  zval *zvalue = get_entry_hashtable(array, property, strlen(property));
   // TODO do we want to log overflow?
   if (!zvalue) {
     len = strlen(property) + 4;
