@@ -16,7 +16,7 @@ char* get_complete_function_path(zend_execute_data const* const execute_data) {
   if (!execute_data) {
     return NULL;  // LCOV_EXCL_LINE
   }
-  zend_function *func = execute_data->func;
+  const zend_function *const func = execute_data->func;
   if (!(func->common.function_name)) {
     return NULL;
   }
@@ -25,7 +25,7 @@ char* get_complete_function_path(zend_execute_data const* const execute_data) {
   char* complete_path_function = NULL;
 
   if ((func->type == ZEND_USER_FUNCTION || func->type == ZEND_INTERNAL_FUNCTION) && func->common.scope) {
-    char const* class_name = ZSTR_VAL(func->common.scope->name);
+    const char *const class_name = ZSTR_VAL(func->common.scope->name);
     const size_t len = strlen(class_name) + 2 + strlen(function_name) + 1;
     complete_path_function = emalloc(len);
     snprintf(complete_path_function, len, "%s::%s", class_name, function_name);
