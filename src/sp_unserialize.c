@@ -8,7 +8,7 @@ static inline void *php_hash_alloc_context(const php_hash_ops *ops) {
 }
 #endif
 
-static zend_string *sp_do_hash_hmac_sha256(char *data, size_t data_len, char *key, size_t key_len)
+static zend_string *sp_do_hash_hmac_sha256(char* restrict data, size_t data_len, char* restrict key, size_t key_len)
 {
 #if PHP_VERSION_ID < 80000
   const php_hash_ops *ops = php_hash_fetch_ops(ZEND_STRL("sha256"));
