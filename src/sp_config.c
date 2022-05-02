@@ -65,10 +65,10 @@ zend_result sp_parse_config(const char *filename) {
 }
 
 
-zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, sp_config_keyword *config_keywords) {
+zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, const sp_config_keyword *config_keywords) {
   for (sp_parsed_keyword *kw = parsed_rule; kw->kw; kw++) {
     bool found_kw = false;
-    for (sp_config_keyword *ckw = config_keywords; ckw->func; ckw++) {
+    for (const sp_config_keyword *ckw = config_keywords; ckw->func; ckw++) {
       if (kw->kwlen == strlen(ckw->token) && !strncmp(kw->kw, ckw->token, kw->kwlen)) {
         if (ckw->func) {
           int ret = ckw->func(ckw->token, kw, ckw->retval);

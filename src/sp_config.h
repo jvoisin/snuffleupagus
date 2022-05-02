@@ -269,7 +269,7 @@ typedef struct {
 
 #define SP_TOKEN_LIST "list"
 
-zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, sp_config_keyword *config_keywords);
+zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, const sp_config_keyword *config_keywords);
 
 zend_result sp_parse_config(const char *filename);
 
