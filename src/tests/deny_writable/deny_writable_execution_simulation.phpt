@@ -1,7 +1,6 @@
 --TEST--
 Readonly execution attempt (simulation mode)
 --SKIPIF--
-<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
 <?php
 if (!extension_loaded("snuffleupagus")) { print "skip"; };
 
