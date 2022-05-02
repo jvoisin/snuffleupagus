@@ -4,7 +4,7 @@
 
 typedef struct sp_token_s {
   elem_type type;
-  char *text_repr;
+  const char *text_repr;
   size_t pos;
 } sp_conf_token;
 

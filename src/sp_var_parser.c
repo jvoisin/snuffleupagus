@@ -245,15 +245,15 @@ static sp_tree *parse_tokens(const char *restrict str,
 }
 
 sp_tree *sp_parse_var(const char *line) {
-  sp_list_node *tokens_list = NULL;
-  sp_tree *tree = NULL;
-  const sp_conf_token delimiter_list[] = {
+  static const sp_conf_token delimiter_list[] = {
       {.type = OBJECT, .text_repr = OBJECT_TOKEN},
       {.type = ARRAY, .text_repr = ARRAY_TOKEN},
       {.type = ARRAY_END, .text_repr = ARRAY_END_TOKEN},
       {.type = INTERPRETED_STRING, .text_repr = STRING_TOKEN},
       {.type = LITERAL_STRING, .text_repr = ESC_STRING_TOKEN},
       {.type = CLASS, .text_repr = CLASS_TOKEN}};
+  sp_list_node *tokens_list = NULL;
+  sp_tree *tree = NULL;
 
   if (!line) {
     return NULL;
