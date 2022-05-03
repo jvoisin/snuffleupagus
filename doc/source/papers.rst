@@ -124,6 +124,7 @@ Notable users
 - `AdwCleaner <https://www.malwarebytes.com/adwcleaner/>`__'s backend- a notorious anti-pup
 - `Alertot <https://www.alertot.com/>`__ - a Chilean continuous web security monitoring company
 - `NBS System <https://www.nbs-system.com/>`__ - a French hosting/security company and author of snuffleupagus
+- `Mangadex <https://mangadex.dev/mangadex-v5-infrastructure-overview/>`__ - a major manga website
 - `Net4All <https://net4all.ch/>`__ - a Swiss hosting company
 - `Oceanet Technology <https://www.oceanet-technology.com/>`__ - a French hosting company
 - `SwissCenter <https://swisscenter.com>`__ - a Swiss datacenter & web hosting company
