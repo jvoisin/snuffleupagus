@@ -6,7 +6,7 @@
 
 
 static zend_result sp_process_config_root(sp_parsed_keyword *parsed_rule) {
-  sp_config_keyword sp_func[] = {
+  static const sp_config_keyword sp_func[] = {
     {parse_unserialize,         SP_TOKEN_UNSERIALIZE_HMAC, &(SPCFG(unserialize))},
     {parse_enable,              SP_TOKEN_HARDEN_RANDOM, &(SPCFG(random).enable)},
     {parse_log_media,           SP_TOKEN_LOG_MEDIA, &(SPCFG(log_media))},
@@ -29,7 +29,7 @@ static zend_result sp_process_config_root(sp_parsed_keyword *parsed_rule) {
   return sp_process_rule(parsed_rule, sp_func);
 }
 
-zend_result sp_parse_config(const char *filename) {
+zend_result sp_parse_config(const char *const filename) {
   FILE *fd = fopen(filename, "rb");
   if (fd == NULL) {
     sp_log_err("config", "Could not open configuration file %s : %s", filename, strerror(errno));
@@ -65,7 +65,7 @@ zend_result sp_parse_config(const char *filename) {
 }
 
 
-zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, const sp_config_keyword *config_keywords) {
+zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, const sp_config_keyword *const config_keywords) {
   for (sp_parsed_keyword *kw = parsed_rule; kw->kw; kw++) {
     bool found_kw = false;
     for (const sp_config_keyword *ckw = config_keywords; ckw->func; ckw++) {
@@ -119,13 +119,12 @@ SP_PARSEKW_FN(parse_list) {
   CHECK_DUPLICATE_KEYWORD(retval);
 
   sp_list_node **list = retval;
-  char *tok, *tmp;
 
   SP_PARSE_ARG(value);
 
-  tmp = ZSTR_VAL(value);
+  char* tmp = ZSTR_VAL(value);
   while (1) {
-    tok = strsep(&tmp, ",");
+    const char* const tok = strsep(&tmp, ",");
     if (tok == NULL) {
       break;
     }
