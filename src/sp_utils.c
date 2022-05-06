@@ -448,6 +448,7 @@ void unhook_functions(HashTable *ht) {
     if (func && func->type == ZEND_INTERNAL_FUNCTION && orig_handler) {
       func->internal_function.handler = orig_handler;
     }
+    (void)idx;//silence a -Wunused-but-set-variable
   ZEND_HASH_FOREACH_END_DEL();
 }
 
