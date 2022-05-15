@@ -1,5 +1,7 @@
 #include "php_snuffleupagus.h"
 
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 /*!types:re2c*/
 
 #define cs_log_error(fmt, ...) sp_log_err("config", fmt, ##__VA_ARGS__)
