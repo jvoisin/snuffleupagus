@@ -60,8 +60,10 @@ jobs:
         run: DEBIAN_FRONTEND=noninteractive apt-get -qqy --no-install-recommends install fakeroot php-xml php-curl dpkg-dev gcc make libpcre3-dev dh-php php-dev build-essential
       - name: Build debs
         run: DPKG_SKIP_TESTS=1 dpkg-buildpackage -i -us -uc -tc -I -rfakeroot
-      - name: Move built debs
-        run: mv ../*.deb ./
+      - name: Move built debs and rename
+        run: |
+          mv -v ../*.deb ./
+          ls *.deb | xargs -I % mv -v % ${{ matrix.name }}-%
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
