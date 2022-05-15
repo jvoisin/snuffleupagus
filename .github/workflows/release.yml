@@ -1,0 +1,69 @@
+name: Release Builder
+on:
+  push:
+    branches:
+      - "release-*"
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - "release-*"
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-latest
+    name: ${{ matrix.name }}
+    container: ${{ matrix.container }}
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          [
+            "debian-buster",
+            "debian-stretch",
+            "debian-bullseye",
+            "debian-sid",
+            "debian-bookworm",
+            "ubuntu-bionic",
+            "ubuntu-focal",
+            "ubuntu-jammy",
+            "ubuntu-impish",
+          ]
+        include:
+          - name: debian-buster
+            container: debian:buster
+          - name: debian-stretch
+            container: debian:stretch
+          - name: debian-bullseye
+            container: debian:bullseye
+          - name: debian-sid
+            container: debian:sid
+          - name: debian-bookworm
+            container: debian:bookworm
+          - name: ubuntu-bionic
+            container: ubuntu:bionic
+          - name: ubuntu-focal
+            container: ubuntu:focal
+          - name: ubuntu-jammy
+            container: ubuntu:jammy
+          - name: ubuntu-impish
+            container: ubuntu:impish
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set timezone
+        if: startsWith(matrix.container, 'ubuntu:')
+        run: ln -snf /usr/share/zoneinfo/Europe/Paris /etc/localtime && echo Europe/Paris > /etc/timezone
+      - name: Update OS
+        run: apt-get -qqy update
+      - name: Install deps
+        run: DEBIAN_FRONTEND=noninteractive apt-get -qqy --no-install-recommends install fakeroot php-xml php-curl dpkg-dev gcc make libpcre3-dev dh-php php-dev build-essential
+      - name: Build debs
+        run: DPKG_SKIP_TESTS=1 dpkg-buildpackage -i -us -uc -tc -I -rfakeroot
+      - name: Move built debs
+        run: mv ../*.deb ./
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: snuffleupagus-${{ matrix.name }}
+          path: ./*.deb
