@@ -28,8 +28,8 @@ override_dh_auto_install:
  
 override_dh_auto_test:
 ifeq ($(strip $(DPKG_SKIP_TESTS)),)
-	echo "skip tests"
-else
 	sed -i "s/\$$ext_params -d display_errors=0 -r/-d display_errors=0 -r/" src/run-tests.php
 	TEST_PHP_ARGS="-q" REPORT_EXIST_STATUS=1 make -C src test
+else
+	echo "skip tests"
 endif
