@@ -515,7 +515,11 @@ ZEND_FUNCTION(eval_blacklist_callback) {
   zif_handler orig_handler;
   char* current_function_name = get_complete_function_path(EG(current_execute_data));
 
-  if (!current_function_name || true == check_is_in_eval_whitelist(current_function_name)) {
+  if (!current_function_name) {
+    return;
+  }
+
+  if( true == check_is_in_eval_whitelist(current_function_name)) {
     goto whitelisted;
   }
 
