@@ -1,31 +1,53 @@
 Changelog
 =========
 
-0.8.0 - Woolly Mammoth
-----------------------
+0.8.0 - `Woolly Mammoth` <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.8.0>`__ 2022/05/15
+-----------------------------------------------------------------------------------------------------
 
-- Massive simplification of the configuration parser
-- Better memory management
-- Removal of internal calls to `call_user_func`
-- Check for unsupported PHP version
-- Compatibility with PHP8.1
-- Suhosin features backports:
-  - Maximum stack depth/recursion limit
-  - Maximum length for session id
+New features
+^^^^^^^^^^^^
+* Compatibility with PHP8.1
+* Check for unsupported PHP version
+* Backport of Suhosin-ng patches:
+  * Maximum stack depth/recursion limit
+  * Maximum length for session id
+  * $_SERVER strip/encode
+  * Configuration dump
+  * Support for conditional rules
+  * INI settings protection
+  * Output SP logs to stderr
+  * Ported Suhosin rules to SP
+
+Improvements
+^^^^^^^^^^^^
+* Massive simplification of the configuration parser
+* Better memory management
+* Removal of internal calls to `call_user_func`
+* Increased portability of the default rules access different version of PHP
+* Start SP as late as possible, to hook as many things as possible
+
+Bug fixes
+^^^^^^^^^
+* XML and Session support are now checked at runtime instead of at compile time
 
 
 0.7.1 - `Proboscidea <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.7.0>`__ 2021/08/02
 -------------------------------------------------------------------------------------------------
 
-* Fixed possible memory-leaks when hooking via regular expressions               
-* Modernise the code by removing usage of `strtok`                               
-* Prevent a possible crash during configuration reloading                        
-* Fix the default rules to catch dangerous `chmod` calls                         
+Improvements
+^^^^^^^^^^^^
 * Improve compatibility with various `libpcre` configurations/versions           
+* Modernise the code by removing usage of `strtok`                               
 * Improve the default rules' compatibility with php8                             
 * Prevent XXE in php8 as well                                                    
 * Improve a bit the verbosity of the logs
 * Add a rules file for php8
+
+Bug fixes
+^^^^^^^^^
+* Prevent a possible crash during configuration reloading                        
+* Fix the default rules to catch dangerous `chmod` calls                         
+* Fixed possible memory-leaks when hooking via regular expressions               
 
 
 0.7.0 - `Los Elefantes <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.7.0>`__ 2021/01/02
@@ -46,7 +68,7 @@ Improvements
 
 Bug fixes
 ^^^^^^^^^
-* The strict mode is now disableable
+* The strict mode can now be disabled
 
 
 0.6.0 - `Elephant in the room <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.6.0>`__ 2020/11/06

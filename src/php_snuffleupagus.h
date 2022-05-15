@@ -1,7 +1,7 @@
 #ifndef PHP_SNUFFLEUPAGUS_H
 #define PHP_SNUFFLEUPAGUS_H
 
-#define PHP_SNUFFLEUPAGUS_VERSION "0.8.0"
+#define PHP_SNUFFLEUPAGUS_VERSION "0.9.0"
 #define PHP_SNUFFLEUPAGUS_EXTNAME "snuffleupagus"
 #define PHP_SNUFFLEUPAGUS_AUTHOR "NBS System & Julien (jvoisin) Voisin & SektionEins GmbH"
 #define PHP_SNUFFLEUPAGUS_URL "https://github.com/jvoisin/snuffleupagus"
