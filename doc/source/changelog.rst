@@ -1,7 +1,16 @@
 Changelog
 =========
 
-0.8.0 - `Woolly Mammoth` <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.8.0>`__ 2022/05/15
+0.8.1 - `Batyr <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.8.1>`__ 2022/05/16
+-------------------------------------------------------------------------------------------
+
+Bug fixes
+^^^^^^^^^
+* Fix the version number
+* Fix a test on PHP7
+
+
+0.8.0 - `Woolly Mammoth <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.8.0>`__ 2022/05/15
 -----------------------------------------------------------------------------------------------------
 
 New features

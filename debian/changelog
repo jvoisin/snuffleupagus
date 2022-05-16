@@ -1,3 +1,10 @@
+snuffleupagus (0.8.1) UNRELEASED; urgency=low
+  [ jvoisin ]
+  * Fix the version number
+  * Fix a test on PHP7
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Sun, 16 Apr 2022 19:45:00 +0200
+
 snuffleupagus (0.8.0) UNRELEASED; urgency=low
   [ jvoisin ]
   * Compatibility with PHP8.1
