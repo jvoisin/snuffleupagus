@@ -97,7 +97,7 @@ static void sp_register_server_variables(zval *track_vars_array) {
 
 void sp_hook_register_server_variables()
 {
-  if (sapi_module.register_server_variables) {
+  if (sapi_module.register_server_variables && sapi_module.register_server_variables != sp_register_server_variables) {
     orig_register_server_variables = sapi_module.register_server_variables;
     sapi_module.register_server_variables = sp_register_server_variables;
   }
