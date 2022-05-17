@@ -9,6 +9,10 @@ Bug fixes
 * Fix the version number
 * Fix a test on PHP7
 
+Breaking Changes
+^^^^^^^^^^^^^^^^
+* `disable_xxe` is changed to `xxe_protection`
+
 
 0.8.0 - `Woolly Mammoth <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.8.0>`__ 2022/05/15
 -----------------------------------------------------------------------------------------------------
