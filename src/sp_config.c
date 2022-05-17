@@ -6,7 +6,7 @@
 
 
 static zend_result sp_process_config_root(sp_parsed_keyword *parsed_rule) {
-  static const sp_config_keyword sp_func[] = {
+  sp_config_keyword sp_func[] = {
     {parse_unserialize,         SP_TOKEN_UNSERIALIZE_HMAC, &(SPCFG(unserialize))},
     {parse_enable,              SP_TOKEN_HARDEN_RANDOM, &(SPCFG(random).enable)},
     {parse_log_media,           SP_TOKEN_LOG_MEDIA, &(SPCFG(log_media))},
