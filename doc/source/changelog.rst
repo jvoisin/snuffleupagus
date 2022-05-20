@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.8.2 - `Surus <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.8.2>`__ 2022/05/20
+-------------------------------------------------------------------------------------------
+
+Bug fixes
+^^^^^^^^^
+* Fix compilation when ZTS is used
+* Fix a possible infinite loop
+
+
 0.8.1 - `Batyr <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.8.1>`__ 2022/05/16
 -------------------------------------------------------------------------------------------
 
