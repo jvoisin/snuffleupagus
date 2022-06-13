@@ -31,4 +31,4 @@ string(3) "300"
 
 Warning: [snuffleupagus][0.0.0.0][ini_protection][log] INI value out of range in %a/ini_minmax.php on line 11
 bool(true)
-string(3) "300"
+string(3) "300"%A
