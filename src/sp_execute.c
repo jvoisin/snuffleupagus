@@ -302,6 +302,8 @@ ZEND_API zend_op_array* sp_compile_string(zend_string* source_string,
 #else
 ZEND_API zend_op_array* sp_compile_string(zval* source_string, char* filename) {
 #endif
+  // TODO(jvoisin) handle recursive calls to `eval`
+  SPG(eval_source_string) = source_string;
   zend_op_array* opline = orig_zend_compile_string(source_string, filename);
   sp_sloppy_modify_opcode(opline);
   return opline;

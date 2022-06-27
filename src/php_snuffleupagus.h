@@ -148,6 +148,13 @@ u_long execution_depth;
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;
 HashTable *sp_eval_blacklist_functions_hook;
+
+#if PHP_VERSION_ID >= 80000
+zend_string* eval_source_string;
+#else
+zval* eval_source_string;
+#endif
+
 ZEND_END_MODULE_GLOBALS(snuffleupagus)
 
 ZEND_EXTERN_MODULE_GLOBALS(snuffleupagus)
