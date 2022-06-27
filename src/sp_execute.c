@@ -286,6 +286,34 @@ static zend_result sp_stream_open(zend_file_handle *handle) {
 
 #endif
 
+ZEND_API zend_op_array* (*orig_zend_compile_file)(zend_file_handle* file_handle,
+                                                  int type) = NULL;
+#if PHP_VERSION_ID >= 80000
+ZEND_API zend_op_array* (*orig_zend_compile_string)(
+    zend_string* source_string, const char* filename) = NULL;
+#else
+ZEND_API zend_op_array* (*orig_zend_compile_string)(zval* source_string,
+                                                    char* filename) = NULL;
+#endif
+
+#if PHP_VERSION_ID >= 80000
+ZEND_API zend_op_array* sp_compile_string(zend_string* source_string,
+                                          const char* filename) {
+#else
+ZEND_API zend_op_array* sp_compile_string(zval* source_string, char* filename) {
+#endif
+  zend_op_array* opline = orig_zend_compile_string(source_string, filename);
+  sp_sloppy_modify_opcode(opline);
+  return opline;
+}
+
+ZEND_API zend_op_array* sp_compile_file(zend_file_handle* file_handle,
+                                        int type) {
+  zend_op_array* opline = orig_zend_compile_file(file_handle, type);
+  sp_sloppy_modify_opcode(opline);
+  return opline;
+}
+
 int hook_execute(void) {
   TSRMLS_FETCH();
 
@@ -307,6 +335,17 @@ int hook_execute(void) {
       orig_zend_stream_open = zend_stream_open_function;
       zend_stream_open_function = sp_stream_open;
     }
+  }
+
+  if (NULL == orig_zend_compile_file && zend_compile_file != sp_compile_file) {
+    orig_zend_compile_file = zend_compile_file;
+    zend_compile_file = sp_compile_file;
+  }
+
+  if (NULL == orig_zend_compile_string &&
+      zend_compile_string != sp_compile_string) {
+    orig_zend_compile_string = zend_compile_string;
+    zend_compile_string = sp_compile_string;
   }
 
   return SUCCESS;
