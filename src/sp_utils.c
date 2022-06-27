@@ -182,7 +182,7 @@ int sp_log_request(const zend_string* restrict folder, const zend_string* restri
 #if PHP_VERSION_ID >= 80000
     fprintf(file, "EVAL_CODE: %s\n", ZSTR_VAL(SPG(eval_source_string)));
 #else
-    fprintf(file, "EVAL_CODE: %s\n", ZSTR_VAL(zval_get_string(SPG(eval_source_string))));
+    fprintf(file, "EVAL_CODE: %s\n", Z_STRVAL_P(SPG(eval_source_string)));
 #endif
   }
 
