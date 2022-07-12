@@ -254,7 +254,7 @@ PHP_MINFO_FUNCTION(snuffleupagus) {
 #define ADD_ASSOC_ZSTR(arr, key, zstr) if (zstr) { add_assoc_str(arr, key, zstr); } else { add_assoc_null(arr, key); }
 #define ADD_ASSOC_REGEXP(arr, key, regexp) if (regexp && regexp->pattern) { add_assoc_str(arr, key, regexp->pattern); } else { add_assoc_null(arr, key); }
 
-static void add_df_to_arr(zval *arr, sp_disabled_function *df) {
+static void add_df_to_arr(zval *arr, sp_disabled_function const *const df) {
   zval arr_df;
   array_init(&arr_df);
 
@@ -365,7 +365,7 @@ static void dump_config() {
   if (splist) { \
     zval arr_sp; \
     array_init(&arr_sp); \
-    for (sp_list_node *p = splist; p; p = p->next) { add_next_index_str(&arr_sp, p->data); } \
+    for (const sp_list_node *p = splist; p; p = p->next) { add_next_index_str(&arr_sp, p->data); } \
     add_assoc_zval(arr, key, &arr_sp); \
   } else { add_assoc_null(arr, key); }
 
@@ -381,6 +381,8 @@ static void dump_config() {
 
   ADD_ASSOC_SPLIST(&arr, SP_TOKEN_ALLOW_WRAPPERS, SPCFG(wrapper).whitelist);
 
+#undef ADD_ASSOC_SPLIST
+
   add_assoc_bool(&arr, SP_TOKEN_INI_PROTECTION "." SP_TOKEN_ENABLE, SPCFG(ini).enable);
   add_assoc_bool(&arr, SP_TOKEN_INI_PROTECTION "." SP_TOKEN_SIM, SPCFG(ini).simulation);
   add_assoc_bool(&arr, SP_TOKEN_INI_PROTECTION "." "policy_ro", SPCFG(ini).policy_readonly);
@@ -392,7 +394,7 @@ static void dump_config() {
     zval arr_ini;
     array_init(&arr_ini);
 
-    sp_ini_entry *sp_entry;
+    const sp_ini_entry *sp_entry;
     ZEND_HASH_FOREACH_PTR(SPCFG(ini).entries, sp_entry)
       zval arr_ini_entry;
       array_init(&arr_ini_entry);
@@ -442,7 +444,8 @@ static void dump_config() {
   zval arr_dfs;
   array_init(&arr_dfs);
   size_t num_df = 0;
-  sp_list_node *dflist, *dfp;
+  const sp_list_node *dflist;
+  const sp_list_node *dfp;
   ZEND_HASH_FOREACH_PTR(SPCFG(disabled_functions), dflist)
     for (dfp = dflist; dfp; dfp = dfp->next) {
       add_df_to_arr(&arr_dfs, dfp->data);
@@ -597,7 +600,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     (SPCFG(disabled_functions_ret) && zend_hash_num_elements(SPCFG(disabled_functions_ret)));
 
   if (SPCFG(show_old_php_warning) && getenv("SP_SKIP_OLD_PHP_CHECK") == NULL) {
-    time_t ts = time(NULL);
+    const time_t ts = time(NULL);
     if ((PHP_VERSION_ID < 70300) ||
         (PHP_VERSION_ID < 70400 && ts >= (time_t)1638745200L) ||
         (PHP_VERSION_ID < 80000 && ts >= (time_t)1669590000L) ||
