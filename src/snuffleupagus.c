@@ -495,7 +495,6 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
   // set some defaults
   SPCFG(show_old_php_warning) = true;
-  SPCFG(readonly_exec).extended_checks = true;
 
   char *str = new_value->val;
 
