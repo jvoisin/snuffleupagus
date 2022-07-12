@@ -261,6 +261,9 @@ readonly_exec
 the execution of writeable PHP files.
 
 It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` mode.
+``extended_checks`` can be specified to abort the execution if the executed
+file or the folder containing it is owned by the user the PHP process is
+running under.
 
 ::
 
