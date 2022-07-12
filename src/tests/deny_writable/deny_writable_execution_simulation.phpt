@@ -48,7 +48,7 @@ Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution
 Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/writable_file.txt) in %a/writable_file.txt on line 1
 Code execution within a writable file.
 
-Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of file owned by process (%s/tests/deny_writable/non_writable_file.txt) in %s/tests/deny_writable/deny_writable_execution_simulation.php on line 13
+Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a file owned by the PHP process (%s/tests/deny_writable/non_writable_file.txt) in %s/tests/deny_writable/deny_writable_execution_simulation.php on line 13
 
-Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of file owned by process (%s/tests/deny_writable/non_writable_file.txt) in %src/tests/deny_writable/non_writable_file.txt on line 1
+Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a file owned by the PHP process (%s/tests/deny_writable/non_writable_file.txt) in %src/tests/deny_writable/non_writable_file.txt on line 1
 Code execution within a non-writable file.

@@ -38,6 +38,7 @@
 #include "ext/standard/head.h"
 #include "ext/standard/info.h"
 #include "ext/standard/url.h"
+#include "ext/standard/php_string.h"
 #include "ext/standard/php_var.h"
 #include "ext/session/php_session.h"
 #include "php.h"

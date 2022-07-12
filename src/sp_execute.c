@@ -1,5 +1,4 @@
 #include "php_snuffleupagus.h"
-#include "ext/standard/php_string.h"
 
 static void (*orig_execute_ex)(zend_execute_data *execute_data) = NULL;
 static void (*orig_zend_execute_internal)(zend_execute_data *execute_data,
@@ -11,11 +10,10 @@ static zend_result (*orig_zend_stream_open)(zend_file_handle *handle) = NULL;
 #endif
 
 // FIXME handle symlink
-ZEND_COLD static inline void terminate_if_writable(const char *filename) {
-  const sp_config_readonly_exec *config_ro_exec = &(SPCFG(readonly_exec));
-  char *errmsg = "unknown access problem";
+ZEND_COLD static inline void terminate_if_writable(char const* const filename) {
+  sp_config_readonly_exec const* const config_ro_exec = &(SPCFG(readonly_exec));
+  char const *errmsg = "unknown access problem";
 
-  // check write access
   if (0 == access(filename, W_OK)) {
     errmsg = "Attempted execution of a writable file";
     goto violation;
@@ -29,21 +27,19 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
     return;
   }
 
-  // check effective uid
   struct stat buf;
   if (0 != stat(filename, &buf)) {
     goto err;
   }
   if (buf.st_uid == geteuid()) {
-    errmsg = "Attempted execution of file owned by process";
+    errmsg = "Attempted execution of a file owned by the PHP process";
     goto violation;
   }
 
-  // check write access on directory
-  char *dirname = estrndup(filename, strlen(filename));
+  char *const dirname = estrndup(filename, strlen(filename));
   php_dirname(dirname, strlen(dirname));
   if (0 == access(dirname, W_OK)) {
-    errmsg = "Attempted execution of file in writable directory";
+    errmsg = "Attempted execution of a file in a writable directory";
     efree(dirname);
     goto violation;
   }
@@ -52,18 +48,16 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
     goto err;
   }
 
-  // check effecite uid of directory
   if (0 != stat(dirname, &buf)) {
     efree(dirname);
     goto err;
   }
   efree(dirname);
   if (buf.st_uid == geteuid()) {
-    errmsg = "Attempted execution of file in directory owned by process";
+    errmsg = "Attempted execution of a file in directory owned by the PHP process";
     goto violation;
   }
 
-  // we would actually need to check all parent directories as well, but that task is left for other tools
   return;
 
 violation:
