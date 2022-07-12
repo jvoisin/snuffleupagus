@@ -93,6 +93,21 @@ int compute_hash(const char* const restrict filename,
 static int construct_filename(char* filename,
                               const zend_string* restrict folder,
                               const zend_string* restrict textual) {
+  return 0;
+}
+
+int sp_log_request(const zend_string* restrict folder, const zend_string* restrict text_repr) {
+  FILE* file;
+  char const* const current_filename = zend_get_executed_filename(TSRMLS_C);
+  const int current_line = zend_get_executed_lineno(TSRMLS_C);
+  char filename[PATH_MAX] = {0};
+  const struct {
+    char const* const str;
+    const int key;
+  } zones[] = {{"GET", TRACK_VARS_GET},       {"POST", TRACK_VARS_POST},
+               {"COOKIE", TRACK_VARS_COOKIE}, {"SERVER", TRACK_VARS_SERVER},
+               {"ENV", TRACK_VARS_ENV},       {NULL, 0}};
+
   PHP_SHA256_CTX context;
   unsigned char digest[SHA256_SIZE] = {0};
   char strhash[65] = {0};
@@ -103,34 +118,31 @@ static int construct_filename(char* filename,
     return -1;
   }
 
-  /* We're using the sha256 sum of the rule's textual representation
-   * as filename, in order to only have one dump per rule, to mitigate
-   * DoS attacks. */
+  /* We're using the sha256 sum of the rule's textual representation, as well
+   * as the stacktrace as filename, in order to only have one dump per rule, to
+   * mitigate DoS attacks. We're doing the walk-the-execution-context dance
+   * twice because it's easier than to cache it in a linked-list. It doesn't
+   * really matter, since this is a super-cold path anyway.
+   */
   PHP_SHA256Init(&context);
-  PHP_SHA256Update(&context, (const unsigned char*)ZSTR_VAL(textual),
-                   ZSTR_LEN(textual));
+  PHP_SHA256Update(&context, (const unsigned char*)ZSTR_VAL(text_repr), ZSTR_LEN(text_repr));
+  zend_execute_data* orig_execute_data = EG(current_execute_data);
+  zend_execute_data* current = EG(current_execute_data);
+  while (current) {
+    EG(current_execute_data) = current;
+    char* const complete_path_function = get_complete_function_path(current);
+    if (complete_path_function) {
+      const int current_line = zend_get_executed_lineno(TSRMLS_C);
+      PHP_SHA256Update(&context, (const unsigned char*)complete_path_function, strlen(complete_path_function));
+      efree(complete_path_function);
+    }
+    current = current->prev_execute_data;
+  }
+  EG(current_execute_data) = orig_execute_data;
   PHP_SHA256Final(digest, &context);
   make_digest_ex(strhash, digest, SHA256_SIZE);
   snprintf(filename, PATH_MAX - 1, "%s/sp_dump.%s", ZSTR_VAL(folder), strhash);
 
-  return 0;
-}
-
-int sp_log_request(const zend_string* restrict folder, const zend_string* restrict text_repr) {
-  FILE* file;
-  const char* current_filename = zend_get_executed_filename(TSRMLS_C);
-  const int current_line = zend_get_executed_lineno(TSRMLS_C);
-  char filename[PATH_MAX] = {0};
-  const struct {
-    char const* const str;
-    const int key;
-  } zones[] = {{"GET", TRACK_VARS_GET},       {"POST", TRACK_VARS_POST},
-               {"COOKIE", TRACK_VARS_COOKIE}, {"SERVER", TRACK_VARS_SERVER},
-               {"ENV", TRACK_VARS_ENV},       {NULL, 0}};
-
-  if (0 != construct_filename(filename, folder, text_repr)) {
-    return -1;
-  }
   if (NULL == (file = fopen(filename, "w+"))) {
     sp_log_warn("request_logging", "Unable to open %s: %s", filename,
                 strerror(errno));
@@ -141,8 +153,8 @@ int sp_log_request(const zend_string* restrict folder, const zend_string* restri
 
   fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
 
-  zend_execute_data* orig_execute_data = EG(current_execute_data);
-  zend_execute_data* current = EG(current_execute_data);
+  orig_execute_data = EG(current_execute_data);
+  current = EG(current_execute_data);
   while (current) {
     EG(current_execute_data) = current;
     char* const complete_path_function = get_complete_function_path(current);
