@@ -136,9 +136,11 @@ static inline void sp_execute_handler(INTERNAL_FUNCTION_PARAMETERS, bool interna
     if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
       const sp_list_node *config = zend_hash_str_find_ptr(SPCFG(disabled_functions), ZEND_STRL("eval"));
 
-      zend_string *filename = get_eval_filename(zend_get_executed_filename());
-      is_builtin_matching(filename, "eval", NULL, config, SPCFG(disabled_functions));
-      zend_string_release(filename);
+#if PHP_VERSION_ID >= 80000
+      is_builtin_matching(SPG(eval_source_string), "eval", "code", config, SPCFG(disabled_functions));
+#else
+      is_builtin_matching(Z_STR_P(SPG(eval_source_string)), "eval", "code", config, SPCFG(disabled_functions));
+#endif
 
       SPG(in_eval)++;
       sp_orig_execute(execute_data);
