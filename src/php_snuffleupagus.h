@@ -11,6 +11,12 @@
 #include "config.h"
 #endif
 
+#ifdef PHP_WIN32
+#include "win32/glob.h"
+#else
+#include <glob.h>
+#endif
+
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>
@@ -41,6 +47,7 @@
 #include "zend_extensions.h"
 #include "zend_hash.h"
 #include "zend_string.h"
+#include "zend_smart_str.h"
 #include "zend_types.h"
 #include "zend_vm.h"
 
@@ -150,9 +157,9 @@ HashTable *sp_internal_functions_hook;
 HashTable *sp_eval_blacklist_functions_hook;
 
 #if PHP_VERSION_ID >= 80000
-zend_string* eval_source_string;
+const zend_string* eval_source_string;
 #else
-zval* eval_source_string;
+const zval* eval_source_string;
 #endif
 
 ZEND_END_MODULE_GLOBALS(snuffleupagus)

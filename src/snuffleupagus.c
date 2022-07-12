@@ -1,11 +1,3 @@
-#ifdef PHP_WIN32
-#include "win32/glob.h"
-#else
-#include <glob.h>
-#endif
-
-#include "zend_smart_str.h"
-
 #include "php_snuffleupagus.h"
 
 #ifndef ZEND_EXT_API
