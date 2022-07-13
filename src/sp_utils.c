@@ -90,12 +90,6 @@ int compute_hash(const char* const restrict filename,
   return SUCCESS;
 }
 
-static int construct_filename(char* filename,
-                              const zend_string* restrict folder,
-                              const zend_string* restrict textual) {
-  return 0;
-}
-
 int sp_log_request(const zend_string* restrict folder, const zend_string* restrict text_repr) {
   FILE* file;
   char const* const current_filename = zend_get_executed_filename(TSRMLS_C);
@@ -132,7 +126,6 @@ int sp_log_request(const zend_string* restrict folder, const zend_string* restri
     EG(current_execute_data) = current;
     char* const complete_path_function = get_complete_function_path(current);
     if (complete_path_function) {
-      const int current_line = zend_get_executed_lineno(TSRMLS_C);
       PHP_SHA256Update(&context, (const unsigned char*)complete_path_function, strlen(complete_path_function));
       efree(complete_path_function);
     }
