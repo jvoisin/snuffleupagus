@@ -95,7 +95,7 @@ int sp_log_request(const zend_string* restrict folder, const zend_string* restri
   char const* const current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);
   char filename[PATH_MAX] = {0};
-  const struct {
+  static const struct {
     char const* const str;
     const int key;
   } zones[] = {{"GET", TRACK_VARS_GET},       {"POST", TRACK_VARS_POST},
@@ -146,7 +146,9 @@ int sp_log_request(const zend_string* restrict folder, const zend_string* restri
   fputs(ZSTR_VAL(text_repr), file);
   fputc('\n', file);
 
-  fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
+  fputs("FILE: ", file);
+  fputs(current_filename, file);
+  fprintf(file, ":%d\n", current_line);
 
   orig_execute_data = EG(current_execute_data);
   current = EG(current_execute_data);
@@ -155,7 +157,9 @@ int sp_log_request(const zend_string* restrict folder, const zend_string* restri
     char* const complete_path_function = get_complete_function_path(current);
     if (complete_path_function) {
       const int current_line = zend_get_executed_lineno(TSRMLS_C);
-      fprintf(file, "STACKTRACE: %s:%d\n", complete_path_function, current_line);
+      fputs("STACKTRACE: ", file);
+      fputs(complete_path_function, file);
+      fprintf(file, ":%d\n", current_line);
       efree(complete_path_function);
     }
     current = current->prev_execute_data;
@@ -171,26 +175,30 @@ int sp_log_request(const zend_string* restrict folder, const zend_string* restri
     }
 
     HashTable* ht = Z_ARRVAL(PG(http_globals)[zones[i].key]);
-    fprintf(file, "%s:", zones[i].str);
+    fputs(zones[i].str, file);
+    fputc(':', file);
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, variable_key, variable_value) {
-      smart_str a;
-
-      memset(&a, 0, sizeof(a));
+      smart_str a = {0};
       php_var_export_ex(variable_value, 1, &a);
       ZSTR_VAL(a.s)[ZSTR_LEN(a.s)] = '\0';
-      fprintf(file, "%s=%s ", ZSTR_VAL(variable_key), ZSTR_VAL(a.s));
+      fputs(ZSTR_VAL(variable_key), file);
+      fputc('=', file);
+      fputs(ZSTR_VAL(a.s), file);
+      fputc(' ', file);
       zend_string_release(a.s);
     }
     ZEND_HASH_FOREACH_END();
-    fputs("\n", file);
+    fputc('\n', file);
   }
 
   if (UNEXPECTED(0 != SPG(in_eval))) {
+    fputs("EVAL_CODE: ", file);
 #if PHP_VERSION_ID >= 80000
-    fprintf(file, "EVAL_CODE: %s\n", ZSTR_VAL(SPG(eval_source_string)));
+    fputs(ZSTR_VAL(SPG(eval_source_string)), file);
 #else
-    fprintf(file, "EVAL_CODE: %s\n", Z_STRVAL_P(SPG(eval_source_string)));
+    fputs(Z_STRVAL_P(SPG(eval_source_string)), file);
 #endif
+    fputc('\n', file);
   }
 
   fclose(file);
