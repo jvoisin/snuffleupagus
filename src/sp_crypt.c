@@ -115,10 +115,9 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
   ret = ZEND_HASH_APPLY_KEEP;
 
 out:
-
-  if (debase64) { zend_string_efree(debase64); }
-  if (decrypted) { efree(decrypted); }
-  if (backup) { efree(backup); }
+  zend_string_efree(debase64);
+  efree(decrypted);
+  efree(backup);
 
   return ret;
 }
