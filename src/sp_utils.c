@@ -142,7 +142,9 @@ int sp_log_request(const zend_string* restrict folder, const zend_string* restri
     return -1;
   }
 
-  fprintf(file, "RULE: %s\n", ZSTR_VAL(text_repr));
+  fputs("RULE: ", file);
+  fputs(ZSTR_VAL(text_repr), file);
+  fputc('\n', file);
 
   fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
 
