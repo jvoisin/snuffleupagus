@@ -1,6 +1,6 @@
 #include "php_snuffleupagus.h"
 
-static const char* default_ipaddr = "0.0.0.0";
+static char const* const default_ipaddr = "0.0.0.0";
 const char* get_ipaddr() {
   const char* client_ip = getenv("REMOTE_ADDR");
   if (client_ip) {
@@ -15,8 +15,8 @@ const char* get_ipaddr() {
   return default_ipaddr;
 }
 
-void sp_log_msgf(char const* restrict feature, int level, int type,
-                 const char* restrict fmt, ...) {
+void sp_log_msgf(char const* const restrict feature, int level, int type,
+                 char const* const restrict fmt, ...) {
   char* msg;
   va_list args;
 
@@ -63,7 +63,7 @@ void sp_log_msgf(char const* restrict feature, int level, int type,
   }
 }
 
-int compute_hash(const char* const restrict filename,
+int compute_hash(char const* const restrict filename,
                  char* restrict file_hash) {
   unsigned char buf[1024] = {0};
   unsigned char digest[SHA256_SIZE] = {0};
@@ -90,7 +90,7 @@ int compute_hash(const char* const restrict filename,
   return SUCCESS;
 }
 
-int sp_log_request(const zend_string* restrict folder, const zend_string* restrict text_repr) {
+int sp_log_request(zend_string const* const restrict folder, zend_string const* const restrict text_repr) {
   FILE* file;
   char const* const current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);

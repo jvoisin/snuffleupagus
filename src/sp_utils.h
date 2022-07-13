@@ -71,8 +71,8 @@ extern int sp_debug_stderr;
 #define GET_SUFFIX(x) (x == 1) ? "st" : ((x == 2) ? "nd" : "th")
 
 const char *get_ipaddr(void);
-void sp_log_msgf(char const *restrict feature, int level, int type, const char *restrict fmt, ...);
-int compute_hash(const char *const restrict filename, char *restrict file_hash);
+void sp_log_msgf(char const* const restrict feature, int level, int type, char const* const restrict fmt, ...);
+int compute_hash(char const* const restrict filename, char *restrict file_hash);
 const zend_string *sp_zval_to_zend_string(const zval *);
 bool sp_match_value(const zend_string* value, const zend_string* to_match, const sp_regexp* rx);
 bool sp_match_array_key(const zval *, const zend_string *, const sp_regexp *);
@@ -83,7 +83,7 @@ bool hook_function(const char *, HashTable *, zif_handler);
 void unhook_functions(HashTable *ht);
 int hook_regexp(const sp_pcre *, HashTable *, zif_handler);
 bool check_is_in_eval_whitelist(const char* function_name);
-int sp_log_request(const zend_string *restrict folder, const zend_string *restrict text_repr);
+int sp_log_request(zend_string const* const restrict folder, zend_string const* const restrict text_repr);
 #define sp_zend_string_equals(s1, s2) zend_string_equals((zend_string*)s1, (zend_string*)s2)
 static inline bool sp_zend_string_equals_str(const zend_string* s1, const char *str, size_t len) {
   return (ZSTR_LEN(s1) == len && !memcmp(ZSTR_VAL(s1), str, len));
