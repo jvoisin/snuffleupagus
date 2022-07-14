@@ -87,8 +87,8 @@ inline static void is_builtin_matching(
   should_disable_ht(EG(current_execute_data), function_name, param_value, param_name, SPCFG(disabled_functions_reg).disabled_functions, ht);
 }
 
-static void ZEND_HOT is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
-  const sp_config_eval *config_eval = &(SPCFG(eval));
+static void ZEND_HOT is_in_eval_and_whitelisted(zend_execute_data const* const execute_data) {
+  sp_config_eval const* const config_eval = &(SPCFG(eval));
 
   if (EXPECTED(0 == SPG(in_eval))) {
     return;
@@ -107,18 +107,18 @@ static void ZEND_HOT is_in_eval_and_whitelisted(const zend_execute_data *execute
     return;
   }
 
-    if (UNEXPECTED(false == check_is_in_eval_whitelist(function_name))) {
-      if (config_eval->dump) {
-        sp_log_request(config_eval->dump, config_eval->textual_representation);
-      }
-      if (config_eval->simulation) {
-        sp_log_simulation("Eval_whitelist", "The function '%s' isn't in the eval whitelist, logging its call.", function_name);
-        goto out;
-      } else {
-        sp_log_drop("Eval_whitelist", "The function '%s' isn't in the eval whitelist, dropping its call.", function_name);
-      }
+  if (UNEXPECTED(false == check_is_in_eval_whitelist(function_name))) {
+    if (config_eval->dump) {
+      sp_log_request(config_eval->dump, config_eval->textual_representation);
     }
-  // }
+    if (config_eval->simulation) {
+      sp_log_simulation("Eval_whitelist", "The function '%s' isn't in the eval whitelist, logging its call.", function_name);
+      goto out;
+    } else {
+      sp_log_drop("Eval_whitelist", "The function '%s' isn't in the eval whitelist, dropping its call.", function_name);
+    }
+  }
+
 out:
   efree(function_name);
 }
@@ -179,7 +179,7 @@ static inline void sp_execute_handler(INTERNAL_FUNCTION_PARAMETERS, bool interna
 
   if (!internal) {
     if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
-      const sp_list_node *config = zend_hash_str_find_ptr(SPCFG(disabled_functions), ZEND_STRL("eval"));
+      sp_list_node const* const config = zend_hash_str_find_ptr(SPCFG(disabled_functions), ZEND_STRL("eval"));
 
 #if PHP_VERSION_ID >= 80000
       is_builtin_matching(SPG(eval_source_string), "eval", "code", config, SPCFG(disabled_functions));
@@ -251,9 +251,7 @@ static inline void sp_execute_handler(INTERNAL_FUNCTION_PARAMETERS, bool interna
   if (EX(return_value) == &ret_val) {
     return_value = EX(return_value) = NULL;
   }
-
 }
-
 
 static void sp_execute_ex(zend_execute_data *execute_data) {
   sp_execute_handler(execute_data, execute_data ? EX(return_value) : NULL, false);
@@ -271,7 +269,7 @@ static inline void sp_stream_open_checks(zend_string *zend_filename, zend_file_h
     return;
   }
 
-  const HashTable *disabled_functions_hooked = SPCFG(disabled_functions_hooked);
+  HashTable const* const disabled_functions_hooked = SPCFG(disabled_functions_hooked);
 
   switch (data->opline->opcode) {
     case ZEND_INCLUDE_OR_EVAL:
@@ -312,10 +310,6 @@ static inline void sp_stream_open_checks(zend_string *zend_filename, zend_file_h
           EMPTY_SWITCH_DEFAULT_CASE();  // LCOV_EXCL_LINE
       }
   }
-  // efree(zend_filename);
-
-// end:
-  // return orig_zend_stream_open(filename, handle);
 }
 
 #if PHP_VERSION_ID < 80100
