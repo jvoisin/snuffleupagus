@@ -4,9 +4,7 @@
 
 #include "php_snuffleupagus.h"
 
-
-static zend_result sp_process_config_root(sp_parsed_keyword *parsed_rule) {
-  sp_config_keyword sp_func[] = {
+static const sp_config_keyword sp_func[] = {
     {parse_unserialize,         SP_TOKEN_UNSERIALIZE_HMAC, &(SPCFG(unserialize))},
     {parse_enable,              SP_TOKEN_HARDEN_RANDOM, &(SPCFG(random).enable)},
     {parse_log_media,           SP_TOKEN_LOG_MEDIA, &(SPCFG(log_media))},
@@ -25,7 +23,10 @@ static zend_result sp_process_config_root(sp_parsed_keyword *parsed_rule) {
     {parse_wrapper_whitelist,   SP_TOKEN_ALLOW_WRAPPERS, &(SPCFG(wrapper))},
     {parse_ini_protection,      SP_TOKEN_INI_PROTECTION, &(SPCFG(ini))},
     {parse_ini_entry,           SP_TOKEN_INI, NULL},
-    {NULL, NULL, NULL}};
+    {NULL, NULL, NULL}
+};
+
+static zend_result sp_process_config_root(sp_parsed_keyword *parsed_rule) {
   return sp_process_rule(parsed_rule, sp_func);
 }
 
