@@ -273,7 +273,7 @@ static void add_df_to_arr(zval *arr, sp_disabled_function *df) {
   if (df->functions_list && df->functions_list->data) {
     zval arr_fl;
     array_init(&arr_fl);
-    for (sp_list_node *p = df->functions_list; p; p = p->next) { add_next_index_str(&arr_fl, p->data); }
+    for (sp_list_node *p = df->functions_list; p; p = p->next) { add_next_index_string(&arr_fl, (char*)p->data); }
     add_assoc_zval(&arr_df, "function_list", &arr_fl);
   } else {
     add_assoc_null(&arr_df, "function_list");
