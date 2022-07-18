@@ -494,6 +494,11 @@ SP_PARSE_FN(parse_ini_entry) {
     goto err;
   }
 
+  if (zend_hash_find_ptr(SPCFG(ini).entries, entry->key)) {
+    sp_log_err("config", "duplicate INI key '%s' on line %zu", ZSTR_VAL(entry->key), parsed_rule->lineno);
+    goto err;
+  }
+
   if (ro && rw) {
     sp_log_err("config", "rule cannot be both read-write and read-only on line %zu", parsed_rule->lineno);
     goto err;
