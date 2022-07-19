@@ -128,6 +128,9 @@ Notable users
 - `NBS System <https://www.nbs-system.com/>`__ - a French hosting/security company and author of snuffleupagus
 - `Net4All <https://net4all.ch/>`__ - a Swiss hosting company
 - `Oceanet Technology <https://www.oceanet-technology.com/>`__ - a French hosting company
+- The `Swedish team <https://ccdcoe.org/news/2021/sweden-scored-highest-at-the-cyber-defence-exercise-locked-shields-2021/>`__
+  of the `NATO <https://www.nato.int/>`__'s `CCDCOE <https://ccdcoe.org/>`__ 
+  `Locked Shields <https://ccdcoe.org/exercises/locked-shields/>`__ exercise.
 - `SwissCenter <https://swisscenter.com>`__ - a Swiss datacenter & web hosting company
 - `Toolslib <https://toolslib.net/>`__ - an `Alexa top 10k <https://www.alexa.com/siteinfo/toolslib.net>`__ website
 - `cPanel <https://cpanel.net/>`__ - one of the most popular web hosting control panel 
