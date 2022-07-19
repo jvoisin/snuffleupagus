@@ -75,6 +75,19 @@ The terminating ``;`` is optional for now, but it should be used for future comp
 Miscellaneous
 -------------
 
+conditions
+^^^^^^^^^^
+
+It's possible to use conditions to have configuration portables accross
+several setups.
+
+::
+  @condition PHP_VERSION_ID < 80000;
+    # some rules
+  @condition PHP_VERSION_ID >= 80000;
+    # some other rules
+  @end_condition;
+
 global
 ^^^^^^
 
