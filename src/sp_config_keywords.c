@@ -228,6 +228,8 @@ SP_PARSE_FN(parse_cookie) {
         ZSTR_VAL(samesite), parsed_rule->lineno);
       goto err;
     }
+    zend_string_release(samesite);
+    samesite = NULL;
   }
 
   SPCFG(cookie).cookies = sp_list_insert(SPCFG(cookie).cookies, cookie);
