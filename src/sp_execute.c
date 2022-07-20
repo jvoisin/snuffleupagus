@@ -1,4 +1,5 @@
 #include "php_snuffleupagus.h"
+#include "ext/standard/php_string.h"
 
 static void (*orig_execute_ex)(zend_execute_data *execute_data) = NULL;
 static void (*orig_zend_execute_internal)(zend_execute_data *execute_data,
@@ -40,6 +41,7 @@ ZEND_COLD static inline void terminate_if_writable(char const* const filename) {
   php_dirname(dirname, strlen(dirname));
   if (0 == access(dirname, W_OK)) {
     errmsg = "Attempted execution of a file in a writable directory";
+
     efree(dirname);
     goto violation;
   }

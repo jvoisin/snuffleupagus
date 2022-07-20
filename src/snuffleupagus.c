@@ -265,7 +265,7 @@ static void add_df_to_arr(zval *arr, sp_disabled_function const *const df) {
   if (df->functions_list && df->functions_list->data) {
     zval arr_fl;
     array_init(&arr_fl);
-    for (sp_list_node *p = df->functions_list; p; p = p->next) { add_next_index_str(&arr_fl, p->data); }
+    for (sp_list_node *p = df->functions_list; p; p = p->next) { add_next_index_string(&arr_fl, (char*)p->data); }
     add_assoc_zval(&arr_df, "function_list", &arr_fl);
   } else {
     add_assoc_null(&arr_df, "function_list");
@@ -283,6 +283,7 @@ static void add_df_to_arr(zval *arr, sp_disabled_function const *const df) {
   add_assoc_long(&arr_df, SP_TOKEN_LINE_NUMBER, df->line);
   ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_RET, df->ret);
   ADD_ASSOC_REGEXP(&arr_df, SP_TOKEN_RET_REGEXP, df->r_ret);
+  add_assoc_long(&arr_df, SP_TOKEN_RET_TYPE, df->ret_type);
   ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_VALUE, df->value);
   ADD_ASSOC_REGEXP(&arr_df, SP_TOKEN_VALUE_REGEXP, df->r_value);
   ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_KEY, df->key);
@@ -495,6 +496,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
   // set some defaults
   SPCFG(show_old_php_warning) = true;
+  SPCFG(readonly_exec).extended_checks = true;
 
   char *str = new_value->val;
 

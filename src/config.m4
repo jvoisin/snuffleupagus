@@ -31,6 +31,8 @@ CFLAGS="$CFLAGS -fstack-protector-strong"
 
 LDFLAGS="$LDFLAGS `pcre2-config --libs8`"
 
+AX_CHECK_COMPILE_FLAG([-Wl,-z,relro,-z,now], [LDFLAGS="$LDFLAGS -Wl,-z,relro,-z,now"], {}, [-Werror])
+
 if test "$PHP_DEBUG" = "yes"; then
   AC_DEFINE(SP_DEBUG, 1, [Enable SP debug messages])
   CFLAGS="$CFLAGS -g -ggdb -O0"
