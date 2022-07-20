@@ -16,4 +16,4 @@ var_dump(ini_get("highlight.comment"));
 string(7) "#000aBc"
 
 Warning: [snuffleupagus][0.0.0.0][ini_protection][log] INI value does not match regex in %a/ini_regexp.php on line 5
-string(7) "#000aBc"
+string(7) "#000aBc"%A

@@ -94,28 +94,3 @@ jobs:
         if: ${{ failure() }}
         run: |
           grep -r . --include='*.log' src/tests
-
-  alpine:
-    runs-on: ubuntu-latest
-    container: alpine:latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Remove php8 tests for php7
-        run: rm -rf src/tests/*php8*/ src/tests/*/*_php8.phpt
-      - name: Remove tests failing on alpine for wathever reason
-        run: rm -rf src/tests/cookies_encryption_warning src/tests/upload_validation/upload_validation.phpt /tests/broken_configuration/encrypt_regexp_cookies_bad_regexp.phpt
-      - name: Install dependencies
-        run: apk add php7-dev php7-cgi php7-simplexml php7-xml pcre-dev build-base php7-pear php7-openssl php7-session bash grep re2c
-      - name: Install pecl
-        continue-on-error: true
-        run: pecl install vld-beta
-      - name: Build SP and run the testsuite
-        run: |
-          make release
-          ln -s $(php -r 'echo ini_get("extension_dir");')/* src/modules/
-          make tests
-      - name: Show logs in case of failure
-        if: ${{ failure() }}
-        run: |
-          grep -r . --include='*.log' src/tests

@@ -38,6 +38,8 @@ if ($res[3] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
     echo "Invalid POST";
 } elseif ($res[5] != "COOKIE:cookie_a='data_cookie_a&cookie_b=data_cookie_b' \n") {
     echo "Invalid COOKIE";
+} elseif ($res[6] != "EVAL_CODE: \$a = strtoupper(\"1234\");\n") {
+    echo "Invalid EVAL_CODE";
 }
 ?>
 --EXPECTF--

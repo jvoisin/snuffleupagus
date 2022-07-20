@@ -1,6 +1,6 @@
 #include "php_snuffleupagus.h"
 
-static const char* default_ipaddr = "0.0.0.0";
+static char const* const default_ipaddr = "0.0.0.0";
 const char* get_ipaddr() {
   const char* client_ip = getenv("REMOTE_ADDR");
   if (client_ip) {
@@ -15,8 +15,8 @@ const char* get_ipaddr() {
   return default_ipaddr;
 }
 
-void sp_log_msgf(char const* restrict feature, int level, int type,
-                 const char* restrict fmt, ...) {
+void sp_log_msgf(char const* const restrict feature, int level, int type,
+                 char const* const restrict fmt, ...) {
   char* msg;
   va_list args;
 
@@ -63,7 +63,7 @@ void sp_log_msgf(char const* restrict feature, int level, int type,
   }
 }
 
-int compute_hash(const char* const restrict filename,
+int compute_hash(char const* const restrict filename,
                  char* restrict file_hash) {
   unsigned char buf[1024] = {0};
   unsigned char digest[SHA256_SIZE] = {0};
@@ -90,9 +90,18 @@ int compute_hash(const char* const restrict filename,
   return SUCCESS;
 }
 
-static int construct_filename(char* filename,
-                              const zend_string* restrict folder,
-                              const zend_string* restrict textual) {
+int sp_log_request(zend_string const* const restrict folder, zend_string const* const restrict text_repr) {
+  FILE* file;
+  char const* const current_filename = zend_get_executed_filename(TSRMLS_C);
+  const int current_line = zend_get_executed_lineno(TSRMLS_C);
+  char filename[PATH_MAX] = {0};
+  static const struct {
+    char const* const str;
+    const int key;
+  } zones[] = {{"GET", TRACK_VARS_GET},       {"POST", TRACK_VARS_POST},
+               {"COOKIE", TRACK_VARS_COOKIE}, {"SERVER", TRACK_VARS_SERVER},
+               {"ENV", TRACK_VARS_ENV},       {NULL, 0}};
+
   PHP_SHA256_CTX context;
   unsigned char digest[SHA256_SIZE] = {0};
   char strhash[65] = {0};
@@ -103,52 +112,54 @@ static int construct_filename(char* filename,
     return -1;
   }
 
-  /* We're using the sha256 sum of the rule's textual representation
-   * as filename, in order to only have one dump per rule, to mitigate
-   * DoS attacks. */
+  /* We're using the sha256 sum of the rule's textual representation, as well
+   * as the stacktrace as filename, in order to only have one dump per rule, to
+   * mitigate DoS attacks. We're doing the walk-the-execution-context dance
+   * twice because it's easier than to cache it in a linked-list. It doesn't
+   * really matter, since this is a super-cold path anyway.
+   */
   PHP_SHA256Init(&context);
-  PHP_SHA256Update(&context, (const unsigned char*)ZSTR_VAL(textual),
-                   ZSTR_LEN(textual));
-  PHP_SHA256Final(digest, &context);
-  make_digest_ex(strhash, digest, SHA256_SIZE);
-  snprintf(filename, PATH_MAX - 1, "%s/sp_dump.%s", ZSTR_VAL(folder), strhash);
-
-  return 0;
-}
-
-int sp_log_request(const zend_string* restrict folder, const zend_string* restrict text_repr) {
-  FILE* file;
-  const char* current_filename = zend_get_executed_filename(TSRMLS_C);
-  const int current_line = zend_get_executed_lineno(TSRMLS_C);
-  char filename[PATH_MAX] = {0};
-  const struct {
-    char const* const str;
-    const int key;
-  } zones[] = {{"GET", TRACK_VARS_GET},       {"POST", TRACK_VARS_POST},
-               {"COOKIE", TRACK_VARS_COOKIE}, {"SERVER", TRACK_VARS_SERVER},
-               {"ENV", TRACK_VARS_ENV},       {NULL, 0}};
-
-  if (0 != construct_filename(filename, folder, text_repr)) {
-    return -1;
-  }
-  if (NULL == (file = fopen(filename, "w+"))) {
-    sp_log_warn("request_logging", "Unable to open %s: %s", filename,
-                strerror(errno));
-    return -1;
-  }
-
-  fprintf(file, "RULE: %s\n", ZSTR_VAL(text_repr));
-
-  fprintf(file, "FILE: %s:%d\n", current_filename, current_line);
-
+  PHP_SHA256Update(&context, (const unsigned char*)ZSTR_VAL(text_repr), ZSTR_LEN(text_repr));
   zend_execute_data* orig_execute_data = EG(current_execute_data);
   zend_execute_data* current = EG(current_execute_data);
   while (current) {
     EG(current_execute_data) = current;
     char* const complete_path_function = get_complete_function_path(current);
     if (complete_path_function) {
+      PHP_SHA256Update(&context, (const unsigned char*)complete_path_function, strlen(complete_path_function));
+      efree(complete_path_function);
+    }
+    current = current->prev_execute_data;
+  }
+  EG(current_execute_data) = orig_execute_data;
+  PHP_SHA256Final(digest, &context);
+  make_digest_ex(strhash, digest, SHA256_SIZE);
+  snprintf(filename, PATH_MAX - 1, "%s/sp_dump.%s", ZSTR_VAL(folder), strhash);
+
+  if (NULL == (file = fopen(filename, "w+"))) {
+    sp_log_warn("request_logging", "Unable to open %s: %s", filename,
+                strerror(errno));
+    return -1;
+  }
+
+  fputs("RULE: ", file);
+  fputs(ZSTR_VAL(text_repr), file);
+  fputc('\n', file);
+
+  fputs("FILE: ", file);
+  fputs(current_filename, file);
+  fprintf(file, ":%d\n", current_line);
+
+  orig_execute_data = EG(current_execute_data);
+  current = EG(current_execute_data);
+  while (current) {
+    EG(current_execute_data) = current;
+    char* const complete_path_function = get_complete_function_path(current);
+    if (complete_path_function) {
       const int current_line = zend_get_executed_lineno(TSRMLS_C);
-      fprintf(file, "STACKTRACE: %s:%d\n", complete_path_function, current_line);
+      fputs("STACKTRACE: ", file);
+      fputs(complete_path_function, file);
+      fprintf(file, ":%d\n", current_line);
       efree(complete_path_function);
     }
     current = current->prev_execute_data;
@@ -164,19 +175,32 @@ int sp_log_request(const zend_string* restrict folder, const zend_string* restri
     }
 
     HashTable* ht = Z_ARRVAL(PG(http_globals)[zones[i].key]);
-    fprintf(file, "%s:", zones[i].str);
+    fputs(zones[i].str, file);
+    fputc(':', file);
     ZEND_HASH_FOREACH_STR_KEY_VAL(ht, variable_key, variable_value) {
-      smart_str a;
-
-      memset(&a, 0, sizeof(a));
+      smart_str a = {0};
       php_var_export_ex(variable_value, 1, &a);
       ZSTR_VAL(a.s)[ZSTR_LEN(a.s)] = '\0';
-      fprintf(file, "%s=%s ", ZSTR_VAL(variable_key), ZSTR_VAL(a.s));
+      fputs(ZSTR_VAL(variable_key), file);
+      fputc('=', file);
+      fputs(ZSTR_VAL(a.s), file);
+      fputc(' ', file);
       zend_string_release(a.s);
     }
     ZEND_HASH_FOREACH_END();
-    fputs("\n", file);
+    fputc('\n', file);
   }
+
+  if (UNEXPECTED(0 != SPG(in_eval))) {
+    fputs("EVAL_CODE: ", file);
+#if PHP_VERSION_ID >= 80000
+    fputs(ZSTR_VAL(SPG(eval_source_string)), file);
+#else
+    fputs(Z_STRVAL_P(SPG(eval_source_string)), file);
+#endif
+    fputc('\n', file);
+  }
+
   fclose(file);
 
   return 0;
@@ -448,6 +472,7 @@ void unhook_functions(HashTable *ht) {
     if (func && func->type == ZEND_INTERNAL_FUNCTION && orig_handler) {
       func->internal_function.handler = orig_handler;
     }
+    (void)idx;//silence a -Wunused-but-set-variable
   ZEND_HASH_FOREACH_END_DEL();
 }
 

@@ -88,7 +88,7 @@ without having to touch the PHP code.
   * Every commit is tested on [several distributions](https://gitlab.com/jvoisin/snuffleupagus/pipelines)
   * An `clang-format`-enforced code style
   * A [comprehensive documentation](https://snuffleupagus.rtfd.io)
-  * Usage of [coverity](https://scan.coverity.com/projects/jvoisin-snuffleupagus)
+  * Usage of [coverity](https://scan.coverity.com/projects/jvoisin-snuffleupagus), codeql, [scan-build](https://clang-analyzer.llvm.org/scan-build.html), …
 
 ## Download
 

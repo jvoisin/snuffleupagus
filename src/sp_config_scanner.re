@@ -1,5 +1,7 @@
 #include "php_snuffleupagus.h"
 
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
 /*!types:re2c*/
 
 #define cs_log_error(fmt, ...) sp_log_err("config", fmt, ##__VA_ARGS__)
@@ -7,7 +9,7 @@
 #define cs_log_warning(fmt, ...) sp_log_warn("config", fmt, ##__VA_ARGS__)
 
 
-zend_string *sp_get_arg_string(sp_parsed_keyword *kw) {
+zend_string *sp_get_arg_string(sp_parsed_keyword const *const kw) {
   if (!kw || !kw->arg) {
     return NULL;
   }
@@ -33,11 +35,10 @@ zend_string *sp_get_arg_string(sp_parsed_keyword *kw) {
   return ret;
 }
 
-zend_string *sp_get_textual_representation(sp_parsed_keyword *parsed_rule) {
+zend_string *sp_get_textual_representation(sp_parsed_keyword const *const parsed_rule) {
   // a rule is "sp.keyword...keyword(arg);\0"
   size_t len = 3; // sp + ;
-  sp_parsed_keyword *kw;
-  for (kw = parsed_rule; kw->kw; kw++) {
+  for (const sp_parsed_keyword *kw = parsed_rule; kw->kw; kw++) {
     len++; // .
     len += kw->kwlen;
     if (kw->argtype == SP_ARGTYPE_EMPTY) {
@@ -47,10 +48,12 @@ zend_string *sp_get_textual_representation(sp_parsed_keyword *parsed_rule) {
         len += kw->arglen;
     }
   }
+
   zend_string *ret = zend_string_alloc(len, 1);
   char *ptr = ZSTR_VAL(ret);
+
   memcpy(ptr, "sp", 2); ptr += 2;
-  for (kw = parsed_rule; kw->kw; kw++) {
+  for (const sp_parsed_keyword *kw = parsed_rule; kw->kw; kw++) {
     *ptr++ = '.';
     memcpy(ptr, kw->kw, kw->kwlen); ptr += kw->kwlen;
     if (kw->argtype == SP_ARGTYPE_EMPTY || kw->argtype == SP_ARGTYPE_STR || kw->argtype == SP_ARGTYPE_UNKNOWN) {

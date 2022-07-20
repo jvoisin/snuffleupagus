@@ -19,7 +19,7 @@ typedef struct {
 } sp_parsed_keyword;
 
 zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_keyword*));
-zend_string *sp_get_arg_string(sp_parsed_keyword *kw);
-zend_string *sp_get_textual_representation(sp_parsed_keyword *parsed_rule);
+zend_string *sp_get_arg_string(sp_parsed_keyword const *const kw);
+zend_string *sp_get_textual_representation(sp_parsed_keyword const *const parsed_rule);
 
 #endif

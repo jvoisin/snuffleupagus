@@ -12,12 +12,12 @@
   }
 
 
-static bool /* success */ sp_ini_check(zend_string *varname, zend_string *new_value, sp_ini_entry **sp_entry_p) {
+static bool /* success */ sp_ini_check(zend_string *const restrict varname, zend_string const *const restrict new_value, sp_ini_entry **sp_entry_p) {
   if (!varname || ZSTR_LEN(varname) == 0) {
     return false;
   }
 
-  sp_config_ini *cfg = &(SPCFG(ini));
+  sp_config_ini const* const cfg = &(SPCFG(ini));
   sp_ini_entry *entry = zend_hash_find_ptr(cfg->entries, varname);
   if (sp_entry_p) {
     *sp_entry_p = entry;
@@ -76,10 +76,9 @@ static bool /* success */ sp_ini_check(zend_string *varname, zend_string *new_va
 }
 
 static PHP_INI_MH(sp_ini_onmodify) {
-  zend_ini_entry *ini_entry = entry;
   sp_ini_entry *sp_entry = NULL;
 
-  if (!sp_ini_check(ini_entry->name, new_value, &sp_entry)) {
+  if (!sp_ini_check(entry->name, new_value, &sp_entry)) {
     return FAILURE;
   }
 
@@ -91,7 +90,7 @@ static PHP_INI_MH(sp_ini_onmodify) {
 }
 
 void sp_hook_ini() {
-  sp_config_ini *cfg = &(SPCFG(ini));
+  sp_config_ini const* const cfg = &(SPCFG(ini));
   sp_ini_entry *sp_entry;
   zend_ini_entry *ini_entry;
   ZEND_HASH_FOREACH_PTR(cfg->entries, sp_entry)
@@ -126,8 +125,8 @@ void sp_hook_ini() {
 
 void sp_unhook_ini() {
   sp_ini_entry *sp_entry;
-  zend_ini_entry *ini_entry;
   ZEND_HASH_FOREACH_PTR(SPCFG(ini).entries, sp_entry)
+    zend_ini_entry *ini_entry;
     if (!sp_entry->orig_onmodify) {
       // not hooked or no original onmodify
       continue;

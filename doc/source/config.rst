@@ -75,6 +75,19 @@ The terminating ``;`` is optional for now, but it should be used for future comp
 Miscellaneous
 -------------
 
+conditions
+^^^^^^^^^^
+
+It's possible to use conditions to have configuration portables accross
+several setups.
+
+::
+  @condition PHP_VERSION_ID < 80000;
+    # some rules
+  @condition PHP_VERSION_ID >= 80000;
+    # some other rules
+  @end_condition;
+
 global
 ^^^^^^
 
@@ -261,6 +274,9 @@ readonly_exec
 the execution of writeable PHP files.
 
 It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` mode.
+``extended_checks`` can be specified to abort the execution if the executed
+file or the folder containing it is owned by the user the PHP process is
+running under.
 
 ::
 

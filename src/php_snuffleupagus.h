@@ -1,7 +1,7 @@
 #ifndef PHP_SNUFFLEUPAGUS_H
 #define PHP_SNUFFLEUPAGUS_H
 
-#define PHP_SNUFFLEUPAGUS_VERSION "0.8.0"
+#define PHP_SNUFFLEUPAGUS_VERSION "0.8.2"
 #define PHP_SNUFFLEUPAGUS_EXTNAME "snuffleupagus"
 #define PHP_SNUFFLEUPAGUS_AUTHOR "NBS System & Julien (jvoisin) Voisin & SektionEins GmbH"
 #define PHP_SNUFFLEUPAGUS_URL "https://github.com/jvoisin/snuffleupagus"
@@ -9,6 +9,12 @@
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
+
+#ifdef PHP_WIN32
+#include "win32/glob.h"
+#else
+#include <glob.h>
 #endif
 
 #include <errno.h>
@@ -32,6 +38,7 @@
 #include "ext/standard/head.h"
 #include "ext/standard/info.h"
 #include "ext/standard/url.h"
+#include "ext/standard/php_string.h"
 #include "ext/standard/php_var.h"
 #include "ext/session/php_session.h"
 #include "php.h"
@@ -41,6 +48,7 @@
 #include "zend_extensions.h"
 #include "zend_hash.h"
 #include "zend_string.h"
+#include "zend_smart_str.h"
 #include "zend_types.h"
 #include "zend_vm.h"
 
@@ -148,6 +156,13 @@ u_long execution_depth;
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;
 HashTable *sp_eval_blacklist_functions_hook;
+
+#if PHP_VERSION_ID >= 80000
+const zend_string* eval_source_string;
+#else
+const zval* eval_source_string;
+#endif
+
 ZEND_END_MODULE_GLOBALS(snuffleupagus)
 
 ZEND_EXTERN_MODULE_GLOBALS(snuffleupagus)

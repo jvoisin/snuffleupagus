@@ -1,3 +1,39 @@
+snuffleupagus (0.8.2) UNRELEASED; urgency=low
+  [ jvoisin ]
+  * Fix compilation when ZTS is used
+  * Fix a possible infinite loop
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Sun, 20 Apr 2022 22:00:00 +0200
+
+snuffleupagus (0.8.1) UNRELEASED; urgency=low
+  [ jvoisin ]
+  * Fix the version number
+  * Fix a test on PHP7
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Sun, 16 Apr 2022 19:45:00 +0200
+
+snuffleupagus (0.8.0) UNRELEASED; urgency=low
+  [ jvoisin ]
+  * Compatibility with PHP8.1
+  * Check for unsupported PHP version
+  * Backport of Suhosin-ng patches:
+    * Maximum stack depth/recursion limit
+    * Maximum length for session id
+    * $_SERVER strip/encode
+    * Configuration dump
+    * Support for conditional rules
+    * INI settings protection
+    * Output SP logs to stderr
+    * Ported Suhosin rules to SP
+  * Massive simplification of the configuration parser
+  * Better memory management
+  * Removal of internal calls to `call_user_func`
+  * Increased portability of the default rules access different version of PHP
+  * Start SP as late as possible, to hook as many things as possible
+  * XML and Session support are now checked at runtime instead of at compile time
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Sun, 15 Apr 2022 18:00:00 +0200
+
 snuffleupagus (0.7.1) UNRELEASED; urgency=low
   [ jvoisin ]
   * Fixed possible memory-leaks when hooking via regular expressions               

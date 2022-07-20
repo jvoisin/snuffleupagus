@@ -27,5 +27,9 @@ override_dh_auto_install:
 	install -m 644 -o root -g root config/snuffleupagus.ini debian/snuffleupagus/etc/php/$$(/usr/bin/php-config --version | cut -d '.' -f1-2)/mods-available/snuffleupagus.ini
  
 override_dh_auto_test:
+ifeq ($(strip $(DPKG_SKIP_TESTS)),)
 	sed -i "s/\$$ext_params -d display_errors=0 -r/-d display_errors=0 -r/" src/run-tests.php
 	TEST_PHP_ARGS="-q" REPORT_EXIST_STATUS=1 make -C src test
+else
+	echo "skip tests"
+endif

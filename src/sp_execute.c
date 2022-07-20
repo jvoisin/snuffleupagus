@@ -11,11 +11,10 @@ static zend_result (*orig_zend_stream_open)(zend_file_handle *handle) = NULL;
 #endif
 
 // FIXME handle symlink
-ZEND_COLD static inline void terminate_if_writable(const char *filename) {
-  const sp_config_readonly_exec *config_ro_exec = &(SPCFG(readonly_exec));
-  char *errmsg = "unknown access problem";
+ZEND_COLD static inline void terminate_if_writable(char const* const filename) {
+  sp_config_readonly_exec const* const config_ro_exec = &(SPCFG(readonly_exec));
+  char const *errmsg = "unknown access problem";
 
-  // check write access
   if (0 == access(filename, W_OK)) {
     errmsg = "Attempted execution of a writable file";
     goto violation;
@@ -29,21 +28,20 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
     return;
   }
 
-  // check effective uid
   struct stat buf;
   if (0 != stat(filename, &buf)) {
     goto err;
   }
   if (buf.st_uid == geteuid()) {
-    errmsg = "Attempted execution of file owned by process";
+    errmsg = "Attempted execution of a file owned by the PHP process";
     goto violation;
   }
 
-  // check write access on directory
-  char *dirname = estrndup(filename, strlen(filename));
+  char *const dirname = estrndup(filename, strlen(filename));
   php_dirname(dirname, strlen(dirname));
   if (0 == access(dirname, W_OK)) {
-    errmsg = "Attempted execution of file in writable directory";
+    errmsg = "Attempted execution of a file in a writable directory";
+
     efree(dirname);
     goto violation;
   }
@@ -52,18 +50,16 @@ ZEND_COLD static inline void terminate_if_writable(const char *filename) {
     goto err;
   }
 
-  // check effecite uid of directory
   if (0 != stat(dirname, &buf)) {
     efree(dirname);
     goto err;
   }
   efree(dirname);
   if (buf.st_uid == geteuid()) {
-    errmsg = "Attempted execution of file in directory owned by process";
+    errmsg = "Attempted execution of a file in directory owned by the PHP process";
     goto violation;
   }
 
-  // we would actually need to check all parent directories as well, but that task is left for other tools
   return;
 
 violation:
@@ -93,8 +89,8 @@ inline static void is_builtin_matching(
   should_disable_ht(EG(current_execute_data), function_name, param_value, param_name, SPCFG(disabled_functions_reg).disabled_functions, ht);
 }
 
-static void ZEND_HOT is_in_eval_and_whitelisted(const zend_execute_data *execute_data) {
-  const sp_config_eval *config_eval = &(SPCFG(eval));
+static void ZEND_HOT is_in_eval_and_whitelisted(zend_execute_data const* const execute_data) {
+  sp_config_eval const* const config_eval = &(SPCFG(eval));
 
   if (EXPECTED(0 == SPG(in_eval))) {
     return;
@@ -113,18 +109,18 @@ static void ZEND_HOT is_in_eval_and_whitelisted(const zend_execute_data *execute
     return;
   }
 
-    if (UNEXPECTED(false == check_is_in_eval_whitelist(function_name))) {
-      if (config_eval->dump) {
-        sp_log_request(config_eval->dump, config_eval->textual_representation);
-      }
-      if (config_eval->simulation) {
-        sp_log_simulation("Eval_whitelist", "The function '%s' isn't in the eval whitelist, logging its call.", function_name);
-        goto out;
-      } else {
-        sp_log_drop("Eval_whitelist", "The function '%s' isn't in the eval whitelist, dropping its call.", function_name);
-      }
+  if (UNEXPECTED(false == check_is_in_eval_whitelist(function_name))) {
+    if (config_eval->dump) {
+      sp_log_request(config_eval->dump, config_eval->textual_representation);
     }
-  // }
+    if (config_eval->simulation) {
+      sp_log_simulation("Eval_whitelist", "The function '%s' isn't in the eval whitelist, logging its call.", function_name);
+      goto out;
+    } else {
+      sp_log_drop("Eval_whitelist", "The function '%s' isn't in the eval whitelist, dropping its call.", function_name);
+    }
+  }
+
 out:
   efree(function_name);
 }
@@ -185,11 +181,13 @@ static inline void sp_execute_handler(INTERNAL_FUNCTION_PARAMETERS, bool interna
 
   if (!internal) {
     if (UNEXPECTED(EX(func)->op_array.type == ZEND_EVAL_CODE)) {
-      const sp_list_node *config = zend_hash_str_find_ptr(SPCFG(disabled_functions), ZEND_STRL("eval"));
+      sp_list_node const* const config = zend_hash_str_find_ptr(SPCFG(disabled_functions), ZEND_STRL("eval"));
 
-      zend_string *filename = get_eval_filename(zend_get_executed_filename());
-      is_builtin_matching(filename, "eval", NULL, config, SPCFG(disabled_functions));
-      zend_string_release(filename);
+#if PHP_VERSION_ID >= 80000
+      is_builtin_matching(SPG(eval_source_string), "eval", "code", config, SPCFG(disabled_functions));
+#else
+      is_builtin_matching(Z_STR_P(SPG(eval_source_string)), "eval", "code", config, SPCFG(disabled_functions));
+#endif
 
       SPG(in_eval)++;
       sp_orig_execute(execute_data);
@@ -255,9 +253,7 @@ static inline void sp_execute_handler(INTERNAL_FUNCTION_PARAMETERS, bool interna
   if (EX(return_value) == &ret_val) {
     return_value = EX(return_value) = NULL;
   }
-
 }
-
 
 static void sp_execute_ex(zend_execute_data *execute_data) {
   sp_execute_handler(execute_data, execute_data ? EX(return_value) : NULL, false);
@@ -275,7 +271,7 @@ static inline void sp_stream_open_checks(zend_string *zend_filename, zend_file_h
     return;
   }
 
-  const HashTable *disabled_functions_hooked = SPCFG(disabled_functions_hooked);
+  HashTable const* const disabled_functions_hooked = SPCFG(disabled_functions_hooked);
 
   switch (data->opline->opcode) {
     case ZEND_INCLUDE_OR_EVAL:
@@ -316,10 +312,6 @@ static inline void sp_stream_open_checks(zend_string *zend_filename, zend_file_h
           EMPTY_SWITCH_DEFAULT_CASE();  // LCOV_EXCL_LINE
       }
   }
-  // efree(zend_filename);
-
-// end:
-  // return orig_zend_stream_open(filename, handle);
 }
 
 #if PHP_VERSION_ID < 80100
@@ -342,6 +334,36 @@ static zend_result sp_stream_open(zend_file_handle *handle) {
 
 #endif
 
+ZEND_API zend_op_array* (*orig_zend_compile_file)(zend_file_handle* file_handle,
+                                                  int type) = NULL;
+#if PHP_VERSION_ID >= 80000
+ZEND_API zend_op_array* (*orig_zend_compile_string)(
+    zend_string* source_string, const char* filename) = NULL;
+#else
+ZEND_API zend_op_array* (*orig_zend_compile_string)(zval* source_string,
+                                                    char* filename) = NULL;
+#endif
+
+#if PHP_VERSION_ID >= 80000
+ZEND_API zend_op_array* sp_compile_string(zend_string* source_string,
+                                          const char* filename) {
+#else
+ZEND_API zend_op_array* sp_compile_string(zval* source_string, char* filename) {
+#endif
+  // TODO(jvoisin) handle recursive calls to `eval`
+  SPG(eval_source_string) = source_string;
+  zend_op_array* opline = orig_zend_compile_string(source_string, filename);
+  sp_sloppy_modify_opcode(opline);
+  return opline;
+}
+
+ZEND_API zend_op_array* sp_compile_file(zend_file_handle* file_handle,
+                                        int type) {
+  zend_op_array* opline = orig_zend_compile_file(file_handle, type);
+  sp_sloppy_modify_opcode(opline);
+  return opline;
+}
+
 int hook_execute(void) {
   TSRMLS_FETCH();
 
@@ -363,6 +385,17 @@ int hook_execute(void) {
       orig_zend_stream_open = zend_stream_open_function;
       zend_stream_open_function = sp_stream_open;
     }
+  }
+
+  if (NULL == orig_zend_compile_file && zend_compile_file != sp_compile_file) {
+    orig_zend_compile_file = zend_compile_file;
+    zend_compile_file = sp_compile_file;
+  }
+
+  if (NULL == orig_zend_compile_string &&
+      zend_compile_string != sp_compile_string) {
+    orig_zend_compile_string = zend_compile_string;
+    zend_compile_string = sp_compile_string;
   }
 
   return SUCCESS;
