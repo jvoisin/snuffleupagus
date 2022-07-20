@@ -291,6 +291,7 @@ static void add_df_to_arr(zval *arr, sp_disabled_function *df) {
   add_assoc_long(&arr_df, SP_TOKEN_LINE_NUMBER, df->line);
   ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_RET, df->ret);
   ADD_ASSOC_REGEXP(&arr_df, SP_TOKEN_RET_REGEXP, df->r_ret);
+  add_assoc_long(&arr_df, SP_TOKEN_RET_TYPE, df->ret_type);
   ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_VALUE, df->value);
   ADD_ASSOC_REGEXP(&arr_df, SP_TOKEN_VALUE_REGEXP, df->r_value);
   ADD_ASSOC_ZSTR(&arr_df, SP_TOKEN_KEY, df->key);
