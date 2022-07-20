@@ -12,6 +12,7 @@ release:  ## compile with releases flags
 	cd $(SRC); phpize
 	cd $(SRC); ./configure --enable-snuffleupagus
 	make -C $(SRC)
+	strip $(SRC)/.libs/snuffleupagus.so
 
 install: release  ## compile and install snuffleupagus
 	make -C $(SRC) install

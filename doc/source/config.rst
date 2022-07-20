@@ -78,7 +78,7 @@ Miscellaneous
 conditions
 ^^^^^^^^^^
 
-It's possible to use conditions to have configuration portables accross
+It's possible to use conditions to have configuration portable across
 several setups.
 
 ::
@@ -87,6 +87,30 @@ several setups.
   @condition PHP_VERSION_ID >= 80000;
     # some other rules
   @end_condition;
+
+Conditions accept variables and the special function ``extension_loadod()``.
+
+::
+  @condition extension_loaded("sqlite3");
+  sp.ini.key("sqlite3.extension_dir").ro();
+  @end_condition;
+
+Conditions cannot be nested, but arithmetic and logical operations can be applied.
+
+::
+  @condition extension_loaded("session") && PHP_VERSION_ID <= 80200;
+  set whitelist "my_fun,cos"
+  sp.eval_whitelist.list(whitelist).simulation().dump("/tmp/dump_result/");
+  @end_condition;
+
+variables
+^^^^^^^^^
+
+You may set a configuration variable using the ``set`` keyword (or ``@set``) and use it instead of arguments.
+
+::
+  @set CMD "ls"
+  sp.disable_function.function("system").pos("0").value(CMD).allow();
 
 global
 ^^^^^^
