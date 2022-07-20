@@ -232,7 +232,28 @@ SP_PARSE_FN(parse_cookie) {
     samesite = NULL;
   }
 
-  SPCFG(cookie).cookies = sp_list_insert(SPCFG(cookie).cookies, cookie);
+  // find other cookie entry with identical name or name_r
+  sp_cookie *entry = NULL;
+  sp_list_node *pList = NULL;
+  for (pList = SPCFG(cookie).cookies; pList; pList = pList->next) {
+    entry = pList->data;
+    if (!entry) { continue; }
+    if ((entry->name && cookie->name && sp_zend_string_equals(entry->name, cookie->name)) ||
+        (entry->name_r && cookie->name_r && sp_zend_string_equals(entry->name_r->pattern, cookie->name_r->pattern))) {
+          break;
+        }
+  }
+  if (pList && entry) {
+    // override cookie settings if set
+    if (cookie->samesite) { entry->samesite = cookie->samesite; }
+    if (cookie->encrypt) { entry->encrypt = cookie->encrypt; }
+    if (cookie->simulation) { entry->simulation = cookie->simulation; }
+    sp_free_cookie(cookie);
+    pefree(cookie, 1);
+    cookie = NULL;
+  } else {
+    SPCFG(cookie).cookies = sp_list_insert(SPCFG(cookie).cookies, cookie);
+  }
 
   return SP_PARSER_STOP;
 
