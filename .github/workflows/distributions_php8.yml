@@ -105,6 +105,10 @@ jobs:
       - name: Install pecl
         continue-on-error: true
         run: pecl install vld-beta
+      - name: Symlink utilities
+        run: |
+          ln -s /usr/bin/phpize8 /usr/bin/phpize
+          ln -s /usr/bin/php-config8 /usr/bin/php-config
       - name: Build SP and run the testsuite
         run: |
           make release
