@@ -61,6 +61,11 @@ Mentions
 - `Habr - PHP Дайджест № 196 <https://habr.com/ru/post/536726/>`__ (ru) - Habr
 - `OWASP's PHP Configuration Cheat Sheet <https://cheatsheetseries.owasp.org/cheatsheets/PHP_Configuration_Cheat_Sheet.html#snuffleupagus>`__ - OWASP
 
+2022
+""""
+
+- `RCE on Spip and Root-Me, v2! <https://thinkloveshare.com/hacking/rce_on_spip_and_root_me_v2/>`__ - Laluka's blog
+
 
 
 Articles
