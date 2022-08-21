@@ -12,7 +12,7 @@ if ($qwe == 0) {
 }
 $qwe = "0e123";
 if ("0e432" == $qwe) {
-  echo "failed";
+  echo "failed_power";
 }
 $qwe = [];
 $test = false;

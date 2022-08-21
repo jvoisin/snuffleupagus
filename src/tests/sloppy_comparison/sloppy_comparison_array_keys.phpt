@@ -8,8 +8,8 @@ sp.configuration_file={PWD}/config/sloppy_comparison.ini
 <?php 
 $qwe = array(rand(1,2), "qwe");
 var_dump(array_keys($qwe, 0));
-var_dump(array_keys($qwe, 0, 0));
-var_dump(array_keys($qwe, 0, 1));
+var_dump(array_keys($qwe, 0, FALSE));
+var_dump(array_keys($qwe, 0, TRUE));
 
 $toto = [
         "toto" => 1,

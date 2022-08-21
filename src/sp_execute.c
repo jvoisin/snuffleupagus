@@ -353,14 +353,18 @@ ZEND_API zend_op_array* sp_compile_string(zval* source_string, char* filename) {
   // TODO(jvoisin) handle recursive calls to `eval`
   SPG(eval_source_string) = source_string;
   zend_op_array* opline = orig_zend_compile_string(source_string, filename);
-  sp_sloppy_modify_opcode(opline);
+  if (SPCFG(sloppy).enable) {
+    sp_sloppy_modify_opcode(opline);
+  }
   return opline;
 }
 
 ZEND_API zend_op_array* sp_compile_file(zend_file_handle* file_handle,
                                         int type) {
   zend_op_array* opline = orig_zend_compile_file(file_handle, type);
-  sp_sloppy_modify_opcode(opline);
+  if (SPCFG(sloppy).enable) {
+    sp_sloppy_modify_opcode(opline);
+  }
   return opline;
 }
 

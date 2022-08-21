@@ -9,8 +9,23 @@ sp.allow_broken_configuration=On
 <?php 
 $qwe = "abc";
 if ($qwe == 0) {
-  echo "OK";
+  echo "ONE";
 }
+$qwe = "0e123";
+if ("0e432" == $qwe) {
+  echo "TWO";
+}
+$qwe = [];
+$test = false;
+if ($test == $qwe) {
+  echo "THREE";
+}
+eval("
+\$asd = 'qwe';
+if (\$asd == 0) {
+  echo 'FOUR';
+}
+");
 ?>
 --EXPECT--
-OK
+ONETWOTHREEFOUR

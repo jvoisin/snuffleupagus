@@ -8,7 +8,7 @@ sp.configuration_file={PWD}/config/sloppy_comparison.ini
 <?php 
 $qwe = array(rand(1,2), "qwe");
 var_dump(in_array(0, $qwe));
-var_dump(in_array(0, $qwe, 0));
+var_dump(in_array(0, $qwe, false));
 ?>
 --EXPECT--
 bool(false)

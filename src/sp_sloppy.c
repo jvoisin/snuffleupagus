@@ -1,16 +1,17 @@
 #include "php_snuffleupagus.h"
 
 void sp_sloppy_modify_opcode(zend_op_array* opline) {
-  if (NULL != opline) {
-    for (size_t i = 0; i < opline->last; i++) {
-      zend_op* orig_opline = &(opline->opcodes[i]);
-      if (orig_opline->opcode == ZEND_IS_EQUAL) {
-        orig_opline->opcode = ZEND_IS_IDENTICAL;
-        zend_vm_set_opcode_handler(orig_opline);
-      } else if (orig_opline->opcode == ZEND_IS_NOT_EQUAL) {
-        orig_opline->opcode = ZEND_IS_NOT_IDENTICAL;
-        zend_vm_set_opcode_handler(orig_opline);
-      }
+  if (NULL == opline) {
+    return;
+  }
+  for (size_t i = 0; i < opline->last; i++) {
+    zend_op* orig_opline = &(opline->opcodes[i]);
+    if (orig_opline->opcode == ZEND_IS_EQUAL) {
+      orig_opline->opcode = ZEND_IS_IDENTICAL;
+      zend_vm_set_opcode_handler(orig_opline);
+    } else if (orig_opline->opcode == ZEND_IS_NOT_EQUAL) {
+      orig_opline->opcode = ZEND_IS_NOT_IDENTICAL;
+      zend_vm_set_opcode_handler(orig_opline);
     }
   }
 }
