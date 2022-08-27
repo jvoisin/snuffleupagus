@@ -1,3 +1,18 @@
+snuffleupagus (0.8.3) UNRELEASED; urgency=low
+  [ jvoisin ]
+  * Mix the stacktrace in the sha256 for the filename of .dump()
+  * Add the ability to dump the parameter passed to `eval`
+  * Add the ability to match on `eval`'s parameter
+  * Add optional extended checks for `readonly_exec`
+  * Add config error for ini rules with identical key
+  * Add disabled functions return type to config export
+  * Make it actually possible to configure sloppy comparison on latests PHP7
+  * Allow file:// prefix in include() wich readonly_exec mode
+  * Fix a possible crash when exporting function list
+  * Fix a minor memory leak when parsing cookie-related configuration
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Sat, 27 Aug 2022 17:30:00 +0200
+
 snuffleupagus (0.8.2) UNRELEASED; urgency=low
   [ jvoisin ]
   * Fix compilation when ZTS is used

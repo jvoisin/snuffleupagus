@@ -1,6 +1,29 @@
 Changelog
 =========
 
+0.8.3 - `Surus <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.8.3>`__ 2022/08/27
+-------------------------------------------------------------------------------------------
+
+New features
+^^^^^^^^^^^^
+* Add the ability to dump the parameter passed to `eval`
+* Add the ability to match on `eval`'s parameter
+* Add optional extended checks for `readonly_exec`
+* Add config error for ini rules with identical key
+* Add disabled functions return type to config export
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+* Mix the stacktrace in the sha256 for the filename of .dump()
+
+Bug fixes
+^^^^^^^^^
+* Make it actually possible to configure sloppy comparison on latests PHP7
+* Allow file:// prefix in include() wich readonly_exec mode
+* Fix a possible crash when exporting function list
+* Fix a minor memory leak when parsing cookie-related configuration
+
+
 0.8.2 - `Surus <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.8.2>`__ 2022/05/20
 -------------------------------------------------------------------------------------------
 
