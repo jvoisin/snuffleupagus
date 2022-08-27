@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - "release-*"
+      - "master"
     tags:
       - "v*"
   pull_request:
@@ -46,8 +47,8 @@ jobs:
             container: ubuntu:focal
           - name: ubuntu-jammy
             container: ubuntu:jammy
-          - name: ubuntu-impish
-            container: ubuntu:impish
+          - name: ubuntu-kinetic
+            container: ubuntu:kinetic
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -55,9 +56,15 @@ jobs:
         if: startsWith(matrix.container, 'ubuntu:')
         run: ln -snf /usr/share/zoneinfo/Europe/Paris /etc/localtime && echo Europe/Paris > /etc/timezone
       - name: Update OS
-        run: apt-get -qqy update
+        run:  |
+          apt-get -qqy update || \
+          sudo apt-get -qqy update
       - name: Install deps
-        run: DEBIAN_FRONTEND=noninteractive apt-get -qqy --no-install-recommends install fakeroot php-xml php-curl dpkg-dev gcc make libpcre3-dev dh-php php-dev build-essential
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          export PACKAGES_TO_INSTALL="fakeroot php-xml php-curl dpkg-dev gcc make libpcre3-dev dh-php php-dev build-essential"
+          apt-get -qqy --no-install-recommends install $PACKAGES_TO_INSTALL ||
+          sudo apt-get -qqy --no-install-recommends install $PACKAGES_TO_INSTALL
       - name: Build debs
         run: DPKG_SKIP_TESTS=1 dpkg-buildpackage -i -us -uc -tc -I -rfakeroot
       - name: Move built debs and rename
