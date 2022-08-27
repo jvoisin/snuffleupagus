@@ -27,7 +27,7 @@ jobs:
             "ubuntu-bionic",
             "ubuntu-focal",
             "ubuntu-jammy",
-            "ubuntu-impish",
+            "ubuntu-kinetic",
           ]
         include:
           - name: debian-buster
