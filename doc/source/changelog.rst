@@ -1,8 +1,8 @@
 Changelog
 =========
 
-0.8.3 - `Surus <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.8.3>`__ 2022/08/27
--------------------------------------------------------------------------------------------
+0.8.3 - `Elephant Gambit <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.8.3>`__ 2022/08/27
+-----------------------------------------------------------------------------------------------------
 
 New features
 ^^^^^^^^^^^^
