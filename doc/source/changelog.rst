@@ -54,6 +54,7 @@ New features
 * Compatibility with PHP8.1
 * Check for unsupported PHP version
 * Backport of Suhosin-ng patches:
+
   * Maximum stack depth/recursion limit
   * Maximum length for session id
   * $_SERVER strip/encode
