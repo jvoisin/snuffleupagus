@@ -23,6 +23,12 @@ Talks
 """"
 - `Modern PHP security - sec4dev 2020, Vienna - Synacktiv <https://www.synacktiv.com/ressources/modern_php_security_sec4dev.pdf>`__ - `sec4dev 2020 <https://sec4dev.io/2020>`__ 
 
+2022
+""""
+- `Custom php Introspection for 0-Day Research - GreHack 2022, Grenoble - Groumpf and Laluka <https://thinkloveshare.com/hacking/php-internalog-introspection-for-0day-research/Custom-php-Introspection-for-0-Day-Research.pdf>`__ - `transcript and blogpost <https://thinkloveshare.com/hacking/php-internalog-introspection-for-0day-research/>`__
+
+
+
 Mentions
 --------
 
