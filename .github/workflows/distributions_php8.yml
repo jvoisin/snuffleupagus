@@ -6,7 +6,7 @@ on:
     - cron: '0 16 * * 5'
 
 jobs:
-  alpine:
+  alpine_81:
     runs-on: ubuntu-latest
     container: alpine:edge
     steps:
@@ -17,7 +17,7 @@ jobs:
       - name: Remove tests failing on alpine for wathever reason
         run: rm -rf src/tests/*session*/ src/tests/broken_configuration/ src/tests/*cookie* src/tests/upload_validation/
       - name: Install dependencies
-        run: apk add php8-dev php8-cgi php8-simplexml php8-xml pcre-dev build-base php8-pear php8-openssl re2c
+        run: apk add php81-dev php81-cgi php81-simplexml php81-xml pcre-dev build-base php81-pear php81-openssl re2c
       - name: Install pecl
         continue-on-error: true
         run: pecl install vld-beta
@@ -88,33 +88,6 @@ jobs:
         run: make tests
       - name: Show logs in case of failure
         continue-on-error: true
-        if: ${{ failure() }}
-        run: |
-          grep -r . --include='*.log' src/tests
-
-  alpine_php8:
-    runs-on: ubuntu-latest
-    container: alpine:edge
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Remove tests failing on alpine for wathever reason
-        run: rm -rf src/tests/cookies_encryption_warning src/tests/upload_validation/upload_validation.phpt
-      - name: Install dependencies
-        run: apk add php8-dev php8-cgi php8-simplexml php8-xml pcre-dev build-base php8-pear php8-openssl php8-session php8-curl bash grep re2c
-      - name: Install pecl
-        continue-on-error: true
-        run: pecl install vld-beta
-      - name: Symlink utilities
-        run: |
-          ln -s /usr/bin/phpize8 /usr/bin/phpize
-          ln -s /usr/bin/php-config8 /usr/bin/php-config
-      - name: Build SP and run the testsuite
-        run: |
-          make release
-          ln -s $(php -r 'echo ini_get("extension_dir");')/* src/modules/
-          make tests
-      - name: Show logs in case of failure
         if: ${{ failure() }}
         run: |
           grep -r . --include='*.log' src/tests
