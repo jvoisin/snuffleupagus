@@ -12,4 +12,4 @@ var_dump(unserialize($a, "too", "many", "aaaaaaaarguments!"));
 ?>
 --EXPECTF--
 Warning: unserialize() expects at most 2 parameters, 4 given in %a/unserialize_wrong_call.php on line %d
-bool(false)
+NULL

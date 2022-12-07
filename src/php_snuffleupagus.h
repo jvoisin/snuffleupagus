@@ -119,6 +119,7 @@ ZEND_BEGIN_MODULE_GLOBALS(snuffleupagus)
 sp_config_random config_random;
 sp_config_sloppy config_sloppy;
 sp_config_unserialize config_unserialize;
+sp_config_unserialize_noclass config_unserialize_noclass;
 sp_config_readonly_exec config_readonly_exec;
 sp_config_upload_validation config_upload_validation;
 sp_config_cookie config_cookie;

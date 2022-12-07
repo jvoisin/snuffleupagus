@@ -61,6 +61,10 @@ PHP_FUNCTION(sp_serialize) {
     orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
   }
 
+  if (!SPCFG(unserialize).enable) {
+    return;
+  }
+
   /* Compute the HMAC of the textual representation of the serialized data*/
   zend_string *hmac = sp_do_hash_hmac_sha256(Z_STRVAL_P(return_value), Z_STRLEN_P(return_value), ZSTR_VAL(SPCFG(encryption_key)), ZSTR_LEN(SPCFG(encryption_key)));
 
@@ -84,15 +88,9 @@ PHP_FUNCTION(sp_serialize) {
 }
 
 PHP_FUNCTION(sp_unserialize) {
-  zif_handler orig_handler;
-
   char *buf = NULL;
-  char *serialized_str = NULL;
-  char *hmac = NULL;
   size_t buf_len = 0;
   HashTable *opts = NULL;
-
-  const sp_config_unserialize *config_unserialize = &(SPCFG(unserialize));
 
   ZEND_PARSE_PARAMETERS_START(1, 2)
     Z_PARAM_STRING(buf, buf_len)
@@ -100,13 +98,27 @@ PHP_FUNCTION(sp_unserialize) {
     Z_PARAM_ARRAY_HT(opts)
   ZEND_PARSE_PARAMETERS_END();
 
+  if (SPCFG(unserialize_noclass).enable) {
+#if PHP_VERSION_ID > 80000
+    HashTable ht;
+    zend_hash_init(&ht, 1, NULL, NULL, 0);
+    zval zv;
+    ZVAL_FALSE(&zv);
+    zend_hash_str_add(&ht, "allowed_classes", sizeof("allowed_classes")-1, &zv);
+    php_unserialize_with_options(return_value, buf, buf_len, &ht, "unserialize");
+    return;
+#else
+    sp_log_drop("unserialize_noclass", "unserialize_noclass is only supported on PHP8+");
+#endif
+  }
+
   /* 64 is the length of HMAC-256 */
   if (buf_len < 64) {
     sp_log_drop("unserialize", "The serialized object is too small.");
   }
 
-  hmac = buf + buf_len - 64;
-  serialized_str = ecalloc(buf_len - 64 + 1, 1);
+  char* hmac = buf + buf_len - 64;
+  char* serialized_str = ecalloc(buf_len - 64 + 1, 1);
   memcpy(serialized_str, buf, buf_len - 64);
 
   zend_string *expected_hmac = sp_do_hash_hmac_sha256(serialized_str, strlen(serialized_str), ZSTR_VAL(SPCFG(encryption_key)), ZSTR_LEN(SPCFG(encryption_key)));
@@ -118,11 +130,13 @@ PHP_FUNCTION(sp_unserialize) {
     }
   } else { status = 1; }
 
+  zif_handler orig_handler;
   if (0 == status) {
     if ((orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("unserialize")))) {
       orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     }
   } else {
+    const sp_config_unserialize *config_unserialize = &(SPCFG(unserialize));
     if (config_unserialize->dump) {
       sp_log_request(config_unserialize->dump,
                      config_unserialize->textual_representation);

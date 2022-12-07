@@ -332,6 +332,8 @@ static void dump_config() {
   array_init(&arr);
   add_assoc_string(&arr, "version", PHP_SNUFFLEUPAGUS_VERSION);
 
+  add_assoc_bool(&arr, SP_TOKEN_UNSERIALIZE_NOCLASS "." SP_TOKEN_ENABLE, SPCFG(unserialize_noclass).enable);
+
   add_assoc_bool(&arr, SP_TOKEN_UNSERIALIZE_HMAC "." SP_TOKEN_ENABLE, SPCFG(unserialize).enable);
   add_assoc_bool(&arr, SP_TOKEN_UNSERIALIZE_HMAC "." SP_TOKEN_SIM, SPCFG(unserialize).simulation);
   ADD_ASSOC_ZSTR(&arr, SP_TOKEN_UNSERIALIZE_HMAC "." SP_TOKEN_DUMP, SPCFG(unserialize).dump);
@@ -562,10 +564,8 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     hook_session();
   }
 
-  if (NULL != SPCFG(encryption_key)) {
-    if (SPCFG(unserialize).enable) {
-      hook_serialize();
-    }
+  if ((NULL != SPCFG(encryption_key) && SPCFG(unserialize).enable) || SPCFG(unserialize_noclass).enable) {
+    hook_serialize();
   }
 
   hook_execute();

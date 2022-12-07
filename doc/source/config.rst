@@ -202,6 +202,20 @@ It can either be ``enabled`` or ``disabled``.
   sp.sloppy_comparison.enable();
   sp.sloppy_comparison.disable();
 
+unserialize_noclass
+^^^^^^^^^^^^^^^^^^^
+ 
+:ref:`unserialize_noclass <unserialize-feature>`, available only on PHP8+ and
+disabled by default, will disable the deserialization of objects via
+``unserialize``. It's equivalent to setting the ``options`` parameter of
+``unserialize`` to ``false``, on every call. It can either be ``enabled`` or
+``disabled``.
+
+::
+
+  sp.unserialize_noclass.enable();
+  sp.unserialize_noclass.disable();
+
 unserialize_hmac
 ^^^^^^^^^^^^^^^^
  

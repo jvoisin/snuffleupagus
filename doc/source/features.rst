@@ -166,6 +166,8 @@ CVE-2016-9138 <https://bugs.php.net/bug.php?id=73147>`_, `2016-7124
 <https://bugs.php.net/bug.php?id=72663>`_, `CVE-2016-5771 and CVE-2016-5773
 <https://www.evonide.com/how-we-broke-php-hacked-pornhub-and-earned-20000-dollar/>`_.
 
+A less subtle mitigation can be used to simply prevent the deserialization of objects altogether.
+
 
 Examples of related vulnerabilities
 """""""""""""""""""""""""""""""""""

@@ -74,6 +74,24 @@ SP_PARSEKW_FN(parse_log_media) {
   return SP_PARSER_ERROR;
 }
 
+SP_PARSE_FN(parse_unserialize_noclass) {
+  bool enable = false, disable = false;
+  sp_config_unserialize_noclass *cfg = (sp_config_unserialize_noclass*)retval;
+
+  sp_config_keyword config_keywords[] = {
+      {parse_empty, SP_TOKEN_ENABLE, &(enable)},
+      {parse_empty, SP_TOKEN_DISABLE, &(disable)},
+      {0, 0, 0}};
+
+  SP_PROCESS_CONFIG_KEYWORDS_ERR();
+
+  SP_SET_ENABLE_DISABLE(enable, disable, cfg->enable);
+
+  cfg->textual_representation = sp_get_textual_representation(parsed_rule);
+
+  return SP_PARSER_STOP;
+}
+
 SP_PARSE_FN(parse_unserialize) {
   bool enable = false, disable = false;
   sp_config_unserialize *cfg = (sp_config_unserialize*)retval;
