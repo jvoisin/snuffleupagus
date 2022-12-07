@@ -90,14 +90,15 @@ PHP_FUNCTION(sp_unserialize) {
   char *serialized_str = NULL;
   char *hmac = NULL;
   size_t buf_len = 0;
-  zval *opts = NULL;
+  HashTable *opts = NULL;
 
   const sp_config_unserialize *config_unserialize = &(SPCFG(unserialize));
 
-  if (zend_parse_parameters(ZEND_NUM_ARGS(), "s|a", &buf, &buf_len, &opts) ==
-      FAILURE) {
-    RETURN_FALSE;
-  }
+  ZEND_PARSE_PARAMETERS_START(1, 2)
+    Z_PARAM_STRING(buf, buf_len)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_ARRAY_HT(opts)
+  ZEND_PARSE_PARAMETERS_END();
 
   /* 64 is the length of HMAC-256 */
   if (buf_len < 64) {
