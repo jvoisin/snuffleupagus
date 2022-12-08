@@ -6,6 +6,7 @@ SP_PARSE_FN(parse_enable);
 SP_PARSE_FN(parse_global);
 SP_PARSE_FN(parse_cookie);
 SP_PARSE_FN(parse_unserialize);
+SP_PARSE_FN(parse_unserialize_noclass);
 SP_PARSE_FN(parse_readonly_exec);
 SP_PARSE_FN(parse_disabled_functions);
 SP_PARSE_FN(parse_upload_validation);

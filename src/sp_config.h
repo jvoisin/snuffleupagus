@@ -83,6 +83,11 @@ typedef struct {
 
 typedef struct {
   bool enable;
+  zend_string *textual_representation;
+} sp_config_unserialize_noclass;
+
+typedef struct {
+  bool enable;
   bool simulation;
   zend_string *dump;
   zend_string *textual_representation;
@@ -202,6 +207,7 @@ typedef struct {
 #define SP_TOKEN_HARDEN_RANDOM "harden_random"
 #define SP_TOKEN_READONLY_EXEC "readonly_exec"
 #define SP_TOKEN_UNSERIALIZE_HMAC "unserialize_hmac"
+#define SP_TOKEN_UNSERIALIZE_NOCLASS "unserialize_noclass"
 #define SP_TOKEN_UPLOAD_VALIDATION "upload_validation"
 #define SP_TOKEN_XXE_PROTECTION "xxe_protection"
 #define SP_TOKEN_EVAL_BLACKLIST "eval_blacklist"
