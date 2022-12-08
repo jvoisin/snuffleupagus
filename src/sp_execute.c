@@ -336,7 +336,11 @@ static zend_result sp_stream_open(zend_file_handle *handle) {
 
 ZEND_API zend_op_array* (*orig_zend_compile_file)(zend_file_handle* file_handle,
                                                   int type) = NULL;
-#if PHP_VERSION_ID >= 80000
+#if PHP_VERSION_ID >= 82000
+ZEND_API zend_op_array* (*orig_zend_compile_string)(
+    zend_string* source_string, const char* filename,
+    enum _zend_compile_position position) = NULL;
+#elif PHP_VERSION_ID >= 80000
 ZEND_API zend_op_array* (*orig_zend_compile_string)(
     zend_string* source_string, const char* filename) = NULL;
 #else
@@ -344,7 +348,11 @@ ZEND_API zend_op_array* (*orig_zend_compile_string)(zval* source_string,
                                                     char* filename) = NULL;
 #endif
 
-#if PHP_VERSION_ID >= 80000
+#if PHP_VERSION_ID >= 82000
+ZEND_API zend_op_array* sp_compile_string(zend_string* source_string,
+                                          const char* filename,
+					  enum _zend_compile_position position) {
+#elif PHP_VERSION_ID >= 80000
 ZEND_API zend_op_array* sp_compile_string(zend_string* source_string,
                                           const char* filename) {
 #else
@@ -352,7 +360,11 @@ ZEND_API zend_op_array* sp_compile_string(zval* source_string, char* filename) {
 #endif
   // TODO(jvoisin) handle recursive calls to `eval`
   SPG(eval_source_string) = source_string;
-  zend_op_array* opline = orig_zend_compile_string(source_string, filename);
+  zend_op_array* opline = orig_zend_compile_string(source_string, filename
+#if PHP_VERSION_ID >= 82000
+    , position
+#endif
+    );
   if (SPCFG(sloppy).enable) {
     sp_sloppy_modify_opcode(opline);
   }

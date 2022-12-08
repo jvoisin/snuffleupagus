@@ -473,7 +473,7 @@ void unhook_functions(HashTable *ht) {
       func->internal_function.handler = orig_handler;
     }
     (void)idx;//silence a -Wunused-but-set-variable
-  ZEND_HASH_FOREACH_END_DEL();
+  ZEND_HASH_FOREACH_END();
 }
 
 bool check_is_in_eval_whitelist(const char* function_name) {

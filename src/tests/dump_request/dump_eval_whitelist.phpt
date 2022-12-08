@@ -6,10 +6,12 @@ if (!extension_loaded("snuffleupagus")) print "skip";
 ?>
 --CLEAN--
 <?php
-foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
-    @unlink($dump);
+if (is_dir("/tmp/dump_result/")) {
+  foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
+      @unlink($dump);
+  }
+  @rmdir("/tmp/dump_result/");
 }
-@rmdir("/tmp/dump_result/");
 ?>
 --POST--
 post_a=data_post_a&post_b=data_post_b
