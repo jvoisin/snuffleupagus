@@ -57,9 +57,15 @@ static bool /* success */ sp_ini_check(zend_string *const restrict varname, zend
   // we have a new_value.
 
   if (entry->min || entry->max) {
+#if PHP_VERSION_ID >= 80200
+    zend_long lvalue = ZEND_STRTOL(ZSTR_VAL(new_value), NULL, 0);
+    if ((entry->min && ZEND_STRTOL(ZSTR_VAL(entry->min), NULL, 0) > lvalue) ||
+        (entry->max && ZEND_STRTOL(ZSTR_VAL(entry->max), NULL, 0) < lvalue)) {
+#else
     zend_long lvalue = zend_atol(ZSTR_VAL(new_value), ZSTR_LEN(new_value));
     if ((entry->min && zend_atol(ZSTR_VAL(entry->min), ZSTR_LEN(entry->min)) > lvalue) ||
         (entry->max && zend_atol(ZSTR_VAL(entry->max), ZSTR_LEN(entry->max)) < lvalue)) {
+#endif
       sp_log_ini_check_violation("%s", (entry->msg ? ZSTR_VAL(entry->msg) : "INI value out of range"));
       return simulation;
     }
