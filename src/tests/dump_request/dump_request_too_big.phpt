@@ -6,15 +6,6 @@ if (!extension_loaded("snuffleupagus")) {
     print "skip";
 }
 ?>
---CLEAN--
-<?php
-if (is_dir("/tmp/dump_result/")) {
-  foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
-      @unlink($dump);
-  }
-  @rmdir("/tmp/dump_result/");
-}
-?>
 --POST--
 post_a=data_post_a&post_b=data_post_b&post_c=c
 --GET--
@@ -29,6 +20,12 @@ END;
 sp.configuration_file={PWD}/config/dump_request.ini
 --FILE--
 <?php
+if (is_dir("/tmp/dump_result/")) {
+  foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
+      @unlink($dump);
+  }
+  @rmdir("/tmp/dump_result/");
+}
 echo "1\n";
 system("echo 1337;");
 $filename = glob('/tmp/dump_result/*')[0];

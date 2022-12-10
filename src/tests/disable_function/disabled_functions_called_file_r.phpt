@@ -25,10 +25,5 @@ include "$dir/myfunc.php";
 test();
 
 ?>
---CLEAN--
-<?php
-$dir = __DIR__;
-@unlink("$dir/myfunc.php");
-?>
 --EXPECTF--
 Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'test' in %a/myfunc.php on line 3

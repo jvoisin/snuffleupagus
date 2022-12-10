@@ -6,8 +6,12 @@ Disable functions - runtime inclusion
 sp.configuration_file={PWD}/config/config_disabled_functions_param_runtime.ini
 --FILE--
 <?php 
-
 $dir = __DIR__;
+
+// Just in case
+@unlink("file_to_include1.php");
+@unlink("file_to_include2.php");
+
 $content = '<?php function test($param) { echo $param . "\n"; }';
 file_put_contents('file_to_include1.php', $content);
 file_put_contents('file_to_include2.php', $content);
@@ -20,11 +24,6 @@ if (rand() % 2) {
 
 test('1338');test('1337');
 
-?>
---CLEAN--
-<?php
-unlink("file_to_include1.php");
-unlink("file_to_include2.php");
 ?>
 --EXPECTF--
 1338

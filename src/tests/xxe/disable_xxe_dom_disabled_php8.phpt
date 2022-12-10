@@ -10,6 +10,10 @@ dom
 --FILE--
 <?php 
 $dir = __DIR__;
+// Just in case
+@unlink($dir . "/content.xml");
+@unlink($dir . "/content.txt");
+
 $content = '<content>WARNING, external entity loaded!</content>';
 file_put_contents($dir . '/content.txt', $content);
 
@@ -49,9 +53,3 @@ default setting with LIBXML_NOENT: WARNING, external entity loaded!
 default setting without LIBXML_NOENT: 
 disabled entity loader with LIBXML_NOENT: WARNING, external entity loaded!
 disabled entity loader without LIBXML_NOENT:
---CLEAN--
-<?php
-$dir = __DIR__;
-unlink($dir . "/content.xml");
-unlink($dir . "/content.txt");
-?>

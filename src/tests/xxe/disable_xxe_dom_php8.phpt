@@ -10,6 +10,11 @@ dom
 --FILE--
 <?php 
 $dir = __DIR__;
+
+// Just in case
+@unlink($dir . "/content.xml");
+@unlink($dir . "/content.txt");
+
 $content = '<content>WARNING, external entity loaded!</content>';
 file_put_contents($dir . '/content.txt', $content);
 
@@ -48,12 +53,6 @@ printf("disabled entity loader without LIBXML_NOENT: %s\n", $dom->getElementsByT
 default setting with LIBXML_NOENT: WARNING, external entity loaded!
 default setting without LIBXML_NOENT: 
 
-Warning: [snuffleupagus][0.0.0.0][xxe][log] A call to libxml_set_external_entity_loader was tried and nopped in %a.php on line 26
+Warning: [snuffleupagus][0.0.0.0][xxe][log] A call to libxml_set_external_entity_loader was tried and nopped in %a.php on line %d
 disabled entity loader with LIBXML_NOENT: WARNING, external entity loaded!
 disabled entity loader without LIBXML_NOENT:
---CLEAN--
-<?php
-$dir = __DIR__;
-unlink($dir . "/content.xml");
-unlink($dir . "/content.txt");
-?>

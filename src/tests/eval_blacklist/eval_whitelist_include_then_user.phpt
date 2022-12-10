@@ -9,6 +9,9 @@ sp.configuration_file={PWD}/config/eval_whitelist.ini
 $b = 1337;
 $dir = __DIR__;
 
+// Just in case
+@unlink($dir . '/test.bla');
+
 file_put_contents($dir . '/test.bla', '<?php $b = sin(1) ?>');
 
 $a = cos(1);
@@ -17,11 +20,6 @@ eval('$a = cos(5);');
 echo "After allowed eval: $a\n";
 eval("include_once('$dir' . '/test.bla');");
 echo "After eval: $b\n";
-?>
---CLEAN--
-<?php
-$dir = __DIR__;
-unlink($dir . '/test.bla');
 ?>
 --EXPECTF--
 Outside of eval: 0.54030230586814

@@ -7,6 +7,11 @@ sp.configuration_file={PWD}/config/config_disabled_functions_require_allow.ini
 --FILE--
 <?php 
 $dir = __DIR__;
+
+// Just in case
+unlink($dir . '/test.bla');
+unlink($dir . '/test.meh');
+
 file_put_contents($dir . '/test.bla', "BLA\n");
 file_put_contents($dir . '/test.meh', "MEH\n");
 require $dir . '/test.bla';
@@ -17,9 +22,3 @@ echo "1337";
 BLA
 MEH
 1337
---CLEAN--
-<?php
-$dir = __DIR__;
-unlink($dir . '/test.bla');
-unlink($dir . '/test.meh');
-?>

@@ -18,15 +18,13 @@ chmod("$dir/writable_file.txt", 0777);
 chmod("$dir/non_writable_file.txt", 0400);
 include "$dir/writable_file.txt";
 include "$dir/non_writable_file.txt";
-?>
---EXPECT--
-Code execution within a writable file.
-Code execution within a non-writable file.
---CLEAN--
-<?php
-$dir = __DIR__;
+
+// Clean up
 chmod("$dir/non_writable_file.txt", 0777);
 chmod("$dir/writable_file.txt", 0777);
 unlink("$dir/non_writable_file.txt");
 unlink("$dir/writable_file.txt");
 ?>
+--EXPECT--
+Code execution within a writable file.
+Code execution within a non-writable file.
