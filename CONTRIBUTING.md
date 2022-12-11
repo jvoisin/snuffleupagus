@@ -142,5 +142,4 @@ Maintainers need to do the following to push out a release:
 9. Wait for the CI on the new tag branch to finish
 10. Create the [release on github](https://github.com/jvoisin/snuffleupagus/releases)
 11. Add the freshly built Debian packages from the CI to the release
-12. Publish a [tweet](https://twitter.com/sp_php)
-13. Do the *secret release dance*
+12. Do the *secret release dance*

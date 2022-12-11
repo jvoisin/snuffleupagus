@@ -34,7 +34,7 @@
     <img src="https://coveralls.io/repos/github/jvoisin/snuffleupagus/badge.svg?branch=master"
          alt="coveralls">
   </a>
-  <a href="https://twitter.com/sp_php">
+  <a href="https://twitter.com/dustriorg">
     <img src="https://img.shields.io/badge/twitter-follow-blue.svg"
          alt="twitter">
   </a>
