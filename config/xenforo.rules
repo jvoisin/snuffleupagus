@@ -1,0 +1,141 @@
+# This is a sample configuration for Snuffleupagus to accomodate Xenforo v2.2.12 on PHP 8.1
+# We keep the default configuration values commented out where they have been shown to be harmful
+
+# Global configuration variables
+sp.global.secret_key("YOU _DO_ NEED TO CHANGE THIS WITH SOME RANDOM CHARACTERS.");
+
+# Enforce secure cookies
+# -- You ought to be using HTTPS-only anyway
+sp.auto_cookie_secure.enable();
+
+# Harden the PRNG
+sp.harden_random.enable();
+
+# Disabled XXE
+sp.xxe_protection.enable();
+
+# Globally activate strict mode
+# -- Entirely breaks Xenforo; 99% of requests abuse lose typing directly in their entrypoint
+# sp.global_strict.enable();
+
+# Prevent unserialize-related exploits
+# -- Xenforo heavily uses serialization in database and caches; enable at your own risk
+# sp.unserialize_hmac.enable();
+
+# Only allow execution of read-only files. This is a low-hanging fruit that you should enable.
+# -- Xenforo has a 0777 file permissions model and will refuse to run with anything else, both for
+# -- code caches and its own webroot; this isn't workable at all with this
+# sp.readonly_exec.enable();
+
+# PHP has a lot of wrappers, most of them aren't usually useful, you should
+# only enable the ones you're using.
+# -- Seems OK in general, could break somewhere along the way however
+sp.wrappers_whitelist.list("file,php,phar");
+
+# Prevent sloppy comparisons.
+sp.sloppy_comparison.enable();
+
+# use SameSite on session cookie
+# https://snuffleupagus.readthedocs.io/features.html#protection-against-cross-site-request-forgery
+sp.cookie.name("PHPSESSID").samesite("lax");
+# -- Xenforo cookies
+sp.cookie.name("xf_csrf").samesite("lax");
+sp.cookie.name("xf_session").samesite("lax");
+sp.cookie.name("xf_user").samesite("lax");
+
+# Harden the `chmod` function
+# -- Xenforo aggressively makes files executable left and right, alas
+# sp.disable_function.function("chmod").param("mode").value_r("^[0-9]{2}[67]$").drop();
+
+# Prevent various `mail`-related vulnerabilities
+sp.disable_function.function("mail").param("additional_parameters").value_r("\\-").drop();
+
+# Since it's now burned, me might as well mitigate it publicly
+sp.disable_function.function("putenv").param("assignment").value_r("LD_").drop()
+
+# This one was burned in Nov 2019 - https://gist.github.com/LoadLow/90b60bd5535d6c3927bb24d5f9955b80
+sp.disable_function.function("putenv").param("assignment").value_r("GCONV_").drop()
+
+# Since people are stupid enough to use `extract` on things like $_GET or $_POST, we might as well mitigate this vector
+sp.disable_function.function("extract").param("array").value_r("^_").drop()
+sp.disable_function.function("extract").param("flags").value("0").drop()
+
+# This is also burned:
+# ini_set('open_basedir','..');chdir('..');…;chdir('..');ini_set('open_basedir','/');echo(file_get_contents('/etc/passwd'));
+# Since we have no way of matching on two parameters at the same time, we're
+# blocking calls to open_basedir altogether: nobody is using it via ini_set anyway.
+# Moreover, there are non-public bypasses that are also using this vector ;)
+sp.disable_function.function("ini_set").param("option").value_r("open_basedir").drop()
+
+##Prevent various `include`-related vulnerabilities
+# -- "php8" is necessary here, due to the following snippet in one of the vendored Symfony dependencies
+# -- if (PHP_VERSION_ID >= 80000) {
+# --     require_once __DIR__.'/Resources/mb_convert_variables.php8';
+# -- }
+sp.disable_function.function("require_once").value_r("\.(inc|phtml|php|php8)$").allow();
+sp.disable_function.function("include_once").value_r("\.(inc|phtml|php)$").allow();
+sp.disable_function.function("require").value_r("\.(inc|phtml|php)$").allow();
+sp.disable_function.function("include").value_r("\.(inc|phtml|php)$").allow();
+sp.disable_function.function("require_once").drop()
+sp.disable_function.function("include_once").drop()
+sp.disable_function.function("require").drop()
+sp.disable_function.function("include").drop()
+
+# Prevent `system`-related injections
+sp.disable_function.function("system").param("command").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
+sp.disable_function.function("shell_exec").param("command").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
+sp.disable_function.function("exec").param("command").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
+sp.disable_function.function("proc_open").param("command").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
+
+# Prevent runtime modification of interesting things
+# -- Xenforo applies its own set of ini rules sanitization and this cannot be disabled without a hard fork
+# sp.disable_function.function("ini_set").param("option").value("assert.active").drop();
+# sp.disable_function.function("ini_set").param("option").value("zend.assertions").drop();
+# sp.disable_function.function("ini_set").param("option").value("memory_limit").drop();
+sp.disable_function.function("ini_set").param("option").value("include_path").drop();
+sp.disable_function.function("ini_set").param("option").value("open_basedir").drop();
+
+# Detect some backdoors via environment recon
+# -- Xenforo does its own recon of the environment and this cannot be disabled without a hard fork
+# sp.disable_function.function("ini_get").param("option").value("allow_url_fopen").drop();
+# sp.disable_function.function("ini_get").param("option").value("open_basedir").drop();
+sp.disable_function.function("ini_get").param("option").value_r("suhosin").drop();
+sp.disable_function.function("function_exists").param("function").value("eval").drop();
+sp.disable_function.function("function_exists").param("function").value("exec").drop();
+sp.disable_function.function("function_exists").param("function").value("system").drop();
+sp.disable_function.function("function_exists").param("function").value("shell_exec").drop();
+sp.disable_function.function("function_exists").param("function").value("proc_open").drop();
+sp.disable_function.function("function_exists").param("function").value("passthru").drop();
+sp.disable_function.function("is_callable").param("value").value("eval").drop();
+sp.disable_function.function("is_callable").param("value").value("exec").drop();
+sp.disable_function.function("is_callable").param("value").value("system").drop();
+sp.disable_function.function("is_callable").param("value").value("shell_exec").drop();
+sp.disable_function.function("is_callable").param("value").value("proc_open").drop();
+sp.disable_function.function("is_callable").param("value").value("passthru").drop();
+
+# Ghetto error-based sqli detection
+sp.disable_function.function("mysql_query").ret("FALSE").drop();
+sp.disable_function.function("mysqli_query").ret("FALSE").drop();
+sp.disable_function.function("PDO::query").ret("FALSE").drop();
+
+# Ensure that certificates are properly verified
+sp.disable_function.function("curl_setopt").param("value").value("1").allow();
+sp.disable_function.function("curl_setopt").param("value").value("2").allow();
+# `81` is SSL_VERIFYHOST and `64` SSL_VERIFYPEER
+sp.disable_function.function("curl_setopt").param("option").value("64").drop().alias("Please don't turn CURLOPT_SSL_VERIFYCLIENT off.");
+sp.disable_function.function("curl_setopt").param("option").value("81").drop().alias("Please don't turn CURLOPT_SSL_VERIFYHOST off.");
+
+# File upload
+sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ph").drop();
+sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ht").drop();
+
+# Logging lockdown
+# -- Xenforo applies its own set of ini rules sanitization and this cannot be disabled without a hard fork
+# sp.disable_function.function("ini_set").param("option").value_r("error_log").drop()
+# sp.disable_function.function("ini_set").param("option").value_r("error_reporting").drop()
+# sp.disable_function.function("ini_set").param("option").value_r("display_errors").drop()
+
+# Configuration you might want to enable on production environments only
+# sp.ini.key("display_errors").set("0").ro();
+# sp.ini.key("display_startup_errors").set("0").ro();
+# sp.ini.key("expose_php").set("0").ro();
