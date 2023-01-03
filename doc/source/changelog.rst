@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.9.0 - `Elephant seal <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.9.0>`__ 2023/01/03
+---------------------------------------------------------------------------------------------------
+
+New features
+^^^^^^^^^^^^
+* Compatibility with PHP8.2
+* Add the ability block object unserialization globally.
+
+
 0.8.3 - `Elephant Gambit <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.8.3>`__ 2022/08/27
 -----------------------------------------------------------------------------------------------------
 

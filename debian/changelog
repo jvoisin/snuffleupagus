@@ -1,3 +1,10 @@
+snuffleupagus (0.9.0) UNRELEASED; urgency=low
+  [ jvoisin ]
+  * Compatibility with PHP8.2
+  * Add the ability block object unserialization globally.
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Tue, 03 Jan 2023 20:25:00 +0200
+
 snuffleupagus (0.8.3) UNRELEASED; urgency=low
   [ jvoisin ]
   * Mix the stacktrace in the sha256 for the filename of .dump()
