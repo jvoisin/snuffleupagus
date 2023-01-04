@@ -10,6 +10,9 @@ dom
 --FILE--
 <?php 
 $dir = __DIR__;
+@unlink($dir . "/content.xml");
+@unlink($dir . "/content.txt");
+
 $content = '<content>WARNING, external entity loaded!</content>';
 file_put_contents($dir . '/content.txt', $content);
 
@@ -52,9 +55,3 @@ libxml_disable_entity to false: WARNING, external entity loaded!
 
 Warning: [snuffleupagus][0.0.0.0][xxe][log] A call to libxml_disable_entity_loader was tried and nopped in %s/tests/xxe/disable_xxe_dom_disabled.php on line %d
 without xxe: foo
---CLEAN--
-<?php
-$dir = __DIR__;
-unlink($dir . "/content.xml");
-unlink($dir . "/content.txt");
-?>

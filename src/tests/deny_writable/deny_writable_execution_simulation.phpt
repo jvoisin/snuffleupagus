@@ -22,6 +22,8 @@ sp.configuration_file={PWD}/config/config_disable_writable_simulation.ini
 $dir = __DIR__;
 
 // just in case
+@chmod("$dir/non_writable_file.txt", 0777);
+@chmod("$dir/writable_file.txt", 0777);
 @unlink("$dir/non_writable_file.txt");
 @unlink("$dir/writable_file.txt");
 
@@ -32,23 +34,15 @@ chmod("$dir/non_writable_file.txt", 0400);
 include "$dir/writable_file.txt";
 include "$dir/non_writable_file.txt";
 ?>
---CLEAN--
-<?php
-$dir = __DIR__;
-chmod("$dir/non_writable_file.txt", 0777);
-chmod("$dir/writable_file.txt", 0777);
-unlink("$dir/non_writable_file.txt");
-unlink("$dir/writable_file.txt");
-?>
 --EXPECTF--
-Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/deny_writable_execution_simulation.php) in %a/deny_writable_execution_simulation.php on line 2
+Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/deny_writable_execution_simulation.php) in %a/deny_writable_execution_simulation.php on line %d
 
-Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/writable_file.txt) in %a/deny_writable_execution_simulation.php on line 12
+Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/writable_file.txt) in %a/deny_writable_execution_simulation.php on line %d
 
-Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/writable_file.txt) in %a/writable_file.txt on line 1
+Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/writable_file.txt) in %a/writable_file.txt on line %d
 Code execution within a writable file.
 
-Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a file owned by the PHP process (%s/tests/deny_writable/non_writable_file.txt) in %s/tests/deny_writable/deny_writable_execution_simulation.php on line 13
+Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a file owned by the PHP process (%s/tests/deny_writable/non_writable_file.txt) in %s/tests/deny_writable/deny_writable_execution_simulation.php on line %d
 
-Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a file owned by the PHP process (%s/tests/deny_writable/non_writable_file.txt) in %src/tests/deny_writable/non_writable_file.txt on line 1
+Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a file owned by the PHP process (%s/tests/deny_writable/non_writable_file.txt) in %src/tests/deny_writable/non_writable_file.txt on line %d
 Code execution within a non-writable file.

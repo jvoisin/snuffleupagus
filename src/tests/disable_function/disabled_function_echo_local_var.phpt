@@ -14,7 +14,6 @@ test();
 $abc = 123;
 test();
 ?>
---CLEAN--
 --EXPECTF--
 3
 

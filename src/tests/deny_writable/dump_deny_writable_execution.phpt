@@ -32,6 +32,8 @@ foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
 $dir = __DIR__;
 
 // just in case
+@chmod("$dir/non_writable_file.txt", 0777);
+@chmod("$dir/writable_file.txt", 0777);
 @unlink("$dir/non_writable_file.txt");
 @unlink("$dir/writable_file.txt");
 
@@ -57,11 +59,3 @@ if ($res[2] != "GET:get_a='data_get_a_readonly' get_b='data_get_b_readonly' \n")
 --EXPECTF--
 %a
 WIN
---CLEAN--
-<?php
-$dir = __DIR__;
-chmod("$dir/non_writable_file.txt", 0777);
-chmod("$dir/writable_file.txt", 0777);
-unlink("$dir/non_writable_file.txt");
-unlink("$dir/writable_file.txt");
-?>

@@ -16,6 +16,9 @@ sp.configuration_file={PWD}/config/disable_xxe.ini
 --FILE--
 <?php 
 $dir = __DIR__;
+@unlink($dir . "/content.xml");
+@unlink($dir . "/content.txt");
+
 $content = 'WARNING, external entity loaded!';
 file_put_contents('content.txt', $content);
 
@@ -71,7 +74,7 @@ $doc = xml_parse($parser, $xml, true);
 xml_parser_free($parser);
 
 --EXPECTF--
-Warning: [snuffleupagus][0.0.0.0][xxe][log] A call to libxml_disable_entity_loader was tried and nopped in %a.php on line 41
+Warning: [snuffleupagus][0.0.0.0][xxe][log] A call to libxml_disable_entity_loader was tried and nopped in %a.php on line %d
 string(4) "TEST"
 
 array(0) {
@@ -83,7 +86,7 @@ array(0) {
 string(7) "TESTING"
 string(4) "TEST"
 
-Warning: [snuffleupagus][0.0.0.0][xxe][log] A call to libxml_disable_entity_loader was tried and nopped in %a.php on line 46
+Warning: [snuffleupagus][0.0.0.0][xxe][log] A call to libxml_disable_entity_loader was tried and nopped in %a.php on line %d
 string(4) "TEST"
 
 array(0) {
@@ -104,9 +107,3 @@ array(0) {
 }
 textfoostring(7) "TESTING"
 string(4) "TEST"
---CLEAN--
-<?php
-$dir = __DIR__;
-unlink($dir . "/content.xml");
-unlink($dir . "/content.txt");
-?>

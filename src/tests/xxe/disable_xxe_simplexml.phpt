@@ -11,6 +11,9 @@ simplexml
 --FILE--
 <?php 
 $dir = __DIR__;
+@unlink($dir . "/content.xml");
+@unlink($dir . "/content.txt");
+
 $content = 'WARNING, external entity loaded!';
 file_put_contents('content.txt', $content);
 
@@ -44,9 +47,3 @@ printf("without xxe: %s", $doc->testing);
 libxml_disable_entity to true: 
 libxml_disable_entity to false: 
 without xxe: foo
---CLEAN--
-<?php
-$dir = __DIR__;
-unlink($dir . "/content.xml");
-unlink($dir . "/content.txt");
-?>
