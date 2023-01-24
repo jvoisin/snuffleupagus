@@ -11,7 +11,7 @@ jobs:
     container: alpine:edge
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Remove php7 tests for php8
         run: rm -rf src/tests/*php7*/
       - name: Remove tests failing on alpine for wathever reason
@@ -36,7 +36,7 @@ jobs:
     container: debian:testing
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install dependencies
         run: |
           apt update
@@ -55,7 +55,7 @@ jobs:
     container: fedora:latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install dependencies
         run: |
           dnf install -y php-devel php-pear make re2c
@@ -73,7 +73,7 @@ jobs:
     container: archlinux:latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install dependencies
         continue-on-error: true
         run: |

@@ -22,7 +22,7 @@ jobs:
     container: ${{ matrix.container }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: PHP 7 env setup
         if: startsWith(matrix.container, 'php:7')
         run: |
