@@ -151,6 +151,16 @@ it's `possible to modify php's logging system via php
 <https://www.php.net/manual/en/errorfunc.configuration.php>`__, it's
 heavily recommended to use the ``syslog`` option instead.
 
+log_max_len
+^^^^^^^^^^^
+
+This configuration variable allows to specify (roughly) the size of the log.
+
+::
+
+  sp.log_max_len("16");
+
+The default value for ``sp.log_max_len`` is ``255``.
 
 Bugclass-killer features
 ------------------------

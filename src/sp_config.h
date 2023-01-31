@@ -264,6 +264,7 @@ typedef struct {
 #define SP_TOKEN_ENCRYPTION_KEY "secret_key"
 #define SP_TOKEN_ENV_VAR "cookie_env_var"
 #define SP_TOKEN_LOG_MEDIA "log_media"
+#define SP_TOKEN_LOG_MAX_LEN "log_max_len"
 #define SP_TOKEN_MAX_EXECUTION_DEPTH "max_execution_depth"
 #define SP_TOKEN_SERVER_ENCODE "server_encode"
 #define SP_TOKEN_SERVER_STRIP "server_strip"
