@@ -300,7 +300,7 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
     char* char_repr = NULL;
     if (arg_value) {
       char_repr = zend_string_to_char(arg_value);
-      sp_sanitize_charstring(char_repr, 255);
+      sp_sanitize_charstring(char_repr, SPCFG(log_max_len));
     }
     if (alias) {
       sp_log_auto(
@@ -341,7 +341,7 @@ void sp_log_disable_ret(const char* restrict path,
   }
   if (ret_value) {
     char_repr = zend_string_to_char(ret_value);
-    sp_sanitize_charstring(char_repr, 255);
+    sp_sanitize_charstring(char_repr, SPCFG(log_max_len));
   }
   if (alias) {
     sp_log_auto(

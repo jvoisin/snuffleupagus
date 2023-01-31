@@ -144,6 +144,7 @@ SP_PARSE_FN(parse_global) {
       {parse_str, SP_TOKEN_ENCRYPTION_KEY, &(SPCFG(encryption_key))},
       {parse_str, SP_TOKEN_ENV_VAR, &(SPCFG(cookies_env_var))},
       {parse_log_media, SP_TOKEN_LOG_MEDIA, &(SPCFG(log_media))},
+      {parse_ulong, SP_TOKEN_LOG_MAX_LEN, &(SPCFG(log_max_len))},
       {parse_ulong, SP_TOKEN_MAX_EXECUTION_DEPTH, &(SPCFG(max_execution_depth))},
       {parse_enable, SP_TOKEN_SERVER_ENCODE, &(SPCFG(server_encode))},
       {parse_enable, SP_TOKEN_SERVER_STRIP, &(SPCFG(server_strip))},
