@@ -1,5 +1,9 @@
 #include "php_snuffleupagus.h"
 
+#ifndef MIN
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#endif
+
 static char const* const default_ipaddr = "0.0.0.0";
 const char* get_ipaddr() {
   const char* client_ip = getenv("REMOTE_ADDR");
@@ -230,15 +234,12 @@ static char* zend_string_to_char(const zend_string* zs) {
 
 static void sp_sanitize_charstring(char* c, size_t maxlen)
 {
-  for (size_t i = 0; *c; c++, i++) {
-    if (maxlen && i > maxlen - 1) {
-      *c = 0;
-      return;
-    }
-    if (*c < 32 || *c > 126) {
-      *c = '*';
+  for (size_t i = 0; i < maxlen - 1; i++) {
+    if (c[i] < 32 || c[i] > 126) {
+      c[i] = '*';
     }
   }
+  c[maxlen] = 0;
 }
 
 const zend_string* sp_zval_to_zend_string(const zval* zv) {
@@ -300,7 +301,7 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
     char* char_repr = NULL;
     if (arg_value) {
       char_repr = zend_string_to_char(arg_value);
-      sp_sanitize_charstring(char_repr, SPCFG(log_max_len));
+      sp_sanitize_charstring(char_repr, MIN(ZSTR_LEN(arg_value), (size_t)SPCFG(log_max_len)));
     }
     if (alias) {
       sp_log_auto(
@@ -341,7 +342,7 @@ void sp_log_disable_ret(const char* restrict path,
   }
   if (ret_value) {
     char_repr = zend_string_to_char(ret_value);
-    sp_sanitize_charstring(char_repr, SPCFG(log_max_len));
+    sp_sanitize_charstring(char_repr, MIN(ZSTR_LEN(ret_value), (size_t)SPCFG(log_max_len)));
   }
   if (alias) {
     sp_log_auto(
