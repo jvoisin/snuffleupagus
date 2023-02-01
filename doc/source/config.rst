@@ -497,6 +497,9 @@ not the one where the function is **called from**.
 
 For clarity, the presence of the ``allow`` or ``drop`` action is **mandatory**.
 
+In the logs, the parameters and the return values of function are url-encoded,
+to accommodate fragile log processors.
+
 .. warning::
 
   When you're writing rules, please do keep in mind that **the order matters**.
