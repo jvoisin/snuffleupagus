@@ -21,6 +21,6 @@ echo "1337\n";
 --EXPECTF--
 BLA
 
-Warning: [snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'include_once', because its argument 'inclusion path' content (%a/test.sim) matched a rule in %a/disabled_functions_include_once.php on line %d
+Warning: [snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'include_once', because its argument 'inclusion path' content (%a%2Ftest.sim) matched a rule in %a/disabled_functions_include_once.php on line %d
 MEH
 1337

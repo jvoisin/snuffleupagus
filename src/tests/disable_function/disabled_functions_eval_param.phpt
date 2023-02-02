@@ -11,4 +11,4 @@ eval('$var = 1337 + 1337;');
 print("Variable: $var\n");
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'eval', because its argument 'code' content ($var = 1337 + 1337;) matched a rule in %s/tests/disable_function/disabled_functions_eval_param.php(3) : eval()'d code on line 1
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'eval', because its argument 'code' content (%24var%20%3D%201337%20%2B%201337%3B) matched a rule in %s/tests/disable_function/disabled_functions_eval_param.php(3) : eval()'d code on line 1

@@ -232,16 +232,6 @@ static char* zend_string_to_char(const zend_string* zs) {
   return copy;
 }
 
-static void sp_sanitize_charstring(char* c, size_t maxlen)
-{
-  for (size_t i = 0; i < maxlen - 1; i++) {
-    if (c[i] < 32 || c[i] > 126) {
-      c[i] = '*';
-    }
-  }
-  c[maxlen] = 0;
-}
-
 const zend_string* sp_zval_to_zend_string(const zval* zv) {
   switch (Z_TYPE_P(zv)) {
     case IS_LONG: {
@@ -300,8 +290,11 @@ void sp_log_disable(const char* restrict path, const char* restrict arg_name,
   if (arg_name) {
     char* char_repr = NULL;
     if (arg_value) {
-      char_repr = zend_string_to_char(arg_value);
-      sp_sanitize_charstring(char_repr, MIN(ZSTR_LEN(arg_value), (size_t)SPCFG(log_max_len)));
+      zend_string *arg_value_dup = zend_string_init(ZSTR_VAL(arg_value), ZSTR_LEN(arg_value), 0);
+      arg_value_dup = php_raw_url_encode(ZSTR_VAL(arg_value_dup), ZSTR_LEN(arg_value_dup));
+      char_repr = zend_string_to_char(arg_value_dup);
+      size_t max_len = MIN(ZSTR_LEN(arg_value_dup), (size_t)SPCFG(log_max_len));
+      char_repr[max_len] = '\0';
     }
     if (alias) {
       sp_log_auto(
@@ -341,8 +334,11 @@ void sp_log_disable_ret(const char* restrict path,
     sp_log_request(dump, config_node->textual_representation);
   }
   if (ret_value) {
-    char_repr = zend_string_to_char(ret_value);
-    sp_sanitize_charstring(char_repr, MIN(ZSTR_LEN(ret_value), (size_t)SPCFG(log_max_len)));
+    zend_string *ret_value_dup = zend_string_init(ZSTR_VAL(ret_value), ZSTR_LEN(ret_value), 0);
+    ret_value_dup = php_raw_url_encode(ZSTR_VAL(ret_value_dup), ZSTR_LEN(ret_value_dup));
+    char_repr = zend_string_to_char(ret_value_dup);
+    size_t max_len = MIN(ZSTR_LEN(ret_value_dup), (size_t)SPCFG(log_max_len));
+    char_repr[max_len] = '\0';
   }
   if (alias) {
     sp_log_auto(

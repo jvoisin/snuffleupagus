@@ -19,4 +19,4 @@ echo "1337";
 ?>
 --EXPECTF--
 BLA
-Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'require_once', because its argument 'inclusion path' content (%a/test.meh) matched a rule in %a/disabled_functions_require_once.php on line %d
+Fatal error: [snuffleupagus][0.0.0.0][disabled_function][drop] Aborted execution on call of the function 'require_once', because its argument 'inclusion path' content (%a%2Ftest.meh) matched a rule in %a/disabled_functions_require_once.php on line %d
