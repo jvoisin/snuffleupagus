@@ -86,8 +86,6 @@ Having a secret server-side key will prevent anyone (even the user)
 from reading the content of the cookie, reducing the impact of an application storing sensitive data client-side.
 
 
-
-
 .. _fileupload-feature:
 
 Remote code execution via file-upload
@@ -111,6 +109,13 @@ inside the script to ensure the file doesn't contain any valid PHP code, with so
 ::
 
   $ php -d vld.execute=0 -d vld.active=1 -d extension=vld.so $file
+
+One could also filter on the file extensions, with something like this:
+
+::
+
+  #!/bin/bash
+  exit $([[ $SP_FILENAME =~ *\.php* ]])
 
 
 Examples of related vulnerabilities
