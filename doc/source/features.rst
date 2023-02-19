@@ -185,7 +185,7 @@ Examples of related vulnerabilities
 - `CVE-2016-5726 <http://seclists.org/oss-sec/2016/q2/521>`_: Unauthenticated remote code execution in Simple Machines Forums
 - `CVE-2016-???? <https://www.computest.nl/advisories/CT-2016-1110_Observium.txt>`_: Unauthenticated remote code execution in Observium (leading to remote root)
 - `CVE-2017-2641 <http://netanelrub.in/2017/03/20/moodle-remote-code-execution/>`_: Unauthenticated remote code execution in Moodle
-- `CVE-2018-17057 <https://www.exploit-db.com/exploits/46634>`: Unauthenticated remote code execution in LimeSurvey
+- `CVE-2018-17057 <https://www.exploit-db.com/exploits/46634>`__: Unauthenticated remote code execution in LimeSurvey
 - `CVE-2018-19274 <https://blog.ripstech.com/2018/phpbb3-phar-deserialization-to-remote-code-execution/>`__: Authenticated remote code execution in phpBB
 - `CVE-2019-6340 <https://www.ambionics.io/blog/drupal8-rce>`__:  Unauthenticated remote code execution in Drupal
 
