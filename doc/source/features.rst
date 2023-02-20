@@ -336,7 +336,7 @@ and various other types mismatch.
 This feature is largely inspired from the
 `autostrict <https://github.com/krakjoe/autostrict>`_ module from `krakjoe <http://krakjoe.ninja>`__.
 
-PHP8 already has [this feature](https://wiki.php.net/rfc/consistent_type_errors) for internal functions.
+PHP8 already has `this feature <https://wiki.php.net/rfc/consistent_type_errors>`__ for internal functions.
 
 
 .. _sloppy-comparisons-feature:
@@ -360,7 +360,7 @@ but also the `in_array
 <https://secure.php.net/manual/en/function.array-search.php>`__ and `array_keys
 <https://secure.php.net/manual/en/function.array-keys.php>`__ functions.
 
-PHP8 is implementing [a subset](https://wiki.php.net/rfc/consistent_type_errors) of this feature.
+PHP8 is implementing `a subset <https://wiki.php.net/rfc/consistent_type_errors>`__ of this feature.
 
 
 .. _readonly-exec-feature:
