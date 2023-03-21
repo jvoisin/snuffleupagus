@@ -42,6 +42,7 @@ It can either be set to ``strict`` or ``lax``:
 ::
 
   sp.cookie.name("cookie1").samesite("lax");
+  sp.cookie.name_r("^cookie[0-9]+").samesite("lax");
   sp.cookie.name("cookie2").samesite("strict");;
 
 
