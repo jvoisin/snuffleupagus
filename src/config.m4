@@ -41,6 +41,13 @@ if test "$PHP_DEBUG" = "yes"; then
   fi
 fi
 
+AC_MSG_CHECKING([for NTS])
+if test "$PHP_THREAD_SAFETY" != "no"; then
+  AC_MSG_ERROR([ZTS (thread safe) is not supported, please use NTS (standard) build of PHP])
+else
+  AC_MSG_RESULT([ok])
+fi
+
 AC_CHECK_LIB(pcre, pcre_compile, AC_DEFINE(HAVE_PCRE, 1, [have pcre]))
 
 if test "$PHP_SNUFFLEUPAGUS" = "yes"; then
