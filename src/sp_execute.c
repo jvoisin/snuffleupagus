@@ -19,7 +19,7 @@ ZEND_COLD static inline void terminate_if_writable(char const* const filename) {
     errmsg = "Attempted execution of a writable file";
     goto violation;
   }
-  if (errno != EACCES) {
+  if (errno != EACCES && errno != EROFS && errno != EPERM) {
     goto err;
   }
 
@@ -45,7 +45,7 @@ ZEND_COLD static inline void terminate_if_writable(char const* const filename) {
     efree(dirname);
     goto violation;
   }
-  if (errno != EACCES) {
+  if (errno != EACCES && errno != EROFS && errno != EPERM) {
     efree(dirname);
     goto err;
   }
