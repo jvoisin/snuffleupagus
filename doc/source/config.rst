@@ -330,6 +330,14 @@ It can either be ``enabled`` or ``disabled`` and can be used in ``simulation`` m
 file or the folder containing it is owned by the user the PHP process is
 running under.
 
+Extended checks, enabled by default, can be explicitly enabled via
+``extended_checks`` and disabled via ``no_extended_checks``. The checks
+include:
+
+* verifying the effective user id;
+* verifying that the current folder isn't writable;
+* verifying the current folder effective user id.
+
 ::
 
   sp.readonly_exec.enable();
