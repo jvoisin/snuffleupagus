@@ -21,7 +21,6 @@ jobs:
         name:
           [
             "debian-buster",
-            "debian-stretch",
             "debian-bullseye",
             "debian-sid",
             "debian-bookworm",
@@ -33,8 +32,6 @@ jobs:
         include:
           - name: debian-buster
             container: debian:buster
-          - name: debian-stretch
-            container: debian:stretch
           - name: debian-bullseye
             container: debian:bullseye
           - name: debian-sid
