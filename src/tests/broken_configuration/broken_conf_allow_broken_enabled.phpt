@@ -11,5 +11,5 @@ error_log=/dev/null
 echo 1337;
 ?>
 --EXPECT--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Parser error on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] parser error on line 1 in Unknown on line 0
 1337

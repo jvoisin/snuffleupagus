@@ -8,15 +8,19 @@
 #define cs_log_info(fmt, ...) sp_log_msg("config", SP_LOG_INFO, fmt, ##__VA_ARGS__)
 #define cs_log_warning(fmt, ...) sp_log_warn("config", fmt, ##__VA_ARGS__)
 
+#define MAX_CONDITIONS 100
+#define MAX_KEYWORDS 16
+
 
 zend_string *sp_get_arg_string(sp_parsed_keyword const *const kw) {
   if (!kw || !kw->arg) {
     return NULL;
   }
+
   zend_string *ret = zend_string_init(kw->arg, kw->arglen, 1);
   char *pin, *pout;
   pin = pout = ZSTR_VAL(ret);
-  char *pend = pin + ZSTR_LEN(ret);
+  char const *const pend = pin + ZSTR_LEN(ret);
 
   while (pin < pend) {
     if (*pin == '\\') {
@@ -37,31 +41,38 @@ zend_string *sp_get_arg_string(sp_parsed_keyword const *const kw) {
 
 zend_string *sp_get_textual_representation(sp_parsed_keyword const *const parsed_rule) {
   // a rule is "sp.keyword...keyword(arg);\0"
-  size_t len = 3; // sp + ;
+  size_t len = 3; // "sp" + ";"
   for (const sp_parsed_keyword *kw = parsed_rule; kw->kw; kw++) {
     len++; // .
     len += kw->kwlen;
     if (kw->argtype == SP_ARGTYPE_EMPTY) {
       len += 2; // ()
     } else if (kw->argtype == SP_ARGTYPE_STR) {
-        len += 4;
-        len += kw->arglen;
+      len += 2; // ("
+      len += kw->arglen;
+      len += 2; // ")
     }
   }
 
   zend_string *ret = zend_string_alloc(len, 1);
   char *ptr = ZSTR_VAL(ret);
 
-  memcpy(ptr, "sp", 2); ptr += 2;
+  memcpy(ptr, "sp", 2);
+  ptr += 2;
+
   for (const sp_parsed_keyword *kw = parsed_rule; kw->kw; kw++) {
     *ptr++ = '.';
-    memcpy(ptr, kw->kw, kw->kwlen); ptr += kw->kwlen;
+
+    memcpy(ptr, kw->kw, kw->kwlen);
+    ptr += kw->kwlen;
+
     if (kw->argtype == SP_ARGTYPE_EMPTY || kw->argtype == SP_ARGTYPE_STR || kw->argtype == SP_ARGTYPE_UNKNOWN) {
       *ptr++ = '(';
     }
     if (kw->argtype == SP_ARGTYPE_STR && kw->arg) {
       *ptr++ = '"';
-      memcpy(ptr, kw->arg, kw->arglen); ptr += kw->arglen;
+      memcpy(ptr, kw->arg, kw->arglen);
+      ptr += kw->arglen;
       *ptr++ = '"';
     }
     if (kw->argtype == SP_ARGTYPE_EMPTY || kw->argtype == SP_ARGTYPE_STR || kw->argtype == SP_ARGTYPE_UNKNOWN) {
@@ -79,16 +90,16 @@ static void str_dtor(zval *zv) {
 
 // sy_ functions and macros are helpers for the shunting yard algorithm
 #define sy_res_push(val) \
-  if (cond_res_i >= 100) { cs_log_error("condition too complex on line %d", lineno); goto out; } \
+  if (cond_res_i >= MAX_CONDITIONS) { cs_log_error("condition too complex on line %d", lineno); goto out; } \
   cond_res[cond_res_i++] = val;
 #define sy_res_pop() cond_res[--cond_res_i]
 #define sy_op_push(op) \
-  if (cond_op_i >= 100) { cs_log_error("condition too complex on line %d", lineno); goto out; } \
+  if (cond_op_i >= MAX_CONDITIONS) { cs_log_error("condition too complex on line %d", lineno); goto out; } \
   cond_op[cond_op_i++] = op;
 #define sy_op_pop() cond_op[--cond_op_i]
 #define sy_op_peek() cond_op[cond_op_i-1]
 
-static inline int sy_op_precedence(char op) {
+static inline int sy_op_precedence(const char op) {
   switch (op) {
     case '!': return 120;
     case '<':
@@ -102,13 +113,15 @@ static inline int sy_op_precedence(char op) {
   }
   return 0;
 }
-static inline int sy_op_is_left_assoc(char op) {
+
+static inline int sy_op_is_left_assoc(const char op) {
   switch (op) {
     case '!': return 0;
   }
   return 1;
 }
-static int sy_apply_op(char op, int a, int b) {
+
+static int sy_apply_op(const char op, const int a, const int b) {
   switch (op) {
     case '!': return !a;
     case '&': return (b && a);
@@ -138,79 +151,77 @@ static int sy_apply_op(char op, int a, int b) {
       tmpstr[tmplen] = 0;
 
 
-zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_keyword*))
+zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_parsed_keyword*))
 {
-  const char *YYCURSOR = data;
   const char *YYMARKER, *t1, *t2, *t3, *t4;
-  /*!stags:re2c format = 'const char *@@;\n'; */
 
   int ret = FAILURE;
-
-  const int max_keywords = 16;
-  sp_parsed_keyword parsed_rule[max_keywords+1];
+  sp_parsed_keyword parsed_rule[MAX_KEYWORDS+1];
   int kw_i = 0;
 
   HashTable vars;
   zend_hash_init(&vars, 10, NULL, str_dtor, 1);
   zend_hash_str_add_ptr(&vars, ZEND_STRL("PHP_VERSION_ID"), zend_string_init(ZEND_STRL(ZEND_TOSTR(PHP_VERSION_ID)), 1));
 
-
-  int cond_res[100] = {1};
+  int cond_res[MAX_CONDITIONS] = {1};
   int cond_res_i = 0;
-  char cond_op[100] = {0};
+  char cond_op[MAX_CONDITIONS] = {0};
   int cond_op_i = 0;
 
   int cond = yycinit;
   long lineno = 1;
 
+  /*!stags:re2c format = 'const char *@@;\n'; */
   /*!re2c
-    re2c:define:YYCTYPE = "unsigned char";
-    // re2c:define:YYCURSOR = data;
+    re2c:define:YYCTYPE = char;
+    re2c:define:YYCURSOR = data;
+    //re2c:sentinel = 0;
     re2c:yyfill:enable = 0;
+    re2c:eof = -1;
     re2c:flags:tags = 1;
     re2c:api:style = free-form;
     re2c:define:YYGETCONDITION = "cond";
     re2c:define:YYSETCONDITION = "cond = @@;";
 
     end = "\x00";
-    nl = "\r"?"\n";
-    ws = [ \t];
-    keyword = [a-zA-Z_][a-zA-Z0-9_]*;
-    string = "\"" ("\\\"" | [^"\r\n])* "\"";
+    newline = "\r"?"\n";
+    whitespace = [ \t];
+    keyword = [a-zA-Z][a-zA-Z0-9_]*;
+    string = ["] ("\\"["] | [^"\r\n\x00])* ["];
 
-    <init> *       { cs_log_error("Parser error on line %d", lineno); goto out; }
-    <init> ws+     { goto yyc_init; }
-    <init> [;#] .* { goto yyc_init; }
-    <init> nl      { lineno++; goto yyc_init; }
-    <init> "sp"    { kw_i = 0;  goto yyc_rule; }
-    <init> end     { ret = SUCCESS; goto out; }
-    <init> "@"? "set" ws+ @t1 keyword @t2 ws+ @t3 string @t4 ws* ";"? {
+    <init> *                 { cs_log_error("parser error on line %d", lineno); goto out; }
+    <init> whitespace+       { goto yyc_init; }
+    <init> [;#] [^\r\n\x00]* { goto yyc_init; }
+    <init> newline           { lineno++; goto yyc_init; }
+    <init> "sp"              { kw_i = 0;  goto yyc_rule; }
+    <init> end               { ret = SUCCESS; goto out; }
+    <init> "@"? "set" whitespace+ @t1 keyword @t2 whitespace+ @t3 string @t4 whitespace* ";" {
       if (!cond_res[0]) { goto yyc_init; }
       char *key = (char*)t1;
-      int keylen = t2-t1;
+      int keylen = t2 - t1;
       zend_string *tmp = zend_hash_str_find_ptr(&vars, key, keylen);
       if (tmp) {
         zend_hash_str_del(&vars, key, keylen);
       }
-      tmp = zend_string_init(t3+1, t4-t3-2, 1);
+      tmp = zend_string_init(t3+1, t4-t3-2, 1);  // `-2` for the surrounding double quotes.
       zend_hash_str_add_ptr(&vars, key, keylen, tmp);
       goto yyc_init;
     }
-    <init> "@condition" ws+ { cond_res_i = 0; goto yyc_cond; }
-    <init> "@end_condition" ws* ";" { cond_res[0] = 1; cond_res_i = 0; goto yyc_init; }
-    <init> ( "@log" | "@info" ) ws+ @t1 string @t2 ";"? {
+    <init> "@condition" whitespace+         { cond_res_i = 0; goto yyc_cond; }
+    <init> "@end_condition" whitespace* ";" { cond_res[0] = 1; cond_res_i = 0; goto yyc_init; }
+    <init> ( "@log" | "@info" ) whitespace+ @t1 string @t2 ";" {
       if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);
       cs_log_info("[line %d]: %s", lineno, tmpstr);
       goto yyc_init;
     }
-    <init> ( "@warn" | "@warning" ) ws+ @t1 string @t2 ";"? {
+    <init> ( "@warn" | "@warning" ) whitespace+ @t1 string @t2 ";" {
       if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);
       cs_log_warning("[line %d]: %s", lineno, tmpstr);
       goto yyc_init;
     }
-    <init> ( "@err" | "@error" ) ws+ @t1 string @t2 ";"? {
+    <init> ( "@err" | "@error" ) whitespace+ @t1 string @t2 ";" {
       if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);
       cs_log_error("[line %d]: %s", lineno, tmpstr);
@@ -218,8 +229,8 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
     }
 
 
-    <cond> ws+ { goto yyc_cond; }
-    <cond> nl  { lineno++; goto yyc_cond; }
+    <cond> whitespace+ { goto yyc_cond; }
+    <cond> newline     { lineno++; goto yyc_cond; }
     <cond> @t1 keyword @t2 "(" @t3 string? @t4 ")" {
       if (t4-t3 >= 2 && strlen("extension_loaded") == t2-t1 && strncmp("extension_loaded", t1, t2-t1) == 0) {
         int is_loaded = (zend_hash_str_find_ptr(&module_registry, t3+1, t4-t3-2) != NULL);
@@ -240,10 +251,10 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
       goto yyc_cond_op;
     }
     <cond> @t1 [0-9]+ @t2 { sy_res_push(atoi(t1));  goto yyc_cond_op; }
-    <cond> @t1 "!" { sy_op_push(*t1); goto yyc_cond; }
-    <cond> @t1 "(" { sy_op_push(*t1); goto yyc_cond; }
-    <cond_op> ws+ { goto yyc_cond_op; }
-    <cond_op> nl  { lineno++; goto yyc_cond_op; }
+    <cond> @t1 "!"        { sy_op_push(*t1); goto yyc_cond; }
+    <cond> @t1 "("        { sy_op_push(*t1); goto yyc_cond; }
+    <cond_op> whitespace+ { goto yyc_cond_op; }
+    <cond_op> newline     { lineno++; goto yyc_cond_op; }
     <cond_op> @t1 ( "&&" | "||" | "<" | ">" | "==" | "<=" | ">=") @t2 {
       char op1 = *t1;
       if (t2-t1 == 2) {
@@ -252,7 +263,13 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
           case '>': op1 = 'G'; break; // >=
         }
       }
-      while (cond_op_i && sy_op_peek() != '(' && ((sy_op_precedence(sy_op_peek()) > sy_op_precedence(*t1)) || (sy_op_precedence(sy_op_peek()) == sy_op_precedence(*t1) && sy_op_is_left_assoc(*t1)))) {
+      while (cond_op_i &&
+	     sy_op_peek() != '(' &&
+	       (
+	         (sy_op_precedence(sy_op_peek()) > sy_op_precedence(*t1)) ||
+	         (sy_op_precedence(sy_op_peek()) == sy_op_precedence(*t1) && sy_op_is_left_assoc(*t1))
+	       )
+	     ) {
         SY_APPLY_OP_FROM_STACK();
       }
       sy_op_push(*t1);
@@ -263,30 +280,37 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
         SY_APPLY_OP_FROM_STACK();
       }
       if (cond_op_i == 0 || sy_op_peek() != '(') {
-        cs_log_error("unbalanced parathesis on line %d", lineno); goto out;
+        cs_log_error("unbalanced parenthesis on line %d", lineno); goto out;
       }
       cond_op_i--;
       goto yyc_cond_op;
     }
     <cond_op> ";" {
       while (cond_op_i) {
-        if (sy_op_peek() == '(') { cs_log_error("unbalanced parathesis on line %d", lineno); goto out; }
+        if (sy_op_peek() == '(') { cs_log_error("unbalanced parenthesis on line %d", lineno); goto out; }
         SY_APPLY_OP_FROM_STACK();
       }
       if (cond_res_i > 1) { cs_log_error("invalid condition on line %d", lineno); goto out; }
       goto yyc_init;
     }
-    <cond, cond_op> * { cs_log_error("Syntax error in condition on line %d", lineno); goto out; }
+    <cond, cond_op> * { cs_log_error("syntax error in condition on line %d", lineno); goto out; }
 
-    <rule> ws+     {  goto yyc_rule; }
-    <rule> nl / ( nl | ws )* "." {  lineno++; goto yyc_rule; }
-    <rule> "." @t1 keyword @t2 ( "(" @t3 ( string? | keyword ) @t4 ")" )?  {
+    <rule> whitespace+     {  goto yyc_rule; }
+    <rule> newline / ( newline | whitespace )* "." {  lineno++; goto yyc_rule; }
+    <rule> "." @t1 keyword @t2 ( "(" @t3 ( string? | keyword ) @t4 ")" )? {
       if (!cond_res[0]) { goto yyc_rule; }
-      if (kw_i == max_keywords) {
-        cs_log_error("Too many keywords in rule (more than %d) on line %d", max_keywords, lineno);
+      if (kw_i == MAX_KEYWORDS) {
+        cs_log_error("too many keywords in rule (more than %d) on line %d", MAX_KEYWORDS, lineno);
         goto out;
       }
-      sp_parsed_keyword kw = {.kw = (char*)t1, .kwlen = t2-t1, .arg = (char*)t3, .arglen = t4-t3, .argtype = SP_ARGTYPE_UNKNOWN, .lineno = lineno};
+      sp_parsed_keyword kw = {
+        .kw = (char*)t1,
+	.kwlen = t2-t1,
+	.arg = (char*)t3,
+	.arglen = t4-t3,
+	.argtype = SP_ARGTYPE_UNKNOWN,
+	.lineno = lineno
+      };
       if (t3 && t4) {
         if (t3 == t4) {
           kw.argtype = SP_ARGTYPE_EMPTY;
@@ -320,7 +344,6 @@ zend_result sp_config_scan(char *data, zend_result (*process_rule)(sp_parsed_key
       goto yyc_init;
     }
     <rule> *       { goto end_of_rule; }
-
   */
 out:
   zend_hash_destroy(&vars);
