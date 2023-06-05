@@ -27,6 +27,9 @@ Talks
 """"
 - `Custom php Introspection for 0-Day Research - GreHack 2022, Grenoble - Groumpf and Laluka <https://thinkloveshare.com/hacking/php-internalog-introspection-for-0day-research/Custom-php-Introspection-for-0-Day-Research.pdf>`__ - `transcript and blogpost <https://thinkloveshare.com/hacking/php-internalog-introspection-for-0day-research/>`__
 
+2023
+""""
+- `S01-E35-FR | Spip email/eval n-day - Analysis with Snuffleupagus, with @olivier_boschko<https://www.youtube.com/watch?v=8baCoHYItwk>`__ (fr)
 
 
 Mentions
