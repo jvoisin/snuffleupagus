@@ -50,8 +50,6 @@ static zend_string *sp_do_hash_hmac_sha256(char* restrict data, size_t data_len,
   return hex_digest;
 }
 
-// ------------------
-
 PHP_FUNCTION(sp_serialize) {
   zif_handler orig_handler;
 
@@ -130,11 +128,16 @@ PHP_FUNCTION(sp_unserialize) {
     }
   } else { status = 1; }
 
-  zif_handler orig_handler;
+  zif_handler orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("unserialize"));
   if (0 == status) {
-    if ((orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("unserialize")))) {
+#if PHP_VERSION_ID >= 80300
+      // PHP8.3 gives a warning about trailing data in unserialize strings.
+      php_unserialize_with_options(return_value, buf, buf_len - 64, opts, "unserialize");
+#else
+    if ((orig_handler)) {
       orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     }
+#endif
   } else {
     const sp_config_unserialize *config_unserialize = &(SPCFG(unserialize));
     if (config_unserialize->dump) {
@@ -143,9 +146,14 @@ PHP_FUNCTION(sp_unserialize) {
     }
     if (true == config_unserialize->simulation) {
       sp_log_simulation("unserialize", "Invalid HMAC for %s", serialized_str);
-      if ((orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("unserialize")))) {
+#if PHP_VERSION_ID >= 80300
+      // PHP8.3 gives a warning about trailing data in unserialize strings.
+      php_unserialize_with_options(return_value, buf, buf_len - 64, opts, "unserialize");
+#else
+      if ((orig_handler)) {
         orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
       }
+#endif
     } else {
       sp_log_drop("unserialize", "Invalid HMAC for %s", serialized_str);
     }
