@@ -89,7 +89,7 @@ inline static void is_builtin_matching(
   should_disable_ht(EG(current_execute_data), function_name, param_value, param_name, SPCFG(disabled_functions_reg).disabled_functions, ht);
 }
 
-static void ZEND_HOT is_in_eval_and_whitelisted(zend_execute_data const* const execute_data) {
+static void is_in_eval_and_whitelisted(zend_execute_data const* const execute_data) {
   sp_config_eval const* const config_eval = &(SPCFG(eval));
 
   if (EXPECTED(0 == SPG(in_eval))) {

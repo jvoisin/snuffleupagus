@@ -23,7 +23,7 @@ sp_pcre* sp_pcre_compile(const char* const pattern) {
   return ret;
 }
 
-bool ZEND_HOT sp_is_regexp_matching_len(const sp_pcre* regexp, const char* str, size_t len) {
+bool sp_is_regexp_matching_len(const sp_pcre* regexp, const char* str, size_t len) {
   int ret = 0;
 
   assert(NULL != regexp);
