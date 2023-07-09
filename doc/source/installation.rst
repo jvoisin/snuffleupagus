@@ -44,7 +44,7 @@ prefer:
 
 
 Be careful, on some distribution, there are separate configurations for
-cli/fmp/cgi/… be sure to edit the right one.
+cli/fpm/cgi/… be sure to edit the right one.
 
 If you're using `Gentoo <https://gentoo.org>`__, you might encounter the
 following error:
