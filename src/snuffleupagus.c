@@ -209,7 +209,7 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
     if (SPG(is_config_valid) == SP_CONFIG_INVALID) {
       sp_log_err("config", "Invalid configuration file");
     } else if (SPG(is_config_valid) == SP_CONFIG_NONE) {
-      sp_log_warn("config", "No configuration specificed via sp.configuration_file");
+      sp_log_warn("config", "No configuration specified via sp.configuration_file");
     }
   }
 
