@@ -24,10 +24,9 @@ jobs:
             "debian-bullseye",
             "debian-sid",
             "debian-bookworm",
-            "ubuntu-bionic",
             "ubuntu-focal",
             "ubuntu-jammy",
-            "ubuntu-kinetic",
+            "ubuntu-lunar",
           ]
         include:
           - name: debian-buster
@@ -38,14 +37,12 @@ jobs:
             container: debian:sid
           - name: debian-bookworm
             container: debian:bookworm
-          - name: ubuntu-bionic
-            container: ubuntu:bionic
           - name: ubuntu-focal
             container: ubuntu:focal
           - name: ubuntu-jammy
             container: ubuntu:jammy
-          - name: ubuntu-kinetic
-            container: ubuntu:kinetic
+          - name: ubuntu-lunar
+            container: ubuntu:lunar
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
