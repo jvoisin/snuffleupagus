@@ -1,3 +1,12 @@
+snuffleupagus (0.10.0) UNRELEASED; urgency=low
+  [ jvoisin ]
+  * Compatibility with PHP8.3
+  * Add `sp.log_max_len` to limit the maximum size of the log messages
+  * Add an example configuration for Xenforo 2.2.12 
+  * Url encode functions arguments when logging them
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Wed, 20 Sep 2023 15:25:00 +0200
+
 snuffleupagus (0.9.0) UNRELEASED; urgency=low
   [ jvoisin ]
   * Compatibility with PHP8.2

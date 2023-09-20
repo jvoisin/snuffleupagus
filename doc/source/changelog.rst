@@ -1,6 +1,25 @@
 Changelog
 =========
 
+0.10.0 - `Babar the Elephant <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.10.0>`__ 2023/09/20
+----------------------------------------------------------------------------------------------------------
+
+New features
+^^^^^^^^^^^^
+* Compatibility with PHP8.3
+* Add `sp.log_max_len` to limit the maximum size of the log messages
+* Add an example configuration for Xenforo 2.2.12 
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+* Url encode functions arguments when logging them
+
+Bug fixes
+^^^^^^^^^
+* Fix a possible NULL-byte truncation when outputting parameters in the logs
+* Make readonly_exec play nice on readonly filesystems 
+
+
 0.9.0 - `Elephant seal <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.9.0>`__ 2023/01/03
 ---------------------------------------------------------------------------------------------------
 
