@@ -72,6 +72,9 @@ Rules can be split into lines and contain whitespace for easier readability and 
 
 The terminating ``;`` is optional for now, but it should be used for future compatibility.
 
+Rules, including comments, needs to be written in ASCII, other encodings aren't
+supported and might cause syntax errors and related issues.
+
 Miscellaneous
 -------------
 
