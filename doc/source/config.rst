@@ -436,23 +436,23 @@ Filters
 
 - ``alias(description)``: human-readable ``description`` of the rule
 - ``cidr(ip/mask)``: match on the client's `cidr <https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing>`_
-- ``filename(name)``: match in the file ``name``
-- ``filename_r(regexp)``: the file name matching the ``regexp``
-- ``function(name)``: match on function ``name``
-- ``function_r(regexp)``: the function matching the ``regexp``
-- ``hash(sha256)``: match on the file's `sha256 <https://en.wikipedia.org/wiki/SHA-2>`_ sum
-- ``line(line_number)``: match on the file's line.
-- ``param(name)``: match on the function's parameter ``name``
+- ``filename(name)``: exact match on the file's ``name``
+- ``filename_r(regexp)``: file name matching the ``regexp``
+- ``function(name)``: exact match on function ``name``
+- ``function_r(regexp)``: function name matching the ``regexp``
+- ``hash(sha256)``: exact match on the file's `sha256 <https://en.wikipedia.org/wiki/SHA-2>`_ sum
+- ``line(line_number)``: exact match on the file's line.
+- ``param(name)``: exact match on the function's parameter ``name``
 - ``param_r(regexp)``: match on the function's parameter ``regexp``
-- ``param_type(type)``: match on the function's parameter ``type``
-- ``pos(nth_argument)``: match on the nth argument, starting from ``0``
-- ``ret(value)``: match on the function's return ``value``
+- ``param_type(type)``: exact match on the function's parameter ``type``
+- ``pos(nth_argument)``: exact match on the nth argument, starting from ``0``
+- ``ret(value)``: exact match on the function's return ``value``
 - ``ret_r(regexp)``: match with a ``regexp`` on the function's return
 - ``ret_type(type_name)``: match on the ``type_name`` of the function's return value
-- ``value(value)``: match on a literal ``value``
+- ``value(value)``: exact match on a literal ``value``
 - ``value_r(regexp)``: match on a value matching the ``regexp``
-- ``var(name)``: match on a **local variable** ``name``
-- ``key(name)``: match on the presence of ``name`` as a key in the hashtable
+- ``var(name)``: exact match on a **local variable** ``name``
+- ``key(name)``: exact match on the presence of ``name`` as a key in the hashtable
 - ``key_r(regexp)``: match with ``regexp`` on keys in the hashtable
 
 The ``type`` must be one of the following values:
