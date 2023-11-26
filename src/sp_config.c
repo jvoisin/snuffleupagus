@@ -110,7 +110,7 @@ SP_PARSEKW_FN(parse_empty) {
     return SP_PARSER_ERROR;
   }
   if (kw->argtype != SP_ARGTYPE_EMPTY) {
-    sp_log_err("config", "Missing paranthesis for keyword '%s' - it should be '%s()' on line %zu", token, token, kw->lineno);
+    sp_log_err("config", "Missing parenthesis for keyword '%s' - it should be '%s()' on line %zu", token, token, kw->lineno);
     return SP_PARSER_ERROR;
   }
   *(bool *)retval = true;
