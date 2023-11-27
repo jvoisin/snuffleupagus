@@ -191,6 +191,7 @@ sp.ini.key("mysqli.max_persistent").set("-1").ro();
 sp.ini.key("mysqli.rollback_on_cached_plink").set("0").ro();
 @condition extension_loaded("mysqli") && PHP_VERSION_ID < 80200;
 sp.ini.key("mysqli.reconnect").set("0").ro();
+@end_condition
 @condition extension_loaded("mysqlnd");
 sp.ini.key("mysqlnd.collect_memory_statistics").set("0").ro();
 sp.ini.key("mysqlnd.collect_statistics").set("1").ro();
