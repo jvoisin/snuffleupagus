@@ -368,7 +368,7 @@ SP_PARSE_FN(parse_disabled_functions) {
     goto out;
   }
   if (df->filename && (*ZSTR_VAL(df->filename) != '/') &&
-             (0 != strncmp(ZSTR_VAL(df->filename), "phar://", sizeof("phar://")))) {
+             (0 != strncmp(ZSTR_VAL(df->filename), "phar://", strlen("phar://")))) {
     sp_log_err("config", "Invalid configuration line: 'sp.disabled_functions': '.filename' must be an absolute path or a phar archive on line %zu", parsed_rule->lineno);
     goto out;
   }
