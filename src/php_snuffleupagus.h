@@ -17,6 +17,7 @@
 #include <glob.h>
 #endif
 
+#include <ctype.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <inttypes.h>

@@ -25,10 +25,10 @@ string(2) "30"
 bool(false)
 string(3) "300"
 
-Warning: [snuffleupagus][0.0.0.0][ini_protection][log] INI value out of range in %a/ini_minmax.php on line 8
+Warning: [snuffleupagus][0.0.0.0][ini_protection][log] INI value 29 for `max_execution_time` out of range in %a/ini_minmax.php on line 8
 bool(true)
 string(3) "300"
 
-Warning: [snuffleupagus][0.0.0.0][ini_protection][log] INI value out of range in %a/ini_minmax.php on line 11
+Warning: [snuffleupagus][0.0.0.0][ini_protection][log] INI value 301 for `max_execution_time` out of range in %a/ini_minmax.php on line 11
 bool(true)
 string(3) "300"%A

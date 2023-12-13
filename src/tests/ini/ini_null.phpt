@@ -21,6 +21,6 @@ string(15) "foo@example.com"
 bool(false)
 string(0) ""
 
-Warning: [snuffleupagus][0.0.0.0][ini_protection][log] new INI value must not be NULL or empty in %a/ini_null.php on line 8
+Warning: [snuffleupagus][0.0.0.0][ini_protection][log] new INI value for `unserialize_callback_func` must not be NULL or empty in %a/ini_null.php on line 8
 bool(true)
 string(3) "def"%A
