@@ -1,7 +1,7 @@
 Source: snuffleupagus
 Priority: optional
 Maintainer: Julien (jvoisin) Voisin <julien.voisin+snuffleupagus@dustri.org>
-Build-Depends: debhelper-compat (= 13), dh-php, php-curl <!nocheck>, php-xml <!nocheck>, php7.0-dev | php7.1-dev | php7.2-dev | php7.3-dev | php7.4-dev | php8.0-dev | php8.1-dev | php8.2-dev | php8.3-dev
+Build-Depends: debhelper-compat (= 12), dh-php, php-curl <!nocheck>, php-xml <!nocheck>, php7.0-dev | php7.1-dev | php7.2-dev | php7.3-dev | php7.4-dev | php8.0-dev | php8.1-dev | php8.2-dev | php8.3-dev
 Standards-Version: 4.6.2
 Rules-Requires-Root: no
 Homepage: https://snuffleupagus.readthedocs.io
