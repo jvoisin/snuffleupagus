@@ -3,9 +3,10 @@ Priority: optional
 Maintainer: Julien (jvoisin) Voisin <julien.voisin+snuffleupagus@dustri.org>
 Build-Depends: debhelper-compat (= 13), dh-php, php-curl, php-xml, php7.0-dev | php7.1-dev | php7.2-dev | php7.3-dev | php7.4-dev | php8.0-dev | php8.1-dev | php8.2-dev | php8.3-dev
 Standards-Version: 4.1.3
-Homepage: https://github.com/jvoisin/snuffleupagus
+Homepage: https://snuffleupagus.readthedocs.io
 Section: php
-Vcs-Git: https://github.com/jvoisin/snuffleupagus
+Vcs-Browser: https://github.com/jvoisin/snuffleupagus
+Vcs-Git: https://github.com/jvoisin/snuffleupagus.git
 
 Package: snuffleupagus
 Architecture: any
