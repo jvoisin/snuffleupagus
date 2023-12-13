@@ -11,6 +11,29 @@
     sp_log_auto2("ini_protection", simulation, (cfg->policy_drop || (entry && entry->drop)), __VA_ARGS__); \
   }
 
+static const char* check_safe_key(const char* string) {
+  for (const char* p = string; *p != '\0'; p++) {
+    if (!isalnum((unsigned char)*p) && *p != '_' && *p != '.') {
+      return NULL;
+    }
+  }
+
+  return string;
+}
+
+static const char* check_safe_value(const char* string) {
+  for (const char* p = string; *p != '\0'; p++) {
+    if (*p == '\'' || *p == '"') {
+      return NULL;
+    }
+
+    if (!isgraph((unsigned char)*p)) {
+      return NULL;
+    }
+  }
+
+  return string;
+}
 
 static bool /* success */ sp_ini_check(zend_string *const restrict varname, zend_string const *const restrict new_value, sp_ini_entry **sp_entry_p) {
   if (!varname || ZSTR_LEN(varname) == 0) {
@@ -27,7 +50,8 @@ static bool /* success */ sp_ini_check(zend_string *const restrict varname, zend
   if (!entry) {
     if (cfg->policy_readonly) {
       if (!cfg->policy_silent_ro) {
-        sp_log_ini_check_violation("INI setting is read-only");
+        sp_log_ini_check_violation("INI setting `%s` is read-only",
+                                   check_safe_key(ZSTR_VAL(varname)) ? ZSTR_VAL(varname) : "<invalid>");
       }
       return simulation;
     }
@@ -38,7 +62,11 @@ static bool /* success */ sp_ini_check(zend_string *const restrict varname, zend
 
   if (SP_INI_ACCESS_READONLY_COND(entry, cfg)) {
     if (!cfg->policy_silent_ro) {
-      sp_log_ini_check_violation("%s", (entry->msg ? ZSTR_VAL(entry->msg) : "INI setting is read-only"));
+      if (entry->msg) {
+        sp_log_ini_check_violation("%s", ZSTR_VAL(entry->msg));
+      } else {
+        sp_log_ini_check_violation("INI setting `%s` is read-only", ZSTR_VAL(entry->key));
+      }
     }
     return simulation;
   }
@@ -48,7 +76,7 @@ static bool /* success */ sp_ini_check(zend_string *const restrict varname, zend
       return true; // allow NULL value and skip other tests
     }
     if (SP_INI_HAS_CHECKS_COND(entry)) {
-      sp_log_ini_check_violation("new INI value must not be NULL or empty");
+      sp_log_ini_check_violation("new INI value for `%s` must not be NULL or empty", ZSTR_VAL(entry->key));
       return simulation;
     }
     return true; // no new_value, but no checks to perform
@@ -66,14 +94,36 @@ static bool /* success */ sp_ini_check(zend_string *const restrict varname, zend
     if ((entry->min && zend_atol(ZSTR_VAL(entry->min), ZSTR_LEN(entry->min)) > lvalue) ||
         (entry->max && zend_atol(ZSTR_VAL(entry->max), ZSTR_LEN(entry->max)) < lvalue)) {
 #endif
-      sp_log_ini_check_violation("%s", (entry->msg ? ZSTR_VAL(entry->msg) : "INI value out of range"));
+      if (entry->msg) {
+        sp_log_ini_check_violation("%s", ZSTR_VAL(entry->msg));
+      } else {
+        sp_log_ini_check_violation("INI value %lld for `%s` out of range", lvalue, ZSTR_VAL(entry->key));
+      }
       return simulation;
     }
   }
 
   if (entry->regexp) {
     if (!sp_is_regexp_matching_zstr(entry->regexp, new_value)) {
-      sp_log_ini_check_violation("%s", (entry->msg ? ZSTR_VAL(entry->msg) : "INI value does not match regex"));
+      if (entry->msg) {
+        sp_log_ini_check_violation("%s", ZSTR_VAL(entry->msg));
+      } else {
+        zend_string *base64_new_val = NULL;
+        const char *safe_new_val = check_safe_value(ZSTR_VAL(new_value));
+        if (!safe_new_val) {
+          base64_new_val = php_base64_encode((const unsigned char*)(ZSTR_VAL(new_value)), ZSTR_LEN(new_value));
+          safe_new_val = base64_new_val ? ZSTR_VAL(base64_new_val) : "<invalid>";
+        }
+
+        sp_log_ini_check_violation("INI value `%s`%s for `%s` does not match regex",
+                                   safe_new_val,
+                                   base64_new_val ? "(base64)" : "",
+                                   ZSTR_VAL(entry->key));
+
+        if (base64_new_val) {
+          zend_string_release(base64_new_val);
+        }
+      }
       return simulation;
     }
   }
