@@ -60,7 +60,7 @@ jobs:
           apt-get -qqy --no-install-recommends install $PACKAGES_TO_INSTALL ||
           sudo apt-get -qqy --no-install-recommends install $PACKAGES_TO_INSTALL
       - name: Build debs
-        run: DPKG_SKIP_TESTS=1 dpkg-buildpackage -i -us -uc -tc -I -rfakeroot
+        run: DEB_BUILD_OPTIONS=nocheck dpkg-buildpackage -i -us -uc -tc -I -rfakeroot
       - name: Move built debs and rename
         run: |
           mv -v ../*.deb ./

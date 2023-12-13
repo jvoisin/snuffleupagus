@@ -6,3 +6,10 @@ Source: https://github.com/jvoisin/snuffleupagus
 Files: *
 Copyright: 2017-2018 NBS System, 2018 Julien Voisin
 License: LGPL
+
+License: LGPL
+ This file may be redistributed under the terms of the
+ GNU Lesser General Public License.
+ .
+ On Debian systems, the complete text of the GNU Lesser General Public
+ License can be found in ‘/usr/share/common-licenses/LGPL’.

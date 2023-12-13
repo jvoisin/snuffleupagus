@@ -23,7 +23,7 @@ snuffleupagus (0.8.3) UNRELEASED; urgency=low
   * Add config error for ini rules with identical key
   * Add disabled functions return type to config export
   * Make it actually possible to configure sloppy comparison on latests PHP7
-  * Allow file:// prefix in include() wich readonly_exec mode
+  * Allow file:// prefix in include() with readonly_exec mode
   * Fix a possible crash when exporting function list
   * Fix a minor memory leak when parsing cookie-related configuration
 
@@ -77,6 +77,7 @@ snuffleupagus (0.7.1) UNRELEASED; urgency=low
   * Improve a bit the verbosity of the logs                                        
   * Add a rules file for php8  
 
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Sun, 02 Aug 2021 19:29:00 +0200
 
 snuffleupagus (0.7.0) UNRELEASED; urgency=medium
   [ jvoisin ]
@@ -86,6 +87,8 @@ snuffleupagus (0.7.0) UNRELEASED; urgency=medium
   * PCRE2 is used when possible
   * The `generate_rules.php` script is now more portable
   * The strict mode is now disableable
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Sun, 02 Jan 2021 19:22:00 +0100
 
 snuffleupagus (0.6.0) UNRELEASED; urgency=medium
 
