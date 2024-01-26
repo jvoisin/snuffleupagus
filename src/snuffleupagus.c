@@ -208,8 +208,10 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
   if (!SPG(allow_broken_configuration)) {
     if (SPG(is_config_valid) == SP_CONFIG_INVALID) {
       sp_log_err("config", "Invalid configuration file");
+      return SUCCESS;
     } else if (SPG(is_config_valid) == SP_CONFIG_NONE) {
       sp_log_warn("config", "No configuration specified via sp.configuration_file");
+      return SUCCESS;
     }
   }
 
