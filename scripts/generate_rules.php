@@ -41,8 +41,12 @@ foreach($objects as $name => $object){
 	}
 
 	foreach(token_get_all($file_content) as $token) {
-		if ($token[0] !== T_STRING) {
+		if (!is_array($token)) {
 			continue;
+		}
+
+		if (isset($token[1][0]) && '\\' === $token[1][0]) {
+			$token[1] = substr($token[1], 1);
 		}
 
 		if (in_array($token[1], $functions_blacklist, true)) {
