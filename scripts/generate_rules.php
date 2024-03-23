@@ -40,9 +40,9 @@ foreach($objects as $name => $object){
 		$hash = '.hash("' . hash('sha256', $file_content) . '")';
 	}
 
-	$prev_token = null;
+	$tokens = token_get_all($file_content);
 
-	foreach(token_get_all($file_content) as $token) {
+	foreach ($tokens as $pos => $token) {
 		if (!is_array($token)) {
 			continue;
 		}
@@ -51,13 +51,23 @@ foreach($objects as $name => $object){
 			$token[1] = substr($token[1], 1);
 		}
 
-		$prev_token_str = $prev_token[1] ?? null;
-
-		if (in_array($token[1], $functions_blacklist, true) && $prev_token_str !== '->' && $prev_token_str !== '::') {
-			$output[] = 'sp.disable_function.function("' . $token[1] . '").filename("' . $name . '")' . $hash . '.allow();' . "\n";
+		if (!in_array($token[1], $functions_blacklist, true)) {
+			continue;
 		}
 
-		$prev_token = $token;
+		$prev_token = find_previous_token($tokens, $pos);
+
+		// Ignore function definitions and class calls
+		// function shell_exec() -> ignored
+		// $db->exec() -> ignored
+		// MyClass::assert() -> ignored
+		if ($prev_token === T_FUNCTION
+			|| $prev_token === T_DOUBLE_COLON
+			|| $prev_token === T_OBJECT_OPERATOR) {
+			continue;
+		}
+
+		$output[] = 'sp.disable_function.function("' . $token[1] . '").filename("' . $name . '")' . $hash . '.allow();' . "\n";
 	}
 }
 foreach($functions_blacklist as $fun) {
@@ -66,4 +76,23 @@ foreach($functions_blacklist as $fun) {
 
 foreach (array_unique($output) as $line) {
  	echo $line;
+}
+
+function find_previous_token(array $tokens, int $pos): ?int
+{
+	for ($i = $pos - 1; $i >= 0; $i--) {
+		$token = $tokens[$i];
+
+		if ($token[0] === T_WHITESPACE) {
+			continue;
+		}
+
+		if (!is_array($token)) {
+			return null;
+		}
+
+		return $token[0];
+	}
+
+	return null;
 }
