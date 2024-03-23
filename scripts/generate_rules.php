@@ -40,6 +40,8 @@ foreach($objects as $name => $object){
 		$hash = '.hash("' . hash('sha256', $file_content) . '")';
 	}
 
+	$prev_token = null;
+
 	foreach(token_get_all($file_content) as $token) {
 		if (!is_array($token)) {
 			continue;
@@ -49,9 +51,13 @@ foreach($objects as $name => $object){
 			$token[1] = substr($token[1], 1);
 		}
 
-		if (in_array($token[1], $functions_blacklist, true)) {
+		$prev_token_str = $prev_token[1] ?? null;
+
+		if (in_array($token[1], $functions_blacklist, true) && $prev_token_str !== '->' && $prev_token_str !== '::') {
 			$output[] = 'sp.disable_function.function("' . $token[1] . '").filename("' . $name . '")' . $hash . '.allow();' . "\n";
 		}
+
+		$prev_token = $token;
 	}
 }
 foreach($functions_blacklist as $fun) {
