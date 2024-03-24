@@ -39,7 +39,9 @@ sp.disable_function.function("chmod").param("permissions").value("438").drop();
 sp.disable_function.function("chmod").param("permissions").value("511").drop();
 
 # Prevent various `mail`-related vulnerabilities
-sp.disable_function.function("mail").param("additional_parameters").value_r("\\-").drop();
+# Uncommend the second rule if you're using php8.3+
+#sp.disable_function.function("mail").param("additional_parameters").value_r("\\-").drop();
+#sp.disable_function.function("mail").param("additional_params").value_r("\\-").drop();
 
 # Since it's now burned, me might as well mitigate it publicly
 sp.disable_function.function("putenv").param("assignment").value_r("LD_").drop()
