@@ -112,6 +112,10 @@ sp.disable_function.function("curl_setopt").param("value").value("2").allow();
 sp.disable_function.function("curl_setopt").param("option").value("64").drop().alias("Please don't turn CURLOPT_SSL_VERIFYCLIENT off.");
 sp.disable_function.function("curl_setopt").param("option").value("81").drop().alias("Please don't turn CURLOPT_SSL_VERIFYHOST off.");
 
+# Ensure that file:// protocol is not allowed in CURL
+sp.disable_function.function("curl_setopt").param("value").value_r("file://").drop().alias("file:// protocol is disabled");
+sp.disable_function.function("curl_init").param("url").value_r("file://").drop().alias("file:// protocol is disabled");
+
 # File upload
 # On old PHP7 versions
 #sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ph").drop();
