@@ -53,7 +53,7 @@ sp_list_node *sp_list_sort(sp_list_node *pList,
 }
 
 sp_list_node *sp_list_insert(sp_list_node *list, void *data) {
-  sp_list_node *new = pecalloc(sizeof(*new), 1, 1);
+  sp_list_node *new = pecalloc(1, sizeof(*new), 1);
   sp_list_node *origin = list;
   new->data = data;
   new->next = NULL;
@@ -70,7 +70,7 @@ sp_list_node *sp_list_insert(sp_list_node *list, void *data) {
 }
 
 sp_list_node *sp_list_prepend(sp_list_node *list, void *data) {
-  sp_list_node *new = pecalloc(sizeof(*new), 1, 1);
+  sp_list_node *new = pecalloc(1, sizeof(*new), 1);
   new->next = list;
   new->data = data;
   return new;
