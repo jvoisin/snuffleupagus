@@ -201,7 +201,7 @@ SP_PARSE_FN(parse_wrapper_whitelist) {
 
 SP_PARSE_FN(parse_cookie) {
   zend_string *samesite = NULL;
-  sp_cookie *cookie = pecalloc(sizeof(sp_cookie), 1, 1);
+  sp_cookie *cookie = pecalloc(1, sizeof(sp_cookie), 1);
 
   sp_config_keyword config_keywords[] = {
       {parse_str, SP_TOKEN_NAME, &(cookie->name)},
@@ -302,7 +302,7 @@ SP_PARSE_FN(parse_disabled_functions) {
   int ret = SP_PARSER_ERROR;
   bool enable = false, disable = false, allow = false, drop = false;
   zend_string *var = NULL, *param = NULL;
-  sp_disabled_function *df = pecalloc(sizeof(*df), 1, 1);
+  sp_disabled_function *df = pecalloc(1, sizeof(*df), 1);
   df->pos = -1;
 
   sp_config_keyword config_keywords[] = {
@@ -507,7 +507,7 @@ SP_PARSE_FN(parse_ini_protection) {
 }
 
 SP_PARSE_FN(parse_ini_entry) {
-  sp_ini_entry *entry = pecalloc(sizeof(sp_ini_entry), 1, 1);
+  sp_ini_entry *entry = pecalloc(1, sizeof(sp_ini_entry), 1);
   bool rw = false, ro = false;
 
   sp_config_keyword config_keywords[] = {

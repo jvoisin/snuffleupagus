@@ -217,7 +217,7 @@ SP_PARSEKW_FN(parse_cidr) {
   CHECK_DUPLICATE_KEYWORD(retval);
   SP_PARSE_ARG(value);
 
-  sp_cidr *cidr = pecalloc(sizeof(sp_cidr), 1, 1);
+  sp_cidr *cidr = pecalloc(1, sizeof(sp_cidr), 1);
 
   if (0 != get_ip_and_cidr(ZSTR_VAL(value), cidr)) {
     pefree(cidr, 1);
