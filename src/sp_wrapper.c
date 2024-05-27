@@ -188,11 +188,29 @@ PHP_FUNCTION(sp_stream_wrapper_register) {
   }
 }
 
+PHP_FUNCTION(sp_stream_wrapper_restore) {
+  zif_handler orig_handler;
+  zend_string *protocol_name = NULL;
+  zval *params = NULL;
+  uint32_t param_count = 0;
+
+  zend_parse_parameters_ex(ZEND_PARSE_PARAMS_QUIET, ZEND_NUM_ARGS(), "S*", &protocol_name, &params, &param_count);
+  orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("stream_wrapper_restore"));
+  orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+
+  if (protocol_name && !strcasecmp(ZSTR_VAL(protocol_name), "php")) {
+    sp_reregister_php_wrapper();
+  }
+}
+
 int hook_stream_wrappers() {
   TSRMLS_FETCH();
 
   HOOK_FUNCTION("stream_wrapper_register", sp_internal_functions_hook,
                 PHP_FN(sp_stream_wrapper_register));
+
+  HOOK_FUNCTION("stream_wrapper_restore", sp_internal_functions_hook,
+                PHP_FN(sp_stream_wrapper_restore));
 
   sp_reregister_php_wrapper();
 
