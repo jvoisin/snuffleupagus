@@ -12,7 +12,7 @@ void sp_tree_free(sp_tree *tree) {
 }
 
 sp_tree *sp_tree_new() {
-  sp_tree *new = pecalloc(sizeof(sp_tree), 1, 1);
+  sp_tree *new = pecalloc(1, sizeof(sp_tree), 1);
   new->next = new->idx = NULL;
   new->value = NULL;
   new->type = UNDEFINED;
