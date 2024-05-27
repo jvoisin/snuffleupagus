@@ -389,7 +389,7 @@ static void dump_config() {
   add_assoc_long(&arr, SP_TOKEN_SESSION_ENCRYPTION "." SP_TOKEN_SID_MAX_LENGTH, SPCFG(session).sid_max_length);
   add_assoc_bool(&arr, SP_TOKEN_SLOPPY_COMPARISON "." SP_TOKEN_ENABLE, SPCFG(sloppy).enable);
 
-  ADD_ASSOC_SPLIST(&arr, SP_TOKEN_ALLOW_WRAPPERS, SPCFG(wrapper).whitelist);
+  ADD_ASSOC_SPLIST(&arr, SP_TOKEN_ALLOW_WRAPPERS "." SP_TOKEN_LIST, SPCFG(wrapper).whitelist);
   ADD_ASSOC_SPLIST(&arr, SP_TOKEN_ALLOW_WRAPPERS "." SP_TOKEN_ALLOW_PHP_STREAMS, SPCFG(wrapper).php_stream_allowlist);
 
 #undef ADD_ASSOC_SPLIST
