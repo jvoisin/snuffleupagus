@@ -406,10 +406,12 @@ The builtin `"php" stream wrapper <https://www.php.net/manual/en/wrappers.php.ph
 has support for common streams, like ``stdin``, ``stdout`` or ``stderr``, but
 also for the dangerous ``filter`` one.
 
-Examples of related vulnerability
-"""""""""""""""""""""""""""""""""
+Examples of related vulnerabilities
+"""""""""""""""""""""""""""""""""""
 
 - `CNEXT exploits <https://github.com/ambionics/cnext-exploits/>`__
+- Synacktiv's `php_filter_chain_generator <https://github.com/synacktiv/php_filter_chain_generator>`__ tool
+- Ambionic's `wrapwrap <https://github.com/ambionics/wrapwrap>`__ tool
 
 .. _eval-feature:
 

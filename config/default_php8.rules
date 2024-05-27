@@ -26,7 +26,7 @@ sp.xxe_protection.enable();
 # PHP has a lot of wrappers, most of them aren't usually useful, you should
 # only enable the ones you're using.
 # sp.wrappers_whitelist.list("file,php,phar");
-# The "php" wrapper can be further filtered
+# The "php" wrapper can be further filtered, e.g. to only allow `php://stdout`, `php://stdin` and `php://stderr`:
 # sp.wrappers_whitelist.php_list("stdout,stdin,stderr");
 
 # Prevent sloppy comparisons.
