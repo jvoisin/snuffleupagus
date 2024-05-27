@@ -395,6 +395,17 @@ to explicitly whitelist some `stream wrappers <https://secure.php.net/manual/en/
   sp.wrappers_whitelist.list("file,php,phar");
 
 
+Allowlist of the php stream-wrapper
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:ref:`The php-stream-wrapper allowlist <php-stream-wrapper-allowlist-feature>`
+allows to explicitly allow the builtin `php streams <https://www.php.net/manual/en/wrappers.php.php>`__.
+
+::
+
+  sp.wrappers_whitelist.php_list("stdout,stdin,stderr");
+
+
 Eval white and blacklist
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

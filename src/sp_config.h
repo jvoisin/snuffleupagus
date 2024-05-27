@@ -70,6 +70,7 @@ typedef struct {
 
 typedef struct {
   sp_list_node *whitelist;
+  sp_list_node *php_stream_allowlist;
   bool enabled;
   size_t num_wrapper;  // Used to verify if wrappers were added.
 } sp_config_wrapper;
@@ -214,6 +215,7 @@ typedef struct {
 #define SP_TOKEN_EVAL_WHITELIST "eval_whitelist"
 #define SP_TOKEN_SLOPPY_COMPARISON "sloppy_comparison"
 #define SP_TOKEN_ALLOW_WRAPPERS "wrappers_whitelist"
+#define SP_TOKEN_ALLOW_PHP_STREAMS "php_list"
 #define SP_TOKEN_INI_PROTECTION "ini_protection"
 #define SP_TOKEN_INI "ini"
 

@@ -113,6 +113,7 @@ static PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT_NULL(config_eval.blacklist);
   SP_INIT_NULL(config_eval.whitelist);
   SP_INIT_NULL(config_wrapper.whitelist);
+  SP_INIT_NULL(config_wrapper.php_stream_allowlist);
 #undef SP_INIT_NULL
 }
 
@@ -175,6 +176,7 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_LST(config_eval.blacklist);
   FREE_LST(config_eval.whitelist);
   FREE_LST(config_wrapper.whitelist);
+  FREE_LST(config_wrapper.php_stream_allowlist);
 #undef FREE_LST
 
 
@@ -388,6 +390,7 @@ static void dump_config() {
   add_assoc_bool(&arr, SP_TOKEN_SLOPPY_COMPARISON "." SP_TOKEN_ENABLE, SPCFG(sloppy).enable);
 
   ADD_ASSOC_SPLIST(&arr, SP_TOKEN_ALLOW_WRAPPERS, SPCFG(wrapper).whitelist);
+  ADD_ASSOC_SPLIST(&arr, SP_TOKEN_ALLOW_WRAPPERS "." SP_TOKEN_ALLOW_PHP_STREAMS, SPCFG(wrapper).php_stream_allowlist);
 
 #undef ADD_ASSOC_SPLIST
 
