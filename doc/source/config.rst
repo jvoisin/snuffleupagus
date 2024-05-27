@@ -399,7 +399,7 @@ Allowlist of the php stream-wrapper
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 :ref:`The php-stream-wrapper allowlist <php-stream-wrapper-allowlist-feature>`
-allows to explicitly allow the builtin `php streams <https://www.php.net/manual/en/wrappers.php.php>`__.
+allows to explicitly restrict the permitted builtin `php streams <https://www.php.net/manual/en/wrappers.php.php>`__.
 
 ::
 
