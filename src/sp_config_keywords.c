@@ -190,6 +190,7 @@ SP_PARSE_FN(parse_wrapper_whitelist) {
   
   sp_config_keyword config_keywords[] = {
       {parse_list, SP_TOKEN_LIST, &cfg->whitelist},
+      {parse_list, SP_TOKEN_ALLOW_PHP_STREAMS, &cfg->php_stream_allowlist},
       {0, 0, 0}};
 
   SP_PROCESS_CONFIG_KEYWORDS_ERR();
