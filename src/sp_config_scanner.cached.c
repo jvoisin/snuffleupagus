@@ -97,11 +97,11 @@ static void str_dtor(zval *zv) {
 
 // sy_ functions and macros are helpers for the shunting yard algorithm
 #define sy_res_push(val) \
-  if (cond_res_i >= MAX_CONDITIONS) { cs_log_error("condition too complex on line %d", lineno); goto out; } \
+  if (cond_res_i >= MAX_CONDITIONS) { cs_log_error("condition too complex on line %zu", lineno); goto out; } \
   cond_res[cond_res_i++] = val;
 #define sy_res_pop() cond_res[--cond_res_i]
 #define sy_op_push(op) \
-  if (cond_op_i >= MAX_CONDITIONS) { cs_log_error("condition too complex on line %d", lineno); goto out; } \
+  if (cond_op_i >= MAX_CONDITIONS) { cs_log_error("condition too complex on line %zu", lineno); goto out; } \
   cond_op[cond_op_i++] = op;
 #define sy_op_pop() cond_op[--cond_op_i]
 #define sy_op_peek() cond_op[cond_op_i-1]
@@ -145,7 +145,7 @@ static int sy_apply_op(const char op, const int a, const int b) {
 #define SY_APPLY_OP_FROM_STACK() \
   char op = sy_op_pop(); \
   int unary = (op == '!'); \
-  if (cond_res_i < (2 - unary)) { cs_log_error("not enough input on line %d", lineno); goto out; } \
+  if (cond_res_i < (2 - unary)) { cs_log_error("not enough input on line %zu", lineno); goto out; } \
   int a = sy_res_pop(); \
   int b = unary ? 0 : sy_res_pop(); \
   int res = sy_apply_op(op, a, b); \
@@ -176,7 +176,7 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
   int cond_op_i = 0;
 
   int cond = yycinit;
-  long lineno = 1;
+  size_t lineno = 1;
 
   const char *yyt1;
 const char *yyt2;
@@ -369,7 +369,7 @@ yy1:
 yy2:
 	++data;
 yy3:
-	{ cs_log_error("parser error on line %d", lineno); goto out; }
+	{ cs_log_error("parser error on line %zu", lineno); goto out; }
 yy4:
 	yych = *++data;
 	if (yybm_init[0+yych] & 8) {
@@ -764,7 +764,7 @@ yy63:
 	{
       if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);
-      cs_log_error("[line %d]: %s", lineno, tmpstr);
+      cs_log_error("[line %zu]: %s", lineno, tmpstr);
       goto out;
     }
 yy64:
@@ -798,7 +798,7 @@ yy66:
 	{
       if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);
-      cs_log_info("[line %d]: %s", lineno, tmpstr);
+      cs_log_info("[line %zu]: %s", lineno, tmpstr);
       goto yyc_init;
     }
 yy67:
@@ -935,7 +935,7 @@ yy78:
 	{
       if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);
-      cs_log_warning("[line %d]: %s", lineno, tmpstr);
+      cs_log_warning("[line %zu]: %s", lineno, tmpstr);
       goto yyc_init;
     }
 yy79:
@@ -1154,7 +1154,7 @@ yyc_cond:
 yy93:
 	++data;
 yy94:
-	{ cs_log_error("syntax error in condition on line %d", lineno); goto out; }
+	{ cs_log_error("syntax error in condition on line %zu", lineno); goto out; }
 yy95:
 	yych = *++data;
 	if (yybm_cond[0+yych] & 8) {
@@ -1197,7 +1197,7 @@ yy102:
 	{
       zend_string *tmp = zend_hash_str_find_ptr(&vars, t1, t2-t1);
       if (!tmp) {
-        cs_log_error("unknown variable in condition on line %d", lineno);
+        cs_log_error("unknown variable in condition on line %zu", lineno);
         goto out;
       }
       sy_res_push(atoi(ZSTR_VAL(tmp)));
@@ -1240,7 +1240,7 @@ yy107:
         int is_loaded = (zend_hash_str_find_ptr(&module_registry, t3+1, t4-t3-2) != NULL);
         sy_res_push(is_loaded);
       } else {
-        cs_log_error("unknown function in condition on line %d", lineno);
+        cs_log_error("unknown function in condition on line %zu", lineno);
         goto out;
       }
       goto yyc_cond_op;
@@ -1327,7 +1327,7 @@ yyc_cond_op:
 yy111:
 	++data;
 yy112:
-	{ cs_log_error("syntax error in condition on line %d", lineno); goto out; }
+	{ cs_log_error("syntax error in condition on line %zu", lineno); goto out; }
 yy113:
 	yych = *++data;
 	if (yybm_cond_op[0+yych] & 128) {
@@ -1352,7 +1352,7 @@ yy117:
         SY_APPLY_OP_FROM_STACK();
       }
       if (cond_op_i == 0 || sy_op_peek() != '(') {
-        cs_log_error("unbalanced parenthesis on line %d", lineno); goto out;
+        cs_log_error("unbalanced parenthesis on line %zu", lineno); goto out;
       }
       cond_op_i--;
       goto yyc_cond_op;
@@ -1361,10 +1361,10 @@ yy118:
 	++data;
 	{
       while (cond_op_i) {
-        if (sy_op_peek() == '(') { cs_log_error("unbalanced parenthesis on line %d", lineno); goto out; }
+        if (sy_op_peek() == '(') { cs_log_error("unbalanced parenthesis on line %zu", lineno); goto out; }
         SY_APPLY_OP_FROM_STACK();
       }
-      if (cond_res_i > 1) { cs_log_error("invalid condition on line %d", lineno); goto out; }
+      if (cond_res_i > 1) { cs_log_error("invalid condition on line %zu", lineno); goto out; }
       goto yyc_init;
     }
 yy119:
@@ -1556,7 +1556,7 @@ yy138:
 	{
       if (!cond_res[0]) { goto yyc_rule; }
       if (kw_i == MAX_KEYWORDS) {
-        cs_log_error("too many keywords in rule (more than %d) on line %d", MAX_KEYWORDS, lineno);
+        cs_log_error("too many keywords in rule (more than %d) on line %zu", MAX_KEYWORDS, lineno);
         goto out;
       }
       sp_parsed_keyword kw = {
@@ -1577,7 +1577,7 @@ yy138:
         } else {
           zend_string *tmp = zend_hash_str_find_ptr(&vars, t3, t4-t3);
           if (!tmp) {
-            cs_log_error("unknown variable on line %d", lineno);
+            cs_log_error("unknown variable on line %zu", lineno);
             goto out;
           }
           kw.arg = ZSTR_VAL(tmp);
