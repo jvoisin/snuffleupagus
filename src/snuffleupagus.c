@@ -5,7 +5,6 @@
 #endif
 
 static PHP_INI_MH(OnUpdateConfiguration);
-static inline void sp_op_array_handler(zend_op_array *op);
 
 #ifdef SP_DEBUG_STDERR
 int sp_debug_stderr = STDERR_FILENO;
