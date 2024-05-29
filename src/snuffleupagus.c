@@ -619,7 +619,7 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   return SUCCESS;
 }
 
-const zend_function_entry snuffleupagus_functions[] = {PHP_FE_END};
+static const zend_function_entry snuffleupagus_functions[] = {PHP_FE_END};
 
 zend_module_entry snuffleupagus_module_entry = {
     STANDARD_MODULE_HEADER,
