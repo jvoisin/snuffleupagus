@@ -100,7 +100,7 @@ err:
   return err;
 }
 
-int cmp_tokens(sp_list_node const *const list1,
+static int cmp_tokens(sp_list_node const *const list1,
                sp_list_node const *const list2) {
   return (((sp_conf_token *)list1->data)->pos -
           ((sp_conf_token *)list2->data)->pos);
