@@ -213,6 +213,7 @@ static inline void sp_execute_handler(INTERNAL_FUNCTION_PARAMETERS, bool interna
   bool is_hooked = (zend_hash_str_find(SPG(disabled_functions_hook), VAR_AND_LEN(function_name)) || zend_hash_str_find(SPG(disabled_functions_hook), VAR_AND_LEN(function_name)));
   if (is_hooked) {
     sp_call_orig_execute(INTERNAL_FUNCTION_PARAM_PASSTHRU, internal);
+    efree(function_name);
     return;
   }
 
