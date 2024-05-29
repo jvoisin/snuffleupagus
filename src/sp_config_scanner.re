@@ -197,8 +197,8 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
     <init> end               { ret = SUCCESS; goto out; }
     <init> "@"? "set" whitespace+ @t1 keyword @t2 whitespace+ @t3 string @t4 whitespace* ";" {
       if (!cond_res[0]) { goto yyc_init; }
-      char *key = (char*)t1;
-      int keylen = t2 - t1;
+      const char *key = t1;
+      size_t keylen = t2 - t1;
       zend_string *tmp = zend_hash_str_find_ptr(&vars, key, keylen);
       if (tmp) {
         zend_hash_str_del(&vars, key, keylen);
@@ -304,9 +304,9 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
         goto out;
       }
       sp_parsed_keyword kw = {
-        .kw = (char*)t1,
+        .kw = t1,
 	.kwlen = t2-t1,
-	.arg = (char*)t3,
+	.arg = t3,
 	.arglen = t4-t3,
 	.argtype = SP_ARGTYPE_UNKNOWN,
 	.lineno = lineno
@@ -315,7 +315,7 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
         if (t3 == t4) {
           kw.argtype = SP_ARGTYPE_EMPTY;
         } else if (t4-t3 >= 2 && *t3 == '"') {
-          kw.arg = (char*)t3 + 1;
+          kw.arg = t3 + 1;
           kw.arglen = t4 - t3 - 2;
           kw.argtype = SP_ARGTYPE_STR;
         } else {
