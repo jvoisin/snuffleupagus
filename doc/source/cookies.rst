@@ -37,7 +37,7 @@ It can either be set to ``strict`` or ``lax``:
 - The ``lax`` attribute prevents cookies from being sent cross-domain for
   "dangerous" methods, like ``POST``, ``PUT`` or ``DELETE``.
 
-- The ``strict`` one prevents any cookies from beind sent cross-domain.
+- The ``strict`` one prevents any cookies from being sent cross-domain.
 
 ::
 

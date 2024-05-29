@@ -1,4 +1,4 @@
-# This is a sample configuration for Snuffleupagus to accomodate Xenforo v2.2.12 on PHP 8.1
+# This is a sample configuration for Snuffleupagus to accommodate Xenforo v2.2.12 on PHP 8.1
 # We keep the default configuration values commented out where they have been shown to be harmful
 
 # Global configuration variables
