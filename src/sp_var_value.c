@@ -172,7 +172,6 @@ static zval *get_unknown_type(const char *restrict value, zval *zvalue,
                               const sp_tree *const tree, bool is_param) {
   if (ce) {
     zvalue = get_entry_hashtable(&ce->constants_table, value, strlen(value));
-    ce = NULL;
   } else if (zvalue && Z_TYPE_P(zvalue) == IS_OBJECT) {
     zvalue = get_object_property(ed, zvalue, value, is_param);
   } else if (!zvalue) {
