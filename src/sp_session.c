@@ -73,7 +73,7 @@ static int sp_hook_s_write(PS_WRITE_ARGS) {
   return old_s_write(mod_data, key, val, maxlifetime);
 }
 
-static void sp_hook_session_module() {
+static void sp_hook_session_module(void) {
 #if PHP_VERSION_ID < 70300
   ps_module *old_mod = SESSION_G(mod);
 #else

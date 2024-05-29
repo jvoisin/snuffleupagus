@@ -57,7 +57,7 @@ ZEND_DLEXPORT zend_extension zend_extension_entry = {
     NULL,                /* op_array_dtor_func_t */
     STANDARD_ZEND_EXTENSION_PROPERTIES};
 
-static void sp_load_other_modules() {
+static void sp_load_other_modules(void) {
   // try to load other modules before initializing Snuffleupagus
   zend_module_entry *module;
   bool should_start = false;
@@ -327,7 +327,7 @@ static void add_df_to_arr(zval *arr, sp_disabled_function const *const df) {
   add_next_index_zval(arr, &arr_df);
 }
 
-static void dump_config() {
+static void dump_config(void) {
   zval arr;
   php_serialize_data_t var_hash;
   smart_str buf = {0};
