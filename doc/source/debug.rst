@@ -11,7 +11,7 @@ Debugging crashes
 
 ..  _testsuite_fail:
 
-The testsuite is failling
+The testsuite is failing
 -------------------------
 
 We're using `php qa <https://qa.php.net/>`__ tests format for our testsuite,

@@ -108,7 +108,7 @@ static void sp_hook_session_module(void) {
 
 static PHP_INI_MH(sp_OnUpdateSaveHandler) {
 #if PHP_VERSION_ID < 70100
-  /* PHP7.0 doesn't handle well recusively set session handlers */
+  /* PHP7.0 doesn't handle well recursively set session handlers */
   if (stage == PHP_INI_STAGE_RUNTIME &&
       SESSION_G(session_status) == php_session_none && s_original_mod &&
       zend_string_equals_literal(new_value, "user") == 0 &&

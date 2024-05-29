@@ -47,7 +47,7 @@ Breaking Changes
 Bug fixes
 ^^^^^^^^^
 * Make it actually possible to configure sloppy comparison on latests PHP7
-* Allow file:// prefix in include() wich readonly_exec mode
+* Allow file:// prefix in include() with readonly_exec mode
 * Fix a possible crash when exporting function list
 * Fix a minor memory leak when parsing cookie-related configuration
 
