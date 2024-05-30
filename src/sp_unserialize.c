@@ -128,7 +128,9 @@ PHP_FUNCTION(sp_unserialize) {
     }
   } else { status = 1; }
 
+#if ! (PHP_VERSION_ID >= 80300)
   zif_handler orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("unserialize"));
+#endif
   if (0 == status) {
 #if PHP_VERSION_ID >= 80300
       // PHP8.3 gives a warning about trailing data in unserialize strings.
