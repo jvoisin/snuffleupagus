@@ -71,6 +71,11 @@ extern int sp_debug_stderr;
 #define GET_SUFFIX(x) (x == 1) ? "st" : ((x == 2) ? "nd" : "th")
 
 const char *get_ipaddr(void);
+#if defined __has_attribute
+#  if __has_attribute (__format__)
+     __attribute__((__format__(printf, 4, 5)))
+#  endif
+#endif
 void sp_log_msgf(char const* const restrict feature, int level, int type, char const* const restrict fmt, ...);
 int compute_hash(char const* const restrict filename, char *restrict file_hash);
 const zend_string *sp_zval_to_zend_string(const zval *);

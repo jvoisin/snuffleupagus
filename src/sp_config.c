@@ -90,7 +90,7 @@ zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, const sp_config_keyw
 
     if (!found_kw) {
       zend_string *kwname = zend_string_init(kw->kw, kw->kwlen, 0);
-      sp_log_err("config", "Unexpected keyword '%s' on line %d", ZSTR_VAL(kwname), kw->lineno);
+      sp_log_err("config", "Unexpected keyword '%s' on line %zu", ZSTR_VAL(kwname), kw->lineno);
       zend_string_release_ex(kwname, 0);
       return FAILURE;
     }

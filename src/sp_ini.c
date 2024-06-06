@@ -97,7 +97,7 @@ static bool /* success */ sp_ini_check(zend_string *const restrict varname, zend
       if (entry->msg) {
         sp_log_ini_check_violation("%s", ZSTR_VAL(entry->msg));
       } else {
-        sp_log_ini_check_violation("INI value %lld for `%s` out of range", lvalue, ZSTR_VAL(entry->key));
+        sp_log_ini_check_violation("INI value " ZEND_LONG_FMT " for `%s` out of range", lvalue, ZSTR_VAL(entry->key));
       }
       return simulation;
     }
