@@ -14,11 +14,11 @@ void generate_key(unsigned char *key) {
   PHP_SHA256Init(&ctx);
 
   if (user_agent) {
-    PHP_SHA256Update(&ctx, (unsigned char *)user_agent, strlen(user_agent));
+    PHP_SHA256Update(&ctx, (const unsigned char *)user_agent, strlen(user_agent));
   }
 
   if (env_var) {
-    PHP_SHA256Update(&ctx, (unsigned char *)env_var, strlen(env_var));
+    PHP_SHA256Update(&ctx, (const unsigned char *)env_var, strlen(env_var));
   } else {
     sp_log_warn("cookie_encryption",
                 "The environment variable '%s' "

@@ -1,5 +1,5 @@
 --TEST--
-Unserialize ok, but called with the wrong numeber of aguments
+Unserialize ok, but called with the wrong number of arguments
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 <?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>

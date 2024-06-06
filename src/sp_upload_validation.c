@@ -1,8 +1,7 @@
 #include "php_snuffleupagus.h"
 
-int (*sp_rfc1867_orig_callback)(unsigned int event, void *event_data,
+static int (*sp_rfc1867_orig_callback)(unsigned int event, void *event_data,
                                 void **extra);
-int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra);
 
 #define EFREE_3(env)               \
   for (size_t i = 0; i < 4; i++) { \
@@ -23,7 +22,7 @@ int sp_rfc1867_callback_win(unsigned int event, void *event_data,
 
 #else
 
-int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
+static int sp_rfc1867_callback(unsigned int event, void *event_data, void **extra) {
   int retval = SUCCESS;
 
   if (sp_rfc1867_orig_callback) {

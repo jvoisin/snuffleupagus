@@ -98,7 +98,7 @@ PHP_FUNCTION(sp_setcookie) {
   zval *expires_or_options = NULL;
   zend_bool secure = 0, httponly = 0;
   const sp_cookie *cookie_node = NULL;
-  char *cookie_samesite;
+  const char *cookie_samesite;
 
   // LCOV_EXCL_BR_START
   ZEND_PARSE_PARAMETERS_START(1, 7)

@@ -38,7 +38,7 @@ linked-clone:
 
 tests: release tests-incremental  ## compile a release build and run the testsuite
 
-tests-incremental:
+tests-incremental:  ## perform an incremental build and run the testsuite
 	make -C $(SRC)
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 SP_SKIP_OLD_PHP_CHECK=1 make -C $(SRC) test
 

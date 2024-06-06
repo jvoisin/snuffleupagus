@@ -24,7 +24,7 @@ static const char sp_is_dangerous_char[256] = {
 /* 0xf0 */  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-static void sp_server_strip(HashTable *svars, char *key, int keylen) {
+static void sp_server_strip(HashTable *svars, const char *key, size_t keylen) {
   zval *value = zend_hash_str_find(svars, key, keylen);
   if (!value || Z_TYPE_P(value) != IS_STRING) { return; }
 
@@ -39,7 +39,7 @@ static void sp_server_strip(HashTable *svars, char *key, int keylen) {
   }
 }
 
-static void sp_server_encode(HashTable *svars, char *key, int keylen) {
+static void sp_server_encode(HashTable *svars, const char *key, size_t keylen) {
   zval *value = zend_hash_str_find(svars, key, keylen);
   if (!value || Z_TYPE_P(value) != IS_STRING) { return; }
   

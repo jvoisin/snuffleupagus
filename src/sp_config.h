@@ -189,7 +189,7 @@ typedef struct {
 
 typedef struct {
   SP_PARSE_FN((*func));
-  char *token;
+  const char *token;
   void *retval;
 } sp_config_keyword;
 
