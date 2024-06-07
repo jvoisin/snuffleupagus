@@ -138,6 +138,7 @@ static void sp_reregister_php_wrapper(void) {
 
   if (php_register_url_stream_wrapper("php", &sp_php_stream_php_wrapper) != SUCCESS) {
     sp_log_warn(LOG_FEATURE, "Failed to register custom stream wrapper \"php\"");
+    return;
   }
 
   sp_log_debug(LOG_FEATURE, "Stream \"php\" successfully re-registered");
