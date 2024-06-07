@@ -10,7 +10,7 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 %:
 	dh $@ --sourcedirectory src --with php
 
-override_dh_auto_clean:
+execute_after_dh_auto_clean:
 	cd ./src; phpize --clean
 
 override_dh_auto_configure:
