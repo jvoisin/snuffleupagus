@@ -1,5 +1,5 @@
 --TEST--
-Configuration line without closing parenthese
+Configuration line without closing parentheses
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 --INI--

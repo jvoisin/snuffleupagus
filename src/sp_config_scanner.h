@@ -10,12 +10,12 @@ typedef enum {
 } sp_argtype;
 
 typedef struct {
-  char *kw; // keyword points directly to the parsed input text and as such is not null-terminated
+  const char *kw; // keyword points directly to the parsed input text and as such is not null-terminated
   size_t kwlen;
-  char *arg; // optional argument / can be not null terminated
+  const char *arg; // optional argument / can be not null terminated
   size_t arglen;
   sp_argtype argtype;
-  long lineno;
+  size_t lineno;
 } sp_parsed_keyword;
 
 zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_parsed_keyword*));

@@ -12,7 +12,12 @@ $functions_blacklist = ['shell_exec', 'exec', 'passthru', 'php_uname', 'popen',
 	'posix_kill', 'posix_mkfifo', 'posix_setpgid', 'posix_setsid', 'posix_setuid',
 	'posix_setgid', 'posix_uname', 'proc_close', 'proc_nice', 'proc_open',
 	'proc_terminate', 'proc_open', 'proc_get_status', 'dl', 'pnctl_exec',
-	'pnctl_fork', 'assert', 'system', 'curl_exec', 'curl_multi_exec', 'function_exists'];
+	'pnctl_fork', 'system', 'curl_exec', 'curl_multi_exec', 'function_exists'];
+
+// In PHP < 8.0x you could execute code using assert()
+if (PHP_VERSION_ID < 80000) {
+	$functions_blacklist[] = 'assert';
+}
 
 $extensions = ['php', 'php7', 'php5', 'inc'];
 

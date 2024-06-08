@@ -28,6 +28,8 @@ CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -Wall -Wextra -Wno-unused-parameter"
 CFLAGS="$CFLAGS -Wformat=2 -Wformat-security -D_FORTIFY_SOURCE=2"
 CFLAGS="$CFLAGS -fstack-protector-strong"
+CFLAGS="$CFLAGS -Wmissing-format-attribute -Wmissing-noreturn -Wpointer-arith"
+CFLAGS="$CFLAGS -Wstrict-prototypes -Wunused -Wwrite-strings"
 
 LDFLAGS="$LDFLAGS `pcre2-config --libs8`"
 

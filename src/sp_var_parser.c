@@ -7,7 +7,7 @@ static sp_list_node *parse_str_tokens(const char *str,
 
   while ((cur_str = strchr(cur_str, token.text_repr[0]))) {
     if (0 == strncmp(cur_str, token.text_repr, strlen(token.text_repr))) {
-      sp_conf_token *token_elm = pecalloc(sizeof(sp_conf_token), 1, 1);
+      sp_conf_token *token_elm = pecalloc(1, sizeof(sp_conf_token), 1);
       token_elm->pos = cur_str - str;
       token_elm->text_repr = token.text_repr;
       token_elm->type = token.type;
@@ -51,7 +51,7 @@ static int create_var(sp_tree *tree, const char *restrict value,
   if (tree->next == NULL && tree->type == UNDEFINED) {
     var_node = tree;
   } else {
-    var_node = pecalloc(sizeof(sp_tree), 1, 1);
+    var_node = pecalloc(1, sizeof(sp_tree), 1);
     free_node_on_error = true;
   }
 
@@ -59,7 +59,7 @@ static int create_var(sp_tree *tree, const char *restrict value,
   var_node->next = NULL;
   var_node->idx = NULL;
   var_node->type = _type;
-  /* We consider `$` as part of the variable name, to tell them appart from
+  /* We consider `$` as part of the variable name, to tell them apart from
    * php's constant
    */
   if (value && value[0] == VARIABLE_TOKEN && _type == CONSTANT) {
@@ -100,7 +100,7 @@ err:
   return err;
 }
 
-int cmp_tokens(sp_list_node const *const list1,
+static int cmp_tokens(sp_list_node const *const list1,
                sp_list_node const *const list2) {
   return (((sp_conf_token *)list1->data)->pos -
           ((sp_conf_token *)list2->data)->pos);

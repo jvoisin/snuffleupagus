@@ -90,7 +90,7 @@ zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, const sp_config_keyw
 
     if (!found_kw) {
       zend_string *kwname = zend_string_init(kw->kw, kw->kwlen, 0);
-      sp_log_err("config", "Unexpected keyword '%s' on line %d", ZSTR_VAL(kwname), kw->lineno);
+      sp_log_err("config", "Unexpected keyword '%s' on line %zu", ZSTR_VAL(kwname), kw->lineno);
       zend_string_release_ex(kwname, 0);
       return FAILURE;
     }
@@ -217,7 +217,7 @@ SP_PARSEKW_FN(parse_cidr) {
   CHECK_DUPLICATE_KEYWORD(retval);
   SP_PARSE_ARG(value);
 
-  sp_cidr *cidr = pecalloc(sizeof(sp_cidr), 1, 1);
+  sp_cidr *cidr = pecalloc(1, sizeof(sp_cidr), 1);
 
   if (0 != get_ip_and_cidr(ZSTR_VAL(value), cidr)) {
     pefree(cidr, 1);
