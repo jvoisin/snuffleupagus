@@ -435,8 +435,8 @@ bool hook_function(const char* original_name, HashTable* hook_table, zif_handler
     if (NULL == mb_name) {
       return FAILURE;
     }
-    memcpy(mb_name, ZEND_STRL("mb_"));
-    memcpy(mb_name + 3, VAR_AND_LEN(original_name));
+    memcpy(mb_name, "mb_", 3);
+    memcpy(mb_name + 3, original_name, strlen(original_name));
     _hook_function(mb_name, hook_table, new_function);
     efree(mb_name);
     // LCOV_EXCL_STOP
