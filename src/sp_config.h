@@ -297,7 +297,7 @@ SP_PARSEKW_FN(parse_str);
 SP_PARSEKW_FN(parse_regexp);
 SP_PARSEKW_FN(parse_empty);
 SP_PARSEKW_FN(parse_int);
-SP_PARSEKW_FN(parse_ulong);
+SP_PARSEKW_FN(parse_uint);
 SP_PARSEKW_FN(parse_php_type);
 SP_PARSEKW_FN(parse_cidr);
 SP_PARSEKW_FN(parse_list);

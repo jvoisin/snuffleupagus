@@ -11,7 +11,7 @@ static zend_result sp_process_config_root(sp_parsed_keyword *parsed_rule) {
     {parse_unserialize_noclass, SP_TOKEN_UNSERIALIZE_NOCLASS, &(SPCFG(unserialize_noclass))},
     {parse_enable,              SP_TOKEN_HARDEN_RANDOM, &(SPCFG(random).enable)},
     {parse_log_media,           SP_TOKEN_LOG_MEDIA, &(SPCFG(log_media))},
-    {parse_ulong,               SP_TOKEN_LOG_MAX_LEN, &(SPCFG(log_max_len))},
+    {parse_uint,               SP_TOKEN_LOG_MAX_LEN, &(SPCFG(log_max_len))},
     {parse_disabled_functions,  SP_TOKEN_DISABLE_FUNC, NULL},
     {parse_readonly_exec,       SP_TOKEN_READONLY_EXEC, &(SPCFG(readonly_exec))},
     {parse_enable,              SP_TOKEN_GLOBAL_STRICT, &(SPCFG(global_strict).enable)},
@@ -198,13 +198,13 @@ SP_PARSEKW_FN(parse_int) {
   return ret;
 }
 
-SP_PARSEKW_FN(parse_ulong) {
+SP_PARSEKW_FN(parse_uint) {
   int ret = SP_PARSER_SUCCESS;
   SP_PARSE_ARG(value);
 
   char *endptr;
   errno = 0;
-  *(u_long*)retval = (u_long)strtoul(ZSTR_VAL(value), &endptr, 10);
+  *(u_int*)retval = (u_int)strtoul(ZSTR_VAL(value), &endptr, 10);
   if (errno != 0 || !endptr || endptr == ZSTR_VAL(value)) {
     sp_log_err("config", "Failed to parse arg '%s' of `%s` on line %zu", ZSTR_VAL(value), token, kw->lineno);
     ret = SP_PARSER_ERROR;
