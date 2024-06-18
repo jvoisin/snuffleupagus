@@ -74,6 +74,7 @@ without having to touch the PHP code.
   * File-upload based code execution
   * Weak PRNG
   * [XXE]( https://en.wikipedia.org/wiki/XML_external_entity_attack )
+  * Filter based remote code execution and assorted shenanigans
 * Several hardening features
   * Automatic `secure` and `samesite` flag for cookies
   * Bundled set of rules to detect post-compromissions behaviours
