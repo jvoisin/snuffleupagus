@@ -3,6 +3,7 @@ Set a custom session handler
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
 <?php if (!extension_loaded("session")) print "skip"; ?>
+<?php if (PHP_VERSION_ID >= 80400) print "skip"; /* Calling session_set_save_handler() with more than 2 arguments is deprecated */ ?>
 --EXTENSIONS--
 session
 --INI--

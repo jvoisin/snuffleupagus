@@ -42,6 +42,7 @@
 #include "ext/standard/php_string.h"
 #include "ext/standard/php_var.h"
 #include "ext/session/php_session.h"
+#include "ext/hash/php_hash.h"
 #include "php.h"
 #include "php_ini.h"
 #include "rfc1867.h"
@@ -58,9 +59,11 @@
 #error Snuffleupagus only works with PHP7+. You shouldn't use PHP5 anyway, \
   since it's not supported anymore: https://secure.php.net/supported-versions.php
 #endif
+
 #if PHP_VERSION_ID < 70200
 typedef void (*zif_handler)(INTERNAL_FUNCTION_PARAMETERS);
 #endif
+
 #if PHP_VERSION_ID >= 80000
 #define TSRMLS_FETCH()
 #define TSRMLS_C
@@ -68,6 +71,13 @@ typedef void (*zif_handler)(INTERNAL_FUNCTION_PARAMETERS);
 #if (!HAVE_PCRE && !HAVE_BUNDLED_PCRE)
 #error Snuffleupagus requires PHP7+ with PCRE support
 #endif
+#endif
+
+#if PHP_VERSION_ID < 80200
+#include "ext/standard/php_rand.h"
+#include "ext/standard/php_random.h"
+#else
+#include "ext/random/php_random.h"
 #endif
 
 #define SP_CONFIG_VALID 1
