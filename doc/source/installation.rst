@@ -72,6 +72,13 @@ solvable via:
   ./configure --enable-snuffleupagus
   make
 
+OpenBSD installation
+--------------------
+
+The required dependencies can be installed via ``doas pkg_add git php autoconf gmake``.
+Note that ``gmake`` is required, as PHP's build system generates Makefiles 
+with GNU idioms.
+
 
 Heroku installation
 -------------------
