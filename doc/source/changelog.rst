@@ -1,6 +1,33 @@
 Changelog
 =========
 
+0.11.0 - ` Mastodon <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.12.0>`__ 2024/09/06
+-------------------------------------------------------------------------------------------------
+
+New features
+^^^^^^^^^^^^
+* Compatibility with PHP8.4
+* Print key and value on INI violations
+* Improve scripts/generate_rules.php with regard to functions from global space prefixed with \
+* Add option to specify the allowed "php" wrapper types
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+Bug fixes
+^^^^^^^^^
+* Make 'phar' filenames work in sp.disabled_functions
+* Improve the documentation
+* Improve the default set of rules, especially with regard to portability
+* Improve the Debian packaging
+* Improve behaviour when dealing with broken configuration file
+* Update the internal deprecation checks
+* Don't whitelist files if the function name is actually a method of a class in scripts/generate_rules.php
+* Ignore function definition in scripts/generate_rules.php
+* Improve configuration dumping
+* Fixed compilation on FreeBSD
+
+
 0.10.0 - `Babar the Elephant <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.10.0>`__ 2023/09/20
 ----------------------------------------------------------------------------------------------------------
 

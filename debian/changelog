@@ -1,3 +1,24 @@
+snuffleupagus (0.11.0) UNRELEASED; urgency=low
+  [ jvoisin ]
+  * Compatibility with PHP8.4                                                     
+  * Fixed compilation on FreeBSD
+  * Update the internal deprecation checks                                        
+
+  [ cgzones ]
+  * Print key and value on INI violations                                         
+  * Improve `scripts/generate_rules.php` with regard to functions from global space prefixed with `\`
+  * Add option to specify the allowed "php" wrapper types                         
+  * Make 'phar' filenames work in `sp.disabled_functions`                         
+  * Improve the documentation                                                     
+  * Improve the default set of rules, especially with regard to portability       
+  * Improve the Debian packaging                                                  
+  * Improve behaviour when dealing with broken configuration file                 
+  * Don't whitelist files if the function name is actually a method of a class in `scripts/generate_rules.php`
+  * Ignore function definition in `scripts/generate_rules.php`                    
+  * Improve configuration dumping                                                 
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Fri, 06 Sep 2024 14:30:00 +0200
+
 snuffleupagus (0.10.0) UNRELEASED; urgency=low
   [ jvoisin ]
   * Compatibility with PHP8.3
