@@ -5,7 +5,7 @@
 #define PHP_SNUFFLEUPAGUS_EXTNAME "snuffleupagus"
 #define PHP_SNUFFLEUPAGUS_AUTHOR "NBS System & Julien (jvoisin) Voisin & SektionEins GmbH"
 #define PHP_SNUFFLEUPAGUS_URL "https://github.com/jvoisin/snuffleupagus"
-#define PHP_SNUFFLEUPAGUS_COPYRIGHT "LGPLv2"
+#define PHP_SNUFFLEUPAGUS_COPYRIGHT "LGPLv3"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
