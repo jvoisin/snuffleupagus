@@ -86,11 +86,11 @@ This source code resides in ``src/sp_php_compat.c`` and ``src/sp_php_compat.h`` 
 `The PHP License, version 3.01 <https://www.php.net/license/3_01.txt>`_, also included with the sources as ``PHP_LICENSE``.
 
 
-What is the different between SNuffleupaugs and a (WAF) like ModSecurity?
+What is the different between Snuffleupagus and a (WAF) like ModSecurity?
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-`ModSecurity <https://modsecurity.org/>`__ and the other `Web Application
-Firewall (WAF) <https://en.wikipedia.org/wiki/Web_application_firewall>`__ are
+`ModSecurity <https://modsecurity.org/>`__ and other `Web Application
+Firewalls (WAF) <https://en.wikipedia.org/wiki/Web_application_firewall>`__ are
 working by inspecting the http traffic. Snuffleupagus being a PHP module, is
 operating directly inside your website's code, with a lesser overhead, as well
 as a better understanding of what is currently happening inside your
@@ -113,7 +113,7 @@ How mature is this project?
 """""""""""""""""""""""""""
 
 This project has been floating around since early 2016 and we did the first commit
-the 28ᵗʰ of December of the same year. It's currently stable,
+the 28:sup:`th` of December of the same year. It's currently stable,
 and is usable and used in production.
 
 Are you saying that PHP isn't secure?
@@ -194,7 +194,7 @@ Will Snuffleupagus run on my old PHP 5?
 No.
 
 Since PHP5 `is deprecated since the end of 2018 <http://php.net/supported-versions.php>`_,
-you should think about moving to PHP7. You can (and should) use
+you should think about moving to PHP7 or newer. You can (and should) use
 `Suhosin <https://suhosin.org>`_ in the meantime.
 
 Help and support
@@ -221,8 +221,8 @@ I found a bug. How can I report it?
 """""""""""""""""""""""""""""""""""
 We do have an issue tracker on `Github <https://github.com/jvoisin/snuffleupagus/issues>`_.
 Please make sure to include as much information as possible when reporting your issue,
-such as your operating system, your version of PHP 7, your version of Snuffleupagus,
-your logs, the problematic php code, the request, a brief description, … long story short,
+such as your operating system, your version of PHP, your version of Snuffleupagus,
+your logs, the problematic PHP code, the request, a brief description, … long story short,
 give us everything that you can.
 
 If you're feeling extra-nice, you can try to :ref:`debug it yourself <debug>`,
