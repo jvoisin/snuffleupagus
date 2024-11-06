@@ -301,7 +301,7 @@ It can also restrict per `CIDR <https://en.wikipedia.org/wiki/Classless_Inter-Do
 to restrict execution to users on the LAN for example. There are a *lot*
 of different filters, so make sure to read the :ref:`corresponding documentation <virtual-patching-config>`.
 
-Furthermore, running the `following script <https://github.com/nbs-system/snuffleupagus/blob/master/scripts/generate_rules.php>`_  will generate an hash and line-based whitelist
+Furthermore, running the `following script <https://github.com/jvoisin/snuffleupagus/blob/master/scripts/generate_rules.php>`_  will generate an hash and line-based whitelist
 of dangerous functions, dropping them everywhere else:
 
 
