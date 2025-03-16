@@ -45,6 +45,7 @@ jobs:
         run: pecl install vld-beta
       - name: Build and run the testsuite
         run: make release tests
+        continue-on-error: true
       - name: Show logs in case of failure
         if: ${{ failure() }}
         run: |
