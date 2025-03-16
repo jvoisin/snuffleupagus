@@ -26,7 +26,6 @@ jobs:
             "debian-bookworm",
             "ubuntu-focal",
             "ubuntu-jammy",
-            "ubuntu-lunar",
           ]
         include:
           - name: debian-buster
@@ -41,8 +40,6 @@ jobs:
             container: ubuntu:focal
           - name: ubuntu-jammy
             container: ubuntu:jammy
-          - name: ubuntu-lunar
-            container: ubuntu:lunar
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
