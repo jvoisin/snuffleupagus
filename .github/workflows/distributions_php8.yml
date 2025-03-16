@@ -43,6 +43,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt install -y php-dev php-pear re2c
       - name: Install pecl
         run: pecl install vld-beta
+        continue-on-error: true
       - name: Build and run the testsuite
         run: make release tests
         continue-on-error: true
