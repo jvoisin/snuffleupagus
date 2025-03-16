@@ -56,7 +56,7 @@ jobs:
       - name: Install deps
         run: |
           export DEBIAN_FRONTEND=noninteractive
-          export PACKAGES_TO_INSTALL="fakeroot php-xml php-curl dpkg-dev gcc make libpcre3-dev dh-php php-dev build-essential"
+          export PACKAGES_TO_INSTALL="fakeroot php-xml php-curl dpkg-dev gcc make libpcre2-dev dh-php php-dev build-essential"
           apt-get -qqy --no-install-recommends install $PACKAGES_TO_INSTALL ||
           sudo apt-get -qqy --no-install-recommends install $PACKAGES_TO_INSTALL
       - name: Build debs
