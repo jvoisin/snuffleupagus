@@ -11,15 +11,15 @@ Configuration
   read the present documentation about how to configure them,
   evaluate your threat model and write your configuration file accordingly.
 
-Since PHP *ini-like* configuration model isn't flexible enough,
-Snuffleupagus is using its own format in the file specified by
+Since PHP *ini-like* configuration model isn't flexible enough for our
+usecases, Snuffleupagus is using its own format in the file specified by
 the directive ``sp.configuration_file`` **in** your ``php.ini`` file,
 like ``sp.configuration_file=/etc/php/conf.d/snuffleupagus.rules``.
 
 You can use the ``,`` separator to include multiple configuration files:
 ``sp.configuration_file=/etc/php/conf.d/snuffleupagus.rules,/etc/php/conf.d/sp_wordpress.rules``.
 
-We're also also supporting `glob <https://en.wikipedia.org/wiki/Glob_%28programming%29>`__,
+It also supports `glob <https://en.wikipedia.org/wiki/Glob_%28programming%29>`__,
 so you can write something like:
 ``sp.configuration_file=/etc/php/conf.d/*.rules,/etc/php/conf.d/extra/test.rules``.
 
@@ -32,9 +32,9 @@ To sum up, you should put this in your ``php.ini``:
 
 And the **snuffleupagus rules** into the ``.rules`` files.
 
-Since our configuration format is a bit more complex than php's one,
-we have a ``sp.allow_broken_configuration`` parameter (``false`` by default),
-that you can set to ``true`` if you want PHP to carry on if your Snuffleupagus'
+Since the configuration format is a bit more complex than php's one,
+their is a ``sp.allow_broken_configuration`` parameter (``false`` by default),
+that can be set to ``true`` if you want PHP to carry on if your Snuffleupagus'
 configuration contains syntax errors. You'll still get a big scary message in
 your logs of course. We do **not** recommend to use it of course, but sometimes
 it might be useful to be able to "debug in production" without breaking your
@@ -45,23 +45,23 @@ Configuration file format
 
 Options are chainable by using dots (``.``).
 
-Some options have a string parameter, that **must** be quoted with double quotes, e.g. ``"string"``.
+String parameters **must** be quoted with double quotes, e.g. ``"string"``.
 
 Comments are prefixed either with ``#``, or ``;``.
 
-Some rules apply in a specific ``function`` (context) on a specific ``variable``
+Some rules apply to a specific ``function`` (context) on a specific ``variable``
 (data), like ``disable_function``. Others can only be enabled/disabled, like
 ``harden_random``.
 
 Most of the features can be used in ``simulation`` mode by appending the
 ``.simulation()`` or ``.sim()`` option to them (eg. ``sp.readonly_exec.simulation().enable();``) to see
 whether or not they could break your website. The simulation mode won't block the request,
-but will write a warning in the log.
+and will only log a warning.
 
 The rules are evaluated in the order that they are written, the **first** one
-to match will terminate the evaluation (except for rules in simulation mode).
+to match will terminate the evaluation, except of course for rules in simulation mode.
 
-Rules can be split into lines and contain whitespace for easier readability and maintenance: (This feature is available since version 0.8.0.)
+Since Snuffleupagus 0.8.0, rules can be split into lines and contain whitespace for easier readability and maintenance:
 
 ::
 
@@ -69,8 +69,6 @@ Rules can be split into lines and contain whitespace for easier readability and 
     .param("to").value_r("\\n")
     .alias("newline in mail() To:")
     .drop();
-
-The terminating ``;`` is optional for now, but it should be used for future compatibility.
 
 Rules, including comments, needs to be written in ASCII, other encodings aren't
 supported and might cause syntax errors and related issues like making
