@@ -328,9 +328,11 @@ be raised if the types aren't matching.
 are optional, but you don't have to use them in your code to benefit from them,
 since every internal function from php has them.
 
-This option provides a switch to globally activate this strict mode,
-helping to uncover vulnerabilities like the classical
-`strcmp bypass <https://danuxx.blogspot.fr/2013/03/unauthorized-access-bypassing-php-strcmp.html>`_
+In vanilla PHP, a single declare directive must be placed at the top of the
+file to enable strict mode. This option provides a switch to globally activate
+this strict mode, helping to uncover vulnerabilities like the classical `strcmp
+bypass
+<https://danuxx.blogspot.fr/2013/03/unauthorized-access-bypassing-php-strcmp.html>`_
 and various other types mismatch.
 
 This feature is largely inspired from the
