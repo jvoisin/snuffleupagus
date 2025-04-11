@@ -20,10 +20,7 @@ ZEND_DLEXPORT int sp_zend_startup(zend_extension *extension) {
 // LCOV_EXCL_END
 
 static inline void sp_op_array_handler(zend_op_array *const op) {
-  // We need a filename, and strict mode not already enabled on this op
-  if (NULL == op->filename) {
-    return;
-  } else {
+  if (op->filename) {
     if (SPCFG(global_strict).enable) {
       op->fn_flags |= ZEND_ACC_STRICT_TYPES;
     }
