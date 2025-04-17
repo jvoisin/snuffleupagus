@@ -76,6 +76,12 @@ Mentions
 - `RCE on Spip and Root-Me, v2! <https://thinkloveshare.com/hacking/rce_on_spip_and_root_me_v2/>`__ - Laluka's blog
 
 
+2024
+""""
+
+- `Chamilo 1.11.26 Post Auth RCE via Phar Unserialize Polyglot <https://thinkloveshare.com/offenskill/chamilo-1.11.26-post-auth-rce-via-phar-unserialize-polyglot/>`__ - Laluka's blog
+
+
 
 Articles
 --------
@@ -140,6 +146,9 @@ Notable users
 - `AdwCleaner <https://www.malwarebytes.com/adwcleaner/>`__'s backend- a notorious anti-pup
 - `Alertot <https://www.alertot.com/>`__ - a Chilean continuous web security monitoring company
 - `Control Web Panel <https://control-webpanel.com/>`__ - a free modern and intuitive control panel for servers and VPS
+- `DirectAdmin <https://docs.directadmin.com/webservices/php/php-extensions.html>`__ - a web control panel.
+- `InMotion Hosting <https://www.inmotionhosting.com/support/edu/control-web-panel/cwp-admin/server-software/cwp-server-scanners/>`__ -
+  an USA web-hoster
 - `Mailu <https://github.com/Mailu/Mailu>`__ - mail server as Docker images
 - `Mangadex <https://mangadex.dev/mangadex-v5-infrastructure-overview/>`__ - a major manga website
 - `NBS System <https://www.nbs-system.com/>`__ - a French hosting/security company and author of snuffleupagus
