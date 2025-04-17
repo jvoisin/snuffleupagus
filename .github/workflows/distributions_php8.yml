@@ -60,7 +60,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Install dependencies
         run: |
-          dnf install -y php-devel php-pear make re2c
+          dnf install -y php-devel php-pear make re2c awk
       - name: Install pecl
         run: pecl install vld-beta
       - name: Build and run the testsuite
