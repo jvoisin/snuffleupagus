@@ -361,7 +361,6 @@ static void dump_config(void) {
   add_assoc_long(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_MAX_EXECUTION_DEPTH, SPCFG(max_execution_depth));
   add_assoc_bool(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_SERVER_ENCODE, SPCFG(server_encode));
   add_assoc_bool(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_SERVER_STRIP, SPCFG(server_strip));
-  add_assoc_bool(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_SHOW_OLD_PHP_WARNING, SPCFG(show_old_php_warning));
 
   add_assoc_bool(&arr, SP_TOKEN_AUTO_COOKIE_SECURE, SPCFG(auto_cookie_secure).enable);
   add_assoc_bool(&arr, SP_TOKEN_XXE_PROTECTION, SPCFG(xxe_protection).enable);
@@ -501,7 +500,6 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   }
 
   // set some defaults
-  SPCFG(show_old_php_warning) = true;
   SPCFG(readonly_exec).extended_checks = true;
 
   char *str = new_value->val;
@@ -606,16 +604,6 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     (SPCFG(disabled_functions) && zend_hash_num_elements(SPCFG(disabled_functions))) ||
     (SPCFG(disabled_functions_ret) && zend_hash_num_elements(SPCFG(disabled_functions_ret)));
 
-  if (SPCFG(show_old_php_warning) && getenv("SP_SKIP_OLD_PHP_CHECK") == NULL) {
-    const time_t ts = time(NULL);
-    if ((PHP_VERSION_ID < 80100) ||
-        (PHP_VERSION_ID < 80200 && ts >= (time_t)1732492800L) ||
-        (PHP_VERSION_ID < 80300 && ts >= (time_t)1765152000L) ||
-        (PHP_VERSION_ID < 80400 && ts >= (time_t)1795392000L)) {
-      sp_log_warn("End-of-Life Check", "Your PHP version '" PHP_VERSION "' is not officially maintained anymore, see https://www.php.net/supported-versions.php for details. " \
-		      "Please upgrade as soon as possible.");
-    }
-  }
   return SUCCESS;
 }
 

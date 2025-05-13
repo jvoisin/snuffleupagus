@@ -272,7 +272,6 @@ typedef struct {
 #define SP_TOKEN_SERVER_STRIP "server_strip"
 #define SP_TOKEN_SID_MIN_LENGTH "sid_min_length"
 #define SP_TOKEN_SID_MAX_LENGTH "sid_max_length"
-#define SP_TOKEN_SHOW_OLD_PHP_WARNING "show_old_php_warning"
 
 // upload_validator
 #define SP_TOKEN_UPLOAD_SCRIPT "script"

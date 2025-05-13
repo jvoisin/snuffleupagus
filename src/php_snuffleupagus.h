@@ -148,7 +148,6 @@ bool config_server_encode;
 bool config_server_strip;
 zend_string *config_encryption_key;
 zend_string *config_cookies_env_var;
-bool config_show_old_php_warning;
 
 HashTable *config_disabled_functions;
 HashTable *config_disabled_functions_hooked;
