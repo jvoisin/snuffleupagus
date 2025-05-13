@@ -62,6 +62,7 @@ jobs:
         run: |
           dnf install -y php-devel php-pear make re2c awk
       - name: Install pecl
+        continue-on-error: true
         run: pecl install vld-beta
       - name: Build and run the testsuite
         run: make release tests
