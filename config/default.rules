@@ -40,7 +40,11 @@ sp.disable_function.function("chmod").param("mode").value("438").drop();
 sp.disable_function.function("chmod").param("mode").value("511").drop();
 
 # Prevent various `mail`-related vulnerabilities
+@condition PHP_VERSION_ID < 80300;
 sp.disable_function.function("mail").param("additional_parameters").value_r("\\-").drop();
+@condition PHP_VERSION_ID >= 80300;
+sp.disable_function.function("mail").param("additional_params").value_r("\\-").drop();
+@end_condition;
 
 # Since it's now burned, me might as well mitigate it publicly
 sp.disable_function.function("putenv").param("setting").value_r("LD_").drop()
@@ -77,13 +81,22 @@ sp.disable_function.function("exec").param("command").value_r("[$|;&`\\n\\(\\)\\
 sp.disable_function.function("proc_open").param("command").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
 
 # Prevent runtime modification of interesting things
+@condition PHP_VERSION_ID < 80000;
 sp.disable_function.function("ini_set").param("varname").value("assert.active").drop();
 sp.disable_function.function("ini_set").param("varname").value("zend.assertions").drop();
 sp.disable_function.function("ini_set").param("varname").value("memory_limit").drop();
 sp.disable_function.function("ini_set").param("varname").value("include_path").drop();
 sp.disable_function.function("ini_set").param("varname").value("open_basedir").drop();
+@condition PHP_VERSION_ID >= 80000;
+sp.disable_function.function("ini_set").param("option").value("assert.active").drop();
+sp.disable_function.function("ini_set").param("option").value("zend.assertions").drop();
+sp.disable_function.function("ini_set").param("option").value("memory_limit").drop();
+sp.disable_function.function("ini_set").param("option").value("include_path").drop();
+sp.disable_function.function("ini_set").param("option").value("open_basedir").drop();
+@end_condition;
 
 # Detect some backdoors via environment recon
+@condition PHP_VERSION_ID < 80000;
 sp.disable_function.function("ini_get").param("varname").value("allow_url_fopen").drop();
 sp.disable_function.function("ini_get").param("varname").value("open_basedir").drop();
 sp.disable_function.function("ini_get").param("varname").value_r("suhosin").drop();
@@ -99,6 +112,24 @@ sp.disable_function.function("is_callable").param("var").value("system").drop();
 sp.disable_function.function("is_callable").param("var").value("shell_exec").drop();
 sp.disable_function.function("is_callable").param("var").value("proc_open").drop();
 sp.disable_function.function("is_callable").param("var").value("passthru").drop();
+@condition PHP_VERSION_ID >= 80000;
+sp.disable_function.function("ini_get").param("option").value("allow_url_fopen").drop();
+sp.disable_function.function("ini_get").param("option").value("open_basedir").drop();
+sp.disable_function.function("ini_get").param("option").value_r("suhosin").drop();
+sp.disable_function.function("function_exists").param("function").value("eval").drop();
+sp.disable_function.function("function_exists").param("function").value("exec").drop();
+sp.disable_function.function("function_exists").param("function").value("system").drop();
+sp.disable_function.function("function_exists").param("function").value("shell_exec").drop();
+sp.disable_function.function("function_exists").param("function").value("proc_open").drop();
+sp.disable_function.function("function_exists").param("function").value("passthru").drop();
+sp.disable_function.function("is_callable").param("value").value("eval").drop();
+sp.disable_function.function("is_callable").param("value").value("exec").drop();
+sp.disable_function.function("is_callable").param("value").value("system").drop();
+sp.disable_function.function("is_callable").param("value").value("shell_exec").drop();
+sp.disable_function.function("is_callable").param("value").value("proc_open").drop();
+sp.disable_function.function("is_callable").param("value").value("passthru").drop();
+@end_condition;
+
 
 # Ghetto error-based sqli detection
 # sp.disable_function.function("mysql_query").ret("FALSE").drop();
@@ -117,14 +148,24 @@ sp.disable_function.function("curl_setopt").param("value").value_r("file://").dr
 sp.disable_function.function("curl_init").param("url").value_r("file://").drop().alias("file:// protocol is disabled");
 
 # File upload
-# On old PHP7 versions
-#sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ph").drop();
-#sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ht").drop();
-# On PHP7.4+
+@condition PHP_VERSION_ID >= 80000;
+sp.disable_function.function("move_uploaded_file").param("to").value_r("\\.ph").drop();
+sp.disable_function.function("move_uploaded_file").param("to").value_r("\\.ht").drop();
+@condition PHP_VERSION_ID >= 70400;
 sp.disable_function.function("move_uploaded_file").param("new_path").value_r("\\.ph").drop();
 sp.disable_function.function("move_uploaded_file").param("new_path").value_r("\\.ht").drop();
+@condition PHP_VERSION_ID >= 70000;
+sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ph").drop();
+sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ht").drop();
+@end_condition
 
 # Logging lockdown
+@condition PHP_VERSION_ID >= 70000;
 sp.disable_function.function("ini_set").param("varname").value_r("error_log").drop()
 sp.disable_function.function("ini_set").param("varname").value_r("error_reporting").drop()
 sp.disable_function.function("ini_set").param("varname").value_r("display_errors").drop()
+@condition PHP_VERSION_ID >= 80000;
+sp.disable_function.function("ini_set").param("option").value_r("error_log").drop()
+sp.disable_function.function("ini_set").param("option").value_r("error_reporting").drop()
+sp.disable_function.function("ini_set").param("option").value_r("display_errors").drop()
+@end_condition
