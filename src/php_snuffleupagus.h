@@ -125,6 +125,9 @@ extern zend_module_entry snuffleupagus_module_entry;
 #endif
 
 ZEND_BEGIN_MODULE_GLOBALS(snuffleupagus)
+    sp_pcre *global_regexp_const; \
+
+    sp_pcre *global_regexp_var;
 // sp_config config;
 // --- snuffleupagus config
 sp_config_random config_random;

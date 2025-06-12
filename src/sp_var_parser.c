@@ -21,20 +21,18 @@ static sp_list_node *parse_str_tokens(const char *str,
 }
 
 static bool is_var_name_valid(const char *const name) {
-  static sp_pcre *regexp_const = NULL;
-  static sp_pcre *regexp_var = NULL;
 
   assert(name);
 
-  if (NULL == regexp_var || NULL == regexp_const) {
-    regexp_var = sp_pcre_compile(REGEXP_VAR);
-    regexp_const = sp_pcre_compile(REGEXP_CONST);
+  if (NULL == SPG(global_regexp_var) || NULL == SPG(global_regexp_const)) {
+    SPG(global_regexp_var) = sp_pcre_compile(REGEXP_VAR);
+    SPG(global_regexp_const) = sp_pcre_compile(REGEXP_CONST);
   }
-  if (NULL == regexp_var || NULL == regexp_const) {
+  if (NULL == SPG(global_regexp_var) || NULL == SPG(global_regexp_const)) {
     return false;  // LCOV_EXCL_LINE
   }
-  if ((false == sp_is_regexp_matching_len(regexp_var, VAR_AND_LEN(name))) &&
-      (false == sp_is_regexp_matching_len(regexp_const, VAR_AND_LEN(name)))) {
+  if ((false == sp_is_regexp_matching_len(SPG(global_regexp_var), VAR_AND_LEN(name))) &&
+      (false == sp_is_regexp_matching_len(SPG(global_regexp_const), VAR_AND_LEN(name)))) {
     return false;
   }
   return true;

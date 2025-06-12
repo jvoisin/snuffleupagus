@@ -118,11 +118,20 @@ SP_PARSEKW_FN(parse_empty) {
 }
 
 SP_PARSEKW_FN(parse_list) {
-  CHECK_DUPLICATE_KEYWORD(retval);
 
   sp_list_node **list = retval;
 
   SP_PARSE_ARG(value);
+
+  if (*(void**)retval) { \
+
+    sp_log_err("config", "duplicate keyword %s for regexp on line %zu", token, kw->lineno); \
+
+    zend_string_release_ex(value, 1); \
+
+    return SP_PARSER_ERROR; \
+
+  }
 
   char* tmp = ZSTR_VAL(value);
   while (1) {
@@ -139,6 +148,16 @@ SP_PARSEKW_FN(parse_list) {
 
 SP_PARSEKW_FN(parse_php_type) {
   SP_PARSE_ARG(value);
+
+  if (*(void**)retval) { \
+
+    sp_log_err("config", "duplicate keyword %s for regexp on line %zu", token, kw->lineno); \
+
+    zend_string_release_ex(value, 1); \
+
+    return SP_PARSER_ERROR; \
+
+  }
 
   if (zend_string_equals_literal_ci(value, "undef")) {
     *(sp_php_type *)retval = SP_PHP_TYPE_UNDEF;
@@ -175,8 +194,17 @@ SP_PARSEKW_FN(parse_php_type) {
 
 
 SP_PARSEKW_FN(parse_str) {
-  CHECK_DUPLICATE_KEYWORD(retval);
   SP_PARSE_ARG(value);
+
+  if (*(void**)retval) { \
+
+    sp_log_err("config", "duplicate keyword %s for regexp on line %zu", token, kw->lineno); \
+
+    zend_string_release_ex(value, 1); \
+
+    return SP_PARSER_ERROR; \
+
+  }
 
   *(zend_string **)retval = value;
 
@@ -186,6 +214,16 @@ SP_PARSEKW_FN(parse_str) {
 SP_PARSEKW_FN(parse_int) {
   int ret = SP_PARSER_SUCCESS;
   SP_PARSE_ARG(value);
+
+  if (*(void**)retval) { \
+
+    sp_log_err("config", "duplicate keyword %s for regexp on line %zu", token, kw->lineno); \
+
+    zend_string_release_ex(value, 1); \
+
+    return SP_PARSER_ERROR; \
+
+  }
 
   char *endptr;
   errno = 0;
@@ -202,6 +240,16 @@ SP_PARSEKW_FN(parse_uint) {
   int ret = SP_PARSER_SUCCESS;
   SP_PARSE_ARG(value);
 
+  if (*(void**)retval) { \
+
+    sp_log_err("config", "duplicate keyword %s for regexp on line %zu", token, kw->lineno); \
+
+    zend_string_release_ex(value, 1); \
+
+    return SP_PARSER_ERROR; \
+
+  }
+
   char *endptr;
   errno = 0;
   *(u_int*)retval = (u_int)strtoul(ZSTR_VAL(value), &endptr, 10);
@@ -214,8 +262,17 @@ SP_PARSEKW_FN(parse_uint) {
 }
 
 SP_PARSEKW_FN(parse_cidr) {
-  CHECK_DUPLICATE_KEYWORD(retval);
   SP_PARSE_ARG(value);
+
+  if (*(void**)retval) { \
+
+    sp_log_err("config", "duplicate keyword %s for regexp on line %zu", token, kw->lineno); \
+
+    zend_string_release_ex(value, 1); \
+
+    return SP_PARSER_ERROR; \
+
+  }
 
   sp_cidr *cidr = pecalloc(1, sizeof(sp_cidr), 1);
 
@@ -229,8 +286,23 @@ SP_PARSEKW_FN(parse_cidr) {
 }
 
 SP_PARSEKW_FN(parse_regexp) {
-  CHECK_DUPLICATE_KEYWORD(retval);
-  SP_PARSE_ARG(value);
+    SP_PARSE_ARG(value);
+
+  if (*(void**)retval) { \
+
+    sp_log_err("config", "duplicate keyword %s for regexp on line %zu", token, kw->lineno); \
+
+    zend_string_release_ex(value, 1); \
+
+    return SP_PARSER_ERROR; \
+
+  }
+
+  if (*(void**)retval) {
+    sp_log_err("config", "duplicate keyword %s for regexp on line %zu", token, kw->lineno);
+    zend_string_release_ex(value, 1);
+    return SP_PARSER_ERROR;
+  }
 
   sp_regexp *compiled_re = sp_regexp_compile(value);
   if (!compiled_re) {
