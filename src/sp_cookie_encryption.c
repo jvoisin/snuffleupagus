@@ -16,7 +16,15 @@ static inline const sp_cookie *sp_lookup_cookie_config(const zend_string *key) {
 /* called at RINIT time with each cookie, eventually decrypt said cookie */
 int decrypt_cookie(zval *pDest, int num_args, va_list args,
                    zend_hash_key *hash_key) {
-  const sp_cookie *cookie = sp_lookup_cookie_config(hash_key->key);
+  const zend_string *key = hash_key->key;
+  const sp_cookie *cookie;
+
+  /* If there is no key, it shouldn't be encrypted. */
+  if (!key) {
+    return ZEND_HASH_APPLY_KEEP;
+  }
+
+  cookie = sp_lookup_cookie_config(key);
 
   /* If the cookie isn't in the conf, it shouldn't be encrypted. */
   if (!cookie || !cookie->encrypt) {
