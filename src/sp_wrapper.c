@@ -141,7 +141,7 @@ static void sp_reregister_php_wrapper(void) {
     return;
   }
 
-  sp_log_debug(LOG_FEATURE, "Stream \"php\" successfully re-registered");
+  sp_log_debug("Stream \"php\" successfully re-registered");
 }
 
 void sp_disable_wrapper() {
