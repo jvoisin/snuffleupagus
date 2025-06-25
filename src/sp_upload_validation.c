@@ -47,7 +47,7 @@ static int sp_rfc1867_callback(unsigned int event, void *event_data, void **extr
 
       sp_log_debug("Filename: %s\nTmpname: %s\nSize: %zd\nError: %lld\nScript: %s",
                    filename, tmp_name, filesize,
-                   Z_LVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "error", 5)),
+                   (unsigned long long) Z_LVAL_P(zend_hash_str_find(Z_ARRVAL_P(file), "error", 5)),
                    ZSTR_VAL(config_upload->script));
 
       cmd[0] = ZSTR_VAL(config_upload->script);
