@@ -9,7 +9,7 @@ jobs:
     container: debian:stable
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install dependencies
         run: |
           apt update

@@ -42,7 +42,7 @@ jobs:
             container: ubuntu:jammy
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set timezone
         if: startsWith(matrix.container, 'ubuntu:')
         run: ln -snf /usr/share/zoneinfo/Europe/Paris /etc/localtime && echo Europe/Paris > /etc/timezone
