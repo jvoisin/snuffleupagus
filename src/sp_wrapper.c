@@ -100,7 +100,7 @@ static php_stream * sp_php_stream_url_wrap_php(php_stream_wrapper *wrapper,
 
   extern PHPAPI const php_stream_wrapper php_stream_php_wrapper;
 
-  return php_stream_php_wrapper.wops->stream_opener(wrapper, path, mode, options, opened_path, context STREAMS_DC);
+  return php_stream_php_wrapper.wops->stream_opener(wrapper, path, mode, options, opened_path, context STREAMS_CC);
 }
 
 /*
