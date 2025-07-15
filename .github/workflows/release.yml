@@ -20,26 +20,29 @@ jobs:
       matrix:
         name:
           [
-            "debian-buster",
             "debian-bullseye",
-            "debian-sid",
             "debian-bookworm",
+            "debian-trixie",
+            "debian-sid",
             "ubuntu-focal",
             "ubuntu-jammy",
+            "ubuntu-noble",
           ]
         include:
-          - name: debian-buster
-            container: debian:buster
           - name: debian-bullseye
             container: debian:bullseye
-          - name: debian-sid
-            container: debian:sid
           - name: debian-bookworm
             container: debian:bookworm
+          - name: debian-trixie
+            container: debian:trixie
+          - name: debian-sid
+            container: debian:sid
           - name: ubuntu-focal
             container: ubuntu:focal
           - name: ubuntu-jammy
             container: ubuntu:jammy
+          - name: ubuntu-noble
+            container: ubuntu:noble
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
