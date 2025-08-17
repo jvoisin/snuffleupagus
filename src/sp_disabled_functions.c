@@ -17,7 +17,7 @@ char* get_complete_function_path(zend_execute_data const* const execute_data) {
     return NULL;  // LCOV_EXCL_LINE
   }
   const zend_function *const func = execute_data->func;
-  if (!(func->common.function_name)) {
+  if (!func || !(func->common.function_name)) {
     return NULL;
   }
 
