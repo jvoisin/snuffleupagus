@@ -1,7 +1,26 @@
 Changelog
 =========
 
-0.11.0 - ` Mastodon <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.12.0>`__ 2024/09/06
+0.12.0 - `Stegodontidae <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.12.0>`__ 2025/08/19
+-----------------------------------------------------------------------------------------------------
+
+New features
+^^^^^^^^^^^^
+* Unify the default rules across all php versions
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+* Snuffleupagus will no longer report outdated PHP versions
+
+Bug fixes
+^^^^^^^^^
+* Fix a possible cookie-related crash
+* Fix a NULL-pointer dereference
+* Fix a minor portability issue
+* Improve modern Debian support
+* Improved documentation
+
+0.11.0 - `Mastodon <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.11.0>`__ 2024/09/06
 -------------------------------------------------------------------------------------------------
 
 New features
@@ -11,8 +30,6 @@ New features
 * Improve scripts/generate_rules.php with regard to functions from global space prefixed with \
 * Add option to specify the allowed "php" wrapper types
 
-Breaking Changes
-^^^^^^^^^^^^^^^^
 
 Bug fixes
 ^^^^^^^^^
@@ -37,7 +54,7 @@ New features
 * Add `sp.log_max_len` to limit the maximum size of the log messages
 * Add an example configuration for Xenforo 2.2.12 
 
-Breaking Changes
+Breaking C2hanges
 ^^^^^^^^^^^^^^^^
 * Url encode functions arguments when logging them
 

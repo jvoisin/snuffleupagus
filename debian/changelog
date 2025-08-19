@@ -1,3 +1,15 @@
+snuffleupagus (0.12.0) UNRELEASED; urgency=low
+  [ jvoisin ]
+  * Unify the default rules across all php versions
+  * Snuffleupagus will no longer report outdated PHP versions
+  * Fix a possible cookie-related crash
+  * Fix a NULL-pointer dereference
+  * Fix a minor portability issue
+  * Improve modern Debian support
+  * Improved documentation
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Tue, 19 Aug 2025 21:00:00 +0200
+
 snuffleupagus (0.11.0) UNRELEASED; urgency=low
   [ jvoisin ]
   * Compatibility with PHP8.4                                                     
