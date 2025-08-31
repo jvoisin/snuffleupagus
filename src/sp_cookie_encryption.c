@@ -45,10 +45,24 @@ static zend_string *encrypt_data(zend_string *data) {
   return z;
 }
 
+/*
+/__w/snuffleupagus/snuffleupagus/src/sp_cookie_encryption.c: In function 'zif_sp_setcookie':
+/__w/snuffleupagus/snuffleupagus/src/sp_cookie_encryption.c:135:7: error: too many arguments to function 'php_head_parse_cookie_options_array'
+  135 |       php_head_parse_cookie_options_array(expires_or_options, &expires, &path,
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/__w/snuffleupagus/snuffleupagus/src/sp_cookie_encryption.c:49:13: note: declared here
+   49 | static void php_head_parse_cookie_options_array(
+      |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
 #if PHP_VERSION_ID >= 70300
 static void php_head_parse_cookie_options_array(
     zval *options, zend_long *expires, zend_string **path, zend_string **domain,
-    zend_bool *secure, zend_bool *httponly, zend_string **samesite) {
+    zend_bool *secure, zend_bool *httponly, zend_string **samesite
+#if PHP_VERSION_ID >= 80500
+    ,bool *partitioned
+#endif
+    ) {
   int found = 0;
   zend_string *key;
   zval *value;
@@ -73,6 +87,11 @@ static void php_head_parse_cookie_options_array(
       } else if (zend_string_equals_literal_ci(key, "samesite")) {
         *samesite = zval_get_string(value);
         found++;
+#if PHP_VERSION_ID >= 80500
+      } else if (zend_string_equals_literal_ci(key, "partitioned")) {
+        *partitioned = zval_is_true(value);
+        found++;
+#endif
       } else {
         php_error_docref(NULL, E_WARNING,
                          "Unrecognized key '%s' found in the options array",
@@ -94,6 +113,9 @@ static void php_head_parse_cookie_options_array(
 #endif
 
 PHP_FUNCTION(sp_setcookie) {
+#if PHP_VERSION_ID >= 80500
+  zend_bool partitioned;
+#endif
   zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL,
               *value_enc = NULL,
 #if PHP_VERSION_ID < 70300
@@ -133,7 +155,11 @@ PHP_FUNCTION(sp_setcookie) {
       }
       php_head_parse_cookie_options_array(expires_or_options, &expires, &path,
                                           &domain, &secure, &httponly,
+#if PHP_VERSION_ID < 80500
                                           &samesite);
+#else
+                                          &samesite, &partitioned);
+#endif
     } else {
       expires = zval_get_long(expires_or_options);
     }
@@ -194,9 +220,12 @@ PHP_FUNCTION(sp_setcookie) {
   if (php_setcookie(name, (value_enc ? value_enc : value), expires,
                     (path_samesite ? path_samesite : path), domain, secure, 1,
                     httponly) == SUCCESS) {
-#else
+#elif PHP_VERSION_ID < 80500
   if (php_setcookie(name, (value_enc ? value_enc : value), expires, path,
                     domain, secure, httponly, samesite, 1) == SUCCESS) {
+#else
+  if (php_setcookie(name, (value_enc ? value_enc : value), expires, path,
+                    domain, secure, httponly, samesite, partitioned, false) == SUCCESS) {
 #endif
     RETVAL_TRUE;
   } else {

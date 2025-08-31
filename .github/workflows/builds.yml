@@ -11,6 +11,7 @@ jobs:
     strategy:
         matrix:
           container:
+            - php:8.5.0beta2
             - php:8.4
             - php:8.3
             - php:8.2
