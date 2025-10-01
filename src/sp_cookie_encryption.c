@@ -104,7 +104,7 @@ static void php_head_parse_cookie_options_array(
 
 PHP_FUNCTION(sp_setcookie) {
 #if PHP_VERSION_ID >= 80500
-  zend_bool partitioned;
+  zend_bool partitioned = false;
 #endif
   zend_string *name = NULL, *value = NULL, *path = NULL, *domain = NULL,
               *value_enc = NULL,
@@ -144,12 +144,11 @@ PHP_FUNCTION(sp_setcookie) {
         RETURN_FALSE;
       }
       php_head_parse_cookie_options_array(expires_or_options, &expires, &path,
-                                          &domain, &secure, &httponly,
-#if PHP_VERSION_ID < 80500
-                                          &samesite);
-#else
-                                          &samesite, &partitioned);
+                                          &domain, &secure, &httponly, &samesite
+#if PHP_VERSION_ID >= 80500
+                                          , &partitioned
 #endif
+      );
     } else {
       expires = zval_get_long(expires_or_options);
     }
@@ -214,6 +213,10 @@ PHP_FUNCTION(sp_setcookie) {
   if (php_setcookie(name, (value_enc ? value_enc : value), expires, path,
                     domain, secure, httponly, samesite, 1) == SUCCESS) {
 #else
+  if (!secure) {
+    // Can't have partitioned cookies without the secure flag.
+    partitioned = false;
+  }
   if (php_setcookie(name, (value_enc ? value_enc : value), expires, path,
                     domain, secure, httponly, samesite, partitioned, false) == SUCCESS) {
 #endif
