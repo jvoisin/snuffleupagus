@@ -44,7 +44,7 @@ void sp_log_msgf(char const* const restrict feature, int level, int type,
   }
 
   switch (SPCFG(log_media)) {
-    case SP_SYSLOG: {
+    case SP_LOG_SYSLOG: {
       const char* error_filename = zend_get_executed_filename();
       int syslog_level = (level == E_ERROR) ? LOG_ERR : LOG_INFO;
       int error_lineno = zend_get_executed_lineno(TSRMLS_C);
@@ -58,7 +58,7 @@ void sp_log_msgf(char const* const restrict feature, int level, int type,
       }
       break;
     }
-    case SP_ZEND:
+    case SP_LOG_ZEND:
     default:
       zend_error(level, "[snuffleupagus][%s][%s][%s] %s", client_ip, feature,
                  logtype, msg);

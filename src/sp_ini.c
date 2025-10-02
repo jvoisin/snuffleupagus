@@ -1,7 +1,7 @@
 #include "php_snuffleupagus.h"
 
 #define SP_INI_HAS_CHECKS_COND(entry) (entry->min || entry->max || entry->regexp)
-#define SP_INI_ACCESS_READONLY_COND(entry, cfg) (entry->access == SP_READONLY || (!entry->access && cfg->policy_readonly))
+#define SP_INI_ACCESS_READONLY_COND(entry, cfg) (entry->access == SP_INI_READONLY || (!entry->access && cfg->policy_readonly))
 
 #define sp_log_auto2(feature, is_simulation, drop, ...) \
   sp_log_msgf(feature, ((is_simulation || !drop) ? SP_LOG_WARN : SP_LOG_ERROR), \

@@ -19,9 +19,9 @@ typedef enum {
   SP_PHP_TYPE_REFERENCE = IS_REFERENCE
 } sp_php_type;
 
-typedef enum { SP_ZEND = 0, SP_SYSLOG = 1 } sp_log_media;
+typedef enum { SP_LOG_ZEND = 0, SP_LOG_SYSLOG = 1 } sp_log_media;
 
-typedef enum { SP_UNSET = 0, SP_READONLY = 1, SP_READWRITE = -1 } sp_ini_permission;
+typedef enum { SP_INI_UNSET = 0, SP_INI_READONLY = 1, SP_INI_READWRITE = -1 } sp_ini_permission;
 
 typedef struct {
   int ip_version;

@@ -60,11 +60,11 @@ SP_PARSEKW_FN(parse_log_media) {
   SP_PARSE_ARG(value);
   
   if (!strcmp(ZSTR_VAL(value), "php")) {
-    *(char*)retval = SP_ZEND;
+    *(char*)retval = SP_LOG_ZEND;
     zend_string_release_ex(value, 1);
     return SP_PARSER_SUCCESS;
   } else if (!strcmp(ZSTR_VAL(value), "syslog")) {
-    *(char*)retval = SP_SYSLOG;
+    *(char*)retval = SP_LOG_SYSLOG;
     zend_string_release_ex(value, 1);
     return SP_PARSER_SUCCESS;
   }
