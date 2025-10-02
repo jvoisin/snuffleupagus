@@ -52,18 +52,18 @@ void sp_log_msgf(char const* const restrict feature, int level, int type,
       syslog(syslog_level, "[snuffleupagus][%s][%s][%s] %s in %s on line %d",
              client_ip, feature, logtype, msg, error_filename, error_lineno);
       closelog();
-      efree(msg);
-      if (type == SP_TYPE_DROP) {
-        zend_bailout();
-      }
       break;
     }
     case SP_LOG_ZEND:
     default:
       zend_error(level, "[snuffleupagus][%s][%s][%s] %s", client_ip, feature,
                  logtype, msg);
-      efree(msg);
       break;
+  }
+
+  efree(msg);
+  if (type == SP_TYPE_DROP) {
+    zend_bailout();
   }
 }
 
