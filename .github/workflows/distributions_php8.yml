@@ -6,7 +6,7 @@ on:
     - cron: '0 16 * * 5'
 
 jobs:
-  alpine_82:
+  alpine_83:
     runs-on: ubuntu-latest
     container: alpine:edge
     steps:
@@ -17,7 +17,7 @@ jobs:
       - name: Remove tests failing on alpine for wathever reason
         run: rm -rf src/tests/*session*/ src/tests/broken_configuration/ src/tests/*cookie* src/tests/upload_validation/
       - name: Install dependencies
-        run: apk add php82-dev php82-cgi php82-simplexml php82-xml pcre-dev build-base php82-pear php82-openssl re2c
+        run: apk add php83-dev php83-cgi php83-simplexml php83-xml pcre-dev build-base php83-pear php83-openssl re2c
       - name: Install pecl
         continue-on-error: true
         run: pecl install vld-beta
