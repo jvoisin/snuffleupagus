@@ -57,19 +57,27 @@ SP_PARSE_FN(parse_session) {
 }
 
 SP_PARSEKW_FN(parse_log_media) {
+  sp_config_log *cfg = (sp_config_log*)retval;
+  cfg->path = NULL;
+
   SP_PARSE_ARG(value);
-  
+
   if (!strcmp(ZSTR_VAL(value), "php")) {
-    *(char*)retval = SP_LOG_ZEND;
+    cfg->type = SP_LOG_ZEND;
     zend_string_release_ex(value, 1);
-    return SP_PARSER_SUCCESS;
+    return SP_PARSER_STOP;
   } else if (!strcmp(ZSTR_VAL(value), "syslog")) {
-    *(char*)retval = SP_LOG_SYSLOG;
+    cfg->type = SP_LOG_SYSLOG;
     zend_string_release_ex(value, 1);
-    return SP_PARSER_SUCCESS;
+    return SP_PARSER_STOP;
+  } else if (!strncmp(ZSTR_VAL(value), "file:", strlen("file:"))) {
+    cfg->type = SP_LOG_FILE;
+    cfg->path = strdup(ZSTR_VAL(value)+strlen("file:"));
+    zend_string_release_ex(value, 1);
+    return SP_PARSER_STOP;
   }
 
-  sp_log_err("config", "." SP_TOKEN_LOG_MEDIA "() only supports 'syslog' or 'php' on line %zu", kw->lineno);
+  sp_log_err("config", "." SP_TOKEN_LOG_MEDIA "() only supports 'syslog', 'file:' or 'php' on line %zu, got '%s' instead", kw->lineno, ZSTR_VAL(value));
 
   return SP_PARSER_ERROR;
 }

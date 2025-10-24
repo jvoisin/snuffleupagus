@@ -141,7 +141,7 @@ sp_config_eval config_eval;
 sp_config_wrapper config_wrapper;
 sp_config_session config_session;
 sp_config_ini config_ini;
-char config_log_media;
+sp_config_log config_log_media;
 int config_log_max_len;
 u_long config_max_execution_depth;
 bool config_server_encode;

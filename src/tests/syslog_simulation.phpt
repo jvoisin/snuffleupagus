@@ -9,3 +9,4 @@ sp.configuration_file={PWD}/config/syslog_simulation.ini
 var_dump(unserialize('s:1:"a";'));
 ?>
 --EXPECTF--
+string(1) "a"

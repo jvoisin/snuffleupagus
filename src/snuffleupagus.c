@@ -356,7 +356,7 @@ static void dump_config(void) {
   // global
   add_assoc_bool(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_ENCRYPTION_KEY, SPCFG(encryption_key) && ZSTR_LEN(SPCFG(encryption_key)));
   ADD_ASSOC_ZSTR(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_ENV_VAR, SPCFG(cookies_env_var));
-  add_assoc_long(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_LOG_MEDIA, SPCFG(log_media));
+  //add_assoc_long(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_LOG_MEDIA, SPCFG(log_media));
   add_assoc_long(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_LOG_MAX_LEN, SPCFG(log_max_len));
   add_assoc_long(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_MAX_EXECUTION_DEPTH, SPCFG(max_execution_depth));
   add_assoc_bool(&arr, SP_TOKEN_GLOBAL "." SP_TOKEN_SERVER_ENCODE, SPCFG(server_encode));

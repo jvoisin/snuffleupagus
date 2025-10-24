@@ -139,19 +139,21 @@ log_media
 ^^^^^^^^^
 
 This configuration variable allows to specify how logs should be written,
-either via ``php`` or ``syslog``.
+either via ``php``, ``syslog``, or `file:`.
 
 ::
 
   sp.log_media("php");
   sp.log_media("syslog");
+  sp.log_media("file:/var/log/snuffleupagus.log");
 
 The default value for ``sp.log_media`` is ``php``, to respect the `principle of
 least astonishment
 <https://en.wikipedia.org/wiki/Principle_of_least_astonishment>`__. But since
 it's `possible to modify php's logging system via php
 <https://www.php.net/manual/en/errorfunc.configuration.php>`__, it's
-heavily recommended to use the ``syslog`` option instead.
+heavily recommended to use the ``syslog`` option instead. The ``file:` option
+might be useful if you're using Snuffleupagus to fuzz or audit a codebase.
 
 log_max_len
 ^^^^^^^^^^^

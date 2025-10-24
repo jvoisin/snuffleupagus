@@ -43,7 +43,7 @@ void sp_log_msgf(char const* const restrict feature, int level, int type,
       break;
   }
 
-  switch (SPCFG(log_media)) {
+  switch (SPCFG(log_media).type) {
     case SP_LOG_SYSLOG: {
       const char* error_filename = zend_get_executed_filename();
       int syslog_level = (level == E_ERROR) ? LOG_ERR : LOG_INFO;
@@ -52,6 +52,20 @@ void sp_log_msgf(char const* const restrict feature, int level, int type,
       syslog(syslog_level, "[snuffleupagus][%s][%s][%s] %s in %s on line %d",
              client_ip, feature, logtype, msg, error_filename, error_lineno);
       closelog();
+      break;
+    }
+    case SP_LOG_FILE: {
+      FILE* logf = fopen(SPCFG(log_media).path, "a");
+      if (!logf) {
+        zend_error(level, "[snuffleupagus][%s][logging][log] unable to open %s to log", client_ip,
+                  SPCFG(log_media).path);
+      } else {
+        int error_lineno = zend_get_executed_lineno(TSRMLS_C);
+        const char* error_filename = zend_get_executed_filename();
+        fprintf(logf, "[snuffleupagus][%s][%s][%s] %s in %s on line %d\n",
+             client_ip, feature, logtype, msg, error_filename, error_lineno);
+        fclose(logf);
+      }
       break;
     }
     case SP_LOG_ZEND:

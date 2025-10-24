@@ -19,9 +19,14 @@ typedef enum {
   SP_PHP_TYPE_REFERENCE = IS_REFERENCE
 } sp_php_type;
 
-typedef enum { SP_LOG_ZEND = 0, SP_LOG_SYSLOG = 1 } sp_log_media;
 
 typedef enum { SP_INI_UNSET = 0, SP_INI_READONLY = 1, SP_INI_READWRITE = -1 } sp_ini_permission;
+
+typedef enum { SP_LOG_ZEND = 0, SP_LOG_SYSLOG = 1, SP_LOG_FILE = 2 } sp_log_media_type;
+typedef struct {
+  sp_log_media_type type;
+  char* path;
+} sp_config_log;
 
 typedef struct {
   int ip_version;
