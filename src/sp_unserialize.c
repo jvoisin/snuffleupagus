@@ -110,9 +110,27 @@ PHP_FUNCTION(sp_unserialize) {
 #endif
   }
 
+  const sp_config_unserialize *config_unserialize = &(SPCFG(unserialize));
+#if ! (PHP_VERSION_ID >= 80300)
+  zif_handler orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("unserialize"));
+#endif
+
   /* 64 is the length of HMAC-256 */
   if (buf_len < 64) {
-    sp_log_drop("unserialize", "The serialized object is too small.");
+    if (true == config_unserialize->simulation) {
+      sp_log_simulation("unserialize", "The serialized object is smaller than 64: assuming there is no HMAC");
+#if PHP_VERSION_ID >= 80300
+      // PHP8.3 gives a warning about trailing data in unserialize strings.
+      php_unserialize_with_options(return_value, buf, buf_len, opts, "unserialize");
+#else
+      if ((orig_handler)) {
+        orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+      }
+#endif
+      return;
+    } else {
+      sp_log_drop("unserialize", "The serialized object is too small.");
+    }
   }
 
   char* hmac = buf + buf_len - 64;
@@ -128,9 +146,6 @@ PHP_FUNCTION(sp_unserialize) {
     }
   } else { status = 1; }
 
-#if ! (PHP_VERSION_ID >= 80300)
-  zif_handler orig_handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook), ZEND_STRL("unserialize"));
-#endif
   if (0 == status) {
 #if PHP_VERSION_ID >= 80300
       // PHP8.3 gives a warning about trailing data in unserialize strings.
@@ -141,7 +156,6 @@ PHP_FUNCTION(sp_unserialize) {
     }
 #endif
   } else {
-    const sp_config_unserialize *config_unserialize = &(SPCFG(unserialize));
     if (config_unserialize->dump) {
       sp_log_request(config_unserialize->dump,
                      config_unserialize->textual_representation);
