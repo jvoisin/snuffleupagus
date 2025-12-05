@@ -218,7 +218,7 @@ PHP_FUNCTION(sp_setcookie) {
     partitioned = false;
   }
   if (php_setcookie(name, (value_enc ? value_enc : value), expires, path,
-                    domain, secure, httponly, samesite, partitioned, false) == SUCCESS) {
+                    domain, secure, httponly, samesite, partitioned, 1) == SUCCESS) {
 #endif
     RETVAL_TRUE;
   } else {
