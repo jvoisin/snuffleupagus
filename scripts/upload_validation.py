@@ -15,6 +15,7 @@ def check(filename):
             "-d", "vld.col_sep=@",
             "-d", "log_errors=0",
             "-d", "error_log=/dev/null",
+            "-B", "if (!extension_loaded('vld')) die('no vld');",
             filename],
             stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
