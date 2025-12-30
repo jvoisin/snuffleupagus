@@ -15,6 +15,7 @@ def check(filename):
             "-d", "vld.col_sep=@",
             "-d", "log_errors=0",
             "-d", "error_log=/dev/null",
+            "-l",
             filename],
             stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
