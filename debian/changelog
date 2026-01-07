@@ -1,3 +1,13 @@
+snuffleupagus (0.13.0) UNRELEASED; urgency=low
+  [ jvoisin ]
+  * Compatibility with PHP8.5
+  * Add the possibility to log to a file
+  * Improve .drop() logging reliability when set_error_handler is used
+  * Improve simulation mode for unserialize() when no HMAC key is provided
+  * Fix a possible arbitrary code execution on misconfigured upload_validation deployments
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Wed, 07 Jan 2026 18:00:00 +0200
+
 snuffleupagus (0.12.0) UNRELEASED; urgency=low
   [ jvoisin ]
   * Unify the default rules across all php versions
@@ -12,22 +22,22 @@ snuffleupagus (0.12.0) UNRELEASED; urgency=low
 
 snuffleupagus (0.11.0) UNRELEASED; urgency=low
   [ jvoisin ]
-  * Compatibility with PHP8.4                                                     
+  * Compatibility with PHP8.4
   * Fixed compilation on FreeBSD
-  * Update the internal deprecation checks                                        
+  * Update the internal deprecation checks
 
   [ cgzones ]
-  * Print key and value on INI violations                                         
+  * Print key and value on INI violations
   * Improve `scripts/generate_rules.php` with regard to functions from global space prefixed with `\`
-  * Add option to specify the allowed "php" wrapper types                         
-  * Make 'phar' filenames work in `sp.disabled_functions`                         
-  * Improve the documentation                                                     
-  * Improve the default set of rules, especially with regard to portability       
-  * Improve the Debian packaging                                                  
-  * Improve behaviour when dealing with broken configuration file                 
+  * Add option to specify the allowed "php" wrapper types
+  * Make 'phar' filenames work in `sp.disabled_functions`
+  * Improve the documentation
+  * Improve the default set of rules, especially with regard to portability
+  * Improve the Debian packaging
+  * Improve behaviour when dealing with broken configuration file
   * Don't whitelist files if the function name is actually a method of a class in `scripts/generate_rules.php`
-  * Ignore function definition in `scripts/generate_rules.php`                    
-  * Improve configuration dumping                                                 
+  * Ignore function definition in `scripts/generate_rules.php`
+  * Improve configuration dumping
 
  -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Fri, 06 Sep 2024 14:30:00 +0200
 
@@ -35,7 +45,7 @@ snuffleupagus (0.10.0) UNRELEASED; urgency=low
   [ jvoisin ]
   * Compatibility with PHP8.3
   * Add `sp.log_max_len` to limit the maximum size of the log messages
-  * Add an example configuration for Xenforo 2.2.12 
+  * Add an example configuration for Xenforo 2.2.12
   * Url encode functions arguments when logging them
 
  -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Wed, 20 Sep 2023 15:25:00 +0200
@@ -100,15 +110,15 @@ snuffleupagus (0.8.0) UNRELEASED; urgency=low
 
 snuffleupagus (0.7.1) UNRELEASED; urgency=low
   [ jvoisin ]
-  * Fixed possible memory-leaks when hooking via regular expressions               
-  * Modernise the code by removing usage of `strtok`                               
-  * Prevent a possible crash during configuration reloading                        
-  * Fix the default rules to catch dangerous `chmod` calls                         
-  * Improve compatibility with various `libpcre` configurations/versions           
-  * Improve the default rules' compatibility with php8                             
-  * Prevent XXE in php8 as well                                                    
-  * Improve a bit the verbosity of the logs                                        
-  * Add a rules file for php8  
+  * Fixed possible memory-leaks when hooking via regular expressions
+  * Modernise the code by removing usage of `strtok`
+  * Prevent a possible crash during configuration reloading
+  * Fix the default rules to catch dangerous `chmod` calls
+  * Improve compatibility with various `libpcre` configurations/versions
+  * Improve the default rules' compatibility with php8
+  * Prevent XXE in php8 as well
+  * Improve a bit the verbosity of the logs
+  * Add a rules file for php8
 
  -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Sun, 02 Aug 2021 19:29:00 +0200
 

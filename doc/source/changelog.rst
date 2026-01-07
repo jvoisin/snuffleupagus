@@ -1,6 +1,21 @@
 Changelog
 =========
 
+0.13.0 - `Elephas <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.13.0>`__ 2026/01/07
+-----------------------------------------------------------------------------------------------
+
+New features
+^^^^^^^^^^^^
+* Compatibility with PHP8.5
+* Add the possibility to log to a file
+
+Bug fixes
+^^^^^^^^^
+* Improve .drop() logging reliability when set_error_handler is used
+* Improve simulation mode for unserialize() when no HMAC key is provided
+* Fix a possible arbitrary code execution on misconfigured upload_validation deployments (CVE-2026-22034)
+
+
 0.12.0 - `Stegodontidae <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.12.0>`__ 2025/08/19
 -----------------------------------------------------------------------------------------------------
 
