@@ -45,10 +45,12 @@ sp.cookie.name("PHPSESSID").samesite("lax");
 @end_condition;
 
 # Prevent various `mail`-related vulnerabilities
-@condition PHP_VERSION_ID < 80300;
-sp.disable_function.function("mail").param("additional_parameters").value_r("\\-").drop();
-@condition PHP_VERSION_ID >= 80300;
-sp.disable_function.function("mail").param("additional_params").value_r("\\-").drop();
+@condition PHP_VERSION_ID < 80000;
+    sp.disable_function.function("mail").param("additional_parameters").value_r("\\-").drop();
+    sp.disable_function.function("mb_send_mail").param("additional_parameters").value_r("\\-").drop();
+@condition PHP_VERSION_ID >= 80000;
+    sp.disable_function.function("mail").param("additional_params").value_r("\\-").drop();
+    sp.disable_function.function("mb_send_mail").param("additional_params").value_r("\\-").drop();
 @end_condition;
 
 # Since it's now burned, me might as well mitigate it publicly
