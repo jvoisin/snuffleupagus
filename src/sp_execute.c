@@ -289,25 +289,25 @@ static inline void sp_stream_open_checks(zend_string *zend_filename, zend_file_h
         case ZEND_INCLUDE:
           is_builtin_matching(
               zend_filename, "include", "inclusion path",
-              zend_hash_str_find_ptr(disabled_functions_hooked, ZEND_STRL("include")),
+              zend_hash_find_ex_ptr(disabled_functions_hooked, ZSTR_KNOWN(ZEND_STR_INCLUDE), 1),
               disabled_functions_hooked);
           break;
         case ZEND_REQUIRE:
           is_builtin_matching(
               zend_filename, "require", "inclusion path",
-              zend_hash_str_find_ptr(disabled_functions_hooked, ZEND_STRL("require")),
+              zend_hash_find_ex_ptr(disabled_functions_hooked, ZSTR_KNOWN(ZEND_STR_REQUIRE), 1),
               disabled_functions_hooked);
           break;
         case ZEND_REQUIRE_ONCE:
           is_builtin_matching(
               zend_filename, "require_once", "inclusion path",
-              zend_hash_str_find_ptr(disabled_functions_hooked, ZEND_STRL("require_once")),
+              zend_hash_find_ex_ptr(disabled_functions_hooked, ZSTR_KNOWN(ZEND_STR_REQUIRE_ONCE), 1),
               disabled_functions_hooked);
           break;
         case ZEND_INCLUDE_ONCE:
           is_builtin_matching(
               zend_filename, "include_once", "inclusion path",
-              zend_hash_str_find_ptr(disabled_functions_hooked, ZEND_STRL("include_once")),
+              zend_hash_find_ex_ptr(disabled_functions_hooked, ZSTR_KNOWN(ZEND_STR_INCLUDE_ONCE), 1),
               disabled_functions_hooked);
           break;
           EMPTY_SWITCH_DEFAULT_CASE();  // LCOV_EXCL_LINE
