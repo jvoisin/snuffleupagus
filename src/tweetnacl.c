@@ -131,6 +131,7 @@ int crypto_core_hsalsa20(u8 *out,const u8 *in,const u8 *k,const u8 *c)
   return 0;
 }
 
+__attribute__ ((nonstring))
 static const u8 sigma[16] = "expand 32-byte k";
 
 int crypto_stream_salsa20_xor(u8 *c,const u8 *m,u64 b,const u8 *n,const u8 *k)
