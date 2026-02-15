@@ -11,7 +11,7 @@ $filename = __DIR__ . '/test.txt';
 file_put_contents($filename, 'a');
 chmod($filename, 0400);
 
-if (is_writable($filename)) print "skip";
+if (is_writable($filename)) print "skip chmod did not remove write access";
 @unlink($filename);
  ?>
 --INI--

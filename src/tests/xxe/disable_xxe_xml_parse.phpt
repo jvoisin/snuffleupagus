@@ -8,7 +8,7 @@ Disable XXE in xml_parse
   echo "skip because the `xml` extension isn't loaded";
 }
  ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip Not applicable for PHP 8+"; ?>
 --EXTENSIONS--
 xml
 --INI--

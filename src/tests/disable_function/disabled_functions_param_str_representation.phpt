@@ -2,7 +2,7 @@
 Disable functions - casting various types to string internally
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip Not applicable for PHP 8+"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_disabled_functions_param_str_representation.ini
 --FILE--
