@@ -41,6 +41,8 @@ tests: release tests-incremental  ## compile a release build and run the testsui
 tests-incremental:  ## perform an incremental build and run the testsuite
 	make -C $(SRC)
 	TEST_PHP_ARGS='-q' REPORT_EXIT_STATUS=1 make -C $(SRC) test
+	@rm -f src/file_to_include1.php src/file_to_include2.php src/tests/disable_function/test.bla src/tests/disable_function/test.meh src/tests/disable_function/test.sim src/tests/eval_blacklist/test.bla
+
 
 coverage:  ## compile snuffleugpaus, and run the testsuite with coverage
 	cd $(SRC); phpize
