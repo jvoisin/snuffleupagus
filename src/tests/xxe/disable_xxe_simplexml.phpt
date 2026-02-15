@@ -2,7 +2,7 @@
 Disable XXE
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus") || !extension_loaded("simplexml")) print("skip"); ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip Not applicable for PHP 8+"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disable_xxe_disable.ini
 --EXTENSIONS--

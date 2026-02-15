@@ -2,7 +2,7 @@
 Unserialize ok, but called with the wrong number of arguments
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip Not applicable for PHP 8+, as it results in a fatal error"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_serialize.ini
 --FILE--

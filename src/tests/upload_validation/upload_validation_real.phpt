@@ -3,23 +3,23 @@ Upload a file, validation ok, with our real script, using vld
 --SKIPIF--
 <?php
 if (!extension_loaded("snuffleupagus")) {
- 	print "skip";
+	print "skip";
 }
 
 if (PHP_VERSION_ID >= 80000) {
-  print "skip";
+	print "skip Not applicable for PHP 8+";
 }
 
 if (strpos(system(PHP_BINARY . " -d error_log=/dev/null -d extension=vld.so -m 2>/dev/null"), "vld") === FALSE) {
-	print "skip";
+	print "skip Failed to run php command";
 }
 
 if (strpos(system(PHP_BINARY . " -d extension=vld.so -m 2>&1 | grep 'Unable to load'"), "Unable to load dynamic library 'vld.so'") !== FALSE) {
-	print "skip";
+	print "skip Failed to run php command";
 }
 
 if (strpos(phpversion(), '-dev') !== FALSE) {
-	print 'skip';
+	print "skip Detected development version of PHP";
 }
 ?>
 --INI--

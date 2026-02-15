@@ -2,7 +2,7 @@
 Cookie encryption in ipv6
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID < 80000 || PHP_VERSION_ID >= 80200) print "skip"; ?>
+<?php if (PHP_VERSION_ID < 80000 || PHP_VERSION_ID >= 80200) print "skip Not implemented for PHP 8-8.2"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_encrypted_cookies.ini
 --COOKIE--

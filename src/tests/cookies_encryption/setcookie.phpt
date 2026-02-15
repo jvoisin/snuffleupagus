@@ -2,7 +2,7 @@
 Set cookies.
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80000) print "skip"; ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip Not implemented for PHP 8+"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_encrypted_cookies.ini
 --COOKIE--

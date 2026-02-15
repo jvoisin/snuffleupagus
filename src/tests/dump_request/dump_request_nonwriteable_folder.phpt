@@ -8,11 +8,11 @@ if ("ubuntu" == getenv("CI_JOB_IMAGE")) { print "skip"; }
 // root has write privileges "any" folders
 if (TRUE == function_exists("posix_getuid")) {
 	if (0 == posix_getuid()) {
-		print "skip";
+		print "skip Running as root";
 	}
 } elseif (TRUE == function_exists("shell_exec")) {
 	if ("root" == trim(shell_exec("whoami"))) {
-		print "skip";
+		print "skip Running as root";
 	}
 }
 

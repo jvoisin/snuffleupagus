@@ -1,7 +1,8 @@
 --TEST--
-Unserialize with noclass forced
+Unserialize with noclass forced on PHP7
 --SKIPIF--
-<?php if (!extension_loaded("snuffleupagus") || PHP_VERSION_ID >= 80000) print "skip"; ?>
+<?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
+<?php if (PHP_VERSION_ID >= 80000) print "skip Not applicable for PHP 8+"; ?>
 --INI--
 sp.configuration_file={PWD}/config/config_serialize_noclass.ini
 --FILE--
