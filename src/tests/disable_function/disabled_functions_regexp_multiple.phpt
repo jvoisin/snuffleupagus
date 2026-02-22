@@ -15,5 +15,5 @@ Warning: [snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted executi
 ID
 
 Warning: [snuffleupagus][0.0.0.0][disabled_function][simulation] Aborted execution on call of the function 'strcmp' in %a/disabled_functions_regexp_multiple.php on line 3
--1
+-%d
 After
