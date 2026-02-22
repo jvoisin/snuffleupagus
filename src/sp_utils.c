@@ -4,6 +4,10 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #endif
 
+#ifndef PATH_MAX
+# define PATH_MAX 4096
+#endif
+
 static char const* const default_ipaddr = "0.0.0.0";
 const char* get_ipaddr() {
   const char* client_ip = getenv("REMOTE_ADDR");
@@ -112,7 +116,7 @@ int sp_log_request(zend_string const* const restrict folder, zend_string const* 
   FILE* file;
   char const* const current_filename = zend_get_executed_filename(TSRMLS_C);
   const int current_line = zend_get_executed_lineno(TSRMLS_C);
-  char filename[PATH_MAX] = {0};
+  char filename[PATH_MAX];
   static const struct {
     char const* const str;
     const int key;
@@ -152,7 +156,7 @@ int sp_log_request(zend_string const* const restrict folder, zend_string const* 
   EG(current_execute_data) = orig_execute_data;
   PHP_SHA256Final(digest, &context);
   make_digest_ex(strhash, digest, SHA256_SIZE);
-  snprintf(filename, PATH_MAX - 1, "%s/sp_dump.%s", ZSTR_VAL(folder), strhash);
+  snprintf(filename, PATH_MAX, "%s/sp_dump.%s", ZSTR_VAL(folder), strhash);
 
   if (NULL == (file = fopen(filename, "w+"))) {
     sp_log_warn("request_logging", "Unable to open %s: %s", filename,
