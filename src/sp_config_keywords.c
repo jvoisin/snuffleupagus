@@ -14,7 +14,7 @@
 
 SP_PARSE_FN(parse_enable) {
   bool enable = false, disable = false;
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
       {0, 0, 0}};
@@ -29,7 +29,7 @@ SP_PARSE_FN(parse_enable) {
 SP_PARSE_FN(parse_session) {
   sp_config_session *cfg = retval;
 
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
       {parse_empty, SP_TOKEN_ENCRYPT, &(cfg->encrypt)},
       {parse_empty, SP_TOKEN_SIMULATION, &(cfg->simulation)},
       {parse_empty, SP_TOKEN_SIM, &(cfg->simulation)},
@@ -86,7 +86,7 @@ SP_PARSE_FN(parse_unserialize_noclass) {
   bool enable = false, disable = false;
   sp_config_unserialize_noclass *cfg = (sp_config_unserialize_noclass*)retval;
 
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
       {0, 0, 0}};
@@ -104,7 +104,7 @@ SP_PARSE_FN(parse_unserialize) {
   bool enable = false, disable = false;
   sp_config_unserialize *cfg = (sp_config_unserialize*)retval;
 
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
       {parse_empty, SP_TOKEN_SIMULATION, &(cfg->simulation)},
@@ -125,7 +125,7 @@ SP_PARSE_FN(parse_readonly_exec) {
   bool enable = false, disable = false, xchecks = false, no_xchecks = false;
   sp_config_readonly_exec *cfg = (sp_config_readonly_exec*)retval;
 
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
       {parse_empty, SP_TOKEN_SIMULATION, &(cfg->simulation)},
@@ -148,7 +148,7 @@ SP_PARSE_FN(parse_readonly_exec) {
 }
 
 SP_PARSE_FN(parse_global) {
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
       {parse_str, SP_TOKEN_ENCRYPTION_KEY, &(SPCFG(encryption_key))},
       {parse_str, SP_TOKEN_ENV_VAR, &(SPCFG(cookies_env_var))},
       {parse_log_media, SP_TOKEN_LOG_MEDIA, &(SPCFG(log_media))},
@@ -178,7 +178,7 @@ SP_PARSE_FN(parse_global) {
 SP_PARSE_FN(parse_eval_filter_conf) {
   sp_config_eval *cfg = &(SPCFG(eval));
 
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
       {parse_list, SP_TOKEN_LIST, retval},
       {parse_empty, SP_TOKEN_SIMULATION, &(cfg->simulation)},
       {parse_empty, SP_TOKEN_SIM, &(cfg->simulation)},
@@ -195,7 +195,7 @@ SP_PARSE_FN(parse_eval_filter_conf) {
 SP_PARSE_FN(parse_wrapper_whitelist) {
   sp_config_wrapper *cfg = (sp_config_wrapper*)retval;
   
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
       {parse_list, SP_TOKEN_LIST, &cfg->whitelist},
       {parse_list, SP_TOKEN_ALLOW_PHP_STREAMS, &cfg->php_stream_allowlist},
       {0, 0, 0}};
@@ -211,7 +211,7 @@ SP_PARSE_FN(parse_cookie) {
   zend_string *samesite = NULL;
   sp_cookie *cookie = pecalloc(1, sizeof(sp_cookie), 1);
 
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
       {parse_str, SP_TOKEN_NAME, &(cookie->name)},
       {parse_regexp, SP_TOKEN_NAME_REGEXP, &(cookie->name_r)},
       {parse_str, SP_TOKEN_SAMESITE, &samesite},
@@ -313,7 +313,7 @@ SP_PARSE_FN(parse_disabled_functions) {
   sp_disabled_function *df = pecalloc(1, sizeof(*df), 1);
   df->pos = -1;
 
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
       {parse_str, SP_TOKEN_ALIAS, &(df->alias)},
@@ -456,7 +456,7 @@ SP_PARSE_FN(parse_upload_validation) {
   bool disable = false, enable = false;
   sp_config_upload_validation *cfg = (sp_config_upload_validation*)retval;
 
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
       {parse_empty, SP_TOKEN_ENABLE, &(enable)},
       {parse_empty, SP_TOKEN_DISABLE, &(disable)},
       {parse_str, SP_TOKEN_UPLOAD_SCRIPT, &(cfg->script)},
@@ -482,7 +482,7 @@ SP_PARSE_FN(parse_ini_protection) {
   bool disable = false, enable = false;
   bool rw = false, ro = false; // rw is ignored, but declaring .policy_rw is valid for readability
   sp_config_ini *cfg = (sp_config_ini*)retval;
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
     {parse_empty, "enable", &(enable)},
     {parse_empty, "disable", &(disable)},
     {parse_empty, "simulation", &cfg->simulation},
@@ -518,7 +518,7 @@ SP_PARSE_FN(parse_ini_entry) {
   sp_ini_entry *entry = pecalloc(1, sizeof(sp_ini_entry), 1);
   bool rw = false, ro = false;
 
-  sp_config_keyword config_keywords[] = {
+  const sp_config_keyword config_keywords[] = {
     {parse_empty, "simulation", &entry->simulation},
     {parse_empty, "sim", &entry->simulation},
     {parse_str, "key", &entry->key},

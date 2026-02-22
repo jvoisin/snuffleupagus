@@ -6,12 +6,12 @@
 
 
 static zend_result sp_process_config_root(sp_parsed_keyword *parsed_rule) {
-  sp_config_keyword sp_func[] = {
+  const sp_config_keyword sp_func[] = {
     {parse_unserialize,         SP_TOKEN_UNSERIALIZE_HMAC, &(SPCFG(unserialize))},
     {parse_unserialize_noclass, SP_TOKEN_UNSERIALIZE_NOCLASS, &(SPCFG(unserialize_noclass))},
     {parse_enable,              SP_TOKEN_HARDEN_RANDOM, &(SPCFG(random).enable)},
     {parse_log_media,           SP_TOKEN_LOG_MEDIA, &(SPCFG(log_media))},
-    {parse_uint,               SP_TOKEN_LOG_MAX_LEN, &(SPCFG(log_max_len))},
+    {parse_uint,                SP_TOKEN_LOG_MAX_LEN, &(SPCFG(log_max_len))},
     {parse_disabled_functions,  SP_TOKEN_DISABLE_FUNC, NULL},
     {parse_readonly_exec,       SP_TOKEN_READONLY_EXEC, &(SPCFG(readonly_exec))},
     {parse_enable,              SP_TOKEN_GLOBAL_STRICT, &(SPCFG(global_strict).enable)},
