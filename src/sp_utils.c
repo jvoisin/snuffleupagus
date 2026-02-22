@@ -127,6 +127,7 @@ int sp_log_request(zend_string const* const restrict folder, zend_string const* 
   PHP_SHA256_CTX context;
   unsigned char digest[SHA256_SIZE] = {0};
   char strhash[65] = {0};
+  int r;
 
   if (-1 == mkdir(ZSTR_VAL(folder), 0700) && errno != EEXIST) {
     sp_log_warn("request_logging", "Unable to create the folder '%s'",
@@ -156,7 +157,13 @@ int sp_log_request(zend_string const* const restrict folder, zend_string const* 
   EG(current_execute_data) = orig_execute_data;
   PHP_SHA256Final(digest, &context);
   make_digest_ex(strhash, digest, SHA256_SIZE);
-  snprintf(filename, PATH_MAX, "%s/sp_dump.%s", ZSTR_VAL(folder), strhash);
+
+  r = snprintf(filename, PATH_MAX, "%s/sp_dump.%s", ZSTR_VAL(folder), strhash);
+  if (r < 0 || (size_t)r >= PATH_MAX) {
+    sp_log_warn("request_logging", "Unable to format filename of length %zu",
+                ZSTR_LEN(folder) + 9 + 64);
+    return -1;
+  }
 
   if (NULL == (file = fopen(filename, "w+"))) {
     sp_log_warn("request_logging", "Unable to open %s: %s", filename,
