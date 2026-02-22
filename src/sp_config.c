@@ -213,6 +213,21 @@ SP_PARSEKW_FN(parse_uint) {
   return ret;
 }
 
+SP_PARSEKW_FN(parse_ulong) {
+  int ret = SP_PARSER_SUCCESS;
+  SP_PARSE_ARG(value);
+
+  char *endptr;
+  errno = 0;
+  *(u_long*)retval = (u_long)strtoul(ZSTR_VAL(value), &endptr, 10);
+  if (errno != 0 || !endptr || endptr == ZSTR_VAL(value)) {
+    sp_log_err("config", "Failed to parse arg '%s' of `%s` on line %zu", ZSTR_VAL(value), token, kw->lineno);
+    ret = SP_PARSER_ERROR;
+  }
+  zend_string_release(value);
+  return ret;
+}
+
 SP_PARSEKW_FN(parse_cidr) {
   CHECK_DUPLICATE_KEYWORD(retval);
   SP_PARSE_ARG(value);
