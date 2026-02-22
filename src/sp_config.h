@@ -132,8 +132,6 @@ typedef struct {
   zend_string *alias;
   bool param_is_array;
   bool var_is_array;
-  // sp_list_node *param_array_keys;
-  // sp_list_node *var_array_keys;
 
   bool allow;
 
