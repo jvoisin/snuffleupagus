@@ -288,9 +288,6 @@ void sp_free_disabled_function(void *data) {
   sp_free_zstr(df->dump);
   sp_free_zstr(df->alias);
 
-  // sp_list_free(df->param_array_keys);
-  // sp_list_free(df->var_array_keys);
-
   sp_tree_free(df->var);
 
   pefree(df->cidr, 1);
