@@ -22,15 +22,15 @@ static int (*old_s_write)(PS_WRITE_ARGS);
 static int (*previous_sessionRINIT)(INIT_FUNC_ARGS) = NULL;
 static ZEND_INI_MH((*old_OnUpdateSaveHandler)) = NULL;
 
-static void check_sid_length(zend_string *sid) {
+static void check_sid_length(const zend_string *sid) {
   const sp_config_session *cfg = &(SPCFG(session));
 
   if (sid) {
     if (cfg->sid_min_length && ZSTR_LEN(sid) < cfg->sid_min_length) {
-      sp_log_auto("session", cfg->simulation, "Session ID is too short");
+      sp_log_auto("session", cfg->simulation, "Session ID is too short (sid=%zu min=%zu)", ZSTR_LEN(sid), (size_t)cfg->sid_min_length);
     }
     if (cfg->sid_max_length && ZSTR_LEN(sid) > cfg->sid_max_length) {
-      sp_log_auto("session", cfg->simulation, "Session ID is too long");
+      sp_log_auto("session", cfg->simulation, "Session ID is too long (sid=%zu max=%zu)", ZSTR_LEN(sid), (size_t)cfg->sid_max_length);
     }
   }
 }
