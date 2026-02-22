@@ -14,6 +14,6 @@ session_start();
 echo strlen(session_id());
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][session][drop] Session ID is too short in %a.php on line %d
+Fatal error: [snuffleupagus][0.0.0.0][session][drop] Session ID is too short (sid=3 min=10) in %a.php on line %d
 
-Fatal error: [snuffleupagus][0.0.0.0][session][drop] Session ID is too short in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][session][drop] Session ID is too short (sid=3 min=10) in Unknown on line 0
