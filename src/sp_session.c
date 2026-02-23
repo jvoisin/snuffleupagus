@@ -27,10 +27,10 @@ static void check_sid_length(const zend_string *sid) {
 
   if (sid) {
     if (cfg->sid_min_length && ZSTR_LEN(sid) < cfg->sid_min_length) {
-      sp_log_auto("session", cfg->simulation, "Session ID is too short (sid=%zu min=%zu)", ZSTR_LEN(sid), (size_t)cfg->sid_min_length);
+      sp_log_auto("session", cfg->simulation, "Session ID is too short (sid=%zu min=%lu)", ZSTR_LEN(sid), cfg->sid_min_length);
     }
     if (cfg->sid_max_length && ZSTR_LEN(sid) > cfg->sid_max_length) {
-      sp_log_auto("session", cfg->simulation, "Session ID is too long (sid=%zu max=%zu)", ZSTR_LEN(sid), (size_t)cfg->sid_max_length);
+      sp_log_auto("session", cfg->simulation, "Session ID is too long (sid=%zu max=%lu)", ZSTR_LEN(sid), cfg->sid_max_length);
     }
   }
 }
