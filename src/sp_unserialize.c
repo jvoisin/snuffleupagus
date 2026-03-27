@@ -137,7 +137,7 @@ PHP_FUNCTION(sp_unserialize) {
   char* serialized_str = ecalloc(buf_len - 64 + 1, 1);
   memcpy(serialized_str, buf, buf_len - 64);
 
-  zend_string *expected_hmac = sp_do_hash_hmac_sha256(serialized_str, strlen(serialized_str), ZSTR_VAL(SPCFG(encryption_key)), ZSTR_LEN(SPCFG(encryption_key)));
+  zend_string *expected_hmac = sp_do_hash_hmac_sha256(serialized_str, buf_len - 64, ZSTR_VAL(SPCFG(encryption_key)), ZSTR_LEN(SPCFG(encryption_key)));
 
   unsigned int status = 0;
   if (expected_hmac) {
