@@ -33,7 +33,7 @@ static void sp_server_strip(HashTable *svars, const char *key, size_t keylen) {
   char *tmpend = tmp + ZSTR_LEN(tmp_zstr);
 
   for (char *p = tmp; p < tmpend; p++) {
-    if (sp_is_dangerous_char[(int)*p]) {
+    if (sp_is_dangerous_char[(unsigned char)*p]) {
       *p = '_';
     }
   }
@@ -49,17 +49,17 @@ static void sp_server_encode(HashTable *svars, const char *key, size_t keylen) {
   int extra = 0;
   
   for (char *p = tmp; p < tmpend; p++) {
-    extra += sp_is_dangerous_char[(int)*p] * 2;
+    extra += sp_is_dangerous_char[(unsigned char)*p] * 2;
   }
   if (!extra) { return; }
 
   zend_string *new_zstr = zend_string_alloc(ZSTR_LEN(tmp_zstr) + extra, 0);
   char *n = ZSTR_VAL(new_zstr);
   for (char *p = tmp; p < tmpend; p++, n++) {
-    if (sp_is_dangerous_char[(int)*p]) {
+    if (sp_is_dangerous_char[(unsigned char)*p]) {
       *n++ = '%';
-      *n++ = sp_hexchars[*p >> 4];
-      *n = sp_hexchars[*p & 15];
+      *n++ = sp_hexchars[(unsigned char)*p >> 4];
+      *n = sp_hexchars[(unsigned char)*p & 15];
     } else {
       *n = *p;
     }
