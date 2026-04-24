@@ -180,7 +180,7 @@ PHP_FUNCTION(sp_stream_wrapper_register) {
   if (!protocol_name || wrapper_is_whitelisted(protocol_name)) {
 
     // reject manual loading of "php" wrapper
-    if (!strcasecmp(ZSTR_VAL(protocol_name), "php") && sp_php_stream_is_filtered()) {
+    if (protocol_name && !strcasecmp(ZSTR_VAL(protocol_name), "php") && sp_php_stream_is_filtered()) {
       return;
     }
 
