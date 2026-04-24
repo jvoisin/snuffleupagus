@@ -54,8 +54,9 @@ static int sp_rfc1867_callback(unsigned int event, void *event_data, void **extr
       cmd[1] = tmp_name;
       cmd[2] = NULL;
 
+      const char *remote_addr = getenv("REMOTE_ADDR");
       spprintf(&env[0], 0, "SP_FILENAME=%s", filename);
-      spprintf(&env[1], 0, "SP_REMOTE_ADDR=%s", getenv("REMOTE_ADDR"));
+      spprintf(&env[1], 0, "SP_REMOTE_ADDR=%s", remote_addr ? remote_addr : "");
       spprintf(&env[2], 0, "SP_CURRENT_FILE=%s", zend_get_executed_filename(TSRMLS_C));
       spprintf(&env[3], 0, "SP_FILESIZE=%zu", filesize);
       env[4] = NULL;
