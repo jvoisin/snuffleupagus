@@ -31,6 +31,11 @@ int decrypt_cookie(zval *pDest, int num_args, va_list args,
     return ZEND_HASH_APPLY_KEEP;
   }
 
+  /* Cookies can be arrays, like session_id[]=x */
+  if (Z_TYPE_P(pDest) != IS_STRING) {
+    return ZEND_HASH_APPLY_KEEP;
+  }
+
   /* If the cookie has no value, it shouldn't be encrypted. */
   if (0 == Z_STRLEN_P(pDest)) {
     return ZEND_HASH_APPLY_KEEP;
