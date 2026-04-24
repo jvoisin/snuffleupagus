@@ -32,6 +32,7 @@ void generate_key(unsigned char *key) {
   }
 
   PHP_SHA256Final((unsigned char *)key, &ctx);
+  ZEND_SECURE_ZERO(&ctx, sizeof(ctx));
 }
 
 // This function return 0 upon success , non-zero otherwise
@@ -120,6 +121,7 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
   ret = ZEND_HASH_APPLY_KEEP;
 
 out:
+  ZEND_SECURE_ZERO(key, sizeof(key));
   zend_string_efree(debase64);
   efree(decrypted);
   efree(backup);
@@ -169,6 +171,8 @@ zend_string *encrypt_zval(zend_string *data) {
     z = php_base64_encode(encrypted_data, emsg_and_nonce_len);
   }
 
+  ZEND_SECURE_ZERO(key, sizeof(key));
+  ZEND_SECURE_ZERO(nonce, sizeof(nonce));
   efree(data_to_encrypt);
   efree(encrypted_data);
 
