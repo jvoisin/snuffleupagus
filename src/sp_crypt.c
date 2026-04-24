@@ -42,6 +42,11 @@ int decrypt_zval(zval *pDest, bool simulation, zend_hash_key *hash_key) {
 
   zend_string *debase64 = php_base64_decode((unsigned char *)(Z_STRVAL_P(pDest)), Z_STRLEN_P(pDest));
 
+  if (!debase64) {
+      sp_log_drop( "cookie_encryption", "Unable to base64-decode the cookie");
+      return ZEND_HASH_APPLY_REMOVE;
+  }
+
   if (ZSTR_LEN(debase64) < crypto_secretbox_NONCEBYTES) {
     if (true == simulation) {
       sp_log_simulation(
