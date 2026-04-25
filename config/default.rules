@@ -35,6 +35,10 @@ sp.xxe_protection.enable();
 # https://snuffleupagus.readthedocs.io/features.html#protection-against-cross-site-request-forgery
 sp.cookie.name("PHPSESSID").samesite("lax");
 
+# Note that an attacker with arbitrary PHP code execution
+# can bypass some virtual-patching, by (as)using PHP feature.
+# A clever example would be to declare a class with a __toString method.
+
 # Harden the `chmod` function (0777 (oct = 511, 0666 = 438)
 @condition PHP_VERSION_ID < 80000;
     sp.disable_function.function("chmod").param("mode").value("438").drop();

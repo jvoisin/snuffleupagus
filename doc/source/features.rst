@@ -309,7 +309,11 @@ of dangerous functions, dropping them everywhere else:
    :language: php
 
 
-The intent is to make post-exploitation process (such as backdooring of legitimate code, or RAT usage) a lot harder for the attacker.
+The intent is to make post-exploitation process (such as backdooring of
+legitimate code, or RAT usage) a lot harder for the attacker.
+
+Note that an attacker able to run arbitrary PHP code can likely bypass some virtual-patching
+by (ab)using some PHP features.
 
 
 .. _global-strict-feature:

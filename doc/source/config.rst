@@ -152,7 +152,7 @@ least astonishment
 <https://en.wikipedia.org/wiki/Principle_of_least_astonishment>`__. But since
 it's `possible to modify php's logging system via php
 <https://www.php.net/manual/en/errorfunc.configuration.php>`__, it's
-heavily recommended to use the ``syslog`` option instead. The ``file:` option
+heavily recommended to use the ``syslog`` option instead. The ``file:`` option
 might be useful if you're using Snuffleupagus to fuzz or audit a codebase.
 
 log_max_len
