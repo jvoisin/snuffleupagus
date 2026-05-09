@@ -25,6 +25,39 @@ static inline void sp_op_array_handler(zend_op_array *const op) {
       op->fn_flags |= ZEND_ACC_STRICT_TYPES;
     }
   }
+#if PHP_VERSION_ID >= 80500
+  /* Prevent opcache from inlining user functions that have return-value
+   * monitoring rules, otherwise zend_execute_ex is never called and the
+   * hook never fires. ZEND_ACC_HAS_TYPE_HINTS is checked by
+   * zend_try_inline_call() and blocks inlining. For functions without
+   * actual type hints the only runtime effect is that ZEND_RECV opcodes
+   * are executed instead of skipped; for 0-arg functions (the common
+   * inlineable case) there are no RECV opcodes so the impact is zero. */
+  if (op->function_name && ZEND_USER_CODE(op->type) &&
+      ((SPCFG(disabled_functions_ret) && zend_hash_num_elements(SPCFG(disabled_functions_ret))) ||
+       SPCFG(disabled_functions_reg_ret).disabled_functions)) {
+    char *fname = NULL;
+    if (op->scope) {
+      const size_t len = ZSTR_LEN(op->scope->name) + 2 + ZSTR_LEN(op->function_name) + 1;
+      fname = emalloc(len);
+      snprintf(fname, len, "%s::%s", ZSTR_VAL(op->scope->name), ZSTR_VAL(op->function_name));
+    } else {
+      fname = estrdup(ZSTR_VAL(op->function_name));
+    }
+    bool has_ret_rule = false;
+    if (SPCFG(disabled_functions_ret) &&
+        zend_hash_str_find_ptr(SPCFG(disabled_functions_ret), fname, strlen(fname))) {
+      has_ret_rule = true;
+    }
+    if (!has_ret_rule && SPCFG(disabled_functions_reg_ret).disabled_functions) {
+      has_ret_rule = true;  /* regex rules require runtime matching */
+    }
+    if (has_ret_rule) {
+      op->fn_flags |= ZEND_ACC_HAS_TYPE_HINTS;
+    }
+    efree(fname);
+  }
+#endif
 }
 
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
@@ -582,12 +615,25 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
   sp_hook_register_server_variables();
 
-  if (SPCFG(global_strict).enable) {
+  bool need_op_array_handler = SPCFG(global_strict).enable;
+
+#if PHP_VERSION_ID >= 80500
+  /* Register as zend extension to get op_array_handler callbacks, which we
+   * use to prevent opcache from inlining monitored functions. */
+  if (SPCFG(disabled_functions_ret) && zend_hash_num_elements(SPCFG(disabled_functions_ret))) {
+    need_op_array_handler = true;
+  }
+  if (SPCFG(disabled_functions_reg_ret).disabled_functions) {
+    need_op_array_handler = true;
+  }
+#endif
+
+  if (need_op_array_handler) {
     if (!zend_get_extension(PHP_SNUFFLEUPAGUS_EXTNAME)) {
       zend_extension_entry.startup = NULL;
       zend_register_extension(&zend_extension_entry, NULL);
     }
-    // This is needed to implement the global strict mode
+    // This is needed to enable the op_array_handler callback
     CG(compiler_options) |= ZEND_COMPILE_HANDLE_OP_ARRAY;
   }
 

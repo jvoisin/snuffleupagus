@@ -2,9 +2,9 @@
 Echo hooking
 --SKIPIF--
 <?php if (!extension_loaded("snuffleupagus")) print "skip"; ?>
-<?php if (PHP_VERSION_ID >= 80500) print "skip"; ?>
 --INI--
 sp.configuration_file={PWD}/config/disabled_function_echo.ini
+opcache.optimization_level=0
 --FILE--
 <?php 
 echo "qwe";
