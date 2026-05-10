@@ -393,11 +393,12 @@ bool sp_match_array_key(const zval* zv, const zend_string* to_match, const sp_re
       char* idx_str = NULL;
       spprintf(&idx_str, 0, ZEND_ULONG_FMT, idx);
       zend_string* tmp = zend_string_init(idx_str, strlen(idx_str), 0);
-      if (sp_match_value(tmp, to_match, rx)) {
-        efree(idx_str);
+      bool match = sp_match_value(tmp, to_match, rx);
+      zend_string_release(tmp);
+      efree(idx_str);
+      if (match) {
         return true;
       }
-      efree(idx_str);
     }
   }
   ZEND_HASH_FOREACH_END();
