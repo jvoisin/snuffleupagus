@@ -77,7 +77,7 @@ static int sp_rfc1867_callback(unsigned int event, void *event_data, void **extr
 
       EFREE_3(env);
       int waitstatus;
-      wait(&waitstatus);
+      waitpid(pid, &waitstatus, 0);
       if (WEXITSTATUS(waitstatus) != 0) {  // Nope
         char *uri = getenv("REQUEST_URI");
         int sim = config_upload->simulation;
