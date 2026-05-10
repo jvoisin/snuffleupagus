@@ -64,8 +64,7 @@ static int sp_rfc1867_callback(unsigned int event, void *event_data, void **extr
       if ((pid = fork()) == 0) {
         if (execve(ZSTR_VAL(config_upload->script), cmd, env) == -1) {
           sp_log_warn("upload_validation", "Could not call '%s' : %s", ZSTR_VAL(config_upload->script), strerror(errno));
-          EFREE_3(env);
-          exit(1);
+          _exit(1);
         }
       } else if (pid == -1) {
         // LCOV_EXCL_START
