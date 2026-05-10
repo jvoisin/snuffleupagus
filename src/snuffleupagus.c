@@ -279,7 +279,7 @@ PHP_MINFO_FUNCTION(snuffleupagus) {
   php_info_print_table_start();
   php_info_print_table_row(
       2, "snuffleupagus support",
-      SPG(is_config_valid) ? "enabled" : "disabled");
+      SPG(is_config_valid) == SP_CONFIG_VALID ? "enabled" : "disabled");
   php_info_print_table_row(2, "Version", PHP_SNUFFLEUPAGUS_VERSION);
   php_info_print_table_row(2, "Valid config", valid_config);
   php_info_print_table_end();
