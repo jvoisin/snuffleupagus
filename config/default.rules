@@ -73,6 +73,14 @@ sp.cookie.name("PHPSESSID").samesite("lax");
     sp.disable_function.function("putenv").param("assignment").value_r("GCONV_").drop()
 @end_condition;
 
+# https://github.com/php/php-src/issues/22035
+# CURLOPT_SSLENGINE = 10089 
+@condition PHP_VERSION_ID < 80000;
+    sp.disable_function.function("curl_setopt").param("option").value("10089").drop()
+@condition PHP_VERSION_ID >= 80000;
+    sp.disable_function.function("curl_setopt").param("option").value("10089").drop()
+@end_condition;
+
 # Since people are stupid enough to use `extract` on things like $_GET or $_POST, we might as well mitigate this vector
 @condition PHP_VERSION_ID < 80000;
 sp.disable_function.function("extract").pos("0").value_r("^_").drop()
