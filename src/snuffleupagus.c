@@ -177,48 +177,113 @@ static inline void free_config_ini_entries(HashTable *const ht) {
   ZEND_HASH_FOREACH_END();
 }
 
-static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
-  sp_log_debug("(GSHUTDOWN)");
-#define FREE_HT(F)                       \
-  zend_hash_destroy(snuffleupagus_globals->F); \
-  pefree(snuffleupagus_globals->F, 1);
-  FREE_HT(disabled_functions_hook);
-  FREE_HT(sp_eval_blacklist_functions_hook);
+/* Frees all configuration data and resets every config option to its default
+ * value, WITHOUT destroying the persistent hashtables allocated once in GINIT
+ * (config_disabled_functions*, config_ini.entries): those are merely emptied
+ * so they can be reused. This makes (re)loading a configuration idempotent,
+ * which is required because Apache re-applies the `sp.configuration_file`
+ * directive (and thus calls OnUpdateConfiguration again) on internal
+ * subrequests, e.g. when an .htaccess RewriteRule triggers one. Without this
+ * reset, a second parse trips the "duplicate keyword" guard (and crashes the
+ * worker under php-fpm). Resetting scalars/booleans too means a directive
+ * omitted on reload correctly falls back to its default. */
+static void sp_free_config(void) {
+  sp_log_debug("(config cleanup)");
 
-#define FREE_HT_LIST(F)                                         \
-  free_disabled_functions_hashtable(snuffleupagus_globals->F); \
-  FREE_HT(F);
-  FREE_HT_LIST(config_disabled_functions);
-  FREE_HT_LIST(config_disabled_functions_hooked);
-  FREE_HT_LIST(config_disabled_functions_ret);
-  FREE_HT_LIST(config_disabled_functions_ret_hooked);
-#undef FREE_HT_LIST
+  /* Empty (but keep) the persistent disabled-functions hashtables. */
+#define CLEAN_HT_LIST(F)                          \
+  free_disabled_functions_hashtable(SPG(F)); \
+  zend_hash_clean(SPG(F));
+  CLEAN_HT_LIST(config_disabled_functions);
+  CLEAN_HT_LIST(config_disabled_functions_hooked);
+  CLEAN_HT_LIST(config_disabled_functions_ret);
+  CLEAN_HT_LIST(config_disabled_functions_ret_hooked);
+#undef CLEAN_HT_LIST
 
-  free_config_ini_entries(snuffleupagus_globals->config_ini.entries);
-  FREE_HT(config_ini.entries);
-#undef FREE_HT
+  /* Empty (but keep) the persistent ini-protection hashtable. */
+  free_config_ini_entries(SPG(config_ini.entries));
+  zend_hash_clean(SPG(config_ini.entries));
 
-  sp_list_free(snuffleupagus_globals->config_disabled_functions_reg.disabled_functions, sp_free_disabled_function);
-  sp_list_free(snuffleupagus_globals->config_disabled_functions_reg_ret.disabled_functions, sp_free_disabled_function);
-  sp_list_free(snuffleupagus_globals->config_cookie.cookies, sp_free_cookie);
+  sp_list_free(SPG(config_disabled_functions_reg.disabled_functions), sp_free_disabled_function);
+  sp_list_free(SPG(config_disabled_functions_reg_ret.disabled_functions), sp_free_disabled_function);
+  sp_list_free(SPG(config_cookie.cookies), sp_free_cookie);
 
-#define FREE_LST(L) sp_list_free(snuffleupagus_globals->L, sp_free_zstr);
+#define FREE_LST(L) sp_list_free(SPG(L), sp_free_zstr);
   FREE_LST(config_eval.blacklist);
   FREE_LST(config_eval.whitelist);
   FREE_LST(config_wrapper.whitelist);
   FREE_LST(config_wrapper.php_stream_allowlist);
 #undef FREE_LST
 
-
-// #define FREE_CFG(C) pefree(snuffleupagus_globals->config.C, 1);
-#define FREE_CFG_ZSTR(C) sp_free_zstr(snuffleupagus_globals->C);
+#define FREE_CFG_ZSTR(C) sp_free_zstr(SPG(C));
   FREE_CFG_ZSTR(config_unserialize.dump);
   FREE_CFG_ZSTR(config_unserialize.textual_representation);
+  FREE_CFG_ZSTR(config_unserialize_noclass.textual_representation);
+  FREE_CFG_ZSTR(config_readonly_exec.dump);
+  FREE_CFG_ZSTR(config_readonly_exec.textual_representation);
   FREE_CFG_ZSTR(config_upload_validation.script);
   FREE_CFG_ZSTR(config_eval.dump);
   FREE_CFG_ZSTR(config_eval.textual_representation);
-// #undef FREE_CFG
+  FREE_CFG_ZSTR(config_encryption_key);
+  FREE_CFG_ZSTR(config_cookies_env_var);
 #undef FREE_CFG_ZSTR
+
+  /* config_log_media.path is strdup()'d, not a zend_string. */
+  free(SPG(config_log_media.path));
+
+  /* Reset every config option back to its default. Pointers freed above are
+   * zeroed here so no dangling reference remains and omitted directives fall
+   * back to their defaults on reload. The persistent ini-protection hashtable
+   * pointer lives inside config_ini and must be preserved across the memset. */
+  HashTable *const ini_entries = SPG(config_ini.entries);
+  memset(&SPCFG(random), 0, sizeof(SPCFG(random)));
+  memset(&SPCFG(sloppy), 0, sizeof(SPCFG(sloppy)));
+  memset(&SPCFG(unserialize), 0, sizeof(SPCFG(unserialize)));
+  memset(&SPCFG(unserialize_noclass), 0, sizeof(SPCFG(unserialize_noclass)));
+  memset(&SPCFG(readonly_exec), 0, sizeof(SPCFG(readonly_exec)));
+  memset(&SPCFG(upload_validation), 0, sizeof(SPCFG(upload_validation)));
+  memset(&SPCFG(cookie), 0, sizeof(SPCFG(cookie)));
+  memset(&SPCFG(auto_cookie_secure), 0, sizeof(SPCFG(auto_cookie_secure)));
+  memset(&SPCFG(global_strict), 0, sizeof(SPCFG(global_strict)));
+  memset(&SPCFG(xxe_protection), 0, sizeof(SPCFG(xxe_protection)));
+  memset(&SPCFG(eval), 0, sizeof(SPCFG(eval)));
+  memset(&SPCFG(wrapper), 0, sizeof(SPCFG(wrapper)));
+  memset(&SPCFG(session), 0, sizeof(SPCFG(session)));
+  memset(&SPCFG(log_media), 0, sizeof(SPCFG(log_media)));
+  memset(&SPCFG(disabled_functions_reg), 0, sizeof(SPCFG(disabled_functions_reg)));
+  memset(&SPCFG(disabled_functions_reg_ret), 0, sizeof(SPCFG(disabled_functions_reg_ret)));
+  memset(&SPCFG(ini), 0, sizeof(SPCFG(ini)));
+  SPG(config_ini.entries) = ini_entries;
+
+  SPG(config_log_max_len) = 255;
+  SPG(config_max_execution_depth) = 0;
+  SPG(config_server_encode) = false;
+  SPG(config_server_strip) = false;
+  SPG(config_encryption_key) = NULL;
+  SPG(config_cookies_env_var) = NULL;
+  SPG(hook_execute) = false;
+}
+
+static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
+  sp_log_debug("(GSHUTDOWN)");
+
+  /* Free and reset all configuration data, then destroy the persistent
+   * hashtables that sp_free_config() only emptied (they are not needed
+   * anymore once the process goes away). */
+  sp_free_config();
+
+#define FREE_HT(F)                             \
+  zend_hash_destroy(snuffleupagus_globals->F); \
+  pefree(snuffleupagus_globals->F, 1);
+  FREE_HT(disabled_functions_hook);
+  FREE_HT(sp_internal_functions_hook);
+  FREE_HT(sp_eval_blacklist_functions_hook);
+  FREE_HT(config_disabled_functions);
+  FREE_HT(config_disabled_functions_hooked);
+  FREE_HT(config_disabled_functions_ret);
+  FREE_HT(config_disabled_functions_ret_hooked);
+  FREE_HT(config_ini.entries);
+#undef FREE_HT
 
 #ifdef SP_DEBUG_STDERR
   if (sp_debug_stderr >= 0) {
@@ -533,6 +598,17 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
   if (!new_value || !new_value->len) {
     return FAILURE;
+  }
+
+  /* Apache re-applies this directive on internal subrequests (e.g. via an
+   * .htaccess RewriteRule), calling us more than once per process, and a
+   * surviving worker can be handed a different config (per vhost) or the same
+   * file with modified contents (after a reload). We therefore always reset
+   * and re-parse: this keeps the parse idempotent (no "duplicate keyword"
+   * crash), lets omitted directives fall back to their defaults, and makes
+   * sure edits to the configuration file are picked up. */
+  if (SPG(is_config_valid) != SP_CONFIG_NONE) {
+    sp_free_config();
   }
 
   // set some defaults
