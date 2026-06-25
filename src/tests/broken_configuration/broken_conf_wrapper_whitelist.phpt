@@ -11,7 +11,7 @@ error_log=/dev/null
 echo 1337;
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Unexpected keyword 'invalid_param' on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Unexpected keyword 'invalid_param' in %a/config/broken_conf_wrapper_whitelist.ini on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in %a/config/broken_conf_wrapper_whitelist.ini on line 1
 Could not startup.

@@ -7,7 +7,7 @@ sp.configuration_file={PWD}/config/broken_conf_weird_keyword.ini
 error_log=/dev/null
 --FILE--
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Unexpected keyword 'not_a_valid_keyword' on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Unexpected keyword 'not_a_valid_keyword' in %a/config/broken_conf_weird_keyword.ini on line 1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in %a/config/broken_conf_weird_keyword.ini on line 1
 Could not startup.

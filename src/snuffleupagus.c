@@ -13,39 +13,36 @@ int sp_debug_stderr = STDERR_FILENO;
 
 ZEND_EXTENSION();
 
-void sp_set_config_error_location(const char *const filename,
-                                  const size_t lineno) {
+void sp_set_config_error_location(const char *const filename) {
+  if (SPG(config_error_file) &&
+      strcmp(ZSTR_VAL(SPG(config_error_file)), filename) == 0) {
+    return;
+  }
+
   if (SPG(config_error_file)) {
     zend_string_release_ex(SPG(config_error_file), 1);
+    SPG(config_error_file) = NULL;
   }
-  SPG(config_error_file) =
-      filename ? zend_string_init(filename, strlen(filename), 1) : NULL;
-  sp_set_config_error_line(lineno);
+
+  SPG(config_error_file) = zend_string_init(filename, strlen(filename), 1);
 }
 
 void sp_set_config_error_line(const size_t lineno) {
-  SPG(config_error_line) = lineno > UINT32_MAX ? UINT32_MAX : (uint32_t)lineno;
-}
-
-static void sp_clear_config_error_location(void) {
-  sp_set_config_error_location(NULL, 0);
+  SPG(config_error_line) = (uint32_t)lineno;
 }
 
 static void sp_log_invalid_config_file(void) {
-  if (SPCFG(log_media).type == SP_LOG_ZEND && SPG(config_error_file) &&
-      SPG(config_error_line)) {
-#if PHP_VERSION_ID < 80000
+  if (SPG(config_error_file) && SPG(config_error_line)) {
     zend_error_at(
-        SP_LOG_ERROR, ZSTR_VAL(SPG(config_error_file)),
+        SP_LOG_ERROR,
+#if PHP_VERSION_ID < 80000
+        ZSTR_VAL(SPG(config_error_file)),
+#else
+        SPG(config_error_file),
+#endif
         SPG(config_error_line),
         "[snuffleupagus][%s][config][log] Invalid configuration file",
         get_ipaddr());
-#else
-    zend_error_at(
-        SP_LOG_ERROR, SPG(config_error_file), SPG(config_error_line),
-        "[snuffleupagus][%s][config][log] Invalid configuration file",
-        get_ipaddr());
-#endif
   } else {
     sp_log_err("config", "Invalid configuration file");
   }
@@ -156,6 +153,7 @@ static PHP_GINIT_FUNCTION(snuffleupagus) {
   sp_log_debug("(GINIT)");
   sp_load_other_modules();
   snuffleupagus_globals->is_config_valid = SP_CONFIG_NONE;
+  snuffleupagus_globals->config_current_file = NULL;
   snuffleupagus_globals->config_error_file = NULL;
   snuffleupagus_globals->config_error_line = 0;
   snuffleupagus_globals->in_eval = 0;
@@ -301,7 +299,12 @@ static void sp_free_config(void) {
   SPG(config_server_strip) = false;
   SPG(config_encryption_key) = NULL;
   SPG(config_cookies_env_var) = NULL;
-  sp_clear_config_error_location();
+  SPG(config_current_file) = NULL;
+  if (SPG(config_error_file)) {
+    zend_string_release_ex(SPG(config_error_file), 1);
+    SPG(config_error_file) = NULL;
+  }
+  SPG(config_error_line) = 0;
   SPG(hook_execute) = false;
 }
 
@@ -670,8 +673,8 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     }
 
     for (size_t i = 0; globbuf.gl_pathv[i]; i++) {
-      sp_set_config_error_location(globbuf.gl_pathv[i], 0);
       if (sp_parse_config(globbuf.gl_pathv[i]) != SUCCESS) {
+        sp_set_config_error_location(globbuf.gl_pathv[i]);
         SPG(is_config_valid) = SP_CONFIG_INVALID;
         globfree(&globbuf);
         return FAILURE;
@@ -681,7 +684,6 @@ static PHP_INI_MH(OnUpdateConfiguration) {
   }
 
   SPG(is_config_valid) = SP_CONFIG_VALID;
-  sp_clear_config_error_location();
 
   // dump config
   sp_log_debug("module name? %s", sapi_module.name);
