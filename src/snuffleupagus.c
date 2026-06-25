@@ -31,23 +31,6 @@ void sp_set_config_error_line(const size_t lineno) {
   SPG(config_error_line) = (uint32_t)lineno;
 }
 
-static void sp_log_invalid_config_file(void) {
-  if (SPG(config_error_file) && SPG(config_error_line)) {
-    zend_error_at(
-        SP_LOG_ERROR,
-#if PHP_VERSION_ID < 80000
-        ZSTR_VAL(SPG(config_error_file)),
-#else
-        SPG(config_error_file),
-#endif
-        SPG(config_error_line),
-        "[snuffleupagus][%s][config][log] Invalid configuration file",
-        get_ipaddr());
-  } else {
-    sp_log_err("config", "Invalid configuration file");
-  }
-}
-
 // LCOV_EXCL_START
 ZEND_DLEXPORT int sp_zend_startup(zend_extension *extension) {
   return zend_startup_module(&snuffleupagus_module_entry);
@@ -348,7 +331,20 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
 
   if (!SPG(allow_broken_configuration)) {
     if (SPG(is_config_valid) == SP_CONFIG_INVALID) {
-      sp_log_invalid_config_file();
+      if (SPG(config_error_file) && SPG(config_error_line)) {
+        zend_error_at(
+            SP_LOG_ERROR,
+#if PHP_VERSION_ID < 80000
+            ZSTR_VAL(SPG(config_error_file)),
+#else
+            SPG(config_error_file),
+#endif
+            SPG(config_error_line),
+            "[snuffleupagus][%s][config][log] Invalid configuration file",
+            get_ipaddr());
+      } else {
+        sp_log_err("config", "Invalid configuration file");
+      }
       return SUCCESS;
     } else if (SPG(is_config_valid) == SP_CONFIG_NONE) {
       sp_log_warn("config", "No configuration specified via sp.configuration_file");
