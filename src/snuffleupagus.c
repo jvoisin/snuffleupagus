@@ -14,16 +14,16 @@ int sp_debug_stderr = STDERR_FILENO;
 ZEND_EXTENSION();
 
 void sp_set_config_error_location(const char *const filename) {
-  if (SPG(config_error_file) &&
-      strcmp(ZSTR_VAL(SPG(config_error_file)), filename) == 0) {
+  if (!SPG(config_error_file)) {
+    SPG(config_error_file) = zend_string_init(filename, strlen(filename), 1);
     return;
   }
 
-  if (SPG(config_error_file)) {
-    zend_string_release_ex(SPG(config_error_file), 1);
-    SPG(config_error_file) = NULL;
+  if (strcmp(ZSTR_VAL(SPG(config_error_file)), filename) == 0) {
+    return;
   }
 
+  zend_string_release_ex(SPG(config_error_file), 1);
   SPG(config_error_file) = zend_string_init(filename, strlen(filename), 1);
 }
 
