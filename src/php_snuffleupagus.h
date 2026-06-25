@@ -163,6 +163,8 @@ bool allow_broken_configuration;
 
 // --- runtime/state variables
 int is_config_valid;  // 1 = valid, 0 = invalid, -1 = none
+zend_string *config_error_file;
+uint32_t config_error_line;
 size_t in_eval;
 u_long execution_depth;
 HashTable *disabled_functions_hook;

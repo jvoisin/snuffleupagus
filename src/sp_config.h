@@ -305,6 +305,9 @@ SP_PARSEKW_FN(parse_php_type);
 SP_PARSEKW_FN(parse_cidr);
 SP_PARSEKW_FN(parse_list);
 
+void sp_set_config_error_location(const char *filename, size_t lineno);
+void sp_set_config_error_line(size_t lineno);
+
 // cleanup
 void sp_free_disabled_function(void *data);
 void sp_free_cookie(void *data);
