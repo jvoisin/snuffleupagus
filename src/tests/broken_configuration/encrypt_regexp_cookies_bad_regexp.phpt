@@ -15,4 +15,4 @@ EOF;
 --FILE--
 <?php var_dump($_COOKIE); ?>
 --EXPECTF--
-%AFatal error: [snuffleupagus][127.0.0.1][config][log] Invalid regexp '^super_co[a-z+$' for '.name_r()' on line 2 in Unknown on line 0
+%AFatal error: [snuffleupagus][127.0.0.1][config][log] Invalid regexp '^super_co[a-z+$' for '.name_r()' in %s/tests/broken_configuration/config/config_encrypted_regexp_cookies_bad_regexp.ini:2 in Unknown on line 0

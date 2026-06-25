@@ -90,11 +90,11 @@ static void str_dtor(zval *zv) {
 
 // sy_ functions and macros are helpers for the shunting yard algorithm
 #define sy_res_push(val) \
-  if (cond_res_i >= MAX_CONDITIONS) { cs_log_error("condition too complex on line %zu", lineno); goto out; } \
+  if (cond_res_i >= MAX_CONDITIONS) { cs_log_error("condition too complex in %s:%zu", filename, lineno); goto out; } \
   cond_res[cond_res_i++] = val;
 #define sy_res_pop() cond_res[--cond_res_i]
 #define sy_op_push(op) \
-  if (cond_op_i >= MAX_CONDITIONS) { cs_log_error("condition too complex on line %zu", lineno); goto out; } \
+  if (cond_op_i >= MAX_CONDITIONS) { cs_log_error("condition too complex in %s:%zu", filename, lineno); goto out; } \
   cond_op[cond_op_i++] = op;
 #define sy_op_pop() cond_op[--cond_op_i]
 #define sy_op_peek() cond_op[cond_op_i-1]
@@ -138,7 +138,7 @@ static int sy_apply_op(const char op, const int a, const int b) {
 #define SY_APPLY_OP_FROM_STACK() \
   char op = sy_op_pop(); \
   int unary = (op == '!'); \
-  if (cond_res_i < (2 - unary)) { cs_log_error("not enough input on line %zu", lineno); goto out; } \
+  if (cond_res_i < (2 - unary)) { cs_log_error("not enough input in %s:%zu", filename, lineno); goto out; } \
   int a = sy_res_pop(); \
   int b = unary ? 0 : sy_res_pop(); \
   int res = sy_apply_op(op, a, b); \
@@ -151,7 +151,7 @@ static int sy_apply_op(const char op, const int a, const int b) {
       tmpstr[tmplen] = 0;
 
 
-zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_parsed_keyword*))
+zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_parsed_keyword*), const char* filename)
 {
   const char *YYMARKER, *t1, *t2, *t3, *t4;
 
@@ -189,7 +189,7 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
     keyword = [a-zA-Z][a-zA-Z0-9_]*;
     string = ["] ("\\"["] | [^"\r\n\x00])* ["];
 
-    <init> *                 { cs_log_error("parser error on line %zu", lineno); goto out; }
+    <init> *                 { cs_log_error("parser error in %s:%zu", filename, lineno); goto out; }
     <init> whitespace+       { goto yyc_init; }
     <init> [;#] [^\r\n\x00]* { goto yyc_init; }
     <init> newline           { lineno++; goto yyc_init; }
@@ -212,19 +212,19 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
     <init> ( "@log" | "@info" ) whitespace+ @t1 string @t2 ";" {
       if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);
-      cs_log_info("[line %zu]: %s", lineno, tmpstr);
+      cs_log_info("[%s:%zu]: %s", filename, lineno, tmpstr);
       goto yyc_init;
     }
     <init> ( "@warn" | "@warning" ) whitespace+ @t1 string @t2 ";" {
       if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);
-      cs_log_warning("[line %zu]: %s", lineno, tmpstr);
+      cs_log_warning("[%s:%zu]: %s", filename, lineno, tmpstr);
       goto yyc_init;
     }
     <init> ( "@err" | "@error" ) whitespace+ @t1 string @t2 ";" {
       if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);
-      cs_log_error("[line %zu]: %s", lineno, tmpstr);
+      cs_log_error("[%s:%zu]: %s", filename, lineno, tmpstr);
       goto out;
     }
 
@@ -236,7 +236,7 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
         int is_loaded = (zend_hash_str_find_ptr(&module_registry, t3+1, t4-t3-2) != NULL);
         sy_res_push(is_loaded);
       } else {
-        cs_log_error("unknown function in condition on line %zu", lineno);
+        cs_log_error("unknown function in condition in %s:%zu", filename, lineno);
         goto out;
       }
       goto yyc_cond_op;
@@ -244,7 +244,7 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
     <cond> @t1 keyword @t2 {
       zend_string *tmp = zend_hash_str_find_ptr(&vars, t1, t2-t1);
       if (!tmp) {
-        cs_log_error("unknown variable in condition on line %zu", lineno);
+        cs_log_error("unknown variable in condition in %s:%zu", filename, lineno);
         goto out;
       }
       sy_res_push(atoi(ZSTR_VAL(tmp)));
@@ -280,27 +280,27 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
         SY_APPLY_OP_FROM_STACK();
       }
       if (cond_op_i == 0 || sy_op_peek() != '(') {
-        cs_log_error("unbalanced parenthesis on line %zu", lineno); goto out;
+        cs_log_error("unbalanced parenthesis in %s:%zu", filename, lineno); goto out;
       }
       cond_op_i--;
       goto yyc_cond_op;
     }
     <cond_op> ";" {
       while (cond_op_i) {
-        if (sy_op_peek() == '(') { cs_log_error("unbalanced parenthesis on line %zu", lineno); goto out; }
+        if (sy_op_peek() == '(') { cs_log_error("unbalanced parenthesis in %s:%zu", filename, lineno); goto out; }
         SY_APPLY_OP_FROM_STACK();
       }
-      if (cond_res_i > 1) { cs_log_error("invalid condition on line %zu", lineno); goto out; }
+      if (cond_res_i > 1) { cs_log_error("invalid condition in %s:%zu", filename, lineno); goto out; }
       goto yyc_init;
     }
-    <cond, cond_op> * { cs_log_error("syntax error in condition on line %zu", lineno); goto out; }
+    <cond, cond_op> * { cs_log_error("syntax error in condition in %s:%zu", filename, lineno); goto out; }
 
     <rule> whitespace+     {  goto yyc_rule; }
     <rule> newline / ( newline | whitespace )* "." {  lineno++; goto yyc_rule; }
     <rule> "." @t1 keyword @t2 ( "(" @t3 ( string? | keyword ) @t4 ")" )? {
       if (!cond_res[0]) { goto yyc_rule; }
       if (kw_i == MAX_KEYWORDS) {
-        cs_log_error("too many keywords in rule (more than %d) on line %zu", MAX_KEYWORDS, lineno);
+        cs_log_error("too many keywords in rule (more than %d) in %s:%zu", MAX_KEYWORDS, filename, lineno);
         goto out;
       }
       sp_parsed_keyword kw = {
@@ -309,7 +309,8 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
 	.arg = t3,
 	.arglen = t4-t3,
 	.argtype = SP_ARGTYPE_UNKNOWN,
-	.lineno = lineno
+	.lineno = lineno,
+	.filename = filename
       };
       if (t3 && t4) {
         if (t3 == t4) {
@@ -321,7 +322,7 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
         } else {
           zend_string *tmp = zend_hash_str_find_ptr(&vars, t3, t4-t3);
           if (!tmp) {
-            cs_log_error("unknown variable on line %zu", lineno);
+            cs_log_error("unknown variable in %s:%zu", filename, lineno);
             goto out;
           }
           kw.arg = ZSTR_VAL(tmp);
@@ -337,7 +338,7 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
     <rule> ";"     {
       end_of_rule:
       if (!cond_res[0]) { goto yyc_init; }
-      parsed_rule[kw_i++] = (sp_parsed_keyword){0, 0, 0, 0, 0, 0};
+      parsed_rule[kw_i++] = (sp_parsed_keyword){0, 0, 0, 0, 0, 0, NULL};
       if (process_rule && process_rule(parsed_rule) != SUCCESS) {
         goto out;
       }

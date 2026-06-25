@@ -10,8 +10,8 @@ error_log=/dev/null
 <?php
 echo 1337;
 ?>
---EXPECT--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Unexpected keyword 'invalid_param' on line 1 in Unknown on line 0
+--EXPECTF--
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Unexpected keyword 'invalid_param' in %s/tests/broken_configuration/config/broken_conf_wrapper_whitelist.ini:1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in Unknown on line 0
 Could not startup.

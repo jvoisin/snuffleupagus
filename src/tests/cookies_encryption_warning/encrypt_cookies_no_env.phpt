@@ -15,7 +15,7 @@ REMOTE_ADDR=127.0.0.1
 EOF;
 --FILE--
 <?php echo "1"; ?>
---EXPECT--
+--EXPECTF--
 Fatal error: [snuffleupagus][127.0.0.1][config][log] Invalid configuration file in Unknown on line 0
 
-Fatal error: [snuffleupagus][127.0.0.1][config][log] You're trying to use the cookie encryption feature on line 2 without having set the `.cookie_env_var` option in `sp.global`: please set it first in Unknown on line 0
+Fatal error: [snuffleupagus][127.0.0.1][config][log] You're trying to use the cookie encryption feature in %s/tests/cookies_encryption_warning/config/encrypt_cookies_no_env.ini:2 without having set the `.cookie_env_var` option in `sp.global`: please set it first in Unknown on line 0

@@ -6,8 +6,8 @@ Bad config, invalid samesite type.
 sp.configuration_file={PWD}/config/broken_conf_cookie_samesite.ini
 error_log=/dev/null
 --FILE--
---EXPECT--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] 'nop' is an invalid value to samesite (expected Lax or Strict) on line 1 in Unknown on line 0
+--EXPECTF--
+Fatal error: [snuffleupagus][0.0.0.0][config][log] 'nop' is an invalid value to samesite (expected Lax or Strict) in %s/tests/broken_configuration/config/broken_conf_cookie_samesite.ini:1 in Unknown on line 0
 
 Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in Unknown on line 0
 Could not startup.

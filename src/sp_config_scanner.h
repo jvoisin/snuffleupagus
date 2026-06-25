@@ -16,9 +16,10 @@ typedef struct {
   size_t arglen;
   sp_argtype argtype;
   size_t lineno;
+  const char* filename;
 } sp_parsed_keyword;
 
-zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_parsed_keyword*));
+zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_parsed_keyword*), const char* current_config_file);
 zend_string *sp_get_arg_string(sp_parsed_keyword const *const kw);
 zend_string *sp_get_textual_representation(sp_parsed_keyword const *const parsed_rule);
 

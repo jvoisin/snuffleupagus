@@ -10,6 +10,6 @@ error_log=/dev/null
 <?php
 echo 1337;
 ?>
---EXPECT--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] parser error on line 1 in Unknown on line 0
+--EXPECTF--
+Fatal error: [snuffleupagus][0.0.0.0][config][log] parser error in %s/tests/broken_configuration/config/broken_conf.ini:1 in Unknown on line 0
 1337

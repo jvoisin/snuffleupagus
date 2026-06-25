@@ -59,7 +59,7 @@ zend_result sp_parse_config(const char *const filename) {
   data = zend_string_truncate(data, len, 0);
   ZSTR_VAL(data)[len] = 0;
 
-  int ret = sp_config_scan(ZSTR_VAL(data), sp_process_config_root);
+  int ret = sp_config_scan(ZSTR_VAL(data), sp_process_config_root, filename);
 
   zend_string_release_ex(data, 0);
 
@@ -90,7 +90,8 @@ zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, const sp_config_keyw
 
     if (!found_kw) {
       zend_string *kwname = zend_string_init(kw->kw, kw->kwlen, 0);
-      sp_log_err("config", "Unexpected keyword '%s' on line %zu", ZSTR_VAL(kwname), kw->lineno);
+        sp_log_err("config", "Unexpected keyword '%s' in %s:%zu",
+                   ZSTR_VAL(kwname), kw->filename, kw->lineno);
       zend_string_release_ex(kwname, 0);
       return FAILURE;
     }
@@ -100,17 +101,17 @@ zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, const sp_config_keyw
 
 #define CHECK_DUPLICATE_KEYWORD(retval) \
   if (*(void**)(retval)) { \
-    sp_log_err("config", "duplicate keyword '%s' on line %zu", token, kw->lineno); \
+    sp_log_err("config", "duplicate keyword '%s' in %s:%zu", token, kw->filename, kw->lineno); \
     return SP_PARSER_ERROR; }
 
 
 SP_PARSEKW_FN(parse_empty) {
   if (kw->arglen) {
-    sp_log_err("config", "Unexpected argument for keyword '%s' - it should be '%s()' on line %zu", token, token, kw->lineno);
+    sp_log_err("config", "Unexpected argument for keyword '%s' - it should be '%s()' in %s:%zu", token, token, kw->filename, kw->lineno);
     return SP_PARSER_ERROR;
   }
   if (kw->argtype != SP_ARGTYPE_EMPTY) {
-    sp_log_err("config", "Missing parenthesis for keyword '%s' - it should be '%s()' on line %zu", token, token, kw->lineno);
+    sp_log_err("config", "Missing parenthesis for keyword '%s' - it should be '%s()' in %s:%zu", token, token, kw->filename, kw->lineno);
     return SP_PARSER_ERROR;
   }
   *(bool *)retval = true;
@@ -166,7 +167,7 @@ SP_PARSEKW_FN(parse_php_type) {
     zend_string_release(value);
     sp_log_err("error", ".%s() is expecting a valid php type ('false', 'true',"
                 " 'array'. 'object', 'long', 'double', 'null', 'resource', "
-                "'reference', 'undef') on line %zu", token, kw->lineno);
+                "'reference', 'undef') in %s:%zu", token, kw->filename, kw->lineno);
     return SP_PARSER_ERROR;
   }
   zend_string_release(value);
@@ -191,7 +192,7 @@ SP_PARSEKW_FN(parse_int) {
   errno = 0;
   *(int*)retval = (int)strtoimax(ZSTR_VAL(value), &endptr, 10);
   if (errno != 0 || !endptr || endptr == ZSTR_VAL(value)) {
-    sp_log_err("config", "Failed to parse arg '%s' of `%s` on line %zu", ZSTR_VAL(value), token, kw->lineno);
+    sp_log_err("config", "Failed to parse arg '%s' of `%s` in %s:%zu", ZSTR_VAL(value), token, kw->filename, kw->lineno);
     ret = SP_PARSER_ERROR;
   }
   zend_string_release(value);
@@ -206,7 +207,7 @@ SP_PARSEKW_FN(parse_uint) {
   errno = 0;
   *(u_int*)retval = (u_int)strtoul(ZSTR_VAL(value), &endptr, 10);
   if (errno != 0 || !endptr || endptr == ZSTR_VAL(value)) {
-    sp_log_err("config", "Failed to parse arg '%s' of `%s` on line %zu", ZSTR_VAL(value), token, kw->lineno);
+    sp_log_err("config", "Failed to parse arg '%s' of `%s` in %s:%zu", ZSTR_VAL(value), token, kw->filename, kw->lineno);
     ret = SP_PARSER_ERROR;
   }
   zend_string_release(value);
@@ -221,7 +222,7 @@ SP_PARSEKW_FN(parse_ulong) {
   errno = 0;
   *(u_long*)retval = (u_long)strtoul(ZSTR_VAL(value), &endptr, 10);
   if (errno != 0 || !endptr || endptr == ZSTR_VAL(value)) {
-    sp_log_err("config", "Failed to parse arg '%s' of `%s` on line %zu", ZSTR_VAL(value), token, kw->lineno);
+    sp_log_err("config", "Failed to parse arg '%s' of `%s` in %s:%zu", ZSTR_VAL(value), token, kw->filename, kw->lineno);
     ret = SP_PARSER_ERROR;
   }
   zend_string_release(value);
@@ -249,7 +250,7 @@ SP_PARSEKW_FN(parse_regexp) {
 
   sp_regexp *compiled_re = sp_regexp_compile(value);
   if (!compiled_re) {
-    sp_log_err("config", "Invalid regexp '%s' for '.%s()' on line %zu", ZSTR_VAL(value), token, kw->lineno);
+    sp_log_err("config", "Invalid regexp '%s' for '.%s()' in %s:%zu", ZSTR_VAL(value), token, kw->filename, kw->lineno);
     zend_string_release_ex(value, 1);
     return SP_PARSER_ERROR;
   }

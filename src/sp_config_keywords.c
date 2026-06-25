@@ -2,7 +2,7 @@
 
 #define SP_SET_ENABLE_DISABLE(enable, disable, varname) \
   if (enable && disable) { \
-    sp_log_err("config", "A rule can't be enabled and disabled on line %zu", parsed_rule->lineno); \
+    sp_log_err("config", "A rule can't be enabled and disabled in %s:%zu", parsed_rule->filename, parsed_rule->lineno); \
     return SP_PARSER_ERROR; \
   } \
   if (enable || disable) { \
@@ -42,13 +42,13 @@ SP_PARSE_FN(parse_session) {
   if (cfg->encrypt) {
     if (!SPCFG(cookies_env_var)) {
       sp_log_err("config", "You're trying to use the session cookie encryption feature "
-          "on line %zu without having set the `.cookie_env_var` option in "
-          "`sp.global`: please set it first", parsed_rule->lineno);
+          "in %s:%zu without having set the `.cookie_env_var` option in "
+          "`sp.global`: please set it first", parsed_rule->filename, parsed_rule->lineno);
       return SP_PARSER_ERROR;
     } else if (!SPCFG(encryption_key)) {
       sp_log_err("config", "You're trying to use the session cookie encryption feature "
-                 "on line %zu without having set the `.secret_key` option in "
-                 "`sp.global`: please set it first", parsed_rule->lineno);
+                 "in %s:%zu without having set the `.secret_key` option in "
+                 "`sp.global`: please set it first", parsed_rule->filename, parsed_rule->lineno);
       return SP_PARSER_ERROR;
     }
   }
@@ -77,7 +77,7 @@ SP_PARSEKW_FN(parse_log_media) {
     return SP_PARSER_STOP;
   }
 
-  sp_log_err("config", "." SP_TOKEN_LOG_MEDIA "() only supports 'syslog', 'file:' or 'php' on line %zu, got '%s' instead", kw->lineno, ZSTR_VAL(value));
+  sp_log_err("config", "." SP_TOKEN_LOG_MEDIA "() only supports 'syslog', 'file:' or 'php' in %s:%zu, got '%s' instead", kw->filename, kw->lineno, ZSTR_VAL(value));
 
   return SP_PARSER_ERROR;
 }
@@ -162,12 +162,12 @@ SP_PARSE_FN(parse_global) {
 
   if (SPCFG(encryption_key)) {
     if (ZSTR_LEN(SPCFG(encryption_key)) < 10) {
-      sp_log_err("config", "The encryption key set on line %zu is too short. please use at least 10 bytes", parsed_rule->lineno);
+      sp_log_err("config", "The encryption key set in %s:%zu is too short. please use at least 10 bytes", parsed_rule->filename, parsed_rule->lineno);
       return SP_PARSER_ERROR;
     }
     if (zend_string_equals_literal(SPCFG(encryption_key), "YOU _DO_ NEED TO CHANGE THIS WITH SOME RANDOM CHARACTERS.") ||
         zend_string_equals_literal(SPCFG(encryption_key), "c6a0e02b3b818f7559d5f85303d8fe44")) {
-      sp_log_err("config", "The encryption key set on line %zu is an unchanged dummy value. please use a unique secret.", parsed_rule->lineno);
+      sp_log_err("config", "The encryption key set in %s:%zu is an unchanged dummy value. please use a unique secret.", parsed_rule->filename, parsed_rule->lineno);
       return SP_PARSER_ERROR;
     }
   }
@@ -224,25 +224,25 @@ SP_PARSE_FN(parse_cookie) {
 
   if (cookie->encrypt) {
     if (!SPCFG(cookies_env_var)) {
-      sp_log_err("config", "You're trying to use the cookie encryption feature on line %zu "
-                            "without having set the `." SP_TOKEN_ENV_VAR "` option in `sp.global`: please set it first", parsed_rule->lineno);
+      sp_log_err("config", "You're trying to use the cookie encryption feature in %s:%zu "
+                            "without having set the `." SP_TOKEN_ENV_VAR "` option in `sp.global`: please set it first", parsed_rule->filename, parsed_rule->lineno);
       goto err;
     } else if (!SPCFG(encryption_key)) {
       sp_log_err("config", "You're trying to use the cookie encryption feature "
-          "on line %zu without having set the `." SP_TOKEN_ENCRYPTION_KEY "` option in "
-          "`sp." SP_TOKEN_GLOBAL "`: please set it first", parsed_rule->lineno);
+          "in %s:%zu without having set the `." SP_TOKEN_ENCRYPTION_KEY "` option in "
+          "`sp." SP_TOKEN_GLOBAL "`: please set it first", parsed_rule->filename, parsed_rule->lineno);
       goto err;
     }
   } else if (!samesite) {
-    sp_log_err("config", "You must specify a at least one action to a cookie on line %zu", parsed_rule->lineno);
+    sp_log_err("config", "You must specify a at least one action to a cookie in %s:%zu", parsed_rule->filename, parsed_rule->lineno);
     goto err;
   }
   if ((!cookie->name || 0 == ZSTR_LEN(cookie->name)) && !cookie->name_r) {
-    sp_log_err("config", "You must specify a cookie name/regexp on line %zu", parsed_rule->lineno);
+    sp_log_err("config", "You must specify a cookie name/regexp in %s:%zu", parsed_rule->filename, parsed_rule->lineno);
     goto err;
   }
   if (cookie->name && cookie->name_r) {
-    sp_log_err("config", "name and name_r are mutually exclusive on line %zu", parsed_rule->lineno);
+    sp_log_err("config", "name and name_r are mutually exclusive in %s:%zu", parsed_rule->filename, parsed_rule->lineno);
     goto err;
   }
   if (samesite) {
@@ -251,8 +251,8 @@ SP_PARSE_FN(parse_cookie) {
     } else if (zend_string_equals_literal_ci(samesite, SP_TOKEN_SAMESITE_STRICT)) {
       cookie->samesite = strict;
     } else {
-      sp_log_err("config", "'%s' is an invalid value to samesite (expected " SP_TOKEN_SAMESITE_LAX " or " SP_TOKEN_SAMESITE_STRICT ") on line %zu",
-        ZSTR_VAL(samesite), parsed_rule->lineno);
+      sp_log_err("config", "'%s' is an invalid value to samesite (expected " SP_TOKEN_SAMESITE_LAX " or " SP_TOKEN_SAMESITE_STRICT ") in %s:%zu",
+        ZSTR_VAL(samesite), parsed_rule->filename, parsed_rule->lineno);
       goto err;
     }
     zend_string_release(samesite);
@@ -352,7 +352,7 @@ SP_PARSE_FN(parse_disabled_functions) {
 
 #define MUTUALLY_EXCLUSIVE(X, Y, STR1, STR2)                             \
   if (X && Y) {                                                          \
-    sp_log_err("config", "Invalid configuration line for 'sp.disabled_functions': '.%s' and '.%s' are mutually exclusive on line %zu", STR1, STR2, parsed_rule->lineno); \
+    sp_log_err("config", "Invalid configuration line for 'sp.disabled_functions': '.%s' and '.%s' are mutually exclusive in %s:%zu", STR1, STR2, parsed_rule->filename, parsed_rule->lineno); \
     goto out;                                                  \
   }
 

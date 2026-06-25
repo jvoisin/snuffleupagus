@@ -6,8 +6,8 @@ Bad boolean value in configuration
 sp.configuration_file={PWD}/config/broken_conf_expecting_bool.ini
 error_log=/dev/null
 --FILE--
---EXPECT--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Missing parenthesis for keyword 'enable' - it should be 'enable()' on line 5 in Unknown on line 0
+--EXPECTF--
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Missing parenthesis for keyword 'enable' - it should be 'enable()' in %s/tests/broken_configuration/config/broken_conf_expecting_bool.ini:5 in Unknown on line 0
 
 Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in Unknown on line 0
 Could not startup.

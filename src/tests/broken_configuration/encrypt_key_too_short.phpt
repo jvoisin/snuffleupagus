@@ -15,8 +15,8 @@ EOF;
 --FILE--
 <?php
 ?>
---EXPECT--
-Fatal error: [snuffleupagus][2001:0db8:0000:0000:0000:fe00:0042:8329][config][log] The encryption key set on line 1 is too short. please use at least 10 bytes in Unknown on line 0
+--EXPECTF--
+Fatal error: [snuffleupagus][2001:0db8:0000:0000:0000:fe00:0042:8329][config][log] The encryption key set in %s/tests/broken_configuration/config/config_encryption_key_short.ini:1 is too short. please use at least 10 bytes in Unknown on line 0
 
 Fatal error: [snuffleupagus][2001:0db8:0000:0000:0000:fe00:0042:8329][config][log] Invalid configuration file in Unknown on line 0
 Could not startup.
