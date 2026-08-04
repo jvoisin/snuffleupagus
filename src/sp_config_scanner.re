@@ -194,7 +194,17 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
     <init> [;#] [^\r\n\x00]* { goto yyc_init; }
     <init> newline           { lineno++; goto yyc_init; }
     <init> "sp"              { kw_i = 0;  goto yyc_rule; }
-    <init> end               { ret = SUCCESS; goto out; }
+    <init> end               {
+      if (data[-1] != 0) {
+        /* The scanner uses a signed char type: a non-ASCII (negative) byte
+         * is mistaken for the end-of-input NUL and used to silently stop
+         * the parsing, ignoring the remaining rules. */
+        cs_log_error("Non-ASCII character (0x%02X) in %s:%zu",
+                     (unsigned char)data[-1], filename, lineno);
+        goto out;
+      }
+      ret = SUCCESS; goto out;
+    }
     <init> "@"? "set" whitespace+ @t1 keyword @t2 whitespace+ @t3 string @t4 whitespace* ";" {
       if (!cond_res[0]) { goto yyc_init; }
       const char *key = t1;

@@ -365,7 +365,17 @@ yyc_init:
 	}
 yy1:
 	++data;
-	{ ret = SUCCESS; goto out; }
+	{
+      if (data[-1] != 0) {
+        /* The scanner uses a signed char type: a non-ASCII (negative) byte
+         * is mistaken for the end-of-input NUL and used to silently stop
+         * the parsing, ignoring the remaining rules. */
+        cs_log_error("Non-ASCII character (0x%02X) in %s:%zu",
+                     (unsigned char)data[-1], filename, lineno);
+        goto out;
+      }
+      ret = SUCCESS; goto out;
+    }
 yy2:
 	++data;
 yy3:
