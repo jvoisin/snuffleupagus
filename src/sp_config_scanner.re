@@ -150,6 +150,17 @@ static int sy_apply_op(const char op, const int a, const int b) {
       strncpy(tmpstr, t1+1, tmplen); \
       tmpstr[tmplen] = 0;
 
+// Non-ASCII bytes in a rule used to be silently dropped (a signed-char lexer
+// mistook them for the NUL sentinel); reject them explicitly instead.
+#define REJECT_NON_ASCII(start, end) \
+  for (const char *nap = (start); nap < (end); nap++) { \
+    if ((unsigned char)*nap >= 0x80) { \
+      cs_log_error("non-ASCII character (0x%02X) in %s:%zu", \
+                   (unsigned char)*nap, filename, lineno); \
+      goto out; \
+    } \
+  }
+
 
 zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_parsed_keyword*), const char* filename)
 {
@@ -173,7 +184,7 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
 
   /*!stags:re2c format = 'const char *@@;\n'; */
   /*!re2c
-    re2c:define:YYCTYPE = char;
+    re2c:define:YYCTYPE = "unsigned char";
     re2c:define:YYCURSOR = data;
     //re2c:sentinel = 0;
     re2c:yyfill:enable = 0;
@@ -188,7 +199,9 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
     whitespace = [ \t];
     keyword = [a-zA-Z][a-zA-Z0-9_]*;
     string = ["] ("\\"["] | [^"\r\n\x00])* ["];
+    nonascii = [\x80-\xff];
 
+    <init> nonascii          { REJECT_NON_ASCII(data-1, data); }
     <init> *                 { cs_log_error("parser error in %s:%zu", filename, lineno); goto out; }
     <init> whitespace+       { goto yyc_init; }
     <init> [;#] [^\r\n\x00]* { goto yyc_init; }
@@ -313,6 +326,7 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
 	.filename = filename
       };
       if (t3 && t4) {
+        REJECT_NON_ASCII(t3, t4);
         if (t3 == t4) {
           kw.argtype = SP_ARGTYPE_EMPTY;
         } else if (t4-t3 >= 2 && *t3 == '"') {
@@ -344,6 +358,7 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
       }
       goto yyc_init;
     }
+    <rule> nonascii { REJECT_NON_ASCII(data-1, data); }
     <rule> *       { goto end_of_rule; }
   */
 out:
