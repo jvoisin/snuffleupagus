@@ -456,7 +456,6 @@ SP_PARSE_FN(parse_disabled_functions) {
 
 out:
   sp_free_disabled_function(df);
-  pefree(df, 1);
   if (param) { zend_string_release(param); }
   if (var) { zend_string_release(var); }
 

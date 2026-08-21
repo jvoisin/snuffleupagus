@@ -292,6 +292,8 @@ void sp_free_disabled_function(void *data) {
   sp_tree_free(df->var);
 
   pefree(df->cidr, 1);
+
+  pefree(df, 1);
 }
 
 void sp_free_cookie(void *data) {
