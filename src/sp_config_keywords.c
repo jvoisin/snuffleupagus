@@ -295,13 +295,24 @@ err:
   return SP_PARSER_ERROR;
 }
 
+/* A chained rule (e.g. `a>b`) can only match when the function being called is
+ * the last one of the chain, so it is indexed by that function to benefit from
+ * an O(1) hashtable dispatch instead of a per-call linear scan. */
 static int add_df_to_hashtable(HashTable *ht, sp_disabled_function *df) {
-  zval *list = zend_hash_find(ht, df->function);
+  // df->functions_list->data is the innermost function of the chain
+  zend_string *key = df->functions_list
+      ? zend_string_init(df->functions_list->data, strlen(df->functions_list->data), 1)
+      : df->function;
+  zval *list = zend_hash_find(ht, key);
 
   if (NULL == list) {
-    zend_hash_add_ptr(ht, df->function, sp_list_insert(NULL, df));
+    zend_hash_add_ptr(ht, key, sp_list_insert(NULL, df));
   } else {
     Z_PTR_P(list) = sp_list_insert(Z_PTR_P(list), df);
+  }
+
+  if (df->functions_list) {
+    zend_string_release(key);
   }
   return SUCCESS;
 }
@@ -428,7 +439,7 @@ SP_PARSE_FN(parse_disabled_functions) {
     df->function = zend_string_init(ZEND_STRL("echo"), 1);
   }
 
-  if (df->function && !df->functions_list) {
+  if (df->function || df->functions_list) {
     if (df->ret || df->r_ret || df->ret_type) {
       add_df_to_hashtable(SPCFG(disabled_functions_ret), df);
     } else {

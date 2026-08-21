@@ -228,14 +228,17 @@ static zend_execute_data* is_file_matching(
 
 inline static bool check_is_builtin_name(
     sp_disabled_function const* const config_node) {
-  if (EXPECTED(config_node->function)) {
-    return (zend_string_equals_literal(config_node->function, "include") ||
-            zend_string_equals_literal(config_node->function, "include_once") ||
-            zend_string_equals_literal(config_node->function, "require") ||
-            zend_string_equals_literal(config_node->function, "require_once") ||
-            zend_string_equals_literal(config_node->function, "echo"));
+  const char* name;
+  if (config_node->functions_list) {  // chained rule: the target is its last function
+    name = config_node->functions_list->data;
+  } else if (EXPECTED(config_node->function)) {
+    name = ZSTR_VAL(config_node->function);
+  } else {
+    return false;  // LCOV_EXCL_LINE
   }
-  return false;  // LCOV_EXCL_LINE
+  return (0 == strcmp(name, "include") || 0 == strcmp(name, "include_once") ||
+          0 == strcmp(name, "require") || 0 == strcmp(name, "require_once") ||
+          0 == strcmp(name, "echo"));
 }
 
 void should_disable_ht(zend_execute_data* execute_data,
@@ -250,14 +253,19 @@ void should_disable_ht(zend_execute_data* execute_data,
     return;  // LCOV_EXCL_LINE
   }
 
+  ht_entry = zend_hash_str_find_ptr(ht, VAR_AND_LEN(function_name));
+
+  /* Bail out before allocating the filename when no rule can match this call. */
+  if (!ht_entry && !(config && config->data)) {
+    return;
+  }
+
   if (UNEXPECTED(builtin_param && !strcmp(function_name, "eval"))) {
     current_filename = get_eval_filename(zend_get_executed_filename());
   } else {
     const char* tmp = zend_get_executed_filename();
     current_filename = zend_string_init(tmp, strlen(tmp), 0);
   }
-
-  ht_entry = zend_hash_str_find_ptr(ht, VAR_AND_LEN(function_name));
 
   if (ht_entry) {
     should_disable(execute_data, function_name, builtin_param,
