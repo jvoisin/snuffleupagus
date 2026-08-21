@@ -144,6 +144,7 @@ PHP_FUNCTION(sp_unserialize) {
     for (uint8_t i = 0; i < 64; i++) {
       status |= (hmac[i] ^ (ZSTR_VAL(expected_hmac))[i]);
     }
+    zend_string_release(expected_hmac);
   } else { status = 1; }
 
   if (0 == status) {
