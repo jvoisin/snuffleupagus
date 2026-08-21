@@ -78,7 +78,7 @@ err:
 }
 
 inline static void is_builtin_matching(
-    const zend_string *restrict const param_value,
+    zend_string *restrict const param_value,
     const char *restrict const function_name,
     const char *restrict const param_name, const sp_list_node *config,
     const HashTable *ht) {

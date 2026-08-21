@@ -78,7 +78,7 @@ const char *get_ipaddr(void);
 #endif
 void sp_log_msgf(char const* const restrict feature, int level, int type, char const* const restrict fmt, ...);
 int compute_hash(char const* const restrict filename, char *restrict file_hash);
-const zend_string *sp_zval_to_zend_string(const zval *);
+zend_string *sp_zval_to_zend_string(const zval *);
 bool sp_match_value(const zend_string* value, const zend_string* to_match, const sp_regexp* rx);
 bool sp_match_array_key(const zval *, const zend_string *, const sp_regexp *);
 bool sp_match_array_value(const zval *, const zend_string *, const sp_regexp *);

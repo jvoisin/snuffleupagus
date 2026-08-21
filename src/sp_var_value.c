@@ -118,9 +118,11 @@ static zval *get_array_value(zend_execute_data *ed, const zval *const zvalue,
   }
 
   if (Z_TYPE_P(zvalue) == IS_ARRAY) {
-    const zend_string *const idx = sp_zval_to_zend_string(idx_value);
-    return get_entry_hashtable(Z_ARRVAL_P(zvalue), ZSTR_VAL(idx),
-                               ZSTR_LEN(idx));
+    zend_string *const idx = sp_zval_to_zend_string(idx_value);
+    zval *const entry = get_entry_hashtable(Z_ARRVAL_P(zvalue), ZSTR_VAL(idx),
+                                            ZSTR_LEN(idx));
+    zend_string_release(idx);
+    return entry;
   }
 
   return NULL;

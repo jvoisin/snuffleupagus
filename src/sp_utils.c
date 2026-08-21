@@ -257,7 +257,9 @@ static char* zend_string_to_char(const zend_string* zs) {
   return copy;
 }
 
-const zend_string* sp_zval_to_zend_string(const zval* zv) {
+/* The returned zend_string is always owned by the caller and must be
+   released with zend_string_release(). */
+zend_string* sp_zval_to_zend_string(const zval* zv) {
   switch (Z_TYPE_P(zv)) {
     case IS_LONG: {
       char* msg;
@@ -274,7 +276,7 @@ const zend_string* sp_zval_to_zend_string(const zval* zv) {
       return zs;
     }
     case IS_STRING: {
-      return Z_STR_P(zv);
+      return zend_string_copy(Z_STR_P(zv));
     }
     case IS_FALSE:
       return zend_string_init(ZEND_STRL("FALSE"), 0);
@@ -410,7 +412,10 @@ bool sp_match_array_value(const zval* arr, const zend_string* to_match, const sp
 
   ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(arr), value) {
     if (Z_TYPE_P(value) != IS_ARRAY) {
-      if (sp_match_value(sp_zval_to_zend_string(value), to_match, rx)) {
+      zend_string* value_str = sp_zval_to_zend_string(value);
+      bool match = sp_match_value(value_str, to_match, rx);
+      zend_string_release(value_str);
+      if (match) {
         return true;
       }
     } else if (sp_match_array_value(value, to_match, rx)) {

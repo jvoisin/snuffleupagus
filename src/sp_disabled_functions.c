@@ -2,7 +2,7 @@
 
 static void should_disable(zend_execute_data* execute_data,
                            const char* complete_function_path,
-                           const zend_string* builtin_param,
+                           zend_string* builtin_param,
                            const char* builtin_param_name,
                            const sp_list_node* config,
                            const zend_string* current_filename);
@@ -81,8 +81,9 @@ static bool is_local_var_matching(zend_execute_data* execute_data, const sp_disa
         return true;
       }
     } else {
-      zend_string const* const var_value_str = sp_zval_to_zend_string(var_value);
+      zend_string* const var_value_str = sp_zval_to_zend_string(var_value);
       bool match = sp_match_value(var_value_str, config_node->value, config_node->r_value);
+      zend_string_release(var_value_str);
 
       if (true == match) {
         return true;
@@ -102,10 +103,10 @@ static inline const char* get_fn_arg_name(zend_function *fn, uint32_t i) {
 
 static bool is_param_matching(zend_execute_data* execute_data,
                               sp_disabled_function const* const config_node,
-                              const zend_string* builtin_param,
+                              zend_string* builtin_param,
                               const char* builtin_param_name,
                               const char** arg_name,
-                              const zend_string** arg_value_str) {
+                              zend_string** arg_value_str) {
   // builtin functions
   if (builtin_param) {
     /* We're matching on a language construct (here named "builtin"),
@@ -243,7 +244,7 @@ inline static bool check_is_builtin_name(
 
 void should_disable_ht(zend_execute_data* execute_data,
                        const char* function_name,
-                       const zend_string* builtin_param,
+                       zend_string* builtin_param,
                        const char* builtin_param_name,
                        const sp_list_node* config, const HashTable* ht) {
   const sp_list_node* ht_entry = NULL;
@@ -280,7 +281,7 @@ void should_disable_ht(zend_execute_data* execute_data,
 
 static void should_disable(zend_execute_data* execute_data,
                            const char* complete_function_path,
-                           const zend_string* builtin_param,
+                           zend_string* builtin_param,
                            const char* builtin_param_name,
                            const sp_list_node* config,
                            const zend_string* current_filename) {
@@ -289,7 +290,7 @@ static void should_disable(zend_execute_data* execute_data,
   while (config) {
     sp_disabled_function const* const config_node = (sp_disabled_function*)(config->data);
     const char* arg_name = NULL;
-    const zend_string* arg_value_str = NULL;
+    zend_string* arg_value_str = NULL;
 
     /* The order matters, since when we have `config_node->functions_list`,
     we also do have `config_node->function` */
@@ -365,6 +366,9 @@ static void should_disable(zend_execute_data* execute_data,
 
     /* Everything matched.*/
     if (true == config_node->allow) {
+      if (!builtin_param && arg_value_str) {
+        zend_string_release(arg_value_str);
+      }
       return;
     }
 
@@ -375,6 +379,9 @@ static void should_disable(zend_execute_data* execute_data,
     }
 
   next:
+    if (!builtin_param && arg_value_str) {
+      zend_string_release(arg_value_str);
+    }
     config = config->next;
   }
 }
@@ -449,7 +456,7 @@ static void should_drop_on_ret(const zval* return_value,
       }
     }
 
-    const zend_string* ret_value_str = NULL;
+    zend_string* ret_value_str = NULL;
     sp_php_type ret_type = SP_PHP_TYPE_NULL;
 
     if (return_value) {
@@ -464,9 +471,15 @@ static void should_drop_on_ret(const zval* return_value,
 
     if (true == match_type || true == match_value) {
       if (true == config_node->allow) {
+        if (ret_value_str) {
+          zend_string_release(ret_value_str);
+        }
         return;
       }
       sp_log_disable_ret(complete_function_path, ret_value_str, config_node);
+    }
+    if (ret_value_str) {
+      zend_string_release(ret_value_str);
     }
   next:
     config = config->next;
