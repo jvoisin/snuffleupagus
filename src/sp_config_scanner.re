@@ -279,13 +279,13 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
       while (cond_op_i &&
 	     sy_op_peek() != '(' &&
 	       (
-	         (sy_op_precedence(sy_op_peek()) > sy_op_precedence(*t1)) ||
-	         (sy_op_precedence(sy_op_peek()) == sy_op_precedence(*t1) && sy_op_is_left_assoc(*t1))
+	         (sy_op_precedence(sy_op_peek()) > sy_op_precedence(op1)) ||
+	         (sy_op_precedence(sy_op_peek()) == sy_op_precedence(op1) && sy_op_is_left_assoc(op1))
 	       )
 	     ) {
         SY_APPLY_OP_FROM_STACK();
       }
-      sy_op_push(*t1);
+      sy_op_push(op1);
       goto yyc_cond;
     }
     <cond_op> ")" {
