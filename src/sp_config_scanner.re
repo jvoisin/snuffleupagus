@@ -280,13 +280,13 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
           case '>': op1 = 'G'; break; // >=
         }
       }
-      while (cond_op_i &&
-	     sy_op_peek() != '(' &&
-	       (
-	         (sy_op_precedence(sy_op_peek()) > sy_op_precedence(op1)) ||
-	         (sy_op_precedence(sy_op_peek()) == sy_op_precedence(op1) && sy_op_is_left_assoc(op1))
-	       )
-	     ) {
+      const int cur_prec = sy_op_precedence(op1);
+      while (cond_op_i && sy_op_peek() != '(') {
+        const int top_prec = sy_op_precedence(sy_op_peek());
+        if (top_prec < cur_prec ||
+            (top_prec == cur_prec && !sy_op_is_left_assoc(op1))) {
+          break;
+        }
         SY_APPLY_OP_FROM_STACK();
       }
       sy_op_push(op1);
