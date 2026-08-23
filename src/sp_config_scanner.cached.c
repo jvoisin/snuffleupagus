@@ -73,7 +73,11 @@ zend_string *sp_get_textual_representation(sp_parsed_keyword const *const parsed
     memcpy(ptr, kw->kw, kw->kwlen);
     ptr += kw->kwlen;
 
-    if (kw->argtype == SP_ARGTYPE_EMPTY || kw->argtype == SP_ARGTYPE_STR || kw->argtype == SP_ARGTYPE_UNKNOWN) {
+    const bool has_parens = kw->argtype == SP_ARGTYPE_EMPTY ||
+                            kw->argtype == SP_ARGTYPE_STR ||
+                            kw->argtype == SP_ARGTYPE_UNKNOWN;
+
+    if (has_parens) {
       *ptr++ = '(';
     }
     if (kw->argtype == SP_ARGTYPE_STR && kw->arg) {
@@ -82,7 +86,7 @@ zend_string *sp_get_textual_representation(sp_parsed_keyword const *const parsed
       ptr += kw->arglen;
       *ptr++ = '"';
     }
-    if (kw->argtype == SP_ARGTYPE_EMPTY || kw->argtype == SP_ARGTYPE_STR || kw->argtype == SP_ARGTYPE_UNKNOWN) {
+    if (has_parens) {
       *ptr++ = ')';
     }
   }
