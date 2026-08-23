@@ -216,12 +216,8 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
       if (!cond_res[0]) { goto yyc_init; }
       const char *key = t1;
       size_t keylen = t2 - t1;
-      zend_string *tmp = zend_hash_str_find_ptr(&vars, key, keylen);
-      if (tmp) {
-        zend_hash_str_del(&vars, key, keylen);
-      }
-      tmp = zend_string_init(t3+1, t4-t3-2, 1);  // `-2` for the surrounding double quotes.
-      zend_hash_str_add_ptr(&vars, key, keylen, tmp);
+      zend_string *tmp = zend_string_init(t3+1, t4-t3-2, 1);  // `-2` for the surrounding double quotes.
+      zend_hash_str_update_ptr(&vars, key, keylen, tmp);
       goto yyc_init;
     }
     <init> "@condition" whitespace+         { cond_res_i = 0; goto yyc_cond; }
