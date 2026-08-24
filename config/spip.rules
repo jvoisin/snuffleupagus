@@ -1,0 +1,48 @@
+# Ruleset to harden a bit Spip and mitigate some critical vulnerabilities.
+#
+# This is defense-in-depth, NOT a substitute for upgrading.
+#
+# Rules that are known to interfere with normal SPIP operation are shipped
+# commented-out, with an explanation, so you can opt in after testing.
+# Always deploy with `sp.global.simulation()` first and watch your logs.
+
+# SameSite on the SPIP session cookies to blunt CSRF.
+sp.cookie.name("spip_session").samesite("lax");
+sp.cookie.name("spip_admin").samesite("lax");
+sp.cookie.name("PHPSESSID").samesite("lax");
+
+# SPIP core never calls these functions. If a plugin genuinely needs one, add a
+# `.filename_r("path/to/that/plugin\\.php$").allow();` line BEFORE the matching
+# drop below.
+#
+# Use https://www.php.net/manual/en/ini.core.php#ini.disable-functions instead of you can.
+sp.disable_function.function("system").drop();
+sp.disable_function.function("passthru").drop();
+sp.disable_function.function("shell_exec").drop();
+sp.disable_function.function("exec").drop();
+sp.disable_function.function("popen").drop();
+sp.disable_function.function("proc_open").drop();
+sp.disable_function.function("pcntl_exec").drop();
+sp.disable_function.function("dl").drop();
+
+sp.eval_blacklist.list("system,exec,shell_exec,passthru,proc_open,popen,pcntl_exec,assert,create_function,call_user_func,call_user_func_array,dl");
+
+# `create_function` and string-argument `assert()` behave like eval() but were
+# removed / neutered in PHP 8, so only block them on PHP 7 to avoid false
+# positives against legitimate assert() usage on modern installs.
+@condition PHP_VERSION_ID < 80000;
+sp.disable_function.function("create_function").drop();
+sp.disable_function.function("assert").param("assertion").value_r(".").drop();
+@end_condition;
+
+sp.disable_function.function("require_once").value_r("\\.(php|html|phtml)$").allow();
+sp.disable_function.function("include_once").value_r("\\.(php|html|phtml)$").allow();
+sp.disable_function.function("require").value_r("\\.(php|html|phtml)$").allow();
+sp.disable_function.function("include").value_r("\\.(php|html|phtml)$").allow();
+sp.disable_function.function("require_once").drop();
+sp.disable_function.function("include_once").drop();
+sp.disable_function.function("require").drop();
+sp.disable_function.function("include").drop();
+
+sp.disable_function.function("move_uploaded_file").pos("1").value_r("\\.(php|php\\d|phtml|phar|ht.*)$").drop();
+sp.disable_function.function("file_put_contents").pos("0").value_r("\\.(php|php\\d|phtml|phar)$").drop();
