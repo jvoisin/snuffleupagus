@@ -1,7 +1,7 @@
 <h1 align="center">
   <br>
   <a href="https://snuffleupagus.readthedocs.io/">
-    <img src="https://github.com/jvoisin/snuffleupagus/raw/master/doc/source/_static/sp.png" alt="Snuffleupagus' logo" width="200"></a>
+    <img src="https://github.com/jvoisin/snuffleupagus/raw/main/doc/source/_static/sp.png" alt="Snuffleupagus' logo" width="200"></a>
   <br>
   Snuffleupagus
   <br>
@@ -30,8 +30,8 @@
     <img src="https://readthedocs.org/projects/snuffleupagus/badge/?version=latest"
          alt="readthedocs.org">
   </a>
-  <a href="https://coveralls.io/github/jvoisin/snuffleupagus?branch=master">
-    <img src="https://coveralls.io/repos/github/jvoisin/snuffleupagus/badge.svg?branch=master"
+  <a href="https://coveralls.io/github/jvoisin/snuffleupagus?branch=main">
+    <img src="https://coveralls.io/repos/github/jvoisin/snuffleupagus/badge.svg?branch=main"
          alt="coveralls">
   </a>
   <a href="https://twitter.com/dustriorg">
@@ -53,7 +53,7 @@
   <a href="#download">Download</a> •
   <a href="#examples">Examples</a> •
   <a href="https://snuffleupagus.readthedocs.io/">Documentation</a> •
-  <a href="https://github.com/jvoisin/snuffleupagus/blob/master/LICENSE">License</a> •
+  <a href="https://github.com/jvoisin/snuffleupagus/blob/main/LICENSE">License</a> •
   <a href="#thanks">Thanks</a>
 </p>
 
@@ -85,7 +85,7 @@ without having to touch the PHP code.
   * Enforcing TLS certificate validation when using [curl](https://secure.php.net/manual/en/book.curl.php)
   * Request dumping capability
 * A relatively sane code base:
-  * A [comprehensive](https://coveralls.io/github/jvoisin/snuffleupagus?branch=master) test suite close to 100% coverage
+  * A [comprehensive](https://coveralls.io/github/jvoisin/snuffleupagus?branch=main) test suite close to 100% coverage
   * Every commit is tested on [several distributions](https://gitlab.com/jvoisin/snuffleupagus/pipelines)
   * An `clang-format`-enforced code style
   * A [comprehensive documentation](https://snuffleupagus.rtfd.io)
@@ -100,7 +100,7 @@ repo, or check the releases on [github](https://github.com/jvoisin/snuffleupagus
 
 ## Examples
 
-We're providing [various example rules](https://github.com/jvoisin/snuffleupagus/tree/master/config),
+We're providing [various example rules](https://github.com/jvoisin/snuffleupagus/tree/main/config),
 that are looking like this:
 
 ```python
@@ -121,7 +121,7 @@ Upon violation of a rule, you should see lines like this in your logs:
 
 We've got a [comprehensive website](https://snuffleupagus.readthedocs.io/) with
 all the documentation that you could possibly wish for. You can of course
-[build it yourself](https://github.com/jvoisin/snuffleupagus/tree/master/doc).
+[build it yourself](https://github.com/jvoisin/snuffleupagus/tree/main/doc).
 
 ## Thanks
 
