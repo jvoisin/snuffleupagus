@@ -34,9 +34,9 @@ jobs:
             --form project=jvoisin/snuffleupagus \
             --form token=$TOKEN \
             --form file=@snuffleupagus.tgz \
-            --form version=master \
+            --form version=main \
             --form email=julien.voisin+coverity@dustri.org \
-            --form description=master \
+            --form description=main \
             https://scan.coverity.com/builds?project=jvoisin/snuffleupagus
         env:
           TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}

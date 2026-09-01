@@ -1,3 +1,20 @@
+snuffleupagus (0.14.0) UNRELEASED; urgency=low
+  [ jvoisin ]
+  * Improved compatibility with PHP 8.5,
+  * Fix a ~2x slowdown caused by chained `disable_function` rules
+  * New hardening ruleset for SPIP
+  * Add coverage for yet another disable_functions bypass
+  * Fix a type confusion and a null-pointer dereference in the cookie-encryption code
+  * Reduce the lifetime of cryptographic material in memory
+  * Harden configuration parsing.
+  * Fix `phpinfo()` reporting "enabled" when no configuration is loaded
+  * Improve `upload_validation` robustness
+  * Fix a truncation issue in the unserialization handling code
+  * Fix half a dozen minor memory leaks
+  * A bunch of code correctness/simplification/hardening changes
+
+ -- jvoisin <julien.voisin+snuffleupagus@dustri.org>  Tue, 01 Sep 2026 14:00:00 +0200
+
 snuffleupagus (0.13.0) UNRELEASED; urgency=low
   [ jvoisin ]
   * Compatibility with PHP8.5

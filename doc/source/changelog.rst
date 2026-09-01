@@ -1,6 +1,28 @@
 Changelog
 =========
 
+0.14.0 - `Blumenbach <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.14.0>`__ 2026/09/01
+--------------------------------------------------------------------------------------------------
+
+Bug fixes
+^^^^^^^^^
+* Improved compatibility with PHP 8.5, including a fix for opcache inlining bypassing return-value rules
+* Fix a ~2x slowdown caused by chained `disable_function` rules                 
+* New hardening ruleset for SPIP                                                
+* Add coverage for yet another disable_functions bypass                         
+* Fix a type confusion and a null-pointer dereference in the cookie-encryption code
+* Reduce the lifetime of cryptographic material in memory                       
+* Harden configuration parsing: reject non-ASCII characters in rules, show the  
+  config filename in errors, and stop parsing the config twice under
+  Apache/php-fpm reloads.                                                       
+* Fix `phpinfo()` reporting "enabled" when no configuration is loaded           
+* Improve `upload_validation` robustness (fork-failure handling, correct pid waiting, strtok_r misuse)
+* Fix a truncation issue in the unserialization handling code                   
+* Fix half a dozen minor memory leaks                                           
+* A bunch of code correctness / simplification / hardening changes, and a       
+  handful of new tests                                                          
+
+
 0.13.0 - `Elephas <https://github.com/jvoisin/snuffleupagus/releases/tag/v0.13.0>`__ 2026/01/07
 -----------------------------------------------------------------------------------------------
 
