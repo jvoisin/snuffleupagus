@@ -21,6 +21,7 @@ jobs:
           DEBIAN_FRONTEND=noninteractive apt install -y php-dev php-pear re2c
       - name: Install pecl
         run: pecl install vld-beta
+        continue-on-error: true
       - name: Build and run the testsuite
         run: make release tests
       - name: Show logs in case of failure
@@ -41,6 +42,7 @@ jobs:
           dnf install -y php-devel php-pear make re2c
       - name: Install pecl
         run: pecl install vld-beta
+        continue-on-error: true
       - name: Build and run the testsuite
         run: make release tests
       - name: Show logs in case of failure
@@ -59,9 +61,10 @@ jobs:
       - name: Install dependencies
         run: |
           apt update
-          DEBIAN_FRONTEND=noninteractive apt install -y php-dev
+          DEBIAN_FRONTEND=noninteractive apt install -y php-dev make
       - name: Install pecl
         run: pecl install vld-beta
+        continue-on-error: true
       - name: Build and run the testsuite
         run: make tests
       - name: Show logs in case of failure

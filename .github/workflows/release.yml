@@ -23,10 +23,12 @@ jobs:
             "debian-bullseye",
             "debian-bookworm",
             "debian-trixie",
+            "debian-forky",
             "debian-sid",
             "ubuntu-focal",
             "ubuntu-jammy",
             "ubuntu-noble",
+            "ubuntu-resolute",
           ]
         include:
           - name: debian-bullseye
@@ -35,6 +37,8 @@ jobs:
             container: debian:bookworm
           - name: debian-trixie
             container: debian:trixie
+          - name: debian-forky
+            container: debian:forky
           - name: debian-sid
             container: debian:sid
           - name: ubuntu-focal
@@ -43,6 +47,8 @@ jobs:
             container: ubuntu:jammy
           - name: ubuntu-noble
             container: ubuntu:noble
+          - name: ubuntu-resolute
+            container: ubuntu:resolute
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
