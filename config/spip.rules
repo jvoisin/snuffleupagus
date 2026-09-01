@@ -46,3 +46,9 @@ sp.disable_function.function("include").drop();
 
 sp.disable_function.function("move_uploaded_file").pos("1").value_r("\\.(php|php\\d|phtml|phar|ht.*)$").drop();
 sp.disable_function.function("file_put_contents").pos("0").value_r("\\.(php|php\\d|phtml|phar)$").drop();
+
+# Block PHP code injection via action=session autosave handler.
+# See https://blog.spip.net/Mise-a-jour-critique-de-securite-sortie-de-SPIP-4-4-22.html
+sp.disable_function.function("session_write_close").var("$_REQUEST[\"val\"]").value_r("<\\?").drop();
+sp.disable_function.function("session_write_close").var("$_REQUEST[\"val\"]").value_r("%3[Cc]%3[Ff]").drop();
+sp.disable_function.function("session_write_close").var("$_REQUEST[\"val\"]").value_r("%253[Cc]%253[Ff]").drop();
