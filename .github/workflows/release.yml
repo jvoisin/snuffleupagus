@@ -20,7 +20,6 @@ jobs:
       matrix:
         name:
           [
-            "debian-bullseye",
             "debian-bookworm",
             "debian-trixie",
             "debian-forky",
@@ -31,8 +30,6 @@ jobs:
             "ubuntu-resolute",
           ]
         include:
-          - name: debian-bullseye
-            container: debian:bullseye
           - name: debian-bookworm
             container: debian:bookworm
           - name: debian-trixie
