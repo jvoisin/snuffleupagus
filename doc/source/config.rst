@@ -70,9 +70,10 @@ Since Snuffleupagus 0.8.0, rules can be split into lines and contain whitespace 
     .alias("newline in mail() To:")
     .drop();
 
-Rules, including comments, needs to be written in ASCII, other encodings aren't
-supported and might cause syntax errors and related issues like making
-all rules after non-ASCII symbols not considered for execution and silently discarded.
+
+Configuration rules must contain ASCII characters. A non-ASCII character in a
+rule causes the configuration to be rejected; comments may contain other
+characters.
 
 Miscellaneous
 -------------
