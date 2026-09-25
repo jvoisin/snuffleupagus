@@ -91,7 +91,7 @@ sp.disable_function.function("extract").param("flags").value("0").drop()
 @end_condition;
 
 # This is also burned:
-# ini_set('open_basedir','..');chdir('..');…;chdir('..');ini_set('open_basedir','/');echo(file_get_contents('/etc/passwd'));
+# ini_set('open_basedir','..');chdir('..');...;chdir('..');ini_set('open_basedir','/');echo(file_get_contents('/etc/passwd'));
 # Since we have no way of matching on two parameters at the same time, we're
 # blocking calls to open_basedir altogether: nobody is using it via ini_set anyway.
 # Moreover, there are non-public bypasses that are also using this vector ;)
