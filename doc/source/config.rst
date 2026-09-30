@@ -88,6 +88,7 @@ several setups.
 
   @condition PHP_VERSION_ID < 80000;
     # some rules
+  @end_condition;
   @condition PHP_VERSION_ID >= 80000;
     # some other rules
   @end_condition;

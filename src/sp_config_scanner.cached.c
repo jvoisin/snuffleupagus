@@ -189,6 +189,7 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
   int cond_res_i = 0;
   char cond_op[MAX_CONDITIONS] = {0};
   int cond_op_i = 0;
+  bool condition_active = false;
 
   int cond = yycinit;
   size_t lineno = 1;
@@ -1112,7 +1113,15 @@ yy90:
 	yych = *++data;
 	if (yych == '\t') goto yy90;
 	if (yych == ' ') goto yy90;
-	{ cond_res_i = 0; goto yyc_cond; }
+	{
+      if (condition_active) {
+        cs_log_error("nested conditions are not supported in %s:%zu", filename, lineno);
+        goto out;
+      }
+      condition_active = true;
+      cond_res_i = 0;
+      goto yyc_cond;
+    }
 yy91:
 	yych = *++data;
 	if (yych != 'i') goto yy12;
@@ -1130,7 +1139,7 @@ yy92:
 		if (yych != ';') goto yy12;
 	}
 	++data;
-	{ cond_res[0] = 1; cond_res_i = 0; goto yyc_init; }
+	{ cond_res[0] = 1; cond_res_i = 0; condition_active = false; goto yyc_init; }
 /* *********************************** */
 yyc_cond:
 	yych = *data;

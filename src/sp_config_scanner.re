@@ -182,6 +182,7 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
   int cond_res_i = 0;
   char cond_op[MAX_CONDITIONS] = {0};
   int cond_op_i = 0;
+  bool condition_active = false;
 
   int cond = yycinit;
   size_t lineno = 1;
@@ -220,8 +221,16 @@ zend_result sp_config_scan(const char *data, zend_result (*process_rule)(sp_pars
       zend_hash_str_update_ptr(&vars, key, keylen, tmp);
       goto yyc_init;
     }
-    <init> "@condition" whitespace+         { cond_res_i = 0; goto yyc_cond; }
-    <init> "@end_condition" whitespace* ";" { cond_res[0] = 1; cond_res_i = 0; goto yyc_init; }
+    <init> "@condition" whitespace+         {
+      if (condition_active) {
+        cs_log_error("nested conditions are not supported in %s:%zu", filename, lineno);
+        goto out;
+      }
+      condition_active = true;
+      cond_res_i = 0;
+      goto yyc_cond;
+    }
+    <init> "@end_condition" whitespace* ";" { cond_res[0] = 1; cond_res_i = 0; condition_active = false; goto yyc_init; }
     <init> ( "@log" | "@info" ) whitespace+ @t1 string @t2 ";" {
       if (!cond_res[0]) { goto yyc_init; }
       TMPSTR(tmpstr, t2, t1);

@@ -3,6 +3,7 @@
 
 @condition extension_loaded("runkit7");
 @error "The runkit7 extension can be used to rename classes and functions, thereby circumventing any filters set by Snuffleupagus. Please disable runkit7.";
+@end_condition;
 
 @condition extension_loaded("FFI");
 @warning "FFI extension is loaded. Disabling via 'ffi.enable=false'";

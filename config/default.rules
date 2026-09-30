@@ -43,6 +43,7 @@ sp.cookie.name("PHPSESSID").samesite("lax");
 @condition PHP_VERSION_ID < 80000;
     sp.disable_function.function("chmod").param("mode").value("438").drop();
     sp.disable_function.function("chmod").param("mode").value("511").drop();
+@end_condition;
 @condition PHP_VERSION_ID >= 80000;
     sp.disable_function.function("chmod").param("permissions").value("438").drop();
     sp.disable_function.function("chmod").param("permissions").value("511").drop();
@@ -52,6 +53,7 @@ sp.cookie.name("PHPSESSID").samesite("lax");
 @condition PHP_VERSION_ID < 80000;
     sp.disable_function.function("mail").param("additional_parameters").value_r("\\-").drop();
     sp.disable_function.function("mb_send_mail").param("additional_parameters").value_r("\\-").drop();
+@end_condition;
 @condition PHP_VERSION_ID >= 80000;
     sp.disable_function.function("mail").param("additional_params").value_r("\\-").drop();
     sp.disable_function.function("mb_send_mail").param("additional_params").value_r("\\-").drop();
@@ -61,6 +63,7 @@ sp.cookie.name("PHPSESSID").samesite("lax");
 @condition PHP_VERSION_ID < 80000;
     sp.disable_function.function("putenv").param("setting").value_r("LD_").drop();
     sp.disable_function.function("putenv").param("setting").value("PATH").drop();
+@end_condition;
 @condition PHP_VERSION_ID >= 80000;
     sp.disable_function.function("putenv").param("assignment").value_r("LD_").drop();
     sp.disable_function.function("putenv").param("assignment").value("PATH").drop();
@@ -69,6 +72,7 @@ sp.cookie.name("PHPSESSID").samesite("lax");
 # This one was burned in Nov 2019 - https://gist.github.com/LoadLow/90b60bd5535d6c3927bb24d5f9955b80
 @condition PHP_VERSION_ID < 80000;
     sp.disable_function.function("putenv").param("setting").value_r("GCONV_").drop()
+@end_condition;
 @condition PHP_VERSION_ID >= 80000;
     sp.disable_function.function("putenv").param("assignment").value_r("GCONV_").drop()
 @end_condition;
@@ -77,6 +81,7 @@ sp.cookie.name("PHPSESSID").samesite("lax");
 # CURLOPT_SSLENGINE = 10089 
 @condition PHP_VERSION_ID < 80000;
     sp.disable_function.function("curl_setopt").param("option").value("10089").drop()
+@end_condition;
 @condition PHP_VERSION_ID >= 80000;
     sp.disable_function.function("curl_setopt").param("option").value("10089").drop()
 @end_condition;
@@ -85,6 +90,7 @@ sp.cookie.name("PHPSESSID").samesite("lax");
 @condition PHP_VERSION_ID < 80000;
 sp.disable_function.function("extract").pos("0").value_r("^_").drop()
 sp.disable_function.function("extract").pos("1").value("0").drop()
+@end_condition;
 @condition PHP_VERSION_ID >= 80000;
 sp.disable_function.function("extract").param("array").value_r("^_").drop()
 sp.disable_function.function("extract").param("flags").value("0").drop()
@@ -97,6 +103,7 @@ sp.disable_function.function("extract").param("flags").value("0").drop()
 # Moreover, there are non-public bypasses that are also using this vector ;)
 @condition PHP_VERSION_ID < 80000;
     sp.disable_function.function("ini_set").param("varname").value_r("open_basedir").drop()
+@end_condition;
 @condition PHP_VERSION_ID >= 80000;
     sp.disable_function.function("ini_set").param("option").value_r("open_basedir").drop()
 @end_condition;
@@ -115,6 +122,7 @@ sp.disable_function.function("include").drop();
 sp.disable_function.function("system").param("command").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
 @condition PHP_VERSION_ID < 80000;
     sp.disable_function.function("shell_exec").pos("0").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
+@end_condition;
 @condition PHP_VERSION_ID >= 80000;
     sp.disable_function.function("shell_exec").param("command").value_r("[$|;&`\\n\\(\\)\\\\]").drop();
 @end_condition;
@@ -128,6 +136,7 @@ sp.disable_function.function("ini_set").param("varname").value("zend.assertions"
 sp.disable_function.function("ini_set").param("varname").value("memory_limit").drop();
 sp.disable_function.function("ini_set").param("varname").value("include_path").drop();
 sp.disable_function.function("ini_set").param("varname").value("open_basedir").drop();
+@end_condition;
 @condition PHP_VERSION_ID >= 80000;
 sp.disable_function.function("ini_set").param("option").value("assert.active").drop();
 sp.disable_function.function("ini_set").param("option").value("zend.assertions").drop();
@@ -153,6 +162,7 @@ sp.disable_function.function("is_callable").param("var").value("system").drop();
 sp.disable_function.function("is_callable").param("var").value("shell_exec").drop();
 sp.disable_function.function("is_callable").param("var").value("proc_open").drop();
 sp.disable_function.function("is_callable").param("var").value("passthru").drop();
+@end_condition;
 @condition PHP_VERSION_ID >= 80000;
 sp.disable_function.function("ini_get").param("option").value("allow_url_fopen").drop();
 sp.disable_function.function("ini_get").param("option").value("open_basedir").drop();
@@ -192,10 +202,12 @@ sp.disable_function.function("curl_init").param("url").value_r("file://").drop()
 @condition PHP_VERSION_ID >= 80000;
 sp.disable_function.function("move_uploaded_file").param("to").value_r("\\.ph").drop();
 sp.disable_function.function("move_uploaded_file").param("to").value_r("\\.ht").drop();
-@condition PHP_VERSION_ID >= 70400;
+@end_condition;
+@condition PHP_VERSION_ID >= 70400 && PHP_VERSION_ID < 80000;
 sp.disable_function.function("move_uploaded_file").param("new_path").value_r("\\.ph").drop();
 sp.disable_function.function("move_uploaded_file").param("new_path").value_r("\\.ht").drop();
-@condition PHP_VERSION_ID >= 70000;
+@end_condition;
+@condition PHP_VERSION_ID >= 70000 && PHP_VERSION_ID < 70400;
 sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ph").drop();
 sp.disable_function.function("move_uploaded_file").param("destination").value_r("\\.ht").drop();
 @end_condition;
@@ -205,7 +217,8 @@ sp.disable_function.function("move_uploaded_file").param("destination").value_r(
 sp.disable_function.function("ini_set").param("option").value_r("error_log").drop();
 sp.disable_function.function("ini_set").param("option").value_r("error_reporting").drop();
 sp.disable_function.function("ini_set").param("option").value_r("display_errors").drop();
-@condition PHP_VERSION_ID >= 70000;
+@end_condition;
+@condition PHP_VERSION_ID < 80000;
 sp.disable_function.function("ini_set").param("varname").value_r("error_log").drop();
 sp.disable_function.function("ini_set").param("varname").value_r("error_reporting").drop();
 sp.disable_function.function("ini_set").param("varname").value_r("display_errors").drop();
