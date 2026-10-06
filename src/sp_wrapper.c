@@ -44,6 +44,13 @@ static php_stream * sp_php_stream_url_wrap_php(php_stream_wrapper *wrapper,
                                             const char *path, const char *mode,
                                             int options, zend_string **opened_path,
                                             php_stream_context *context STREAMS_DC) {
+  extern PHPAPI const php_stream_wrapper php_stream_php_wrapper;
+
+  // The configuration that registered this wrapper may have been replaced since.
+  if (!sp_php_stream_is_filtered()) {
+    return php_stream_php_wrapper.wops->stream_opener(wrapper, path, mode, options, opened_path, context STREAMS_CC);
+  }
+
   if (!strncasecmp(path, "php://", 6)) {
     path += 6;
   }
@@ -97,8 +104,6 @@ static php_stream * sp_php_stream_url_wrap_php(php_stream_wrapper *wrapper,
     sp_log_warn(LOG_FEATURE, "Call to unknown php stream type dropped");
     return NULL;
   }
-
-  extern PHPAPI const php_stream_wrapper php_stream_php_wrapper;
 
   return php_stream_php_wrapper.wops->stream_opener(wrapper, path, mode, options, opened_path, context STREAMS_CC);
 }
