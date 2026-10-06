@@ -4,7 +4,6 @@
 #
 # Rules that are known to interfere with normal SPIP operation are shipped
 # commented-out, with an explanation, so you can opt in after testing.
-# Always deploy with `sp.global.simulation()` first and watch your logs.
 
 # SameSite on the SPIP session cookies to blunt CSRF.
 sp.cookie.name("spip_session").samesite("lax");
@@ -19,13 +18,16 @@ sp.cookie.name("PHPSESSID").samesite("lax");
 sp.disable_function.function("system").drop();
 sp.disable_function.function("passthru").drop();
 sp.disable_function.function("shell_exec").drop();
-sp.disable_function.function("exec").drop();
 sp.disable_function.function("popen").drop();
 sp.disable_function.function("proc_open").drop();
 sp.disable_function.function("pcntl_exec").drop();
 sp.disable_function.function("dl").drop();
 
-sp.eval_blacklist.list("system,exec,shell_exec,passthru,proc_open,popen,pcntl_exec,assert,create_function,call_user_func,call_user_func_array,dl");
+# Spip uses exec in a bunch of places.
+#sp.disable_function.function("exec").drop();
+
+# Spip uses call_user_func_array in its templates
+sp.eval_blacklist.list("system,exec,shell_exec,passthru,proc_open,popen,pcntl_exec,assert,create_function,call_user_func,dl");
 
 # `create_function` and string-argument `assert()` behave like eval() but were
 # removed / neutered in PHP 8, so only block them on PHP 7 to avoid false
@@ -45,7 +47,9 @@ sp.disable_function.function("require").drop();
 sp.disable_function.function("include").drop();
 
 sp.disable_function.function("move_uploaded_file").pos("1").value_r("\\.(php|php\\d|phtml|phar|ht.*)$").drop();
-sp.disable_function.function("file_put_contents").pos("0").value_r("\\.(php|php\\d|phtml|phar)$").drop();
+
+# Spip uses file_put_contents with files ending in .php in its plugins system
+#sp.disable_function.function("file_put_contents").pos("0").value_r("\\.(php|php\\d|phtml|phar)$").drop();
 
 # Block PHP code injection via action=session autosave handler.
 sp.disable_function.function("session_write_close")
