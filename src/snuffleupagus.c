@@ -63,8 +63,10 @@ static inline void sp_op_array_handler(zend_op_array *const op) {
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 PHP_INI_BEGIN()
-PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM, OnUpdateConfiguration)
+/* Registered before sp.configuration_file so the flag is set by the time the
+ * configuration file is parsed. */
 STD_PHP_INI_BOOLEAN("sp.allow_broken_configuration", "0", PHP_INI_SYSTEM, OnUpdateBool, allow_broken_configuration, zend_snuffleupagus_globals, snuffleupagus_globals)
+PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM, OnUpdateConfiguration)
 
 PHP_INI_END()
 
@@ -311,16 +313,17 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
   ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
-  if (!SPG(allow_broken_configuration)) {
-    if (SPG(is_config_valid) == SP_CONFIG_INVALID) {
+  if (SPG(is_config_valid) == SP_CONFIG_INVALID) {
+    if (!SPG(allow_broken_configuration)) {
       SPG(config_parsing) = true;  // report the location of the parse error
       sp_log_err("config", "Invalid configuration file");
       SPG(config_parsing) = false;
-      return SUCCESS;
-    } else if (SPG(is_config_valid) == SP_CONFIG_NONE) {
-      sp_log_warn("config", "No configuration specified via sp.configuration_file");
-      return SUCCESS;
     }
+    return SUCCESS;
+  }
+  if (!SPG(allow_broken_configuration) && SPG(is_config_valid) == SP_CONFIG_NONE) {
+    sp_log_warn("config", "No configuration specified via sp.configuration_file");
+    return SUCCESS;
   }
 
   // We need to disable wrappers loaded by extensions loaded after SNUFFLEUPAGUS.
@@ -604,6 +607,20 @@ static void dump_config(void) {
 
 }
 
+/* With allow_broken_configuration, drop the whole config (every file, even
+ * those parsed successfully before the failing one) so no half-applied
+ * protections linger, and report success so php-fpm workers don't respawn in
+ * a loop (#563). The worker then runs with no protection at all. */
+static int sp_config_failed(void) {
+  SPG(is_config_valid) = SP_CONFIG_INVALID;
+  if (!SPG(allow_broken_configuration)) {
+    return FAILURE;
+  }
+  sp_free_config();
+  sp_log_warn("config", "Invalid configuration; all Snuffleupagus protections are disabled");
+  return SUCCESS;
+}
+
 static PHP_INI_MH(OnUpdateConfiguration) {
   TSRMLS_FETCH();
 
@@ -619,6 +636,9 @@ static PHP_INI_MH(OnUpdateConfiguration) {
    * crash), lets omitted directives fall back to their defaults, and makes
    * sure edits to the configuration file are picked up. */
   if (SPG(is_config_valid) != SP_CONFIG_NONE) {
+    if (SPCFG(ini).enable) {
+      sp_unhook_ini();
+    }
     sp_free_config();
   }
 
@@ -634,16 +654,17 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
     glob_t globbuf;
     if (0 != glob(config_file, GLOB_NOCHECK, NULL, &globbuf)) {
-      SPG(is_config_valid) = SP_CONFIG_INVALID;
+      SPG(config_parsing) = true;  // so that sp_log_err doesn't terminate the process.
+      sp_log_err("config", "Could not expand configuration file pattern %s", config_file);
+      SPG(config_parsing) = false;
       globfree(&globbuf);
-      return FAILURE;
+      return sp_config_failed();
     }
 
     for (size_t i = 0; globbuf.gl_pathv[i]; i++) {
       if (sp_parse_config(globbuf.gl_pathv[i]) != SUCCESS) {
-        SPG(is_config_valid) = SP_CONFIG_INVALID;
         globfree(&globbuf);
-        return FAILURE;
+        return sp_config_failed();
       }
     }
     globfree(&globbuf);

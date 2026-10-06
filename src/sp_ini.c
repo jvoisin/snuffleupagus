@@ -154,9 +154,6 @@ void sp_hook_ini() {
       sp_log_warn("ini_protection", "Cannot hook INI var `%s`. Maybe a typo or the PHP extension providing this var is not loaded yet.", ZSTR_VAL(sp_entry->key));
       continue;
     }
-    if (SP_INI_ACCESS_READONLY_COND(sp_entry, cfg) && (cfg->policy_silent_ro || cfg->policy_silent_fail) && !sp_entry->drop && !(sp_entry->simulation || cfg->simulation)) {
-      ini_entry->modifiable = ini_entry->orig_modifiable = 0;
-    }
     PHP_INI_MH((*orig_onmodify)) = ini_entry->on_modify;
 
     if (SP_INI_HAS_CHECKS_COND(sp_entry) || SP_INI_ACCESS_READONLY_COND(sp_entry, cfg)) {
@@ -183,15 +180,13 @@ void sp_unhook_ini() {
   sp_ini_entry *sp_entry;
   ZEND_HASH_FOREACH_PTR(SPCFG(ini).entries, sp_entry)
     zend_ini_entry *ini_entry;
-    if (!sp_entry->orig_onmodify) {
-      // not hooked or no original onmodify
-      continue;
-    }
     if ((ini_entry = zend_hash_find_ptr(EG(ini_directives), sp_entry->key)) == NULL) {
       // unusual. ini entry is missing.
       continue;
     }
-    ini_entry->on_modify = sp_entry->orig_onmodify;
+    if (ini_entry->on_modify == sp_ini_onmodify) {
+      ini_entry->on_modify = sp_entry->orig_onmodify;
+    }
     sp_entry->orig_onmodify = NULL;
   ZEND_HASH_FOREACH_END();
 }
