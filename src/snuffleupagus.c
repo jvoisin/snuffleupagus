@@ -63,8 +63,10 @@ static inline void sp_op_array_handler(zend_op_array *const op) {
 ZEND_DECLARE_MODULE_GLOBALS(snuffleupagus)
 
 PHP_INI_BEGIN()
-PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM, OnUpdateConfiguration)
+/* Registered before sp.configuration_file so the flag is set by the time the
+ * configuration file is parsed. */
 STD_PHP_INI_BOOLEAN("sp.allow_broken_configuration", "0", PHP_INI_SYSTEM, OnUpdateBool, allow_broken_configuration, zend_snuffleupagus_globals, snuffleupagus_globals)
+PHP_INI_ENTRY("sp.configuration_file", "", PHP_INI_SYSTEM, OnUpdateConfiguration)
 
 PHP_INI_END()
 
@@ -121,6 +123,7 @@ static PHP_GINIT_FUNCTION(snuffleupagus) {
   snuffleupagus_globals->config_filename = NULL;
   snuffleupagus_globals->config_lineno = 0;
   snuffleupagus_globals->config_parsing = false;
+  snuffleupagus_globals->config_nonfatal = false;
   snuffleupagus_globals->in_eval = 0;
   snuffleupagus_globals->config_log_max_len = 255;
 
@@ -311,16 +314,22 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
   ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
-  if (!SPG(allow_broken_configuration)) {
-    if (SPG(is_config_valid) == SP_CONFIG_INVALID) {
+  if (SPG(is_config_valid) == SP_CONFIG_INVALID) {
+    if (!SPG(allow_broken_configuration)) {
+      /* Reject the request before user code runs, with a fatal error located
+       * at the configuration error. sp_config_failed() resets the logging media
+       * to Zend, so this doesn't return. */
       SPG(config_parsing) = true;  // report the location of the parse error
       sp_log_err("config", "Invalid configuration file");
       SPG(config_parsing) = false;
-      return SUCCESS;
-    } else if (SPG(is_config_valid) == SP_CONFIG_NONE) {
-      sp_log_warn("config", "No configuration specified via sp.configuration_file");
-      return SUCCESS;
+      /* Defense in depth, should the error have been logged to a file or syslog. */
+      zend_error(E_ERROR, "Invalid Snuffleupagus configuration");
     }
+    return SUCCESS;
+  }
+  if (!SPG(allow_broken_configuration) && SPG(is_config_valid) == SP_CONFIG_NONE) {
+    sp_log_warn("config", "No configuration specified via sp.configuration_file");
+    return SUCCESS;
   }
 
   // We need to disable wrappers loaded by extensions loaded after SNUFFLEUPAGUS.
@@ -604,13 +613,23 @@ static void dump_config(void) {
 
 }
 
-static PHP_INI_MH(OnUpdateConfiguration) {
-  TSRMLS_FETCH();
+// Discard every rule, even from files that parsed fine, so nothing half-applied lingers.
+static int sp_config_failed(void) {
+  zend_string *const filename = SPG(config_filename);
+  const uint32_t lineno = SPG(config_lineno);
 
-  if (!new_value || !new_value->len) {
-    return FAILURE;
+  SPG(config_filename) = NULL;  // don't free it in sp_free_config
+  sp_free_config();
+  SPG(config_filename) = filename;
+  SPG(config_lineno) = lineno;
+  SPG(is_config_valid) = SP_CONFIG_INVALID;
+  if (SPG(allow_broken_configuration)) {
+    sp_log_warn("config", "Invalid configuration; all Snuffleupagus protections are disabled");
   }
+  return FAILURE;
+}
 
+static int sp_load_config(zend_string *const new_value) {
   /* Apache re-applies this directive on internal subrequests (e.g. via an
    * .htaccess RewriteRule), calling us more than once per process, and a
    * surviving worker can be handed a different config (per vhost) or the same
@@ -619,6 +638,16 @@ static PHP_INI_MH(OnUpdateConfiguration) {
    * crash), lets omitted directives fall back to their defaults, and makes
    * sure edits to the configuration file are picked up. */
   if (SPG(is_config_valid) != SP_CONFIG_NONE) {
+    if (SPCFG(ini).enable) {
+      sp_unhook_ini();
+    }
+    // Reverse hooking order, as a function can be wrapped by several tables.
+    unhook_functions(SPG(sp_eval_blacklist_functions_hook));
+    unhook_functions(SPG(disabled_functions_hook));
+    unhook_functions(SPG(sp_internal_functions_hook));
+    zend_hash_clean(SPG(sp_eval_blacklist_functions_hook));
+    zend_hash_clean(SPG(disabled_functions_hook));
+    zend_hash_clean(SPG(sp_internal_functions_hook));
     sp_free_config();
   }
 
@@ -634,16 +663,15 @@ static PHP_INI_MH(OnUpdateConfiguration) {
 
     glob_t globbuf;
     if (0 != glob(config_file, GLOB_NOCHECK, NULL, &globbuf)) {
-      SPG(is_config_valid) = SP_CONFIG_INVALID;
+      sp_log_err("config", "Could not expand configuration file pattern %s", config_file);
       globfree(&globbuf);
-      return FAILURE;
+      return sp_config_failed();
     }
 
     for (size_t i = 0; globbuf.gl_pathv[i]; i++) {
       if (sp_parse_config(globbuf.gl_pathv[i]) != SUCCESS) {
-        SPG(is_config_valid) = SP_CONFIG_INVALID;
         globfree(&globbuf);
-        return FAILURE;
+        return sp_config_failed();
       }
     }
     globfree(&globbuf);
@@ -741,6 +769,20 @@ static PHP_INI_MH(OnUpdateConfiguration) {
     (SPCFG(disabled_functions_ret) && zend_hash_num_elements(SPCFG(disabled_functions_ret)));
 
   return SUCCESS;
+}
+
+static PHP_INI_MH(OnUpdateConfiguration) {
+  TSRMLS_FETCH();
+
+  if (!new_value || !new_value->len) {
+    return FAILURE;
+  }
+
+  // After module startup an E_ERROR bails out, killing php-fpm workers: RINIT rejects requests instead.
+  SPG(config_nonfatal) = SPG(allow_broken_configuration) || php_get_module_initialized();
+  const int ret = sp_load_config(new_value);
+  SPG(config_nonfatal) = false;
+  return ret;
 }
 
 static const zend_function_entry snuffleupagus_functions[] = {PHP_FE_END};

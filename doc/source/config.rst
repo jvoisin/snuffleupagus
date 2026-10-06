@@ -40,6 +40,11 @@ your logs of course. We do **not** recommend to use it of course, but sometimes
 it might be useful to be able to "debug in production" without breaking your
 website.
 
+When the configuration is broken, the whole configuration (including files that
+were parsed successfully before the broken one) is discarded: without this
+parameter PHP refuses to serve requests, while with it PHP runs without **any**
+Snuffleupagus rule.
+
 Configuration file format
 -------------------------
 

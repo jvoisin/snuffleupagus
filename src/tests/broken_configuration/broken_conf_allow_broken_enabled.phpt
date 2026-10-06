@@ -13,7 +13,9 @@ echo "1337\n";
 trigger_error("runtime error", E_USER_WARNING);
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] parser error in %s/tests/broken_configuration/config/broken_conf.ini:1 in %s/broken_configuration/config/broken_conf.ini on line 1
+Warning: [snuffleupagus][0.0.0.0][config][log] parser error in %s/tests/broken_configuration/config/broken_conf.ini:1 in %s/broken_configuration/config/broken_conf.ini on line 1
+
+Warning: [snuffleupagus][0.0.0.0][config][log] Invalid configuration; all Snuffleupagus protections are disabled in Unknown on line 0
 1337
 
 Warning: runtime error in %s/broken_conf_allow_broken_enabled.php on line 3

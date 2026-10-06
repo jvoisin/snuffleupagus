@@ -166,6 +166,7 @@ int is_config_valid;  // 1 = valid, 0 = invalid, -1 = none
 zend_string *config_filename;
 uint32_t config_lineno;
 bool config_parsing;
+bool config_nonfatal;  // log E_ERROR as E_WARNING while loading the configuration
 size_t in_eval;
 u_long execution_depth;
 HashTable *disabled_functions_hook;
