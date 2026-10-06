@@ -23,6 +23,26 @@ const char* get_ipaddr() {
   return default_ipaddr;
 }
 
+/* zend_error_at() takes a zend_string filename from 8.1, a C string in 7.4/8.0. */
+#if PHP_VERSION_ID >= 80100
+#define sp_config_error(level, filename, lineno, ...) \
+  zend_error_at(level, filename, lineno, __VA_ARGS__)
+#elif PHP_VERSION_ID >= 70400
+#define sp_config_error(level, filename, lineno, ...) \
+  zend_error_at(level, ZSTR_VAL(filename), lineno, __VA_ARGS__)
+#else
+static void sp_config_error(int level, zend_string *filename, uint32_t lineno,
+                            const char *format, ...) ZEND_ATTRIBUTE_FORMAT(printf, 4, 5);
+
+static void sp_config_error(int level, zend_string *filename, uint32_t lineno,
+                            const char *format, ...) {
+  va_list args;
+  va_start(args, format);
+  zend_error_cb(level, ZSTR_VAL(filename), lineno, format, args);
+  va_end(args);
+}
+#endif
+
 void sp_log_msgf(char const* const restrict feature, int level, int type,
                  char const* const restrict fmt, ...) {
   char* msg;
@@ -47,13 +67,15 @@ void sp_log_msgf(char const* const restrict feature, int level, int type,
       break;
   }
 
+  bool config_location = SPG(config_filename) && SPG(config_parsing);
+  const char *error_filename = config_location ? ZSTR_VAL(SPG(config_filename)) : zend_get_executed_filename();
+  uint32_t error_lineno = config_location ? SPG(config_lineno) : zend_get_executed_lineno(TSRMLS_C);
+
   switch (SPCFG(log_media).type) {
     case SP_LOG_SYSLOG: {
-      const char* error_filename = zend_get_executed_filename();
       int syslog_level = (level == E_ERROR) ? LOG_ERR : LOG_INFO;
-      int error_lineno = zend_get_executed_lineno(TSRMLS_C);
       openlog(PHP_SNUFFLEUPAGUS_EXTNAME, LOG_PID, LOG_AUTH);
-      syslog(syslog_level, "[snuffleupagus][%s][%s][%s] %s in %s on line %d",
+      syslog(syslog_level, "[snuffleupagus][%s][%s][%s] %s in %s on line %u",
              client_ip, feature, logtype, msg, error_filename, error_lineno);
       closelog();
       break;
@@ -64,9 +86,7 @@ void sp_log_msgf(char const* const restrict feature, int level, int type,
         zend_error(level, "[snuffleupagus][%s][logging][log] unable to open %s to log", client_ip,
                   SPCFG(log_media).path);
       } else {
-        int error_lineno = zend_get_executed_lineno(TSRMLS_C);
-        const char* error_filename = zend_get_executed_filename();
-        fprintf(logf, "[snuffleupagus][%s][%s][%s] %s in %s on line %d\n",
+        fprintf(logf, "[snuffleupagus][%s][%s][%s] %s in %s on line %u\n",
              client_ip, feature, logtype, msg, error_filename, error_lineno);
         fclose(logf);
       }
@@ -74,8 +94,13 @@ void sp_log_msgf(char const* const restrict feature, int level, int type,
     }
     case SP_LOG_ZEND:
     default:
-      zend_error(level, "[snuffleupagus][%s][%s][%s] %s", client_ip, feature,
-                 logtype, msg);
+      if (config_location) {
+        sp_config_error(level, SPG(config_filename), error_lineno,
+                        "[snuffleupagus][%s][%s][%s] %s", client_ip, feature, logtype, msg);
+      } else {
+        zend_error(level, "[snuffleupagus][%s][%s][%s] %s", client_ip, feature,
+                   logtype, msg);
+      }
       break;
   }
 

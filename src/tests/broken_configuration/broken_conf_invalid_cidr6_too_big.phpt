@@ -7,8 +7,8 @@ Broken configuration, cidr for ipv6 is too big, that will `mod` to 25.
 sp.configuration_file={PWD}/config/broken_conf_invalid_cidr6_too_big.ini
 error_log=/dev/null
 --FILE--
---EXPECT--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] '13337' isn't a valid network mask. in Unknown on line 0
+--EXPECTF--
+Fatal error: [snuffleupagus][0.0.0.0][config][log] '13337' isn't a valid network mask. in %s/broken_configuration/config/broken_conf_invalid_cidr6_too_big.ini on line 1
 
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in %s/broken_configuration/config/broken_conf_invalid_cidr6_too_big.ini on line 1
 Could not startup.

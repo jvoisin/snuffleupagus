@@ -32,9 +32,16 @@ static zend_result sp_process_config_root(sp_parsed_keyword *parsed_rule) {
 }
 
 zend_result sp_parse_config(const char *const filename) {
+  if (SPG(config_filename)) {
+    zend_string_release_ex(SPG(config_filename), 1);
+  }
+  SPG(config_filename) = zend_string_init(filename, strlen(filename), 1);
+  SPG(config_lineno) = 0;
+  SPG(config_parsing) = true;
   FILE *fd = fopen(filename, "rb");
   if (fd == NULL) {
     sp_log_err("config", "Could not open configuration file %s : %s", filename, strerror(errno));
+    SPG(config_parsing) = false;
     return FAILURE;
   }
 
@@ -63,12 +70,19 @@ zend_result sp_parse_config(const char *const filename) {
 
   zend_string_release_ex(data, 0);
 
+  SPG(config_parsing) = false;
+  if (ret == SUCCESS) {
+    zend_string_release_ex(SPG(config_filename), 1);
+    SPG(config_filename) = NULL;
+    SPG(config_lineno) = 0;
+  }
   return ret;
 }
 
 
 zend_result sp_process_rule(sp_parsed_keyword *parsed_rule, const sp_config_keyword *const config_keywords) {
   for (sp_parsed_keyword *kw = parsed_rule; kw->kw; kw++) {
+    SPG(config_lineno) = kw->lineno;
     bool found_kw = false;
     for (const sp_config_keyword *ckw = config_keywords; ckw->func; ckw++) {
       if (kw->kwlen == strlen(ckw->token) && !strncmp(kw->kw, ckw->token, kw->kwlen)) {

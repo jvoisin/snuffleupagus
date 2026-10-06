@@ -118,6 +118,9 @@ static PHP_GINIT_FUNCTION(snuffleupagus) {
   sp_log_debug("(GINIT)");
   sp_load_other_modules();
   snuffleupagus_globals->is_config_valid = SP_CONFIG_NONE;
+  snuffleupagus_globals->config_filename = NULL;
+  snuffleupagus_globals->config_lineno = 0;
+  snuffleupagus_globals->config_parsing = false;
   snuffleupagus_globals->in_eval = 0;
   snuffleupagus_globals->config_log_max_len = 255;
 
@@ -256,6 +259,12 @@ static void sp_free_config(void) {
   SPG(config_ini.entries) = ini_entries;
 
   SPG(config_log_max_len) = 255;
+  if (SPG(config_filename)) {
+    zend_string_release_ex(SPG(config_filename), 1);
+    SPG(config_filename) = NULL;
+  }
+  SPG(config_lineno) = 0;
+  SPG(config_parsing) = false;
   SPG(config_max_execution_depth) = 0;
   SPG(config_server_encode) = false;
   SPG(config_server_strip) = false;
@@ -304,7 +313,9 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
 
   if (!SPG(allow_broken_configuration)) {
     if (SPG(is_config_valid) == SP_CONFIG_INVALID) {
+      SPG(config_parsing) = true;  // report the location of the parse error
       sp_log_err("config", "Invalid configuration file");
+      SPG(config_parsing) = false;
       return SUCCESS;
     } else if (SPG(is_config_valid) == SP_CONFIG_NONE) {
       sp_log_warn("config", "No configuration specified via sp.configuration_file");

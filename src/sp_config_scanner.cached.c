@@ -11,9 +11,9 @@ enum YYCONDTYPE {
 };
 
 
-#define cs_log_error(fmt, ...) sp_log_err("config", fmt, ##__VA_ARGS__)
-#define cs_log_info(fmt, ...) sp_log_msg("config", SP_LOG_INFO, fmt, ##__VA_ARGS__)
-#define cs_log_warning(fmt, ...) sp_log_warn("config", fmt, ##__VA_ARGS__)
+#define cs_log_error(fmt, ...) do { SPG(config_lineno) = lineno; sp_log_err("config", fmt, ##__VA_ARGS__); } while (0)
+#define cs_log_info(fmt, ...) do { SPG(config_lineno) = lineno; sp_log_msg("config", SP_LOG_INFO, fmt, ##__VA_ARGS__); } while (0)
+#define cs_log_warning(fmt, ...) do { SPG(config_lineno) = lineno; sp_log_warn("config", fmt, ##__VA_ARGS__); } while (0)
 
 #define MAX_CONDITIONS 100
 #define MAX_KEYWORDS 16

@@ -13,6 +13,6 @@ Content-Disposition: form-data; name="test"; filename="test.php"
 echo 1;
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in %s/upload_validation/config/upload_validation.ini on line 1
 
-Fatal error: [snuffleupagus][0.0.0.0][config][log] The `script` (tests/upload_ko.sh) doesn't exist on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] The `script` (tests/upload_ko.sh) doesn't exist on line 1 in %s/upload_validation/config/upload_validation.ini on line 1

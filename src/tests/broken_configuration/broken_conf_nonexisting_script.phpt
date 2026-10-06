@@ -11,7 +11,7 @@ error_log=/dev/null
 echo 1;
 ?>
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] The `script` (./non_existing_script.sh) doesn't exist on line 1 in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] The `script` (./non_existing_script.sh) doesn't exist on line 1 in %s/broken_configuration/config/broken_conf_nonexisting_script.ini on line 1
 
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in %s/broken_configuration/config/broken_conf_nonexisting_script.ini on line 1
 Could not startup.

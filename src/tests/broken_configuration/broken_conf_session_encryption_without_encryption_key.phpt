@@ -10,7 +10,7 @@ sp.configuration_file={PWD}/config/broken_conf_session_encryption_without_encryp
 error_log=/dev/null
 --FILE--
 --EXPECTF--
-Fatal error: [snuffleupagus][0.0.0.0][config][log] You're trying to use the session cookie encryption feature in %s/tests/broken_configuration/config/broken_conf_session_encryption_without_encryption_key.ini:2 without having set the `.secret_key` option in `sp.global`: please set it first in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] You're trying to use the session cookie encryption feature in %s/tests/broken_configuration/config/broken_conf_session_encryption_without_encryption_key.ini:2 without having set the `.secret_key` option in `sp.global`: please set it first in %s/broken_configuration/config/broken_conf_session_encryption_without_encryption_key.ini on line 2
 
-Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in Unknown on line 0
+Fatal error: [snuffleupagus][0.0.0.0][config][log] Invalid configuration file in %s/broken_configuration/config/broken_conf_session_encryption_without_encryption_key.ini on line 2
 Could not startup.

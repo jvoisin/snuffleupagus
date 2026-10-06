@@ -9,7 +9,11 @@
     (varname) = (enable || !disable); \
   }
 
-#define SP_PROCESS_CONFIG_KEYWORDS(CMD) if (sp_process_rule(&(parsed_rule[1]), config_keywords) != SUCCESS) { CMD; }
+#define SP_PROCESS_CONFIG_KEYWORDS(CMD) \
+  do { \
+    if (sp_process_rule(&(parsed_rule[1]), config_keywords) != SUCCESS) { CMD; } \
+    SPG(config_lineno) = parsed_rule->lineno; \
+  } while (0)
 #define SP_PROCESS_CONFIG_KEYWORDS_ERR() SP_PROCESS_CONFIG_KEYWORDS(return SP_PARSER_ERROR)
 
 SP_PARSE_FN(parse_enable) {
