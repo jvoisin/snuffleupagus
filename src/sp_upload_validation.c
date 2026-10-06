@@ -29,7 +29,7 @@ static int sp_rfc1867_callback(unsigned int event, void *event_data, void **extr
     retval = sp_rfc1867_orig_callback(event, event_data, extra);
   }
 
-  if (event == MULTIPART_EVENT_END) {
+  if (event == MULTIPART_EVENT_END && SPCFG(upload_validation).enable) {
     zend_string *file_key __attribute__((unused)) = NULL;
     const sp_config_upload_validation *config_upload = &(SPCFG(upload_validation));
     zval *file;
