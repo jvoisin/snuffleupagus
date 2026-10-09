@@ -45,6 +45,10 @@ static void sp_config_error(int level, zend_string *filename, uint32_t lineno,
 
 void sp_log_msgf(char const* const restrict feature, int level, int type,
                  char const* const restrict fmt, ...) {
+  /* When broken configurations are tolerated, a config error must not be fatal:
+   * otherwise it aborts worker startup and php-fpm respawns in a loop (#563). */
+  const int zend_level = (SPG(allow_broken_configuration) && SPG(config_parsing) && level == E_ERROR) ? E_WARNING : level;
+
   char* msg;
   va_list args;
 
@@ -83,7 +87,7 @@ void sp_log_msgf(char const* const restrict feature, int level, int type,
     case SP_LOG_FILE: {
       FILE* logf = fopen(SPCFG(log_media).path, "a");
       if (!logf) {
-        zend_error(level, "[snuffleupagus][%s][logging][log] unable to open %s to log", client_ip,
+        zend_error(zend_level, "[snuffleupagus][%s][logging][log] unable to open %s to log", client_ip,
                   SPCFG(log_media).path);
       } else {
         fprintf(logf, "[snuffleupagus][%s][%s][%s] %s in %s on line %u\n",
@@ -95,10 +99,10 @@ void sp_log_msgf(char const* const restrict feature, int level, int type,
     case SP_LOG_ZEND:
     default:
       if (config_location) {
-        sp_config_error(level, SPG(config_filename), error_lineno,
+        sp_config_error(zend_level, SPG(config_filename), error_lineno,
                         "[snuffleupagus][%s][%s][%s] %s", client_ip, feature, logtype, msg);
       } else {
-        zend_error(level, "[snuffleupagus][%s][%s][%s] %s", client_ip, feature,
+        zend_error(zend_level, "[snuffleupagus][%s][%s][%s] %s", client_ip, feature,
                    logtype, msg);
       }
       break;
