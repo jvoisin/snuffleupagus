@@ -74,17 +74,17 @@ static void php_head_parse_cookie_options_array(
         *domain = zval_get_string(value);
         found++;
       } else if (zend_string_equals_literal_ci(key, "secure")) {
-        *secure = zval_is_true(value);
+        *secure = zend_is_true(value);
         found++;
       } else if (zend_string_equals_literal_ci(key, "httponly")) {
-        *httponly = zval_is_true(value);
+        *httponly = zend_is_true(value);
         found++;
       } else if (zend_string_equals_literal_ci(key, "samesite")) {
         *samesite = zval_get_string(value);
         found++;
 #if PHP_VERSION_ID >= 80500
       } else if (zend_string_equals_literal_ci(key, "partitioned")) {
-        *partitioned = zval_is_true(value);
+        *partitioned = zend_is_true(value);
         found++;
 #endif
       } else {
