@@ -312,7 +312,9 @@ static inline void sp_stream_open_checks(zend_string *zend_filename, zend_file_h
               zend_hash_str_find_ptr(disabled_functions_hooked, ZEND_STRL("include_once")),
               disabled_functions_hooked);
           break;
-          EMPTY_SWITCH_DEFAULT_CASE();  // LCOV_EXCL_LINE
+		default:
+		  ZEND_UNREACHABLE();
+		  break;
       }
   }
 }
