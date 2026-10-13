@@ -97,7 +97,11 @@ static inline const char* get_fn_arg_name(zend_function *fn, uint32_t i) {
   if (fn->type == ZEND_USER_FUNCTION || (fn->common.fn_flags & ZEND_ACC_USER_ARG_INFO)) {
     return ZSTR_VAL(fn->op_array.arg_info[i].name);
   } else {
+#if PHP_VERSION_ID < 86000
     return fn->internal_function.arg_info[i].name;
+#else
+    return ZSTR_VAL(fn->internal_function.arg_info[i].name);
+#endif
   }
 }
 
