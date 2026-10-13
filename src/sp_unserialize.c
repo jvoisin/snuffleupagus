@@ -44,7 +44,7 @@ static zend_string *sp_do_hash_hmac_sha256(char* restrict data, size_t data_len,
 
   zend_string *hex_digest = zend_string_safe_alloc(ops->digest_size, 2, 0, 0);
 
-#if PHP_VERSION_ID < 86000
+#if PHP_VERSION_ID < 80600
   php_hash_bin2hex(ZSTR_VAL(hex_digest), (unsigned char *) ZSTR_VAL(digest), ops->digest_size);
 #else
   zend_bin2hex(ZSTR_VAL(hex_digest), (unsigned char *) ZSTR_VAL(digest), ops->digest_size);

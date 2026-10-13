@@ -9,7 +9,7 @@ static zval *get_param_var(const zend_execute_data *const ed,
     if (ZEND_USER_CODE(ed->func->type)) {
       arg_name = ZSTR_VAL(ed->func->common.arg_info[i].name);
     } else {
-#if PHP_VERSION_ID < 86000
+#if PHP_VERSION_ID < 80600
       arg_name = ed->func->internal_function.arg_info[i].name;
 #else
       arg_name = ZSTR_VAL(ed->func->internal_function.arg_info[i].name);
