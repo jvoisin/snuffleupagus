@@ -10,6 +10,25 @@
 
 static char const* const default_ipaddr = "0.0.0.0";
 const char* get_ipaddr() {
+  // Under PHP-FPM, REMOTE_ADDR is a FastCGI parameter, not part of the
+  // process environment, so getenv() never finds it and every request reads
+  // as 0.0.0.0. Ask the SAPI first, for REMOTE_ADDR only: the web server sets
+  // it, while X-Forwarded-For is whatever the client sent.
+  // sapi_getenv() returns a copy that must be freed.
+  ZEND_TLS char sapi_ip[64];
+  char* const sapi_val = sapi_getenv("REMOTE_ADDR", sizeof("REMOTE_ADDR") - 1);
+  if (sapi_val) {
+    const size_t len = strlen(sapi_val);
+    const bool fits = len > 0 && len < sizeof(sapi_ip);
+    if (fits) {
+      memcpy(sapi_ip, sapi_val, len + 1);
+    }
+    efree(sapi_val);
+    if (fits) {
+      return sapi_ip;
+    }
+  }
+
   const char* client_ip = getenv("REMOTE_ADDR");
   if (client_ip) {
     return client_ip;
