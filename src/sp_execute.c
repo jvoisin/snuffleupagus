@@ -155,9 +155,25 @@ static inline void sp_orig_execute(zend_execute_data *execute_data) {
 }
 
 static inline void sp_check_writable(zend_execute_data *execute_data) {
-  if (execute_data && EX(func) && EX(func)->op_array.filename && SPCFG(readonly_exec).enable) {
-    terminate_if_writable(ZSTR_VAL(EX(func)->op_array.filename));
+  if (!execute_data || !EX(func) || !EX(func)->op_array.filename ||
+      !SPCFG(readonly_exec).enable) {
+    return;
   }
+
+  /* This runs for every userland function call, and terminate_if_writable()
+   * issues one or two access(2) syscalls: check each file only once per
+   * request instead. Its code can't change under our feet during the request,
+   * and it is checked again on the next one. */
+  zend_string *const filename = EX(func)->op_array.filename;
+  if (!SPG(readonly_exec_checked)) {
+    ALLOC_HASHTABLE(SPG(readonly_exec_checked));
+    zend_hash_init(SPG(readonly_exec_checked), 64, NULL, NULL, 0);
+  } else if (zend_hash_exists(SPG(readonly_exec_checked), filename)) {
+    return;
+  }
+  zend_hash_add_empty_element(SPG(readonly_exec_checked), filename);
+
+  terminate_if_writable(ZSTR_VAL(filename));
 }
 
 static inline void sp_call_orig_execute(INTERNAL_FUNCTION_PARAMETERS, bool internal) {
