@@ -376,11 +376,14 @@ Preventing execution of writable PHP files
 
 If an attacker manages to upload an arbitrary file or to modify an existing one,
 odds are that (thanks to the default `umask <https://en.wikipedia.org/wiki/Umask>`_)
-this file is writable by the PHP process.
+this file is writable by the PHP process. To mitigate this, snuffleupagus can
+prevent the execution of files that aren't read-only. 
 
-Snuffleupagus can prevent the execution of this kind of file. A good practice
-would be to use a different user to run PHP than for administrating the website,
-and using this feature to lock this up.
+Of course, an attacker with code execution can bypass this entirely by writing
+code to a file, marking it as read-only, and then including it. A more powerful
+solution would be to use a bind-mount to truly enforce code immutability.
+Another possibility could be to use snuffleupagus' `.hash` filter on every php
+file, but it would likely have a noticeable perform impact.
 
 .. _stream-wrapper-whitelist-feature:
 
