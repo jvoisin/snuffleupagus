@@ -161,17 +161,19 @@ static inline void sp_check_writable(zend_execute_data *execute_data) {
   }
 
   /* This runs for every userland function call, and terminate_if_writable()
-   * issues one or two access(2) syscalls: check each file only once per
-   * request instead. Its code can't change under our feet during the request,
-   * and it is checked again on the next one. */
+   * issues one or two access(2) syscalls. A file's top-level code runs once per
+   * inclusion: check it every time, so that a file that is modified and
+   * included again during the request is checked again. Functions and methods
+   * are only checked the first time their file shows up in the request: their
+   * code comes from an inclusion checked above, or from opcache.preload. */
   zend_string *const filename = EX(func)->op_array.filename;
-  if (!SPG(readonly_exec_checked)) {
-    ALLOC_HASHTABLE(SPG(readonly_exec_checked));
-    zend_hash_init(SPG(readonly_exec_checked), 64, NULL, NULL, 0);
-  } else if (zend_hash_exists(SPG(readonly_exec_checked), filename)) {
-    return;
+  HashTable *const checked = SPG(readonly_exec_checked);
+  if (checked) {  // NULL outside of a request, e.g. during opcache.preload
+    if (!zend_hash_add_empty_element(checked, filename) &&
+        EX(func)->op_array.function_name) {
+      return;
+    }
   }
-  zend_hash_add_empty_element(SPG(readonly_exec_checked), filename);
 
   terminate_if_writable(ZSTR_VAL(filename));
 }

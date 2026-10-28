@@ -309,7 +309,8 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
 PHP_RINIT_FUNCTION(snuffleupagus) {
   SPG(execution_depth) = 0;
   SPG(in_eval) = 0;
-  SPG(readonly_exec_checked) = NULL;
+  ALLOC_HASHTABLE(SPG(readonly_exec_checked));
+  zend_hash_init(SPG(readonly_exec_checked), 64, NULL, NULL, 0);
 
   const sp_config_wrapper *const config_wrapper = &(SPCFG(wrapper));
 #if defined(COMPILE_DL_SNUFFLEUPAGUS) && defined(ZTS)
