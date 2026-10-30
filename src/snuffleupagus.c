@@ -125,6 +125,7 @@ static PHP_GINIT_FUNCTION(snuffleupagus) {
   snuffleupagus_globals->config_parsing = false;
   snuffleupagus_globals->config_nonfatal = false;
   snuffleupagus_globals->in_eval = 0;
+  snuffleupagus_globals->readonly_exec_checked = NULL;
   snuffleupagus_globals->config_log_max_len = 255;
 
 #define SP_INIT_HT(F)                                                          \
@@ -308,6 +309,8 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
 PHP_RINIT_FUNCTION(snuffleupagus) {
   SPG(execution_depth) = 0;
   SPG(in_eval) = 0;
+  ALLOC_HASHTABLE(SPG(readonly_exec_checked));
+  zend_hash_init(SPG(readonly_exec_checked), 64, NULL, NULL, 0);
 
   const sp_config_wrapper *const config_wrapper = &(SPCFG(wrapper));
 #if defined(COMPILE_DL_SNUFFLEUPAGUS) && defined(ZTS)
@@ -346,7 +349,14 @@ PHP_RINIT_FUNCTION(snuffleupagus) {
   return SUCCESS;
 }
 
-PHP_RSHUTDOWN_FUNCTION(snuffleupagus) { return SUCCESS; }
+PHP_RSHUTDOWN_FUNCTION(snuffleupagus) {
+  if (SPG(readonly_exec_checked)) {
+    zend_hash_destroy(SPG(readonly_exec_checked));
+    FREE_HASHTABLE(SPG(readonly_exec_checked));
+    SPG(readonly_exec_checked) = NULL;
+  }
+  return SUCCESS;
+}
 
 PHP_MINFO_FUNCTION(snuffleupagus) {
   const char *valid_config;
