@@ -161,18 +161,19 @@ static inline void sp_check_writable(zend_execute_data *execute_data) {
   }
 
   /* This runs for every userland function call, and terminate_if_writable()
-   * issues one or two access(2) syscalls. A file's top-level code runs once per
-   * inclusion: check it every time, so that a file that is modified and
-   * included again during the request is checked again. Functions and methods
-   * are only checked the first time their file shows up in the request: their
-   * code comes from an inclusion checked above, or from opcache.preload. */
+   * issues one or two access(2) syscalls. A file's top-level code (the op_array
+   * without a function_name) runs once per inclusion: check it every time, so
+   * that a file that is modified and included again during the request is
+   * checked again. Functions and methods are only checked the first time their
+   * file shows up in the request: their code comes from an inclusion checked
+   * above, or from opcache.preload. */
   zend_string *const filename = EX(func)->op_array.filename;
+  const bool is_top_level = !EX(func)->op_array.function_name;
   HashTable *const checked = SPG(readonly_exec_checked);
-  if (checked) {  // NULL outside of a request, e.g. during opcache.preload
-    if (!zend_hash_add_empty_element(checked, filename) &&
-        EX(func)->op_array.function_name) {
-      return;
-    }
+  /* The hashtable is allocated in RINIT, which also runs for the CLI and for
+   * opcache.preload. Without it, nothing is skipped: every call is checked. */
+  if (checked && !zend_hash_add_empty_element(checked, filename) && !is_top_level) {
+    return;
   }
 
   terminate_if_writable(ZSTR_VAL(filename));

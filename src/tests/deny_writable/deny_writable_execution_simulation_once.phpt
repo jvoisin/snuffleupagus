@@ -30,10 +30,9 @@ include "$dir/writable_functions.txt";
 echo from_writable_file();
 echo from_writable_file();
 echo from_writable_file();
-?>
---CLEAN--
-<?php
-@unlink(__DIR__ . "/writable_functions.txt");
+
+// not in --CLEAN--: it would run from a writable file too, and its warning would bork the test
+unlink("$dir/writable_functions.txt");
 ?>
 --EXPECTF--
 Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/deny_writable_execution_simulation_once.php) in %a/deny_writable_execution_simulation_once.php on line %d

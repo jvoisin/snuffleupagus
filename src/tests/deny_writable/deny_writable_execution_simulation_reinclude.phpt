@@ -35,11 +35,9 @@ touch($file, time() + 10);
 clearstatcache();
 include $file;
 from_first_version();
-?>
---CLEAN--
-<?php
-@chmod(__DIR__ . "/reinclude.txt", 0777);
-@unlink(__DIR__ . "/reinclude.txt");
+
+// not in --CLEAN--: it would run from a writable file too, and its warning would bork the test
+unlink($file);
 ?>
 --EXPECTF--
 Warning: [snuffleupagus][0.0.0.0][readonly_exec][simulation] Attempted execution of a writable file (%a/deny_writable_execution_simulation_reinclude.php) in %a/deny_writable_execution_simulation_reinclude.php on line %d
