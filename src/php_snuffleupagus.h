@@ -169,6 +169,7 @@ bool config_parsing;
 bool config_nonfatal;  // log E_ERROR as E_WARNING while loading the configuration
 size_t in_eval;
 u_long execution_depth;
+HashTable *readonly_exec_checked;  // files checked by readonly_exec (request)
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;
 HashTable *sp_eval_blacklist_functions_hook;
