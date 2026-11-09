@@ -26,14 +26,21 @@ m4_version_prereq([2.70], [AC_PROG_CC], [AC_PROG_CC_STDC])
 
 CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -Wall -Wextra -Wno-unused-parameter"
-CFLAGS="$CFLAGS -Wformat=2 -Wformat-security -D_FORTIFY_SOURCE=2"
+CFLAGS="$CFLAGS -Wformat=2 -Wformat-security"
+# Keep a _FORTIFY_SOURCE level that the build environment already chose
+# (e.g. distributions defaulting to 3); redefining it is a warning, and an
+# error with -Werror.
+case " $CPPFLAGS $CFLAGS " in
+  *_FORTIFY_SOURCE*) ;;
+  *) CFLAGS="$CFLAGS -D_FORTIFY_SOURCE=2" ;;
+esac
 CFLAGS="$CFLAGS -fstack-protector-strong"
 CFLAGS="$CFLAGS -Wmissing-format-attribute -Wmissing-noreturn -Wpointer-arith"
 CFLAGS="$CFLAGS -Wstrict-prototypes -Wunused -Wwrite-strings"
 
 LDFLAGS="$LDFLAGS `pcre2-config --libs8`"
 
-AX_CHECK_COMPILE_FLAG([-Wl,-z,relro,-z,now], [LDFLAGS="$LDFLAGS -Wl,-z,relro,-z,now"], {}, [-Werror])
+AX_CHECK_COMPILE_FLAG([-Wl,-z,relro,-z,now], [LDFLAGS="$LDFLAGS -Wl,-z,relro,-z,now"], [], [-Werror])
 
 if test "$PHP_DEBUG" = "yes"; then
   AC_DEFINE(SP_DEBUG, 1, [Enable SP debug messages])
