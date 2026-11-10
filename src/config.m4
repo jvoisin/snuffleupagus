@@ -26,7 +26,7 @@ m4_version_prereq([2.70], [AC_PROG_CC], [AC_PROG_CC_STDC])
 
 CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -Wall -Wextra -Wno-unused-parameter"
-CFLAGS="$CFLAGS -Wformat=2 -Wformat-security -D_FORTIFY_SOURCE=2"
+CFLAGS="$CFLAGS -Wformat=2 -Wformat-security -D_FORTIFY_SOURCE=3"
 CFLAGS="$CFLAGS -fstack-protector-strong"
 CFLAGS="$CFLAGS -Wmissing-format-attribute -Wmissing-noreturn -Wpointer-arith"
 CFLAGS="$CFLAGS -Wstrict-prototypes -Wunused -Wwrite-strings"
