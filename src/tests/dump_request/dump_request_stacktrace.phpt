@@ -16,8 +16,8 @@ cookie_a=data_cookie_a&cookie_b=data_cookie_b
 sp.configuration_file={PWD}/config/dump_request.ini
 --FILE--
 <?php
-@mkdir("/tmp/dump_result/");
-foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
+@mkdir("/tmp/dump_result_stacktrace/");
+foreach (glob("/tmp/dump_result_stacktrace/sp_dump.*") as $dump) {
     @unlink($dump);
 }
 echo "1\n";
@@ -27,7 +27,7 @@ function c(){ b(); }
 function d(){ c(); }
 d();
 
-$filename = glob('/tmp/dump_result/sp_dump.*')[0];
+$filename = glob('/tmp/dump_result_stacktrace/sp_dump.*')[0];
 $res = file($filename);
 //var_dump($res) . "\n";
 if ($res[2] != "STACKTRACE: a:7\n") {

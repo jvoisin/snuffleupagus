@@ -36,9 +36,43 @@ static void check_sid_length(const zend_string *sid) {
   }
 }
 
+#if PHP_VERSION_ID >= 80600
+PHP_FUNCTION(sp_session_start) {
+  if (SESSION_G(id)) {
+    check_sid_length(SESSION_G(id));
+  } else if (SESSION_G(session_name)) {
+    const int zones[] = {TRACK_VARS_COOKIE, TRACK_VARS_GET, TRACK_VARS_POST};
+    const size_t zone_count = SESSION_G(use_only_cookies) ? 1 : 3;
+
+    for (size_t i = 0; i < zone_count; i++) {
+      if (Z_TYPE(PG(http_globals)[zones[i]]) != IS_ARRAY) {
+        continue;
+      }
+
+      zval *sid = zend_hash_find(Z_ARRVAL(PG(http_globals)[zones[i]]),
+                                SESSION_G(session_name));
+      if (sid) {
+        ZVAL_DEREF(sid);
+        if (Z_TYPE_P(sid) == IS_STRING) {
+          check_sid_length(Z_STR_P(sid));
+        }
+        break;
+      }
+    }
+  }
+
+  zif_handler orig_handler =
+      zend_hash_str_find_ptr(SPG(sp_internal_functions_hook),
+                             ZEND_STRL("session_start"));
+  orig_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+#endif
+
 static int sp_hook_s_read(PS_READ_ARGS) {
   const sp_config_session *cfg = &(SPCFG(session));
+#if PHP_VERSION_ID < 80600
   check_sid_length(key);
+#endif
 
   int r = old_s_read(mod_data, key, val, maxlifetime);
 
@@ -65,7 +99,9 @@ static int sp_hook_s_read(PS_READ_ARGS) {
 
 static int sp_hook_s_write(PS_WRITE_ARGS) {
   const sp_config_session *cfg = &(SPCFG(session));
+#if PHP_VERSION_ID < 80600
   check_sid_length(key);
+#endif
 
   if (ZSTR_LEN(val) > 0 && cfg->encrypt) {
     zend_string *new_val = encrypt_zval(val);
@@ -168,4 +204,9 @@ void hook_session() {
   }
 
   sp_hook_session_module();
+
+#if PHP_VERSION_ID >= 80600
+  HOOK_FUNCTION("session_start", sp_internal_functions_hook,
+                PHP_FN(sp_session_start));
+#endif
 }
