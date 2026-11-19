@@ -17,15 +17,15 @@ sp.configuration_file={PWD}/config/dump_request.ini
 --FILE--
 <?php
 // Just in case
-if (is_dir("/tmp/dump_result/")) {
-  foreach (glob("/tmp/dump_result/sp_dump.*") as $dump) {
+if (is_dir("/tmp/dump_result_request/")) {
+  foreach (glob("/tmp/dump_result_request/sp_dump.*") as $dump) {
       @unlink($dump);
   }
-  @rmdir("/tmp/dump_result/");
+  @rmdir("/tmp/dump_result_request/");
 }
 echo "1\n";
 system("echo 1337;");
-$filename = glob('/tmp/dump_result/sp_dump.*')[0];
+$filename = glob('/tmp/dump_result_request/sp_dump.*')[0];
 $res = file($filename);
 if ($res[3] != "GET:get_a='data_get_a' get_b='data_get_b' \n") {
     echo "Invalid GET";

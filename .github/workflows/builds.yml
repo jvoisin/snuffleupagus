@@ -9,8 +9,10 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     strategy:
+        fail-fast: false
         matrix:
           container:
+            - php:8.6
             - php:8.5-zts
             - php:8.5
             - php:8.4-zts
