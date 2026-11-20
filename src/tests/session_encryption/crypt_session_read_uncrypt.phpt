@@ -20,8 +20,8 @@ EOF;
 session_start();
 $id = session_id(); 											// Get the session_id to use it later
 $filename_sess = dirname(__FILE__) . "/sess_" . $id;
-file_put_contents($filename_sess, "toto|s:4:\"tata\";"); 			// Write unencrypted session
 session_write_close(); 											// Close the session
+file_put_contents($filename_sess, "toto|s:4:\"tata\";"); 			// Write unencrypted session
 
 session_id($id);
 session_start();												// Try to read the unencrypted session, it will fail to decrypt but it must return the session
