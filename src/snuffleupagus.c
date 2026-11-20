@@ -8,7 +8,7 @@ static PHP_INI_MH(OnUpdateConfiguration);
 static inline void sp_op_array_handler(zend_op_array *op);
 
 #ifdef SP_DEBUG_STDERR
-int sp_debug_stderr = STDERR_FILENO;
+ZEND_EXT_TLS int sp_debug_stderr = STDERR_FILENO;
 #endif
 
 ZEND_EXTENSION();
@@ -110,22 +110,14 @@ static void sp_load_other_modules(void) {
 }
 
 static PHP_GINIT_FUNCTION(snuffleupagus) {
+  memset(snuffleupagus_globals, 0, sizeof(*snuffleupagus_globals));
 #ifdef SP_DEBUG_STDERR
-  if (getenv("SP_NODEBUG")) {
-    sp_debug_stderr = -1;
-  } else {
-    sp_debug_stderr = dup(STDERR_FILENO);
-  }
+  snuffleupagus_globals->debug_stderr = getenv("SP_NODEBUG") ? -1 : dup(STDERR_FILENO);
+  sp_debug_stderr = snuffleupagus_globals->debug_stderr;
 #endif
   sp_log_debug("(GINIT)");
   sp_load_other_modules();
   snuffleupagus_globals->is_config_valid = SP_CONFIG_NONE;
-  snuffleupagus_globals->config_filename = NULL;
-  snuffleupagus_globals->config_lineno = 0;
-  snuffleupagus_globals->config_parsing = false;
-  snuffleupagus_globals->config_nonfatal = false;
-  snuffleupagus_globals->in_eval = 0;
-  snuffleupagus_globals->readonly_exec_checked = NULL;
   snuffleupagus_globals->config_log_max_len = 255;
 
 #define SP_INIT_HT(F)                                                          \
@@ -139,23 +131,18 @@ static PHP_GINIT_FUNCTION(snuffleupagus) {
   SP_INIT_HT(config_disabled_functions_ret);
   SP_INIT_HT(config_disabled_functions_ret_hooked);
   SP_INIT_HT(config_ini.entries);
+#ifdef ZTS
+  SP_INIT_HT(internal_function_handlers);
+#endif
 #undef SP_INIT_HT
-
-#define SP_INIT_NULL(F) snuffleupagus_globals->F = NULL;
-  SP_INIT_NULL(config_encryption_key);
-  SP_INIT_NULL(config_cookies_env_var);
-  SP_INIT_NULL(config_disabled_functions_reg.disabled_functions);
-  SP_INIT_NULL(config_disabled_functions_reg_ret.disabled_functions);
-  SP_INIT_NULL(config_cookie.cookies);
-  SP_INIT_NULL(config_eval.blacklist);
-  SP_INIT_NULL(config_eval.whitelist);
-  SP_INIT_NULL(config_wrapper.whitelist);
-  SP_INIT_NULL(config_wrapper.php_stream_allowlist);
-#undef SP_INIT_NULL
 }
 
 PHP_MINIT_FUNCTION(snuffleupagus) {
+#if defined(COMPILE_DL_SNUFFLEUPAGUS) && defined(ZTS)
+  ZEND_TSRMLS_CACHE_UPDATE();
+#endif
   sp_log_debug("(MINIT)");
+  sp_ini_init();
   REGISTER_INI_ENTRIES();
 
   return SUCCESS;
@@ -163,11 +150,14 @@ PHP_MINIT_FUNCTION(snuffleupagus) {
 
 PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
   sp_log_debug("(MSHUTDOWN)");
-  unhook_functions(SPG(sp_internal_functions_hook));
-  unhook_functions(SPG(disabled_functions_hook));
+#ifndef ZTS
   unhook_functions(SPG(sp_eval_blacklist_functions_hook));
+  unhook_functions(SPG(disabled_functions_hook));
+  unhook_functions(SPG(sp_internal_functions_hook));
   if (SPCFG(ini).enable) { sp_unhook_ini(); }
+#endif
   UNREGISTER_INI_ENTRIES();
+  sp_ini_shutdown();
 
   return SUCCESS;
 }
@@ -175,12 +165,6 @@ PHP_MSHUTDOWN_FUNCTION(snuffleupagus) {
 static inline void free_disabled_functions_hashtable(HashTable *const ht) {
   void *ptr = NULL;
   ZEND_HASH_FOREACH_PTR(ht, ptr) { sp_list_free(ptr, sp_free_disabled_function); }
-  ZEND_HASH_FOREACH_END();
-}
-
-static inline void free_config_ini_entries(HashTable *const ht) {
-  void *ptr = NULL;
-  ZEND_HASH_FOREACH_PTR(ht, ptr) { sp_free_ini_entry(ptr); pefree(ptr, 1); }
   ZEND_HASH_FOREACH_END();
 }
 
@@ -194,13 +178,15 @@ static inline void free_config_ini_entries(HashTable *const ht) {
  * reset, a second parse trips the "duplicate keyword" guard (and crashes the
  * worker under php-fpm). Resetting scalars/booleans too means a directive
  * omitted on reload correctly falls back to its default. */
-static void sp_free_config(void) {
-  sp_log_debug("(config cleanup)");
+static void sp_free_config(zend_snuffleupagus_globals *globals) {
+  if (globals == ZEND_MODULE_GLOBALS_BULK(snuffleupagus)) {
+    sp_log_debug("(config cleanup)");
+  }
 
   /* Empty (but keep) the persistent disabled-functions hashtables. */
 #define CLEAN_HT_LIST(F)                          \
-  free_disabled_functions_hashtable(SPG(F)); \
-  zend_hash_clean(SPG(F));
+  free_disabled_functions_hashtable(globals->F); \
+  zend_hash_clean(globals->F);
   CLEAN_HT_LIST(config_disabled_functions);
   CLEAN_HT_LIST(config_disabled_functions_hooked);
   CLEAN_HT_LIST(config_disabled_functions_ret);
@@ -208,21 +194,25 @@ static void sp_free_config(void) {
 #undef CLEAN_HT_LIST
 
   /* Empty (but keep) the persistent ini-protection hashtable. */
-  free_config_ini_entries(SPG(config_ini.entries));
-  zend_hash_clean(SPG(config_ini.entries));
+  sp_ini_entry *entry;
+  ZEND_HASH_FOREACH_PTR(globals->config_ini.entries, entry) {
+    sp_free_ini_entry(entry);
+    pefree(entry, 1);
+  } ZEND_HASH_FOREACH_END();
+  zend_hash_clean(globals->config_ini.entries);
 
-  sp_list_free(SPG(config_disabled_functions_reg.disabled_functions), sp_free_disabled_function);
-  sp_list_free(SPG(config_disabled_functions_reg_ret.disabled_functions), sp_free_disabled_function);
-  sp_list_free(SPG(config_cookie.cookies), sp_free_cookie);
+  sp_list_free(globals->config_disabled_functions_reg.disabled_functions, sp_free_disabled_function);
+  sp_list_free(globals->config_disabled_functions_reg_ret.disabled_functions, sp_free_disabled_function);
+  sp_list_free(globals->config_cookie.cookies, sp_free_cookie);
 
-#define FREE_LST(L) sp_list_free(SPG(L), sp_free_zstr);
+#define FREE_LST(L) sp_list_free(globals->L, sp_free_zstr);
   FREE_LST(config_eval.blacklist);
   FREE_LST(config_eval.whitelist);
   FREE_LST(config_wrapper.whitelist);
   FREE_LST(config_wrapper.php_stream_allowlist);
 #undef FREE_LST
 
-#define FREE_CFG_ZSTR(C) sp_free_zstr(SPG(C));
+#define FREE_CFG_ZSTR(C) sp_free_zstr(globals->C);
   FREE_CFG_ZSTR(config_unserialize.dump);
   FREE_CFG_ZSTR(config_unserialize.textual_representation);
   FREE_CFG_ZSTR(config_unserialize_noclass.textual_representation);
@@ -233,57 +223,67 @@ static void sp_free_config(void) {
   FREE_CFG_ZSTR(config_eval.textual_representation);
   FREE_CFG_ZSTR(config_encryption_key);
   FREE_CFG_ZSTR(config_cookies_env_var);
+  FREE_CFG_ZSTR(config_filename);
 #undef FREE_CFG_ZSTR
 
   /* config_log_media.path is strdup()'d, not a zend_string. */
-  free(SPG(config_log_media.path));
+  free(globals->config_log_media.path);
 
   /* Reset every config option back to its default. Pointers freed above are
    * zeroed here so no dangling reference remains and omitted directives fall
    * back to their defaults on reload. The persistent ini-protection hashtable
    * pointer lives inside config_ini and must be preserved across the memset. */
-  HashTable *const ini_entries = SPG(config_ini.entries);
-  memset(&SPCFG(random), 0, sizeof(SPCFG(random)));
-  memset(&SPCFG(sloppy), 0, sizeof(SPCFG(sloppy)));
-  memset(&SPCFG(unserialize), 0, sizeof(SPCFG(unserialize)));
-  memset(&SPCFG(unserialize_noclass), 0, sizeof(SPCFG(unserialize_noclass)));
-  memset(&SPCFG(readonly_exec), 0, sizeof(SPCFG(readonly_exec)));
-  memset(&SPCFG(upload_validation), 0, sizeof(SPCFG(upload_validation)));
-  memset(&SPCFG(cookie), 0, sizeof(SPCFG(cookie)));
-  memset(&SPCFG(auto_cookie_secure), 0, sizeof(SPCFG(auto_cookie_secure)));
-  memset(&SPCFG(global_strict), 0, sizeof(SPCFG(global_strict)));
-  memset(&SPCFG(xxe_protection), 0, sizeof(SPCFG(xxe_protection)));
-  memset(&SPCFG(eval), 0, sizeof(SPCFG(eval)));
-  memset(&SPCFG(wrapper), 0, sizeof(SPCFG(wrapper)));
-  memset(&SPCFG(session), 0, sizeof(SPCFG(session)));
-  memset(&SPCFG(log_media), 0, sizeof(SPCFG(log_media)));
-  memset(&SPCFG(disabled_functions_reg), 0, sizeof(SPCFG(disabled_functions_reg)));
-  memset(&SPCFG(disabled_functions_reg_ret), 0, sizeof(SPCFG(disabled_functions_reg_ret)));
-  memset(&SPCFG(ini), 0, sizeof(SPCFG(ini)));
-  SPG(config_ini.entries) = ini_entries;
+  HashTable *const ini_entries = globals->config_ini.entries;
+#define RESET_CFG(F) memset(&globals->config_##F, 0, sizeof(globals->config_##F));
+  RESET_CFG(random);
+  RESET_CFG(sloppy);
+  RESET_CFG(unserialize);
+  RESET_CFG(unserialize_noclass);
+  RESET_CFG(readonly_exec);
+  RESET_CFG(upload_validation);
+  RESET_CFG(cookie);
+  RESET_CFG(auto_cookie_secure);
+  RESET_CFG(global_strict);
+  RESET_CFG(xxe_protection);
+  RESET_CFG(eval);
+  RESET_CFG(wrapper);
+  RESET_CFG(session);
+  RESET_CFG(log_media);
+  RESET_CFG(disabled_functions_reg);
+  RESET_CFG(disabled_functions_reg_ret);
+  RESET_CFG(ini);
+#undef RESET_CFG
+  globals->config_ini.entries = ini_entries;
 
-  SPG(config_log_max_len) = 255;
-  if (SPG(config_filename)) {
-    zend_string_release_ex(SPG(config_filename), 1);
-    SPG(config_filename) = NULL;
-  }
-  SPG(config_lineno) = 0;
-  SPG(config_parsing) = false;
-  SPG(config_max_execution_depth) = 0;
-  SPG(config_server_encode) = false;
-  SPG(config_server_strip) = false;
-  SPG(config_encryption_key) = NULL;
-  SPG(config_cookies_env_var) = NULL;
-  SPG(hook_execute) = false;
+  globals->config_log_max_len = 255;
+  globals->config_filename = NULL;
+  globals->config_lineno = 0;
+  globals->config_parsing = false;
+  globals->config_max_execution_depth = 0;
+  globals->config_server_encode = false;
+  globals->config_server_strip = false;
+  globals->config_encryption_key = NULL;
+  globals->config_cookies_env_var = NULL;
+  globals->hook_execute = false;
 }
 
 static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
-  sp_log_debug("(GSHUTDOWN)");
+#if defined(COMPILE_DL_SNUFFLEUPAGUS) && defined(ZTS)
+  ZEND_TSRMLS_CACHE_UPDATE();
+#endif
+#ifdef ZTS
+  const bool is_current_thread = snuffleupagus_globals == ZEND_MODULE_GLOBALS_BULK(snuffleupagus);
+#else
+  const bool is_current_thread = true;
+#endif
+  if (is_current_thread) {
+    sp_log_debug("(GSHUTDOWN)");
+  }
 
   /* Free and reset all configuration data, then destroy the persistent
    * hashtables that sp_free_config() only emptied (they are not needed
    * anymore once the process goes away). */
-  sp_free_config();
+  sp_free_config(snuffleupagus_globals);
 
 #define FREE_HT(F)                             \
   zend_hash_destroy(snuffleupagus_globals->F); \
@@ -296,12 +296,17 @@ static PHP_GSHUTDOWN_FUNCTION(snuffleupagus) {
   FREE_HT(config_disabled_functions_ret);
   FREE_HT(config_disabled_functions_ret_hooked);
   FREE_HT(config_ini.entries);
+#ifdef ZTS
+  FREE_HT(internal_function_handlers);
+#endif
 #undef FREE_HT
 
 #ifdef SP_DEBUG_STDERR
-  if (sp_debug_stderr >= 0) {
-    close(sp_debug_stderr);
-    sp_debug_stderr = STDERR_FILENO;
+  if (snuffleupagus_globals->debug_stderr >= 0) {
+    close(snuffleupagus_globals->debug_stderr);
+    if (is_current_thread) {
+      sp_debug_stderr = STDERR_FILENO;
+    }
   }
 #endif
 }
@@ -629,7 +634,7 @@ static int sp_config_failed(void) {
   const uint32_t lineno = SPG(config_lineno);
 
   SPG(config_filename) = NULL;  // don't free it in sp_free_config
-  sp_free_config();
+  sp_free_config(ZEND_MODULE_GLOBALS_BULK(snuffleupagus));
   SPG(config_filename) = filename;
   SPG(config_lineno) = lineno;
   SPG(is_config_valid) = SP_CONFIG_INVALID;
@@ -647,18 +652,20 @@ static int sp_load_config(zend_string *const new_value) {
    * and re-parse: this keeps the parse idempotent (no "duplicate keyword"
    * crash), lets omitted directives fall back to their defaults, and makes
    * sure edits to the configuration file are picked up. */
-  if (SPG(is_config_valid) != SP_CONFIG_NONE) {
-    if (SPCFG(ini).enable) {
-      sp_unhook_ini();
-    }
-    // Reverse hooking order, as a function can be wrapped by several tables.
-    unhook_functions(SPG(sp_eval_blacklist_functions_hook));
-    unhook_functions(SPG(disabled_functions_hook));
-    unhook_functions(SPG(sp_internal_functions_hook));
-    zend_hash_clean(SPG(sp_eval_blacklist_functions_hook));
-    zend_hash_clean(SPG(disabled_functions_hook));
-    zend_hash_clean(SPG(sp_internal_functions_hook));
-    sp_free_config();
+  const bool has_config = SPG(is_config_valid) != SP_CONFIG_NONE;
+  if (has_config && SPCFG(ini).enable) {
+    sp_unhook_ini();
+  }
+
+  // Also unwind startup hooks inherited by a new ZTS worker.
+  unhook_functions(SPG(sp_eval_blacklist_functions_hook));
+  unhook_functions(SPG(disabled_functions_hook));
+  unhook_functions(SPG(sp_internal_functions_hook));
+  zend_hash_clean(SPG(sp_eval_blacklist_functions_hook));
+  zend_hash_clean(SPG(disabled_functions_hook));
+  zend_hash_clean(SPG(sp_internal_functions_hook));
+  if (has_config) {
+    sp_free_config(ZEND_MODULE_GLOBALS_BULK(snuffleupagus));
   }
 
   // set some defaults
@@ -783,6 +790,9 @@ static int sp_load_config(zend_string *const new_value) {
 
 static PHP_INI_MH(OnUpdateConfiguration) {
   TSRMLS_FETCH();
+#if defined(COMPILE_DL_SNUFFLEUPAGUS) && defined(ZTS)
+  ZEND_TSRMLS_CACHE_UPDATE();
+#endif
 
   if (!new_value || !new_value->len) {
     return FAILURE;

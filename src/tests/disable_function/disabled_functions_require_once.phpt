@@ -8,8 +8,8 @@ sp.configuration_file={PWD}/config/config_disabled_functions_require.ini
 <?php 
 $dir = __DIR__;
 // Just in case
-unlink($dir . '/test.bla');
-unlink($dir . '/test.meh');
+@unlink($dir . '/test.bla');
+@unlink($dir . '/test.meh');
 
 file_put_contents($dir . '/test.bla', "BLA");
 file_put_contents($dir . '/test.meh', "MEH");

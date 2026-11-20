@@ -56,7 +56,7 @@
 #ifdef SP_DEBUG
 
 #ifdef SP_DEBUG_STDERR
-extern int sp_debug_stderr;
+extern ZEND_EXT_TLS int sp_debug_stderr;
 #define sp_log_debug(fmt, ...) \
   if (sp_debug_stderr > 0) dprintf(sp_debug_stderr, "[snuffleupagus][DEBUG] %s(): " fmt "\n", __FUNCTION__, ##__VA_ARGS__);
 #else
@@ -86,6 +86,7 @@ void sp_log_disable(const char *restrict, const char *restrict, const zend_strin
 void sp_log_disable_ret(const char *restrict, const zend_string *restrict, const sp_disabled_function *);
 bool hook_function(const char *, HashTable *, zif_handler);
 void unhook_functions(HashTable *ht);
+
 int hook_regexp(const sp_pcre *, HashTable *, zif_handler);
 bool check_is_in_eval_whitelist(const char* function_name);
 int sp_log_request(zend_string const* const restrict folder, zend_string const* const restrict text_repr);

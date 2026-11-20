@@ -25,4 +25,4 @@ Warning: fopen(): Unable to find the wrapper "lolol" - did you forget to enable 
 
 Warning: fopen(): file:// wrapper is disabled in the server configuration in %a/stream_wrapper_register_php82.php on line %d
 
-Warning: fopen(lolol://asdasd): %s to open stream: no suitable wrapper could be found in %a/stream_wrapper_register_php82.php on line %d
+Warning: fopen%a: %s to open stream: no suitable wrapper could be found in %a/stream_wrapper_register_php82.php on line %d

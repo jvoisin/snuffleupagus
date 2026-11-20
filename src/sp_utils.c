@@ -478,17 +478,30 @@ static bool /* success */ _hook_function(const char* original_name, HashTable* h
     if (func->type != ZEND_INTERNAL_FUNCTION) {
       return false;
     }
-    if (func->internal_function.handler == new_function) {
+    zif_handler handler = func->internal_function.handler;
+#ifdef ZTS
+    zif_handler current = zend_hash_str_find_ptr(
+        SPG(internal_function_handlers), VAR_AND_LEN(original_name));
+    if (current) {
+      handler = current;
+    }
+#endif
+    if (handler == new_function) {
       return true;
     }
     if (zend_hash_str_add_new_ptr((hook_table), VAR_AND_LEN(original_name),
-                                  func->internal_function.handler) == NULL) {
+                                  handler) == NULL) {
       // LCOV_EXCL_START
       sp_log_err("function_pointer_saving", "Could not save function pointer for %s", original_name);
       return false;
       // LCOV_EXCL_STOP
     }
+#ifdef ZTS
+    zend_hash_str_update_ptr(SPG(internal_function_handlers),
+                             VAR_AND_LEN(original_name), new_function);
+#else
     func->internal_function.handler = new_function;
+#endif
     return true;
   }
   return false;
@@ -544,7 +557,11 @@ void unhook_functions(HashTable *ht) {
   ZEND_HASH_REVERSE_FOREACH_KEY_PTR(ht, idx, fname, orig_handler)
     zend_function *func = zend_hash_find_ptr(CG(function_table), fname);
     if (func && func->type == ZEND_INTERNAL_FUNCTION && orig_handler) {
+#ifdef ZTS
+      zend_hash_update_ptr(SPG(internal_function_handlers), fname, orig_handler);
+#else
       func->internal_function.handler = orig_handler;
+#endif
     }
     (void)idx;//silence a -Wunused-but-set-variable
   ZEND_HASH_FOREACH_END();

@@ -173,6 +173,12 @@ HashTable *readonly_exec_checked;  // files checked by readonly_exec (request)
 HashTable *disabled_functions_hook;
 HashTable *sp_internal_functions_hook;
 HashTable *sp_eval_blacklist_functions_hook;
+#ifdef ZTS
+HashTable *internal_function_handlers;
+#endif
+#ifdef SP_DEBUG_STDERR
+int debug_stderr;
+#endif
 
 #if PHP_VERSION_ID >= 80000
 const zend_string* eval_source_string;

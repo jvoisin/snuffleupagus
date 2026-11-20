@@ -21,8 +21,8 @@ static sp_list_node *parse_str_tokens(const char *str,
 }
 
 static bool is_var_name_valid(const char *const name) {
-  static sp_pcre *regexp_const = NULL;
-  static sp_pcre *regexp_var = NULL;
+  ZEND_TLS sp_pcre *regexp_const = NULL;
+  ZEND_TLS sp_pcre *regexp_var = NULL;
 
   assert(name);
 

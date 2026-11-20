@@ -1,5 +1,21 @@
 #include "php_snuffleupagus.h"
 
+#ifdef ZTS
+static PHP_INI_MH(sp_ini_onmodify);
+static HashTable sp_ini_original_onmodify;
+
+void sp_ini_init(void) {
+  zend_hash_init(&sp_ini_original_onmodify, 8, NULL, NULL, 1);
+}
+
+void sp_ini_shutdown(void) {
+  zend_hash_destroy(&sp_ini_original_onmodify);
+}
+#else
+void sp_ini_init(void) {}
+void sp_ini_shutdown(void) {}
+#endif
+
 #define SP_INI_HAS_CHECKS_COND(entry) (entry->min || entry->max || entry->regexp)
 #define SP_INI_ACCESS_READONLY_COND(entry, cfg) (entry->access == SP_INI_READONLY || (!entry->access && cfg->policy_readonly))
 
@@ -132,6 +148,9 @@ static bool /* success */ sp_ini_check(zend_string *const restrict varname, zend
 }
 
 static PHP_INI_MH(sp_ini_onmodify) {
+#if defined(COMPILE_DL_SNUFFLEUPAGUS) && defined(ZTS)
+  ZEND_TSRMLS_CACHE_UPDATE();
+#endif
   sp_ini_entry *sp_entry = NULL;
 
   if (!sp_ini_check(entry->name, new_value, &sp_entry)) {
@@ -158,7 +177,17 @@ void sp_hook_ini() {
 
     if (SP_INI_HAS_CHECKS_COND(sp_entry) || SP_INI_ACCESS_READONLY_COND(sp_entry, cfg)) {
       // only hook on_modify if there is any check to perform
+#ifdef ZTS
+      if (ini_entry->on_modify == sp_ini_onmodify) {
+        sp_entry->orig_onmodify = zend_hash_find_ptr(&sp_ini_original_onmodify, sp_entry->key);
+      } else {
+        sp_entry->orig_onmodify = ini_entry->on_modify;
+        zend_hash_update_ptr(&sp_ini_original_onmodify, sp_entry->key, sp_entry->orig_onmodify);
+      }
+      orig_onmodify = sp_entry->orig_onmodify;
+#else
       sp_entry->orig_onmodify = ini_entry->on_modify;
+#endif
       ini_entry->on_modify = sp_ini_onmodify;
     }
 

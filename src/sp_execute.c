@@ -181,6 +181,16 @@ static inline void sp_check_writable(zend_execute_data *execute_data) {
 
 static inline void sp_call_orig_execute(INTERNAL_FUNCTION_PARAMETERS, bool internal) {
   if (internal) {
+#ifdef ZTS
+    zif_handler handler = EX(func)->common.function_name
+                              ? zend_hash_find_ptr(SPG(internal_function_handlers),
+                                                   EX(func)->common.function_name)
+                              : NULL;
+    if (handler) {
+      handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+      return;
+    }
+#endif
     if (UNEXPECTED(NULL != orig_zend_execute_internal)) {
       orig_zend_execute_internal(INTERNAL_FUNCTION_PARAM_PASSTHRU);
     } else {

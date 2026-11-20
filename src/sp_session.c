@@ -11,15 +11,16 @@ static php_ps_globals *session_globals = NULL;
 #define SESSION_G(v) (session_globals->v)
 #endif
 
-static ps_module *s_module;
+ZEND_TLS ps_module *s_module;
 #if PHP_VERSION_ID < 70300
-static ps_module *s_original_mod;
+ZEND_TLS ps_module *s_original_mod;
 #else
-static const ps_module *s_original_mod;
+ZEND_TLS const ps_module *s_original_mod;
 #endif
-static int (*old_s_read)(PS_READ_ARGS);
-static int (*old_s_write)(PS_WRITE_ARGS);
+ZEND_TLS int (*old_s_read)(PS_READ_ARGS);
+ZEND_TLS int (*old_s_write)(PS_WRITE_ARGS);
 static int (*previous_sessionRINIT)(INIT_FUNC_ARGS) = NULL;
+/* PHP copies these hooks into new threads, so their originals are shared. */
 static ZEND_INI_MH((*old_OnUpdateSaveHandler)) = NULL;
 
 static void check_sid_length(const zend_string *sid) {
@@ -107,6 +108,9 @@ static void sp_hook_session_module(void) {
 }
 
 static PHP_INI_MH(sp_OnUpdateSaveHandler) {
+#if defined(COMPILE_DL_SNUFFLEUPAGUS) && defined(ZTS)
+  ZEND_TSRMLS_CACHE_UPDATE();
+#endif
 #if PHP_VERSION_ID < 70100
   /* PHP7.0 doesn't handle well recursively set session handlers */
   if (stage == PHP_INI_STAGE_RUNTIME &&
@@ -149,19 +153,19 @@ void hook_session() {
     session_globals = module->globals_ptr;
   }
 #endif
-  if (old_OnUpdateSaveHandler != NULL) {
-    return;  // LCOV_EXCL_LINE
+  if (module->request_startup_func != sp_hook_session_RINIT) {
+    previous_sessionRINIT = module->request_startup_func;
+    module->request_startup_func = sp_hook_session_RINIT;
   }
-
-  previous_sessionRINIT = module->request_startup_func;
-  module->request_startup_func = sp_hook_session_RINIT;
 
   zend_ini_entry *ini_entry;
-  if ((ini_entry = zend_hash_str_find_ptr(EG(ini_directives), ZEND_STRL("session.save_handler"))) != NULL) {
-    old_OnUpdateSaveHandler = ini_entry->on_modify;
+  if ((ini_entry = zend_hash_str_find_ptr(EG(ini_directives), ZEND_STRL("session.save_handler"))) != NULL &&
+      ini_entry->on_modify != sp_OnUpdateSaveHandler) {
+    if (old_OnUpdateSaveHandler == NULL) {
+      old_OnUpdateSaveHandler = ini_entry->on_modify;
+    }
     ini_entry->on_modify = sp_OnUpdateSaveHandler;
   }
-  s_module = NULL;
 
   sp_hook_session_module();
 }

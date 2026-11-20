@@ -17,10 +17,8 @@ void sp_sloppy_modify_opcode(zend_op_array* opline) {
 }
 
 static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
-                          size_t size, zif_handler orig_handler,
-                          const char* spec) {
+                          size_t size, const char* spec) {
   zif_handler handler;
-  zval func_name;
   zval params[3] = {0};
   zval *value, *array = NULL;
   zend_bool strict = 0;
@@ -40,33 +38,61 @@ static void array_handler(INTERNAL_FUNCTION_PARAMETERS, const char* name,
     ZVAL_NULL(&params[1]);
   }
 
-  ZVAL_STRING(&func_name, name);
-
   handler = zend_hash_str_find_ptr(SPG(sp_internal_functions_hook),
                                    name, size);
-  zend_internal_function* func =
-      zend_hash_str_find_ptr(CG(function_table), name, size);
-  func->handler = handler;
+#ifdef ZTS
+  zif_handler hooked_handler = zend_hash_str_find_ptr(
+      SPG(internal_function_handlers), name, size);
+  zend_hash_str_del(SPG(internal_function_handlers), name, size);
+  zend_function *func = zend_hash_str_find_ptr(CG(function_table), name, size);
+  zend_function local_func = *func;
+  local_func.internal_function.handler = handler;
 
+  zend_fcall_info fci;
+  zend_fcall_info_cache fcc;
+  memset(&fci, 0, sizeof(fci));
+  memset(&fcc, 0, sizeof(fcc));
+  fci.size = sizeof(fci);
+  fci.retval = return_value;
+  fci.param_count = nb_params;
+  fci.params = params;
+#if PHP_VERSION_ID < 70300
+  fcc.initialized = 1;
+#endif
+  fcc.function_handler = &local_func;
+  zend_call_function(&fci, &fcc);
+  if (hooked_handler) {
+    zend_hash_str_update_ptr(SPG(internal_function_handlers), name, size,
+                             hooked_handler);
+  }
+#else
+  zval func_name;
+  zend_function *func = zend_hash_str_find_ptr(CG(function_table), name, size);
+  zif_handler current_handler = func->internal_function.handler;
+  func->internal_function.handler = handler;
+  ZVAL_STRING(&func_name, name);
   call_user_function(CG(function_table), NULL, &func_name, return_value,
                      nb_params, params);
+  func->internal_function.handler = current_handler;
+  zval_ptr_dtor(&func_name);
+#endif
 
-  func->handler = orig_handler;
+  zval_ptr_dtor(&params[0]);
+  zval_ptr_dtor(&params[1]);
+  zval_ptr_dtor(&params[2]);
 }
 
 PHP_FUNCTION(sp_in_array) {
   array_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, "in_array",
-                sizeof("in_array") - 1, PHP_FN(sp_in_array), "zz|b");
+                sizeof("in_array") - 1, "zz|b");
 }
-
 PHP_FUNCTION(sp_array_search) {
   array_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, "array_search",
-                sizeof("array_search") - 1, PHP_FN(sp_array_search), "zz|b");
+                sizeof("array_search") - 1, "zz|b");
 }
-
 PHP_FUNCTION(sp_array_keys) {
   array_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU, "array_keys",
-                sizeof("array_keys") - 1, PHP_FN(sp_array_keys), "z|zb");
+                sizeof("array_keys") - 1, "z|zb");
 }
 
 void hook_sloppy() {

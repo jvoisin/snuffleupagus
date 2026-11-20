@@ -34,45 +34,45 @@ file_put_contents('php://memory', "Bye from memory\n");
 --EXPECTF--
 Warning: [snuffleupagus][0.0.0.0][wrappers_whitelist][log] Call to not allowed php stream type "input" dropped in %a/stream_wrapper_php.php on line %d
 
-Warning: file_get_contents(php://input): %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
+Warning: file_get_contents%a: %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
 
 Warning: [snuffleupagus][0.0.0.0][wrappers_whitelist][log] Call to not allowed php stream type "output" dropped in %a/stream_wrapper_php.php on line %d
 
-Warning: file_put_contents(php://output): %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
+Warning: file_put_contents%a: %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
 Hello from stderr #1
 
 Warning: [snuffleupagus][0.0.0.0][wrappers_whitelist][log] Call to not allowed php stream type "memory" dropped in %a/stream_wrapper_php.php on line %d
 
-Warning: file_put_contents(php://memory): %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
+Warning: file_put_contents%a: %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
 
 Warning: [snuffleupagus][0.0.0.0][wrappers_whitelist][log] Call to not allowed php stream type "memory" dropped in %a/stream_wrapper_php.php on line %d
 
-Warning: file_get_contents(php://memory): %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
+Warning: file_get_contents%a: %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
 
 Warning: [snuffleupagus][0.0.0.0][wrappers_whitelist][log] Call to not allowed php stream type "temp" dropped in %a/stream_wrapper_php.php on line %d
 
-Warning: file_put_contents(php://temp): %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
+Warning: file_put_contents%a: %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
 
 Warning: [snuffleupagus][0.0.0.0][wrappers_whitelist][log] Call to not allowed php stream type "temp" dropped in %a/stream_wrapper_php.php on line %d
 
-Warning: file_get_contents(php://temp): %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
+Warning: file_get_contents%a: %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
 Hello from stderr #2
 
 Warning: [snuffleupagus][0.0.0.0][wrappers_whitelist][log] Call to not allowed php stream type "filter" dropped in %a/stream_wrapper_php.php on line %d
 
-Warning: file_put_contents(php://filter/write=string.toupper/resource=output.tmp): %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
+Warning: file_put_contents%a: %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
 
 Warning: [snuffleupagus][0.0.0.0][wrappers_whitelist][log] Call to not allowed php stream type "filter" dropped in %a/stream_wrapper_php.php on line %d
 
-Warning: file_get_contents(php://filter/read=string.toupper/resource=output.tmp): %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
+Warning: file_get_contents%a: %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
 1
 Warning: file_put_contents(): Unable to find the wrapper "php" - did you forget to enable it when you configured PHP? in %a/stream_wrapper_php.php on line %d
 
 Warning: file_put_contents(): file:// wrapper is disabled in the server configuration in %a/stream_wrapper_php.php on line %d
 
-Warning: file_put_contents(php://stderr): %s to open stream: no suitable wrapper could be found in %a/stream_wrapper_php.php on line %d
+Warning: file_put_contents%a: %s to open stream: no suitable wrapper could be found in %a/stream_wrapper_php.php on line %d
 Hello from stderr #4
 
 Warning: [snuffleupagus][0.0.0.0][wrappers_whitelist][log] Call to not allowed php stream type "memory" dropped in %a/stream_wrapper_php.php on line %d
 
-Warning: file_put_contents(php://memory): %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d
+Warning: file_put_contents%a: %s to open stream: operation failed in %a/stream_wrapper_php.php on line %d

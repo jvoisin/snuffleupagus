@@ -80,6 +80,11 @@ Configuration rules must contain ASCII characters. A non-ASCII character in a
 rule causes the configuration to be rejected; comments may contain other
 characters.
 
+On ZTS builds, function hooks and INI protection policies are thread-local.
+Reloading a worker's configuration does not change another worker's protections.
+Shared internal functions use a fixed dispatcher to select the current thread's
+hook.
+
 Miscellaneous
 -------------
 
