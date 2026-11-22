@@ -28,8 +28,7 @@ Just type `make coverage` or `make debug`, the testsuite should be run
 automatically.
 
 Please add tests if you're fixing a bug or adding a new feature: we do have a
-[high coverage](https://coveralls.io/github/jvoisin/snuffleupagus?branch=master)
-(functions, lines and branches), and intend to keep it that way.
+high coverage (functions, lines and branches), and intend to keep it that way.
 
 #### 3.3 Debugging failures in the test suite
 

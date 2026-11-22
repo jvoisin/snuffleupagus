@@ -27,16 +27,8 @@
            alt="CII Best Practises">
   </a>
   <a href="http://snuffleupagus.readthedocs.io/?badge=latest">
-    <img src="https://readthedocs.org/projects/snuffleupagus/badge/?version=latest"
+    <img src="https://app.readthedocs.org/projects/snuffleupagus/badge/?version=latest"
          alt="readthedocs.org">
-  </a>
-  <a href="https://coveralls.io/github/jvoisin/snuffleupagus?branch=main">
-    <img src="https://coveralls.io/repos/github/jvoisin/snuffleupagus/badge.svg?branch=main"
-         alt="coveralls">
-  </a>
-  <a href="https://twitter.com/dustriorg">
-    <img src="https://img.shields.io/badge/twitter-follow-blue.svg"
-         alt="twitter">
   </a>
   <a href="https://repology.org/project/php:snuffleupagus/versions">
     <img src="https://repology.org/badge/tiny-repos/php:snuffleupagus.svg"
@@ -85,7 +77,7 @@ without having to touch the PHP code.
   * Enforcing TLS certificate validation when using [curl](https://secure.php.net/manual/en/book.curl.php)
   * Request dumping capability
 * A relatively sane code base:
-  * A [comprehensive](https://coveralls.io/github/jvoisin/snuffleupagus?branch=main) test suite close to 100% coverage
+  * A comprehensive test suite close to 100% coverage
   * Every commit is tested on [several distributions](https://gitlab.com/jvoisin/snuffleupagus/pipelines)
   * An `clang-format`-enforced code style
   * A [comprehensive documentation](https://snuffleupagus.rtfd.io)
